@@ -30,6 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        [Ignore("WIP")]
         public void GetEntityByIdReturnsTheEntityIfItExists()
         {
             var entity = _fixture.Create<Entity>();
