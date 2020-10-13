@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BaseApi\SocialCareCaseViewerApi.csproj" />
+    <ProjectReference Include="..\SocialCareCaseViewerApi\SocialCareCaseViewerApi.csproj" />
   </ItemGroup>
 
 </Project>
