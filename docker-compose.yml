@@ -1,8 +1,8 @@
 version: "3.2"
 
 services:
-  base-api:
-    image: base-api
+  social-care-case-viewer-api:
+    image: social-care-case-viewer-api
     build:
       context: SocialCareCaseViewerApi/
       dockerfile: ./Dockerfile
@@ -19,8 +19,8 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
-  base-api-test:
-    image: base-api-test
+  social-care-case-viewer-api-test:
+    image: social-care-case-viewer-api-test
     build:
       context: .
       dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
