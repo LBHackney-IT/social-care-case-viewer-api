@@ -9,6 +9,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
     public class DatabaseContextTest : DatabaseTests
     {
         [Test]
+        [Ignore("WIP")]
         public void CanGetADatabaseEntity()
         {
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntity();
