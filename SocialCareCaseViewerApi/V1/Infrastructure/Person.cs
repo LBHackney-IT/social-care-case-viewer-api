@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MosaicResidentInformationApi.V1.Infrastructure
+namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("dm_persons", Schema = "dbo")]
     public class Person
