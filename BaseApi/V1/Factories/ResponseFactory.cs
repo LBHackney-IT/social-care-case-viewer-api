@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using BaseApi.V1.Boundary.Response;
-using BaseApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 
-namespace BaseApi.V1.Factories
+namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {

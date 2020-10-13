@@ -1,7 +1,7 @@
 using Amazon.Lambda.AspNetCoreServer;
 using Microsoft.AspNetCore.Hosting;
 
-namespace BaseApi
+namespace SocialCareCaseViewerApi
 {
     public class LambdaEntryPoint : APIGatewayProxyFunction
     {

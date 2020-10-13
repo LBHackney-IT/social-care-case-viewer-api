@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using BaseApi.V1.Controllers;
-using BaseApi.V1.UseCase;
+using SocialCareCaseViewerApi.V1.Controllers;
+using SocialCareCaseViewerApi.V1.UseCase;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.Controllers
+namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
 
     [TestFixture]

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace BaseApi.V1.Infrastructure
+namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
 
     public class DatabaseContext : DbContext

@@ -1,9 +1,9 @@
-using BaseApi.V1.Factories;
-using BaseApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.Factories
+namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     [TestFixture]
     public class EntityFactoryTest

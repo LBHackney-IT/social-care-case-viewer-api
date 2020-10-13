@@ -1,4 +1,4 @@
-service: your-api-name
+service: social-care-case-viewer-api
 provider:
   name: aws
   runtime: dotnetcore3.1
@@ -16,12 +16,12 @@ provider:
 
 package:
 # TODO: Rename zipfile in build.sh and build.cmd to match this
-  artifact: ./bin/release/netcoreapp3.1/your-api-name.zip
+  artifact: ./bin/release/netcoreapp3.1/social-care-case-viewer-api.zip
 
 functions:
-  baseApi:
+  socialCareCaseViewerApi:
     name: ${self:service}-${self:provider.stage}
-    handler: BaseApi::BaseApi.LambdaEntryPoint::FunctionHandlerAsync
+    handler: SocialCareCaseViewerApi::SocialCareCaseViewerApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
 # TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name

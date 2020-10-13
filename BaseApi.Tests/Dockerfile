@@ -6,16 +6,16 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY ./BaseApi.sln ./
-COPY ./BaseApi/BaseApi.csproj ./BaseApi/
-COPY ./BaseApi.Tests/BaseApi.Tests.csproj ./BaseApi.Tests/
+COPY ./SocialCareCaseViewerApi.sln ./
+COPY ./SocialCareCaseViewerApi/SocialCareCaseViewerApi.csproj ./SocialCareCaseViewerApi/
+COPY ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj ./SocialCareCaseViewerApi.Tests/
 
-RUN dotnet restore ./BaseApi/BaseApi.csproj
-RUN dotnet restore ./BaseApi.Tests/BaseApi.Tests.csproj
+RUN dotnet restore ./SocialCareCaseViewerApi/SocialCareCaseViewerApi.csproj
+RUN dotnet restore ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj
 
 # Copy everything else and build
 COPY . .
 
-RUN dotnet build -c debug -o out BaseApi.Tests/BaseApi.Tests.csproj
+RUN dotnet build -c debug -o out SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj
 
 CMD dotnet test

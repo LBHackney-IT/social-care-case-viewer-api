@@ -1,8 +1,8 @@
 using AutoFixture;
-using BaseApi.V1.Domain;
-using BaseApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
-namespace BaseApi.Tests.V1.Helper
+namespace SocialCareCaseViewerApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {

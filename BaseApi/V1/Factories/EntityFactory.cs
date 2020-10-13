@@ -1,7 +1,7 @@
-using BaseApi.V1.Domain;
-using BaseApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
-namespace BaseApi.V1.Factories
+namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
     {

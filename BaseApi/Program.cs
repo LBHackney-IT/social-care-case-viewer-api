@@ -2,8 +2,8 @@ using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace BaseApi
-{
+namespace SocialCareCaseViewerApi
+{ 
     public static class Program
     {
         public static void Main(string[] args)

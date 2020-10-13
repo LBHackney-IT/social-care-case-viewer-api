@@ -1,9 +1,9 @@
-using BaseApi.V1.Gateways;
-using BaseApi.V1.UseCase;
+using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.UseCase;
 using Moq;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.UseCase
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     public class GetByIdUseCaseTests
     {

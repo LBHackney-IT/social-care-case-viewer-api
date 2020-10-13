@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using BaseApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Domain;
 
-namespace BaseApi.V1.Gateways
+namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IExampleGateway
     {

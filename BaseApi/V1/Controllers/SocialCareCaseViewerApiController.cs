@@ -1,9 +1,9 @@
-using BaseApi.V1.Boundary.Response;
-using BaseApi.V1.UseCase.Interfaces;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BaseApi.V1.Controllers
+namespace SocialCareCaseViewerApi.V1.Controllers
 {
     [ApiController]
     //TODO: Rename to match the APIs endpoint
@@ -11,11 +11,11 @@ namespace BaseApi.V1.Controllers
     [Produces("application/json")]
     [ApiVersion("1.0")]
     //TODO: rename class to match the API name
-    public class BaseApiController : BaseController
+    public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IGetByIdUseCase _getByIdUseCase;
-        public BaseApiController(IGetAllUseCase getAllUseCase, IGetByIdUseCase getByIdUseCase)
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IGetByIdUseCase getByIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;

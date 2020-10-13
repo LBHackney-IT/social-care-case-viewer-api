@@ -1,9 +1,9 @@
-using BaseApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NUnit.Framework;
 
-namespace BaseApi.Tests
+namespace SocialCareCaseViewerApi.Tests
 {
     [TestFixture]
     public class DatabaseTests

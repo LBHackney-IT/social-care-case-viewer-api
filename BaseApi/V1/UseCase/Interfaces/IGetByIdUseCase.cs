@@ -1,6 +1,6 @@
-using BaseApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 
-namespace BaseApi.V1.UseCase.Interfaces
+namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IGetByIdUseCase
     {

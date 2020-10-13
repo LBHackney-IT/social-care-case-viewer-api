@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace BaseApi.Versioning
+namespace SocialCareCaseViewerApi.Versioning
 {
     public static class ApiVersionExtensions
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace BaseApi.Tests
+namespace SocialCareCaseViewerApi.Tests
 {
     public static class ConnectionString
     {

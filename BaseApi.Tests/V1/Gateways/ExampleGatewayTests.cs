@@ -1,11 +1,11 @@
 using AutoFixture;
-using BaseApi.Tests.V1.Helper;
-using BaseApi.V1.Domain;
-using BaseApi.V1.Gateways;
+using SocialCareCaseViewerApi.Tests.V1.Helper;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Gateways;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.Gateways
+namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
     //TODO: Rename Tests to match gateway name
     //For instruction on how to run tests please see the wiki: https://github.com/LBHackney-IT/lbh-base-api/wiki/Running-the-test-suite.

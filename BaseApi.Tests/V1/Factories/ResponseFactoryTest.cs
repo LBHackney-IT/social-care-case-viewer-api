@@ -1,8 +1,8 @@
-using BaseApi.V1.Domain;
-using BaseApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Factories;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.Factories
+namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTest
     {

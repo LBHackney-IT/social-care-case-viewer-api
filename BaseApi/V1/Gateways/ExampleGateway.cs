@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using BaseApi.V1.Domain;
-using BaseApi.V1.Factories;
-using BaseApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
-namespace BaseApi.V1.Gateways
+namespace SocialCareCaseViewerApi.V1.Gateways
 {
     //TODO: Rename to match the data source that is being accessed in the gateway eg. MosaicGateway
     public class ExampleGateway : IExampleGateway

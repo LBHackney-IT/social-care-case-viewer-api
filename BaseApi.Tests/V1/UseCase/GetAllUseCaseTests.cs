@@ -1,15 +1,15 @@
 using System.Linq;
 using AutoFixture;
-using BaseApi.V1.Boundary.Response;
-using BaseApi.V1.Domain;
-using BaseApi.V1.Factories;
-using BaseApi.V1.Gateways;
-using BaseApi.V1.UseCase;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
-namespace BaseApi.Tests.V1.UseCase
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     public class GetAllUseCaseTests
     {
