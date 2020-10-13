@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public Entity GetEntityById(int id)
+        public Entity GetEntityById(long id)
         {
             var result = _databaseContext.DatabaseEntities.Find(id);
 

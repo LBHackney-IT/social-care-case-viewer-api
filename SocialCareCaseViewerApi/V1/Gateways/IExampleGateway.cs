@@ -5,7 +5,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IExampleGateway
     {
-        Entity GetEntityById(int id);
+        Entity GetEntityById(long id);
 
         List<Entity> GetAll();
     }

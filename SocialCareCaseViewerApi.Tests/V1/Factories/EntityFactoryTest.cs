@@ -13,11 +13,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var databaseEntity = new DatabaseEntity();
+            var databaseEntity = new Person();
             var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
-            databaseEntity.CreatedAt.Should().BeSameDateAs(entity.CreatedAt);
+            //databaseEntity.CreatedAt.Should().BeSameDateAs(entity.CreatedAt);
         }
     }
 }

@@ -6,19 +6,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {
-        public static DatabaseEntity CreateDatabaseEntity()
+        public static Person CreateDatabaseEntity()
         {
             var entity = new Fixture().Create<Entity>();
 
             return CreateDatabaseEntityFrom(entity);
         }
 
-        public static DatabaseEntity CreateDatabaseEntityFrom(Entity entity)
+        public static Person CreateDatabaseEntityFrom(Entity entity)
         {
-            return new DatabaseEntity
+            return new Person
             {
                 Id = entity.Id,
-                CreatedAt = entity.CreatedAt,
+                //CreatedAt = entity.CreatedAt,
             };
         }
     }
