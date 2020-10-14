@@ -21,31 +21,43 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _getByIdUseCase = getByIdUseCase;
         }
 
-        //TODO: add xml comments containing information that will be included in the auto generated swagger docs (https://github.com/LBHackney-IT/lbh-base-api/wiki/Controllers-and-Response-Objects)
         /// <summary>
-        /// ...
+        /// Returns list of contacts who share the query search parameter
         /// </summary>
-        /// <response code="200">...</response>
+        /// <response code="200">Success. Returns a list of matching residents information</response>
         /// <response code="400">Invalid Query Parameter.</response>
-        [ProducesResponseType(typeof(ResponseObjectList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult ListContacts()
+        public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
-            return Ok(_getAllUseCase.Execute());
+            try
+            {
+                return Ok(_getAllResidentsUseCase.Execute(rqp, (int) cursor, (int) limit));
+            }
+            catch (InvalidQueryParameterException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        /// <summary>
-        /// ...
+        /// /// <summary>
+        /// Find a resident by Mosaic ID
         /// </summary>
-        /// <response code="200">...</response>
-        /// <response code="404">No ? found for the specified ID</response>
-        [ProducesResponseType(typeof(ResponseObject), StatusCodes.Status200OK)]
+        /// <response code="200">Success. Returns resident related to the specified ID</response>
+        /// <response code="404">No resident found for the specified ID</response>
+        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
         [HttpGet]
-        //TODO: rename to match the identifier that will be used
-        [Route("{yourId}")]
-        public IActionResult ViewRecord(int yourId)
+        [Route("{mosaicId}")]
+        public IActionResult ViewRecord(int mosaicId)
         {
-            return Ok(_getByIdUseCase.Execute(yourId));
+            try
+            {
+                return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+            }
+            catch (ResidentNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

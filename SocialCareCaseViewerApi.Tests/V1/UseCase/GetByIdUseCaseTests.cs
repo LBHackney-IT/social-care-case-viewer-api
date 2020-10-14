@@ -8,13 +8,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class GetByIdUseCaseTests
     {
         private Mock<IExampleGateway> _mockGateway;
-        private GetByIdUseCase _classUnderTest;
+        private GetEntityByIdUseCase _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
             _mockGateway = new Mock<IExampleGateway>();
-            _classUnderTest = new GetByIdUseCase(_mockGateway.Object);
+            _classUnderTest = new GetEntityByIdUseCase(_mockGateway.Object);
         }
 
         //TODO: test to check that the use case retrieves the correct record from the database.
