@@ -2,6 +2,8 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -14,11 +16,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
-        private readonly IGetByIdUseCase _getByIdUseCase;
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IGetByIdUseCase getByIdUseCase)
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase)
         {
             _getAllUseCase = getAllUseCase;
-            _getByIdUseCase = getByIdUseCase;
         }
 
         /// <summary>
@@ -32,31 +32,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_getAllResidentsUseCase.Execute(rqp, (int) cursor, (int) limit));
+                return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
             }
             catch (InvalidQueryParameterException e)
             {
                 return BadRequest(e.Message);
-            }
-        }
-
-        /// /// <summary>
-        /// Find a resident by Mosaic ID
-        /// </summary>
-        /// <response code="200">Success. Returns resident related to the specified ID</response>
-        /// <response code="404">No resident found for the specified ID</response>
-        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("{mosaicId}")]
-        public IActionResult ViewRecord(int mosaicId)
-        {
-            try
-            {
-                return Ok(_getEntityByIdUseCase.Execute(mosaicId));
-            }
-            catch (ResidentNotFoundException)
-            {
-                return NotFound();
             }
         }
     }

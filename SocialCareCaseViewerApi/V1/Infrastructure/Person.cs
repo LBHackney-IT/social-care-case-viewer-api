@@ -12,10 +12,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Key]
         public long Id { get; set; }
 
-        [Column("full_name")]
-        [MaxLength(62)]
-        public string FullName { get; set; }
-
         [Column("title")]
         [MaxLength(8)]
         public string Title { get; set; }
@@ -28,10 +24,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(30)]
         public string LastName { get; set; }
 
-        [Column("nhs_id")]
-        [MaxLength(10)]
-        public long? NhsNumber { get; set; }
-
         [Column("date_of_birth")]
         public DateTime? DateOfBirth { get; set; }
 
@@ -39,9 +31,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         public string Gender { get; set; }
 
-        [Column("email_address")]
-        [MaxLength(240)]
-        public string EmailAddress { get; set; }
+        [Column("nationality")]
+        [MaxLength(80)]
+        public string Nationality { get; set; }
+
+        [Column("nhs_id")]
+        [MaxLength(10)]
+        public long? NhsNumber { get; set; }
 
         [Column("person_id_legacy")]
         [MaxLength(16)]
