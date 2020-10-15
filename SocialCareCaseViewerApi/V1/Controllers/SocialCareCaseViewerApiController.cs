@@ -39,5 +39,25 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        /// <summary>
+        /// Find a resident by Mosaic ID
+        /// </summary>
+        /// <response code="200">Success. Returns resident related to the specified ID</response>
+        /// <response code="404">No resident found for the specified ID</response>
+        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("cases")]
+        public IActionResult ViewRecord(long mosaicId, string officerEmail)
+        {
+            try
+            {
+                return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+            }
+            catch (ResidentNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
 }
