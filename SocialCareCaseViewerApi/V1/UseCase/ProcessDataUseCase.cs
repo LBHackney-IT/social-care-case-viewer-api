@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 
@@ -13,9 +14,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             _processDataGateway = processDataGateway;
         }
-        public CareCaseDataList Execute(string mosaicId, string officerEmail)
+        public CareCaseDataList Execute(ListCasesRequest request)
         {
-            var result = _processDataGateway.GetProcessData(mosaicId, officerEmail);
+            var result = _processDataGateway.GetProcessData(request);
 
             return new CareCaseDataList
             {
