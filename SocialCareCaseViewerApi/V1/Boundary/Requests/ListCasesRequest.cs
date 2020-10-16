@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     public class ListCasesRequest
     {
         [FromQuery(Name = "mosaic_id")]
-        public long? MosaicId { get; set; }
+        public string MosaicId { get; set; }
 
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
