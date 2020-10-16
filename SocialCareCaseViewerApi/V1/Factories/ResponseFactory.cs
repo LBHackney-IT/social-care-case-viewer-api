@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -60,6 +62,18 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AgeGroup = resident.AgeContext,
                 Address = address
             };
+        }
+
+        public static List<CareCaseData> ToResponse(List<BsonDocument> submittedFormsData)
+        {
+            return submittedFormsData.Select(x => x.ToResponse()).ToList();
+        }
+
+        private static CareCaseData ToResponse(this BsonDocument formData)
+        {
+            var caseData = BsonSerializer.Deserialize<CareCaseData>(formData);
+            caseData.CaseFormData = formData;
+            return caseData;
         }
     }
 }

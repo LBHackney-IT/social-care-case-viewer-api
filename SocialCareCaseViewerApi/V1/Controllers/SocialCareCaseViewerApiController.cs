@@ -86,11 +86,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         //[ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
-        public IActionResult ListCases(string mosaicId, string officerEmail)
+        public IActionResult ListCases([FromQuery] ListCasesRequest request)
         {
             try
             {
-                return Ok(_processDataUsecase.Execute(mosaicId, officerEmail));
+                return Ok(_processDataUsecase.Execute(request));
             }
             catch (ResidentNotFoundException)
             {

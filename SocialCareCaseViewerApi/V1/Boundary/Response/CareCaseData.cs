@@ -8,33 +8,28 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     [BsonIgnoreExtraElements]
     public class CareCaseData
     {
+        [JsonProperty("formName")]
+        [BsonElement("form_name")]
         public string FormName { get; set; }
-
-        [JsonProperty("mosaic_id")]
-        //[BsonRepresentation(BsonType.ObjectId)]
+        [JsonProperty("personId")]
+        [BsonElement("mosaic_id")]
         public string PersonId { get; set; }
-        public string Title { get; set; }
-
-        /// <example>
-        /// Ciasom
-        /// </example>
+        [JsonProperty("firstName")]
+        [BsonElement("first_name")]
         public string FirstName { get; set; }
-        /// <example>
-        /// Tessellate
-        /// </example>
+        [JsonProperty("lastName")]
+        [BsonElement("last_name")]
         public string LastName { get; set; }
-        /// <example>
-        /// 2020-05-15
-        /// </example>
+        [JsonProperty("dateOfBirth")]
+        [BsonElement("date_of_birth")]
         public string DateOfBirth { get; set; }
-
-        [JsonProperty("worker_email")]
+        [JsonProperty("workerEmail")]
+        [BsonElement("worker_email")]
         public string OfficerEmail { get; set; }
-
+        [JsonProperty("formUrl")]
+        [BsonElement("form_url")]
         public string CaseFormUrl { get; set; }
-
-        [JsonProperty("processData")]
-        [BsonElement("processData")]
+        [JsonProperty("form_data")]
         public object CaseFormData { get; set; }
     }
 }
