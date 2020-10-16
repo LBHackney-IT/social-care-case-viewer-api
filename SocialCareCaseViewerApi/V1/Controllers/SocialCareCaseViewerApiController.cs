@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.UseCase;
+using System.Threading.Tasks;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -29,7 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
         /// <response code="400">Invalid Query Parameter.</response>
-        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {

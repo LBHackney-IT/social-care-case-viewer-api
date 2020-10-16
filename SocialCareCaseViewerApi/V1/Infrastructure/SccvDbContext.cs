@@ -26,6 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             string caContentString = System.IO.File.ReadAllText(pathToCAFile);
 
             X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(caContentString));
+
             try
             {
                 localTrustStore.Open(OpenFlags.ReadWrite);

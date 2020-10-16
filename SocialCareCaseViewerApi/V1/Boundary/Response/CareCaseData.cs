@@ -5,12 +5,13 @@ using Newtonsoft.Json;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
+    [BsonIgnoreExtraElements]
     public class CareCaseData
     {
         public string FormName { get; set; }
 
-        [JsonProperty("_id")]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [JsonProperty("mosaic_id")]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public string PersonId { get; set; }
         public string Title { get; set; }
 
@@ -27,6 +28,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         /// </example>
         public string DateOfBirth { get; set; }
 
+        [JsonProperty("worker_email")]
         public string OfficerEmail { get; set; }
 
         public string CaseFormUrl { get; set; }
