@@ -22,9 +22,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
-            string lastname = null, string date_of_birth = null, string mosaicid = null, string agegroup = null)
+            string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
-            var peopleIds = PeopleIds(cursor, limit, firstname, lastname, date_of_birth, mosaicid, agegroup);
+            var peopleIds = PeopleIds(cursor, limit, firstname, lastname, dateOfBirth, mosaicid, agegroup);
 
             var dbRecords = _databaseContext.Persons
                 .Where(p => peopleIds.Contains(p.Id))
@@ -41,11 +41,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         private List<long> PeopleIds(int cursor, int limit, string firstname, string lastname,
-            string date_of_birth = null, string mosaicid = null, string agegroup = null)
+            string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
             var firstNameSearchPattern = GetSearchPattern(firstname);
             var lastNameSearchPattern = GetSearchPattern(lastname);
-            var dateOfBirthSearchPattern = GetSearchPattern(date_of_birth);
+            var dateOfBirthSearchPattern = GetSearchPattern(dateOfBirth);
             var mosaicIdSearchPattern = GetSearchPattern(mosaicid);
             var ageGroupSearchPattern = GetSearchPattern(agegroup);
             return _databaseContext.Persons
