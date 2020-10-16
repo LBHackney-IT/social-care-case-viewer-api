@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(person =>
                     string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
                 .Where(person =>
-                    string.IsNullOrEmpty(date_of_birth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
+                    string.IsNullOrEmpty(dateOfBirth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
                 .Where(person =>
                     string.IsNullOrEmpty(mosaicid) || EF.Functions.ILike(person.Id.ToString(), mosaicIdSearchPattern))
                 .Where(person =>
