@@ -26,9 +26,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
+            long mosaicId = 0;
+            if (!string.IsNullOrEmpty(request.MosaicId)){
+              
+                if(!Int64.TryParse(request.MosaicId, out mosaicId))
+                {
+                    throw new Exception();
+                }
+            }
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Eq("mosaic_id", request.MosaicId);
+                : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
