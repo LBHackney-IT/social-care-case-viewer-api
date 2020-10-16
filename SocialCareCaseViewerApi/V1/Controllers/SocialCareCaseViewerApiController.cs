@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
+using System.Net.Mime;
+using System;
+using SocialCareCaseViewerApi.V1.Boundary;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -16,9 +19,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase)
+        private readonly IAddNewResidentUseCase _addNewResidentUseCase;
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase)
         {
             _getAllUseCase = getAllUseCase;
+            _addNewResidentUseCase = addNewResidentUseCase;
         }
 
         /// <summary>
@@ -37,6 +42,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (InvalidQueryParameterException e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inserts a new record in the DM_PERSONS table 
+        /// </summary>
+        /// <response code="201">Record successfully inserted</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem generating a token.</response>
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
+        [HttpPost]
+        public IActionResult GenerateToken([FromBody] AddNewResidentRequest residentRequest)
+        {
+            try
+            {
+                var response = _addNewResidentUseCase.Execute(residentRequest);
+                
+                return CreatedAtAction("GetResident", new { id = response.PersonId }, response);
+            }
+            catch (ResidentCouldNotBeinsertedException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (AddressCouldNotBeInsertedException ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }

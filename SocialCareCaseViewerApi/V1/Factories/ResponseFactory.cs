@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
@@ -42,5 +44,22 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PostCode = add.PostCode
             }).ToList();
         }
+
+        public static AddNewResidentResponse ToResponse(this Person resident,AddressDomain address)
+        {
+            return new AddNewResidentResponse
+            {
+                PersonId = resident.Id,
+                Title = resident.Title,
+                FirstName = resident.FirstName,
+                LastName = resident.LastName,
+                Gender = resident.Gender,
+                Nationality = resident.Nationality,
+                NhsNumber = resident.NhsNumber,
+                DateOfBirth = resident.DateOfBirth,
+                AgeGroup = resident.AgeContext,
+                Address = address
+            };
+        } 
     }
 }
