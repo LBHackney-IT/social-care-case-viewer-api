@@ -9,6 +9,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public interface IProcessDataUseCase
     {
-        GetProcessDataResponse Execute(long mosaicId);
+        GetProcessDataResponse Execute(long? mosaicId, string officerEmail);
     }
 }

@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         //[ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
-        public IActionResult ListCases(long mosaicId, string officerEmail)
+        public IActionResult ListCases(long? mosaicId, string officerEmail)
         {
             try
             {
