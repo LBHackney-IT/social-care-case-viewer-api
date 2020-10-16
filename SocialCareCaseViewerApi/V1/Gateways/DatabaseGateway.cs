@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.V1.Boundary;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -80,6 +82,55 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private static string GetSearchPattern(string str)
         {
             return $"%{str?.Replace(" ", "")}%";
+        }
+
+        public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
+        {
+            var resident = new Person
+            {
+                DateOfBirth = request.DateOfBirth,
+                FirstName = request.FirstName,
+                Gender = request.Gender,
+                LastName = request.LastName,
+                Nationality = request.Nationality,
+                NhsNumber = request.NhsNumber,
+                PersonIdLegacy = "",
+                Title = request.Title,
+                AgeContext = request.AgeGroup,
+                DataIsFromDmPersonsBackup = "N"
+            };
+            try
+            {
+                _databaseContext.Persons.Add(resident);
+                _databaseContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message} - {ex.InnerException}");
+            }
+            AddResidentAddress(request.Address, resident.Id);
+            return resident.ToResponse(request.Address);
+        }
+
+        public void AddResidentAddress(AddressDomain addressRequest, long personId)
+        {
+            var address = new Address
+            {
+                AddressLines = addressRequest.Address,
+                PersonId = personId,
+                PostCode = addressRequest.Postcode,
+                Uprn = addressRequest.Uprn
+            };
+
+            try
+            {
+                _databaseContext.Addresses.Add(address);
+                _databaseContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new AddressCouldNotBeInsertedException($"Error with inserting address has occurred - {ex.Message} - {ex.InnerException}");
+            }
         }
     }
 

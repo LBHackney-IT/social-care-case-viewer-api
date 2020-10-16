@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using System.Net.Mime;
+using System;
+using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -19,11 +22,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
+        private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IProcessDataUseCase processDataUsecase)
+
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase, IProcessDataUseCase processDataUsecase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
+            _addNewResidentUseCase = addNewResidentUseCase;
         }
 
         /// <summary>
@@ -42,6 +48,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (InvalidQueryParameterException e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Inserts a new record in the DM_PERSONS table 
+        /// </summary>
+        /// <response code="201">Record successfully inserted</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem generating a token.</response>
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
+        [HttpPost]
+        public IActionResult AddNewResident([FromBody] AddNewResidentRequest residentRequest)
+        {
+            try
+            {
+                var response = _addNewResidentUseCase.Execute(residentRequest);
+
+                return CreatedAtAction("GetResident", new { id = response.PersonId }, response);
+            }
+            catch (ResidentCouldNotBeinsertedException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (AddressCouldNotBeInsertedException ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 

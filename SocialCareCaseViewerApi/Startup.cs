@@ -127,6 +127,7 @@ namespace SocialCareCaseViewerApi
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
+            services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
             services.AddScoped<IProcessDataUseCase, ProcessDataUseCase>();
         }
 
