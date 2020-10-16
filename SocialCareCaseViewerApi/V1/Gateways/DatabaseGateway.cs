@@ -36,6 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Addresses = _databaseContext
                         .Addresses
                         .Where(add => add.PersonId == p.Id)
+                        .ToList(),
                 }).ToList();
 
             return dbRecords.Select(x => MapPersonAndAddressesToResidentInformation(x.Person, x.Addresses)
