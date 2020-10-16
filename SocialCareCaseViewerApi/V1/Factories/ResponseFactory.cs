@@ -86,7 +86,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormName = formData.FormName,
                 CaseFormUrl = formData.CaseFormUrl,
                 PersonId = formData.PersonId,
-                CaseFormData = rawData
+                CaseFormData = rawData.ToJson()
             };
         }
     }
