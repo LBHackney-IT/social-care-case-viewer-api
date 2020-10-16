@@ -11,18 +11,18 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public class GetAllUseCase : IGetAllUseCase
     {
         private IDatabaseGateway _databaseGateway;
-        private IValidatePostcode _validatePostcode;
-        public GetAllUseCase(IDatabaseGateway databaseGateway, IValidatePostcode validatePostcode)
+        public GetAllUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
-            _validatePostcode = validatePostcode;
         }
 
         public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
         {
             limit = limit < 10 ? 10 : limit;
             limit = limit > 100 ? 100 : limit;
-            var residents = _databaseGateway.GetAllResidents(cursor: cursor, limit: limit, rqp.FirstName, rqp.LastName);
+            var residents = _databaseGateway.GetAllResidents(
+                cursor: cursor, limit: limit, rqp.FirstName, rqp.LastName,
+                rqp.DateOfBirth, rqp.PersonId, rqp.AgeGroup);
 
             var nextCursor = residents.Count == limit ? residents.Max(r => r.PersonId) : "";
             return new ResidentInformationList

@@ -24,9 +24,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
-            string lastname = null)
+            string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
-            var peopleIds = PeopleIds(cursor, limit, firstname, lastname);
+            var peopleIds = PeopleIds(cursor, limit, firstname, lastname, dateOfBirth, mosaicid, agegroup);
 
             var dbRecords = _databaseContext.Persons
                 .Where(p => peopleIds.Contains(p.Id))
@@ -42,45 +42,30 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             ).ToList();
         }
 
-        private List<long> PeopleIds(int cursor, int limit, string firstname, string lastname)
+        private List<long> PeopleIds(int cursor, int limit, string firstname, string lastname,
+            string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
             var firstNameSearchPattern = GetSearchPattern(firstname);
             var lastNameSearchPattern = GetSearchPattern(lastname);
+            var dateOfBirthSearchPattern = GetSearchPattern(dateOfBirth);
+            var mosaicIdSearchPattern = GetSearchPattern(mosaicid);
+            var ageGroupSearchPattern = GetSearchPattern(agegroup);
             return _databaseContext.Persons
                 .Where(person => person.Id > cursor)
                 .Where(person =>
                     string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern))
                 .Where(person =>
                     string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
+                .Where(person =>
+                    string.IsNullOrEmpty(dateOfBirth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
+                .Where(person =>
+                    string.IsNullOrEmpty(mosaicid) || EF.Functions.ILike(person.Id.ToString(), mosaicIdSearchPattern))
+                .Where(person =>
+                    string.IsNullOrEmpty(agegroup) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
                 .Take(limit)
                 .Select(p => p.Id)
                 .ToList();
         }
-
-        private List<long> PeopleIdsForAddressQuery(int cursor, int limit, string firstname, string lastname, string postcode, string address)
-        {
-            var firstNameSearchPattern = GetSearchPattern(firstname);
-            var lastNameSearchPattern = GetSearchPattern(lastname);
-            var addressSearchPattern = GetSearchPattern(address);
-            var postcodeSearchPattern = GetSearchPattern(postcode);
-            return _databaseContext.Addresses
-                .Where(add =>
-                    string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
-                .Where(add =>
-                    string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern))
-                .Where(add =>
-                    string.IsNullOrEmpty(firstname) || EF.Functions.ILike(add.Person.FirstName, firstNameSearchPattern))
-                .Where(add =>
-                    string.IsNullOrEmpty(lastname) || EF.Functions.ILike(add.Person.LastName, lastNameSearchPattern))
-                .Include(add => add.Person)
-                .Where(add => add.PersonId > cursor)
-                .GroupBy(add => add.PersonId)
-                .Where(p => p.Key != null)
-                .Take(limit)
-                .Select(p => (long) p.Key)
-                .ToList();
-        }
-
 
         private static ResidentInformation MapPersonAndAddressesToResidentInformation(Person person,
             IEnumerable<Address> addresses)

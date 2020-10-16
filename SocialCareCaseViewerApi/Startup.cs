@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Infrastructure;
-using SocialCareCaseViewerApi.V1.UseCase;
-using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using SocialCareCaseViewerApi.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.UseCase;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using SocialCareCaseViewerApi.Versioning;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SocialCareCaseViewerApi
@@ -121,12 +121,14 @@ namespace SocialCareCaseViewerApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
+            services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
+            services.AddScoped<IProcessDataUseCase, ProcessDataUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

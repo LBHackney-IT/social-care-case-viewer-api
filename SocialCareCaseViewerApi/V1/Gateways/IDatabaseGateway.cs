@@ -7,7 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IDatabaseGateway
     {
-        List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null, string lastname = null);
+        List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null, string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null);
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
     }
 }
