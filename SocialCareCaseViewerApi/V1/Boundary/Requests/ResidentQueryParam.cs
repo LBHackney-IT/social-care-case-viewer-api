@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
@@ -25,17 +24,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "date_of_birth")]
         public string DateOfBirth { get; set; }
 
-        /// <example>
-        /// 100000
-        /// </example>
-        /// Databind to person_id
+
         [FromQuery(Name = "person_id")]
         public string PersonId { get; set; }
 
-        /// <example>
-        /// a
-        /// </example>
-        /// Databind to context_flag
         [FromQuery(Name = "context_flag")]
         public string AgeGroup { get; set; }
     }

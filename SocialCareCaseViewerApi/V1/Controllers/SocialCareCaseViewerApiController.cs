@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.UseCase;
+using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -16,9 +19,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase)
+        private readonly IProcessDataUseCase _processDataUsecase;
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IProcessDataUseCase processDataUsecase)
         {
             _getAllUseCase = getAllUseCase;
+            _processDataUsecase = processDataUsecase;
         }
 
         /// <summary>
@@ -26,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
         /// <response code="400">Invalid Query Parameter.</response>
-        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
@@ -37,6 +42,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (InvalidQueryParameterException e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Find a resident by Mosaic ID
+        /// </summary>
+        /// <response code="200">Success. Returns resident related to the specified ID</response>
+        /// <response code="404">No resident found for the specified ID</response>
+        //[ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("cases")]
+        public IActionResult ListCases(string mosaicId, string officerEmail)
+        {
+            try
+            {
+                return Ok(_processDataUsecase.Execute(mosaicId, officerEmail));
+            }
+            catch (ResidentNotFoundException)
+            {
+                return NotFound();
             }
         }
     }
