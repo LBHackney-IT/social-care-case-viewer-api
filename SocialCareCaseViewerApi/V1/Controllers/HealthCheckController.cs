@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using SocialCareCaseViewerApi.V1.UseCase;
 using Microsoft.AspNetCore.Mvc;
+using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {

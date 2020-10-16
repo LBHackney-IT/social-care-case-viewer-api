@@ -1,5 +1,5 @@
-using SocialCareCaseViewerApi.V1.Boundary;
 using Microsoft.Extensions.HealthChecks;
+using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
