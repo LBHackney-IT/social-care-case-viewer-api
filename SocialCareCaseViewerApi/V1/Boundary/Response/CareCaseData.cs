@@ -32,7 +32,5 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         [JsonProperty("formUrl")]
         [BsonElement("form_url")]
         public string CaseFormUrl { get; set; }
-        [JsonProperty("form_data")]
-        public object CaseFormData { get; set; }
     }
 }
