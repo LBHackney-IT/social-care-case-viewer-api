@@ -108,6 +108,7 @@ jobs:
       #- run:
           #name: Run tests
           #command: docker-compose run social-care-case-viewer-api-test
+
   assume-role-development:
     executor: docker-python
     steps:
