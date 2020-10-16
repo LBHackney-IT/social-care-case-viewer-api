@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             catch (DbUpdateException ex)
             {
                 throw new AddressCouldNotBeInsertedException($"Error with inserting address has occurred - {ex.Message} - {ex.InnerException}");
-            }          
+            }
         }
     }
 

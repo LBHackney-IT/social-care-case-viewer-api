@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             }).ToList();
         }
 
-        public static AddNewResidentResponse ToResponse(this Person resident,AddressDomain address)
+        public static AddNewResidentResponse ToResponse(this Person resident, AddressDomain address)
         {
             return new AddNewResidentResponse
             {
@@ -60,6 +60,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AgeGroup = resident.AgeContext,
                 Address = address
             };
-        } 
+        }
     }
 }

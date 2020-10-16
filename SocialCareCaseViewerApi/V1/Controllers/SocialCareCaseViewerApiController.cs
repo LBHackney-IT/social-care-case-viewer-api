@@ -60,12 +60,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
-        public IActionResult GenerateToken([FromBody] AddNewResidentRequest residentRequest)
+        public IActionResult AddNewResident([FromBody] AddNewResidentRequest residentRequest)
         {
             try
             {
                 var response = _addNewResidentUseCase.Execute(residentRequest);
-                
+
                 return CreatedAtAction("GetResident", new { id = response.PersonId }, response);
             }
             catch (ResidentCouldNotBeinsertedException ex)
