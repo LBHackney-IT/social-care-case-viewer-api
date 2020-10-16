@@ -2,21 +2,45 @@ using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using Address = SocialCareCaseViewerApi.V1.Domain.Address;
+using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
+using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        //TODO: Map the fields in the domain object(s) to fields in the response object(s).
-        // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
-        public static ResponseObject ToResponse(this Entity domain)
+        public static ResidentInformationResponse ToResponse(this ResidentInformation domain)
         {
-            return new ResponseObject();
+            return new ResidentInformationResponse
+            {
+                PersonId = domain.PersonId,
+                Title = domain.Title,
+                FirstName = domain.FirstName,
+                LastName = domain.LastName,
+                DateOfBirth = domain.DateOfBirth,
+                Gender = domain.Gender,
+                Nationality = domain.Nationality,
+                AddressList = domain.AddressList?.ToResponse(),
+                NhsNumber = domain.NhsNumber
+            };
+        }
+        public static List<ResidentInformationResponse> ToResponse(this IEnumerable<ResidentInformation> people)
+        {
+            return people.Select(p => p.ToResponse()).ToList();
         }
 
-        public static List<ResponseObject> ToResponse(this IEnumerable<Entity> domainList)
+        private static List<AddressResponse> ToResponse(this List<Address> addresses)
         {
-            return domainList.Select(domain => domain.ToResponse()).ToList();
+            return addresses.Select(add => new AddressResponse
+            {
+                AddressLine1 = add.AddressLine1,
+                AddressLine2 = add.AddressLine2,
+                AddressLine3 = add.AddressLine3,
+                PostCode = add.PostCode
+            }).ToList();
         }
     }
 }
