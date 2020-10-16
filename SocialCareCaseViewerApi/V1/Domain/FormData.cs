@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SocialCareCaseViewerApi.V1.Domain
 {
+    [BsonIgnoreExtraElements]
     public class FormData
     {
         [JsonProperty("_id")]
