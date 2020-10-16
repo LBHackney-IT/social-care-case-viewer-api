@@ -71,10 +71,23 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         private static CareCaseData ToResponse(this BsonDocument formData)
         {
-            
-            var caseData = BsonSerializer.Deserialize<CareCaseData>(formData);
-           // caseData.CaseFormData = formData;
-            return caseData;
+
+            var caseData = BsonSerializer.Deserialize<FormData>(formData);
+            return caseData.ToResponse(formData);
+        }
+        private static CareCaseData ToResponse(this FormData formData, BsonDocument rawData)
+        {
+            return new CareCaseData
+            {
+                FirstName = formData.FirstName,
+                LastName = formData.LastName,
+                DateOfBirth = formData.DateOfBirth,
+                OfficerEmail = formData.OfficerEmail,
+                FormName = formData.FormName,
+                CaseFormUrl = formData.CaseFormUrl,
+                PersonId = formData.PersonId,
+                CaseFormData = rawData.ToJson()
+            };
         }
     }
 }
