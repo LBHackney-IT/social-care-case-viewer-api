@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -16,9 +17,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class SocialCareCaseViewerApiController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase)
+        private readonly IProcessDataUseCase _processDataUsecase;
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IProcessDataUseCase processDataUsecase)
         {
             _getAllUseCase = getAllUseCase;
+            _processDataUsecase = processDataUsecase;
         }
 
         /// <summary>
@@ -45,14 +48,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns resident related to the specified ID</response>
         /// <response code="404">No resident found for the specified ID</response>
-        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
-        public IActionResult ViewRecord(long mosaicId, string officerEmail)
+        public IActionResult ListCases(long mosaicId, string officerEmail)
         {
             try
             {
-                return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+                return Ok(_processDataUsecase.Execute(mosaicId));
             }
             catch (ResidentNotFoundException)
             {

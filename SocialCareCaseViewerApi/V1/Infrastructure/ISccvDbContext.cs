@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    public interface IMatDbContext
+    public interface ISccvDbContext
     {
         IMongoCollection<BsonDocument> matProcessCollection { get; set; }
 

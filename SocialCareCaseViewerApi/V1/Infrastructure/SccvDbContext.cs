@@ -11,12 +11,12 @@ using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    public class MatDbContext : IMatDbContext
+    public class SccvDbContext : ISccvDbContext
     {
-        private MongoClient mongoClient;
-        private IMongoDatabase mongoDatabase;
+        private MongoClient _mongoClient;
+        private IMongoDatabase _mongoDatabase;
         public IMongoCollection<BsonDocument> matProcessCollection { get; set; }
-        public MatDbContext(IOptions<ConnectionSettings> appSettings)
+        public SccvDbContext(IOptions<ConnectionSettings> appSettings)
         {
             string pathToCAFile = "/ssl/rds-ca-2019-root.pem";
 
