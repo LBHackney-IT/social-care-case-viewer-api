@@ -42,11 +42,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             }
 
 
-            mongoClient = new MongoClient(new MongoUrl(appSettings.Value.ConnectionString));
+            _mongoClient = new MongoClient(new MongoUrl(appSettings.Value.ConnectionString));
             //create a new blank database if database does not exist, otherwise get existing database
-            mongoDatabase = mongoClient.GetDatabase(appSettings.Value.Database);
+            _mongoDatabase = _mongoClient.GetDatabase(appSettings.Value.Database);
             //create collection to hold the documents if it does not exist, otherwise retrieve existing
-            matProcessCollection = mongoDatabase.GetCollection<BsonDocument>(appSettings.Value.CollectionName);
+            matProcessCollection = _mongoDatabase.GetCollection<BsonDocument>(appSettings.Value.CollectionName);
         }
         public IMongoCollection<BsonDocument> getCollection()
         {

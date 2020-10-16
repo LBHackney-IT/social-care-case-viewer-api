@@ -121,11 +121,13 @@ namespace SocialCareCaseViewerApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
+            services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
+            services.AddScoped<IProcessDataUseCase, ProcessDataUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

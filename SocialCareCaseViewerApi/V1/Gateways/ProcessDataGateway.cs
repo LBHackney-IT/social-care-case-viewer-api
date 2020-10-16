@@ -21,21 +21,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public CareCaseData GetProcessData(string processRef)
+        public async Task<CareCaseData> GetProcessData(string mosaicId, string officerEmail)
         {
             //retrieve data by id
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", processRef);
-            //we will never expect more than one JSON documents matching an ID so we always choose the first/default result
-            var result = _sccvDbContext.getCollection().FindAsync(filter).Result.FirstOrDefault();
+            var idFilter = Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
+            var emailFilter = Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail);
+            var combinedFilter = Builders<BsonDocument>.Filter.Or(mosaicId, officerEmail);
+
+            var result = await _sccvDbContext.getCollection().FindAsync(combinedFilter).ConfigureAwait(false);
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {
-                throw new DocumentNotFound();
+                throw new DocumentNotFoundException("document not found");
             }
 
             return ProcessDataFactory.CreateProcessDataObject(result);
         }
     }
-
-    public class DocumentNotFound : Exception { }
+    public class DocumentNotFoundException : Exception
+    {
+        public DocumentNotFoundException(string message) : base(message) { }
+    }
 }

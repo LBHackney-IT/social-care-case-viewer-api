@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SocialCareCaseViewerApi.V1.Gateways;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
@@ -12,9 +10,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             _processDataGateway = processDataGateway;
         }
-        public GetProcessDataResponse Execute(GetProcessDataRequest request)
+        public GetProcessDataResponse Execute(string mosaicId, string officerEmail)
         {
-            var gatewayResult = _processDataGateway.GetProcessData();
+            var gatewayResult = _processDataGateway.GetProcessData(mosaicId, officerEmail);
 
             return new GetProcessDataResponse(request, gatewayResult,DateTime.Now);
         }

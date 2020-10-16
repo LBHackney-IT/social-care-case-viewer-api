@@ -4,6 +4,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IProcessDataGateway
     {
-        CareCaseData GetProcessData(string processRef);
+        CareCaseData Task GetProcessData(string mosaicId, string officerEmail);
     }
 }
