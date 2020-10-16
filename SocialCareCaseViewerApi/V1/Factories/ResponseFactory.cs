@@ -71,8 +71,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         private static CareCaseData ToResponse(this BsonDocument formData)
         {
+            
             var caseData = BsonSerializer.Deserialize<CareCaseData>(formData);
-            caseData.CaseFormData = formData;
+           // caseData.CaseFormData = formData;
             return caseData;
         }
     }

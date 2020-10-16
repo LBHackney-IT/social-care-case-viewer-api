@@ -8,6 +8,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     [BsonIgnoreExtraElements]
     public class CareCaseData
     {
+        [JsonProperty("_id")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string RecordId { get; set; }
         [JsonProperty("formName")]
         [BsonElement("form_name")]
         public string FormName { get; set; }
@@ -29,7 +32,5 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         [JsonProperty("formUrl")]
         [BsonElement("form_url")]
         public string CaseFormUrl { get; set; }
-        [JsonProperty("form_data")]
-        public object CaseFormData { get; set; }
     }
 }
