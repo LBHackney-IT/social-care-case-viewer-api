@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string FormName { get; set; }
         [JsonProperty("personId")]
         [BsonElement("mosaic_id")]
-        public int? PersonId { get; set; }
+        public object PersonId { get; set; }
         [JsonProperty("firstName")]
         [BsonElement("first_name")]
         public string FirstName { get; set; }
