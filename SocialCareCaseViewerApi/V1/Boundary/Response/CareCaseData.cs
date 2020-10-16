@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         [JsonProperty("formName")]
         public string FormName { get; set; }
         [JsonProperty("personId")]
-        public int? PersonId { get; set; }
+        public object PersonId { get; set; }
         [JsonProperty("firstName")]
         public string FirstName { get; set; }
         [JsonProperty("lastName")]
