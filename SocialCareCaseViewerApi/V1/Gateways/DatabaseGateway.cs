@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(person =>
                     string.IsNullOrEmpty(mosaicid) || EF.Functions.ILike(person.Id.ToString(), mosaicIdSearchPattern))
                 .Where(person =>
-                    string.IsNullOrEmpty(agegroup) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
+                    string.IsNullOrEmpty(agegroup) || EF.Functions.ILike(person.AgeContext, ageGroupSearchPattern))
                 .Take(limit)
                 .Select(p => p.Id)
                 .ToList();
