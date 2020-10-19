@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
     public class AddressDomain
     {
         public string Address { get; set; }
-        public int? Uprn { get; set; }
+        public long? Uprn { get; set; }
         public string Postcode { get; set; }
     }
 }

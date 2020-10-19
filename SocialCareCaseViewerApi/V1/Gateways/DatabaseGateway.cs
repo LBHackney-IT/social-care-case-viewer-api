@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 DateOfBirth = request.DateOfBirth,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                FullName = $"{request.FirstName} { request.LastName}",
+                FullName = $"{request.FirstName} {request.LastName}",
                 Gender = request.Gender,
                 Nationality = request.Nationality,
                 NhsNumber = request.NhsNumber,
