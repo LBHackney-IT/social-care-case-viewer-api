@@ -27,9 +27,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
             long mosaicId = 0;
-            if (!string.IsNullOrEmpty(request.MosaicId)){
-              
-                if(!Int64.TryParse(request.MosaicId, out mosaicId))
+            if (!string.IsNullOrEmpty(request.MosaicId))
+            {
+
+                if (!Int64.TryParse(request.MosaicId, out mosaicId))
                 {
                     throw new Exception();
                 }
