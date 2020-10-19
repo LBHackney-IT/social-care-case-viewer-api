@@ -20,6 +20,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("last_name")]
         [MaxLength(30)]
         public string LastName { get; set; }
+
+        [Column("full_name"), Required]
+        [MaxLength(62)]
+        public string FullName { get; set; }
+
         [Column("date_of_birth")]
         public DateTime? DateOfBirth { get; set; }
         [Column("gender")]
