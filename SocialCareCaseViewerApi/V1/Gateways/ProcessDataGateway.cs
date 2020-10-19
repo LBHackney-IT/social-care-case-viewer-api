@@ -47,8 +47,4 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return ResponseFactory.ToResponse(result);
         }
     }
-    public class DocumentNotFoundException : Exception
-    {
-        public DocumentNotFoundException(string message) : base(message) { }
-    }
 }

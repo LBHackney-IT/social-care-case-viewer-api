@@ -79,11 +79,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find a resident by Mosaic ID
+        /// Find cases by Mosaic ID or officer email
         /// </summary>
-        /// <response code="200">Success. Returns resident related to the specified ID</response>
-        /// <response code="404">No resident found for the specified ID</response>
-        //[ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
+        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
+        /// <response code="404">No cases found for the specified ID or officer email</response>
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
         public IActionResult ListCases([FromQuery] ListCasesRequest request)
@@ -92,9 +92,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return Ok(_processDataUsecase.Execute(request));
             }
-            catch (ResidentNotFoundException)
+            catch (DocumentNotFoundException e)
             {
-                return NotFound();
+                return NotFound(e.Message);
             }
         }
     }
