@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Required]
         public DateTime? DateOfBirth { get; set; }
         public long? NhsNumber { get; set; }
-        [Required]
+        //[Required]
         //[MaxLength(1)]
         public string AgeGroup { get; set; }
         public string Nationality { get; set; }
