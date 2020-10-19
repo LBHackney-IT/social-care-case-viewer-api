@@ -97,8 +97,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Nationality = request.Nationality,
                 NhsNumber = request.NhsNumber,
                 Title = request.Title,
-                //AgeContext = request.AgeGroup,
-                //DataIsFromDmPersonsBackup = "N"
+                AgeContext = request.AgeGroup,
+                DataIsFromDmPersonsBackup = "N"
             };
             try
             {

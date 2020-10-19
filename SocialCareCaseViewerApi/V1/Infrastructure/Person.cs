@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -41,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string PersonIdLegacy { get; set; }
 
         [MaxLength(1)]
-        [Column("context_flag", TypeName = "varying(1)")]
+        [Column("context_flag")]
         public string AgeContext { get; set; }
         [Column("from_dm_person")]
         [MaxLength(1)]
