@@ -39,8 +39,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("person_id_legacy")]
         [MaxLength(16)]
         public string PersonIdLegacy { get; set; }
-        [Column("context_flag")]
+
         [MaxLength(1)]
+        [Column("context_flag", TypeName = "varying(1)")]
         public string AgeContext { get; set; }
         [Column("from_dm_person")]
         [MaxLength(1)]
