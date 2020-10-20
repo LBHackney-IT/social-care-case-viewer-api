@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.Lambda.Core;
 using Microsoft.EntityFrameworkCore;
-using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
