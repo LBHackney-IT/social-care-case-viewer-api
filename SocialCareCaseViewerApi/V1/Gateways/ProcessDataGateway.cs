@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
+                : Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(mosaicId.ToString()));
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
