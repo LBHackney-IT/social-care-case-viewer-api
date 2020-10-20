@@ -11,7 +11,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(9)]
         [Key]
         public long PersonAddressId { get; set; }
-
+        //Tell EF core to use database generated value
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ref_address_id")]
         [MaxLength(9)]
         public long AddressId { get; set; }
