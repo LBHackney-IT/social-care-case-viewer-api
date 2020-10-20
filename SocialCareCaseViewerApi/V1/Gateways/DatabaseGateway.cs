@@ -120,7 +120,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 AddressLines = addressRequest.Address,
                 PersonId = personId,
                 PostCode = addressRequest.Postcode,
-                Uprn = addressRequest.Uprn
+                Uprn = addressRequest.Uprn,
+                DataIsFromDmPersonsBackup = "N"
             };
 
             try
