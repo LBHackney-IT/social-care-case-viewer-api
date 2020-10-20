@@ -31,7 +31,8 @@ create table dbo.DM_PERSONS
     EMAIL_ADDRESS         varchar(240),
     CONTEXT_FLAG          varchar(1),
     SCRA_ID               varchar(13),
-    INTERPRETER_REQUIRED  varchar(1)
+    INTERPRETER_REQUIRED  varchar(1),
+    FROM_DM_PERSON        varchar(1)  
 );
 
 create index xif1dm_persons
@@ -39,7 +40,6 @@ create index xif1dm_persons
 
 create unique index xif2dm_persons
     on dbo.DM_PERSONS (PERSON_ID_LEGACY);
-
 
 create table dbo.DM_ADDRESSES
 (
@@ -70,5 +70,9 @@ create table dbo.DM_ADDRESSES
     ACCESS_NOTES            varchar(2000),
     EASTING                 numeric(10, 2),
     NORTHING                numeric(10, 2),
-    UNIQUE_ID               numeric(15)
+    UNIQUE_ID               numeric(15),
+    FROM_DM_PERSON          varchar(1)
 );
+
+-- sequence used to generate values for REF_ADDRESS_ID column and attach to column. start at 510000 is arbitrary. 
+CREATE SEQUENCE dm_addresses_ref_address_id_seq START 510000 OWNED BY DM_ADDRESSES.REF_ADDRESS_ID;
