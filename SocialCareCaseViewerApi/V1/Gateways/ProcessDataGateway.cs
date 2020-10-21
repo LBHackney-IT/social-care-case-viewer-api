@@ -39,9 +39,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var regex = new Regex($"/^{mosaicId}/");
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
+                : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
+            //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
+
+            var result = _sccvDbContext.getCollection().Find(filter).ToList();
+            //if document does not exist in the DB, then thrown a corresponsing error.
+            if (result == null)
+            {
+                throw new DocumentNotFoundException("document not found");
+            }
+            return ResponseFactory.ToResponse(result);
+        }
+
+        public IEnumerable<CareCaseData> GetProcessData(long mosaicId)
+        {
+            var regex = new Regex($"/^{mosaicId}/");
+            var filter = Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
+
+            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
