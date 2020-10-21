@@ -20,10 +20,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
+        private ISccvDbContextTemp _sccvDbContextTemp;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, ISccvDbContextTemp sccvDbContextTemp)
         {
             _sccvDbContext = sccvDbContext;
+            _sccvDbContextTemp = sccvDbContextTemp;
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
@@ -36,13 +38,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     throw new Exception();
                 }
             }
-            var regex = new Regex($"/^{mosaicId}/");
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
                 : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
-            //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
-            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
-
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
@@ -57,10 +55,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var regex = new Regex($"/^{mosaicId}/");
             var filter = Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
-
+            //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
+            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
-            var result = _sccvDbContext.getCollection().Find(filter).ToList();
+            var result = _sccvDbContextTemp.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {
