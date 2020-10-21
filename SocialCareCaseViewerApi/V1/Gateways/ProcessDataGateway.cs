@@ -13,6 +13,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
+using System.Text.RegularExpressions;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -35,9 +36,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     throw new Exception();
                 }
             }
+            var regex = new Regex($"/^{mosaicId}/");
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(mosaicId.ToString()));
+                : Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(b["mosaic_id"].ToString()));
+
+            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
