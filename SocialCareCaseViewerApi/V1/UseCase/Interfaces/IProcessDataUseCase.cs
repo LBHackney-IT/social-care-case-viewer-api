@@ -12,5 +12,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public interface IProcessDataUseCase
     {
         CareCaseDataList Execute(ListCasesRequest request);
+
+        CareCaseDataList Execute(long mosaicId);
     }
 }

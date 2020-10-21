@@ -97,5 +97,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return NotFound(e.Message);
             }
         }
+
+
+        /// <summary>
+        /// Find cases by Mosaic ID or officer email
+        /// </summary>
+        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
+        /// <response code="404">No cases found for the specified ID or officer email</response>
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("cases-test")]
+        public IActionResult ListCases(long mosaicId)
+        {
+            try
+            {
+                return Ok(_processDataUsecase.Execute(mosaicId));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }

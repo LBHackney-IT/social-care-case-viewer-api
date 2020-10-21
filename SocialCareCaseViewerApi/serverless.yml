@@ -29,6 +29,7 @@ functions:
       SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
       SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
       SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
+      SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
       RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
     events:
       - http:

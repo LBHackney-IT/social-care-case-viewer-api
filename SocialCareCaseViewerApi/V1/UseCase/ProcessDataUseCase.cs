@@ -23,5 +23,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Cases = result.ToList()
             };
         }
+
+        public CareCaseDataList Execute(long mosaicId)
+        {
+            var result = _processDataGateway.GetProcessData(mosaicId);
+
+            return new CareCaseDataList
+            {
+                Cases = result.ToList()
+            };
+        }
     }
 }
