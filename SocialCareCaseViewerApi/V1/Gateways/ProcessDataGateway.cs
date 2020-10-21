@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
             var result = (filter != null) ? _sccvDbContextTemp.getCollection().Find(filter).ToList()
-                : _sccvDbContextTemp.getCollection().Find($@"""mosaic_id"":/{mosaicId}/").ToList();
+                : _sccvDbContextTemp.getCollection().Find($"'mosaic_id':/{mosaicId}/").ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {
