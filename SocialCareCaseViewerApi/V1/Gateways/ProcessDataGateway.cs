@@ -51,15 +51,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return ResponseFactory.ToResponse(result);
         }
 
-        public IEnumerable<CareCaseData> GetProcessData(long mosaicId)
+        public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string officerEmail)
         {
             var regex = new Regex($"/{mosaicId}/");
-            var filter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(regex));
+
+            var filter = !string.IsNullOrEmpty(officerEmail) ?
+               Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail)
+               : null;//Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(regex));
+
             //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
-            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
-            var result = _sccvDbContextTemp.getCollection().Find(filter).ToList();
+            var result = (filter != null) ? _sccvDbContextTemp.getCollection().Find(filter).ToList()
+                : _sccvDbContextTemp.getCollection().Find($@"""mosaic_id"":/{mosaicId}/").ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {

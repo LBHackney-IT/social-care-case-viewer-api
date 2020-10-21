@@ -8,6 +8,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public interface IProcessDataGateway
     {
         IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request);
-        IEnumerable<CareCaseData> GetProcessData(long mosaicId);
+        IEnumerable<CareCaseData> GetProcessData(long mosaicId, string officerEmail);
     }
 }

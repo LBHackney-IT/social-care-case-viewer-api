@@ -107,7 +107,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases-test")]
-        public IActionResult ListCases(long mosaicId)
+        public IActionResult ListCases([FromQuery] ListCasesRequest request)
         {
             try
             {
