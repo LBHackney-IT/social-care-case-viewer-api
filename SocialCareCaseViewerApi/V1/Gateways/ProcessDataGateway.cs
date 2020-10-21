@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var regex = new Regex($"/^{mosaicId}/");
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(b["mosaic_id"].AsString()));
+                : Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(b["mosaic_id"].AsString));
 
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
 
