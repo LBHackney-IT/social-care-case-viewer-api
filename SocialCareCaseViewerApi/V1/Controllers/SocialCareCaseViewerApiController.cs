@@ -107,11 +107,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases-test")]
-        public IActionResult ListCases([FromQuery] ListCasesRequest request)
+        public IActionResult ListCasesTest([FromQuery] ListCasesRequest request)
         {
+            long mosaicId = 0;
+            _ = Int64.TryParse(request.MosaicId, out mosaicId);
+
             try
             {
-                return Ok(_processDataUsecase.Execute(mosaicId));
+                return Ok(_processDataUsecase.Execute(mosaicId, request.WorkerEmail));
             }
             catch (DocumentNotFoundException e)
             {

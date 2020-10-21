@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CareCaseDataList Execute(long mosaicId, string officerEmail)
         {
-            var result = _processDataGateway.GetProcessData(mosaicId);
+            var result = _processDataGateway.GetProcessData(mosaicId, officerEmail);
 
             return new CareCaseDataList
             {
