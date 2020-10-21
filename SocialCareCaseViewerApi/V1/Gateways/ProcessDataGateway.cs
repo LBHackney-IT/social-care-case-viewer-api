@@ -53,8 +53,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IEnumerable<CareCaseData> GetProcessData(long mosaicId)
         {
-            var regex = new Regex($"/^{mosaicId}/");
-            var filter = Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
+            var regex = new Regex($"/{mosaicId}/");
+            var filter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(regex));
             //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
             //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
