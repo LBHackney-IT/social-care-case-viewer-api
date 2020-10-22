@@ -53,18 +53,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string officerEmail)
         {
-            var regex = new Regex($"/{mosaicId}/");
-
             var filter = !string.IsNullOrEmpty(officerEmail) ?
                Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail)
-               : null;//Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression(regex));
+               : "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
 
-            //: Builders<BsonDocument>.Filter.Where(b => regex.IsMatch(Convert.ToString(b["mosaic_id"])));
-            //("mosaic_id", new BsonRegularExpression($"/^{mosaicId}/"));
+            /*var sFilter = "{ $expr: " +
+                                "{ $regexMatch: " +
+                                    "{ input: { $toString: $mosaic_id }, $regex: /" + mosaicId.ToString() + "/ } " +
+                            "} }";*/
 
-            var result = (filter != null) ? _sccvDbContextTemp.getCollection().Find(filter).ToList()
-                : _sccvDbContextTemp.getCollection().Find($"'mosaic_id':/{mosaicId}/").ToList();
+            //var sFilter = "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() +"/}]}";
+
+            /*var result = (filter != null) ? _sccvDbContextTemp.getCollection().Find(filter).ToList()
+                : _sccvDbContextTemp.getCollection().Find(sFilter).ToList();*/
+
             //if document does not exist in the DB, then thrown a corresponsing error.
+
+            var result = _sccvDbContextTemp.getCollection().Find(filter).ToList();
+
             if (result == null)
             {
                 throw new DocumentNotFoundException("document not found");
