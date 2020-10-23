@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public Task<string> Execute(CaseNotesDocument caseNotesDoc)
         {
-            LambdaLogger.Log("Document: " + caseNotesDoc.CaseFormData.AsString);
+            LambdaLogger.Log("Document: " + caseNotesDoc.CaseFormData);
             return Task.FromResult("id");
             // "id";
             //return _processDataGateway.InsertCaseNoteDocument(caseNotesDoc);
