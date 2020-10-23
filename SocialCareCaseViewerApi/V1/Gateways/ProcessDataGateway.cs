@@ -62,13 +62,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                     "{ input: { $toString: $mosaic_id }, $regex: /" + mosaicId.ToString() + "/ } " +
                             "} }";*/
 
-            //var sFilter = "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() +"/}]}";
-
-            /*var result = (filter != null) ? _sccvDbContextTemp.getCollection().Find(filter).ToList()
-                : _sccvDbContextTemp.getCollection().Find(sFilter).ToList();*/
-
-            //if document does not exist in the DB, then thrown a corresponsing error.
-
             var result = _sccvDbContextTemp.getCollection().Find(filter).ToList();
 
             if (result == null)
@@ -76,6 +69,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new DocumentNotFoundException("document not found");
             }
             return ResponseFactory.ToResponse(result);
+        }
+
+        public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
+        {
+            await _sccvDbContext.getCollection().InsertOneAsync(caseNotesDoc.CaseFormData).ConfigureAwait(false);
+            return caseNotesDoc.Id;
         }
     }
 }
