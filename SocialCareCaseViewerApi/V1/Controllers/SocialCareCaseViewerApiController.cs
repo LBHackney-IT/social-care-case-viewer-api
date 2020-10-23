@@ -98,6 +98,20 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Create new case note records for mosaic client
+        /// </summary>
+        /// <response code="201">Record successfully inserted</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem generating a token.</response>
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [HttpPost]
+        [Route("cases")]
+        public IActionResult CreateCaseNote([FromBody] CaseNotesFormDoc request)
+        {
+            return StatusCode(201, request);
+        }
+
 
         /// <summary>
         /// Find cases by Mosaic ID or officer email
