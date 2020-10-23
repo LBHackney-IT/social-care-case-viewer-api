@@ -71,35 +71,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return ResponseFactory.ToResponse(result);
         }
 
-        public async Task<string> InsertCaseNoteDocument(CaseNotesFormDoc caseNotesDoc)
+        public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
             await _sccvDbContext.getCollection().InsertOneAsync(caseNotesDoc.CaseFormData).ConfigureAwait(false);
             return caseNotesDoc.Id;
-            /*try
-            {
-                //BsonDocument bsonObject = BsonDocument.Parse(JsonConvert.SerializeObject(processDoc));
-                
-            }
-            /*AggregateException - it can wraps up other exceptions while async action is happening.
-            In this case it wraps up the MongoWriteException, which we need to catch. However due to it being wrapped,
-            we can't really catch it...unless you handle the aggregate exception, and extract the Mongo exception.
-            That's what's happening here.*/
-            /*catch (AggregateException ex)
-            { 
-                /*ex.Handle((x) =>
-                {
-                    if (x is MongoWriteException)
-                    {
-                        throw new ConflictException(ex.Message, ex.InnerException); //throw our custom exception, with the information we need wrapped up.
-                    }
-                    throw ex;
-                });*/
-            /*    throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }*/
         }
     }
 }

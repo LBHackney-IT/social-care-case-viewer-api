@@ -1,10 +1,11 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class CaseNotesFormDoc
+    public class CaseNotesDocument
     {
         [BsonId]
         public string Id { get; set; }
@@ -16,6 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string DateOfBirth { get; set; }
         public string OfficerEmail { get; set; }
         public string CaseFormUrl { get; set; }
+        [Required]
         public BsonDocument CaseFormData { get; set; }
     }
 }

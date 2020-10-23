@@ -9,6 +9,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request);
         IEnumerable<CareCaseData> GetProcessData(long mosaicId, string officerEmail);
-        Task<string> InsertCaseNoteDocument(CaseNotesFormDoc caseNotesDoc);
+        Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc);
     }
 }

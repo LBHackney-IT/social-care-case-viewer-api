@@ -14,5 +14,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         CareCaseDataList Execute(ListCasesRequest request);
 
         CareCaseDataList Execute(long mosaicId, string officerEmail);
+
+        Task<string> Execute(CaseNotesDocument caseNotesDoc);
     }
 }

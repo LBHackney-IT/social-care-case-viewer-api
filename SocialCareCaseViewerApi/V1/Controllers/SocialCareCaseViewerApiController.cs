@@ -107,9 +107,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpPost]
         [Route("cases")]
-        public IActionResult CreateCaseNote([FromBody] CaseNotesFormDoc request)
+        public async Task<IActionResult> CreateCaseNote([FromBody] CaseNotesDocument request)
         {
-            return StatusCode(201, request);
+            var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
+            return StatusCode(201, id);
         }
 
 
