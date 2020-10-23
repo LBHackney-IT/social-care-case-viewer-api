@@ -18,6 +18,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string OfficerEmail { get; set; }
         public string CaseFormUrl { get; set; }
         [Required]
-        public BsonDocument CaseFormData { get; set; }
+        public string CaseFormData { get; set; }
     }
 }
