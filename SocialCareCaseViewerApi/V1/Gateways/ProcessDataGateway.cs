@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
             var doc = BsonSerializer.Deserialize<BsonDocument>(caseNotesDoc.CaseFormData);
-            await _sccvDbContextTemp.getCollection().InsertOneAsync(doc)
+            await _sccvDbContext.getCollection().InsertOneAsync(doc)
                 .ConfigureAwait(false);
             return doc["_id"].AsObjectId.ToString();
         }
