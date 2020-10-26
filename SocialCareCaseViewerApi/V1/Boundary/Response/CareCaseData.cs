@@ -8,6 +8,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     [BsonIgnoreExtraElements]
     public class CareCaseData
     {
+        public DateTime Timestamp { get; set; }
+        [JsonProperty("_id")]
+        public string RecordId { get; set; }
         [JsonProperty("formName")]
         public string FormName { get; set; }
         [JsonProperty("personId")]

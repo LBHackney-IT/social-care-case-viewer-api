@@ -78,6 +78,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new CareCaseData
             {
+                Timestamp = DateTime.Now,
+                RecordId = formData.RecordId,
                 FirstName = formData.FirstName,
                 LastName = formData.LastName,
                 DateOfBirth = formData.DateOfBirth,
