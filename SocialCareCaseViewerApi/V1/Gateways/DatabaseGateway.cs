@@ -21,6 +21,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
+        public List<CfsAllocation> GetCfsAllocations(string officerEmail, long mosaidId)
+        {
+            return new List<CfsAllocation>();
+        }
+
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {

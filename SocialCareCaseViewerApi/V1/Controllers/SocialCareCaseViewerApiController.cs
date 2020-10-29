@@ -5,11 +5,9 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using System.Net.Mime;
 using System;
-using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -103,10 +101,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
 
         /// <summary>
-        /// Find cases by Mosaic ID or officer email
+        /// Find cfs allocations by Mosaic ID or officer email
         /// </summary>
-        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
-        /// <response code="404">No cases found for the specified ID or officer email</response>
+        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
+        /// <response code="404">No allocations found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("childrens_allocations")]
