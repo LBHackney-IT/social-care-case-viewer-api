@@ -9,7 +9,7 @@ using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-
+using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -24,12 +24,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
+        private readonly IGetChildrenAllocationUseCase _childrenAllocationUseCase;
 
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase, IProcessDataUseCase processDataUsecase)
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
+            IProcessDataUseCase processDataUsecase, IGetChildrenAllocationUseCase childrenAllocationUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
             _addNewResidentUseCase = addNewResidentUseCase;
+            _childrenAllocationUseCase = childrenAllocationUseCase;
         }
 
         /// <summary>
@@ -91,6 +94,27 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 return Ok(_processDataUsecase.Execute(request));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Find cases by Mosaic ID or officer email
+        /// </summary>
+        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
+        /// <response code="404">No cases found for the specified ID or officer email</response>
+        [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("childrens_allocations")]
+        public IActionResult GetChildrensAllocatedWorker([FromQuery] string officerEmail, long mosaicId)
+        {
+            try
+            {
+                return Ok(_childrenAllocationUseCase.Execute(officerEmail, mosaicId));
             }
             catch (DocumentNotFoundException e)
             {
