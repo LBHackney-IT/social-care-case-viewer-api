@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
-using System.Text.RegularExpressions;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -40,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
+                : "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.

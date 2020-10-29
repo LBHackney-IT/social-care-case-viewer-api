@@ -1,5 +1,25 @@
 CREATE SCHEMA IF NOT EXISTS dbo;
 
+create table dbo.ASC_ALLOCATIONS
+(
+    MOSAIC_ID                   bigint not null,     
+    LAST_NAME                   varchar(30) not null,
+    FIRST_NAME                  varchar(30) not null, 
+    DATE_OF_BIRTH               timestamp,
+    AGE                         int,
+    PRIMARY_SUPPORT_REASON      varchar(100),
+    ALLOCATED_TEAM              varchar(50),
+    ALLOCATED_WORKER            varchar(90),
+    ADDRESS                     varchar(255),
+    POST_CODE                   varchar(10),
+    UPRN                        bigint,
+    LONG_TERM_SERVICE           varchar(4),
+    SOCIAL_CARE_INVOLVEMENT     varchar(4),
+    SHORT_TERM_SUPPORT          varchar(4),
+    HOUSEHOLD_COMPOSITION       varchar(50),
+    FULL_NAME                   varchar(62) not null
+);
+
 create table dbo.CFS_ALLOCATIONS
 (
     MOSAIC_ID                   bigint not null,      
@@ -25,7 +45,7 @@ create table dbo.CFS_ALLOCATIONS
     LEGAL_STATUS                varchar(255),
     PLACEMENT                   varchar(255),
     ON_CP_REGISTER              varchar(3),
-    CONTACT_ADDRESS             varchar(255) not null,
+    CONTACT_ADDRESS             varchar(255),
     CASE_STATUS_OPEN_CLOSED     varchar(7),
     CLOSURE_DATE_IF_CLOSED      timestamp,
     LAST_NAME                   varchar(30) not null,
