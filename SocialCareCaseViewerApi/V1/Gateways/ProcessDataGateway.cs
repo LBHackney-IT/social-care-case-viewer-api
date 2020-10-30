@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
-using System.Text.RegularExpressions;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
