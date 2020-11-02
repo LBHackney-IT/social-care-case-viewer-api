@@ -21,10 +21,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public List<CfsAllocation> SelectCfsAllocations(long mosaicId)
+        public List<CfsAllocation> SelectCfsAllocations(long? mosaicId, string officerEmail)
         {
             var allocations = _databaseContext.CfsAllocations
-                .Where(x => x.Id == mosaicId)
+                .Where(rec => (mosaicId == null) || rec.Id == mosaicId)
+                .Where(rec => string.IsNullOrEmpty(officerEmail) || rec.WorkerEmail.Contains(officerEmail))
                 .Select(rec => new CfsAllocation
                 {
                     PersonId = rec.Id.ToString(),
