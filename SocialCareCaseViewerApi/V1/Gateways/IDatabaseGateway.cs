@@ -9,5 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null, string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null);
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
+
+        List<CfsAllocation> SelectCfsAllocations(long mosaicId);
     }
 }

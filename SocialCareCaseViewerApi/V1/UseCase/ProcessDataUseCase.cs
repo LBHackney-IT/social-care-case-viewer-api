@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Cases = result.ToList()
             };
         }
+
         public Task<string> Execute(CaseNotesDocument caseNotesDoc)
         {
             return _processDataGateway.InsertCaseNoteDocument(caseNotesDoc);
