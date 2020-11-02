@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -40,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
                 Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId);
+                : "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
 
             var result = _sccvDbContext.getCollection().Find(filter).ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
@@ -74,7 +76,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
             var doc = BsonSerializer.Deserialize<BsonDocument>(caseNotesDoc.CaseFormData);
-            await _sccvDbContextTemp.getCollection().InsertOneAsync(doc)
+            await _sccvDbContext.getCollection().InsertOneAsync(doc)
                 .ConfigureAwait(false);
             return doc["_id"].AsObjectId.ToString();
         }

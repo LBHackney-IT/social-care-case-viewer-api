@@ -21,6 +21,47 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
+        public List<CfsAllocation> SelectCfsAllocations(long? mosaicId, string officerEmail)
+        {
+            var allocations = _databaseContext.CfsAllocations
+                .Where(rec => (mosaicId == null) || rec.Id == mosaicId)
+                .Where(rec => string.IsNullOrEmpty(officerEmail) || rec.WorkerEmail.Contains(officerEmail))
+                .Select(rec => new CfsAllocation
+                {
+                    PersonId = rec.Id.ToString(),
+                    FirstName = rec.FirstName,
+                    LastName = rec.LastName,
+                    DateOfBirth = (rec.DateOfBirth != null) ? rec.DateOfBirth.ToString() : null,
+                    Gender = rec.Gender,
+                    GroupId = (rec.GroupId != null) ? rec.GroupId : null,
+                    Ethnicity = rec.Ethnicity,
+                    SubEthnicity = rec.SubEthnicity,
+                    Religion = rec.Religion,
+                    ServiceUserGroup = rec.ServiceUserGroup,
+                    SchoolName = rec.SchoolName,
+                    SchoolAddress = rec.SchoolAddress,
+                    GpName = rec.GpName,
+                    GpAddress = rec.GpAddress,
+                    GpSurgery = rec.GpSurgery,
+                    AllocatedWorker = rec.AllocatedWorker,
+                    WorkerType = rec.WorkerType,
+                    AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
+                    TeamName = rec.TeamName,
+                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationEndDate.ToString() : null,
+                    AllocationEndDate = (rec.AllocationEndDate != null) ? rec.AllocationEndDate.ToString() : null,
+                    LegalStatus = rec.LegalStatus,
+                    Placement = rec.Placement,
+                    OnCpRegister = rec.OnCpRegister,
+                    ContactAddress = rec.ContactAddress,
+                    CaseStatus = rec.CaseStatus,
+                    CaseClosureDate = (rec.CaseClosureDate != null) ? rec.CaseClosureDate.ToString() : null,
+                    WorkerEmail = rec.WorkerEmail,
+                }
+                ).ToList();
+
+            return allocations;
+        }
+
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {

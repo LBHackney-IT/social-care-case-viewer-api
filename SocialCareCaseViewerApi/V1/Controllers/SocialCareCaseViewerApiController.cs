@@ -7,15 +7,16 @@ using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using System.Net.Mime;
+using System;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
     [ApiController]
     //TODO: Rename to match the APIs endpoint
-    [Route("api/v1/residents")]
+    [Route("api/v1")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
     //TODO: rename class to match the API name
@@ -24,12 +25,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
+        private readonly IGetChildrenAllocationUseCase _childrenAllocationUseCase;
 
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase, IProcessDataUseCase processDataUsecase)
+        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
+            IProcessDataUseCase processDataUsecase, IGetChildrenAllocationUseCase childrenAllocationUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
             _addNewResidentUseCase = addNewResidentUseCase;
+            _childrenAllocationUseCase = childrenAllocationUseCase;
         }
 
         /// <summary>
@@ -39,6 +43,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid Query Parameter.</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
+        [Route("residents")]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
             try
@@ -60,6 +65,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
+        [Route("residents")]
         public IActionResult AddNewResident([FromBody] AddNewResidentRequest residentRequest)
         {
             try
@@ -98,19 +104,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
+
         /// <summary>
-        /// Create new case note records for mosaic client
+        /// Find cfs allocations by Mosaic ID or officer email
+        /// </summary>
+        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
+        /// <response code="404">No allocations found for the specified ID or officer email</response>
+        [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("cfs_allocations")]
+        public IActionResult GetChildrensAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        {
+            return Ok(_childrenAllocationUseCase.Execute(request));
+        }
+
+        /// <summary>
+        /// Create new case note record for mosaic client
         /// </summary>
         /// <response code="201">Record successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
         /// <response code="500">There was a problem generating a token.</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [HttpPost]
         [Route("cases")]
         public async Task<IActionResult> CreateCaseNote([FromBody] CaseNotesDocument request)
         {
             var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
-            return StatusCode(201, id);
+            return StatusCode(201, new { _id = id });
         }
 
 
