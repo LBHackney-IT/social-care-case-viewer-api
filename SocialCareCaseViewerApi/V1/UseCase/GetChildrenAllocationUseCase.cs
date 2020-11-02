@@ -1,3 +1,4 @@
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 
@@ -10,10 +11,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             _databaseGateway = databaseGateway;
         }
-        public CfsAllocationList Execute(string officerEmail, long mosaicId)
+        public CfsAllocationList Execute(ListAllocationsRequest request)
         {
             return new CfsAllocationList
-            { CfsAllocations = _databaseGateway.SelectCfsAllocations(mosaicId) };
+            { CfsAllocations = _databaseGateway.SelectCfsAllocations(request.MosaicId, request.WorkerEmail) };
         }
     }
 }

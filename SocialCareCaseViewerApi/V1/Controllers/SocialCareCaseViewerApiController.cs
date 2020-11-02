@@ -110,9 +110,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cfs_allocations")]
-        public IActionResult GetChildrensAllocatedWorker([FromQuery] string officerEmail, long mosaicId)
+        public IActionResult GetChildrensAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
-            return Ok(_childrenAllocationUseCase.Execute(officerEmail, mosaicId));
+            return Ok(_childrenAllocationUseCase.Execute(request));
         }
 
         /// <summary>

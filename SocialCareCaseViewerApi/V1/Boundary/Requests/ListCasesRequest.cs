@@ -14,4 +14,13 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
     }
+
+    public class ListAllocationsRequest
+    {
+        [FromQuery(Name = "mosaic_id")]
+        public long? MosaicId { get; set; }
+
+        [FromQuery(Name = "worker_email")]
+        public string WorkerEmail { get; set; }
+    }
 }
