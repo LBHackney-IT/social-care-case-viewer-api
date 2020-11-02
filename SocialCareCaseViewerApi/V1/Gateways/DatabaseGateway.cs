@@ -24,15 +24,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<CfsAllocation> SelectCfsAllocations(long mosaicId)
         {
             var allocations = _databaseContext.CfsAllocations
-                .Where(x => x.Id == (long) mosaicId)
+                .Where(x => x.Id == mosaicId)
                 .Select(rec => new CfsAllocation
                 {
                     PersonId = rec.Id.ToString(),
                     FirstName = rec.FirstName,
                     LastName = rec.LastName,
-                    DateOfBirth = rec.DateOfBirth.ToString(),
+                    DateOfBirth = (rec.DateOfBirth != null) ? rec.DateOfBirth.ToString() : null,
                     Gender = rec.Gender,
-                    GroupId = rec.GroupId,
+                    GroupId = (rec.GroupId != null) ? rec.GroupId : null,
                     Ethnicity = rec.Ethnicity,
                     SubEthnicity = rec.SubEthnicity,
                     Religion = rec.Religion,
@@ -46,14 +46,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     WorkerType = rec.WorkerType,
                     AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
                     TeamName = rec.TeamName,
-                    AllocationStartDate = rec.AllocationStartDate.ToString(),
-                    AllocationEndDate = rec.AllocationEndDate.ToString(),
+                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationEndDate.ToString() : null,
+                    AllocationEndDate = (rec.AllocationEndDate != null) ? rec.AllocationEndDate.ToString() : null,
                     LegalStatus = rec.LegalStatus,
                     Placement = rec.Placement,
                     OnCpRegister = rec.OnCpRegister,
                     ContactAddress = rec.ContactAddress,
                     CaseStatus = rec.CaseStatus,
-                    CaseClosureDate = rec.CaseClosureDate.ToString(),
+                    CaseClosureDate = (rec.CaseClosureDate != null) ? rec.CaseClosureDate.ToString() : null,
                     WorkerEmail = rec.WorkerEmail,
                 }
                 ).ToList();

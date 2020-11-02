@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     {
         [Column("mosaic_id")]
         [MaxLength(16)]
-        public long Id { get; set; }
+        public long? Id { get; set; }
 
         [Column("first_name")]
         [MaxLength(30)]
@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("group_id")]
         [MaxLength(16)]
-        public long GroupId { get; set; }
+        public long? GroupId { get; set; }
 
         [Column("ethnicity")]
         [MaxLength(33)]

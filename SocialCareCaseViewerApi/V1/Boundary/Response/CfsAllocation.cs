@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         /// F
         /// </example>
         public string Gender { get; set; }
-        public long GroupId { get; set; }
+        public long? GroupId { get; set; }
         public string Ethnicity { get; set; }
         public string SubEthnicity { get; set; }
         public string Religion { get; set; }
