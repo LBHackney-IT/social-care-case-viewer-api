@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 {
     [ApiController]
     //TODO: Rename to match the APIs endpoint
-    [Route("api/v1/residents")]
+    [Route("api/v1")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
     //TODO: rename class to match the API name
@@ -40,6 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid Query Parameter.</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
+        [Route("residents")]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
             try
@@ -61,6 +62,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
+        [Route("residents")]
         public IActionResult AddNewResident([FromBody] AddNewResidentRequest residentRequest)
         {
             try
@@ -107,17 +109,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No allocations found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("childrens_allocations")]
+        [Route("cfs_allocations")]
         public IActionResult GetChildrensAllocatedWorker([FromQuery] string officerEmail, long mosaicId)
         {
-            try
-            {
-                return Ok(_childrenAllocationUseCase.Execute(officerEmail, mosaicId));
-            }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            return Ok(_childrenAllocationUseCase.Execute(officerEmail, mosaicId));
         }
 
         /// <summary>

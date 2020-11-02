@@ -21,9 +21,44 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public List<CfsAllocation> GetCfsAllocations(string officerEmail, long mosaidId)
+        public List<CfsAllocation> SelectCfsAllocations(long mosaicId)
         {
-            return new List<CfsAllocation>();
+            var allocations = _databaseContext.CfsAllocations
+                .Where(x => x.Id == (long) mosaicId)
+                .Select(rec => new CfsAllocation
+                {
+                    PersonId = rec.Id.ToString(),
+                    FirstName = rec.FirstName,
+                    LastName = rec.LastName,
+                    DateOfBirth = rec.DateOfBirth.ToString(),
+                    Gender = rec.Gender,
+                    GroupId = rec.GroupId,
+                    Ethnicity = rec.Ethnicity,
+                    SubEthnicity = rec.SubEthnicity,
+                    Religion = rec.Religion,
+                    ServiceUserGroup = rec.ServiceUserGroup,
+                    SchoolName = rec.SchoolName,
+                    SchoolAddress = rec.SchoolAddress,
+                    GpName = rec.GpName,
+                    GpAddress = rec.GpAddress,
+                    GpSurgery = rec.GpSurgery,
+                    AllocatedWorker = rec.AllocatedWorker,
+                    WorkerType = rec.WorkerType,
+                    AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
+                    TeamName = rec.TeamName,
+                    AllocationStartDate = rec.AllocationStartDate.ToString(),
+                    AllocationEndDate = rec.AllocationEndDate.ToString(),
+                    LegalStatus = rec.LegalStatus,
+                    Placement = rec.Placement,
+                    OnCpRegister = rec.OnCpRegister,
+                    ContactAddress = rec.ContactAddress,
+                    CaseStatus = rec.CaseStatus,
+                    CaseClosureDate = rec.CaseClosureDate.ToString(),
+                    WorkerEmail = rec.WorkerEmail,
+                }
+                ).ToList();
+
+            return allocations;
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,

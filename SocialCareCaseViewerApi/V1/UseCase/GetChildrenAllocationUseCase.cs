@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public CfsAllocationList Execute(string officerEmail, long mosaicId)
         {
             return new CfsAllocationList
-            { CfsAllocations = _databaseGateway.GetCfsAllocations(officerEmail, mosaicId) };
+            { CfsAllocations = _databaseGateway.SelectCfsAllocations(mosaicId) };
         }
     }
 }
