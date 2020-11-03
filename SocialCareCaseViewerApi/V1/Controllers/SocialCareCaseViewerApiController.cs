@@ -7,8 +7,6 @@ using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
-using System.Net.Mime;
-using System;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -57,7 +55,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Inserts a new record in the DM_PERSONS table 
+        /// Inserts a new record in the DM_PERSONS table
         /// </summary>
         /// <response code="201">Record successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
