@@ -8,6 +8,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     [BsonIgnoreExtraElements]
     public class CareCaseData
     {
+        [JsonProperty("_id")]
+        public string RecordId { get; set; }
         [JsonProperty("formName")]
         public string FormName { get; set; }
         [JsonProperty("personId")]
@@ -22,6 +24,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string OfficerEmail { get; set; }
         [JsonProperty("formUrl")]
         public string CaseFormUrl { get; set; }
+        [JsonProperty("timestamp")]
+        public string CaseFormTimestamp { get; set; }
         [JsonProperty("form_data")]
         public object CaseFormData { get; set; }
     }

@@ -85,7 +85,7 @@ create table dbo.DM_PERSONS
     CONTEXT_FLAG          varchar(1),
     SCRA_ID               varchar(13),
     INTERPRETER_REQUIRED  varchar(1),
-    FROM_DM_PERSON        varchar(1)  
+    FROM_DM_PERSON        varchar(1)
 );
 
 create index xif1dm_persons
@@ -127,5 +127,5 @@ create table dbo.DM_ADDRESSES
     FROM_DM_PERSON          varchar(1)
 );
 
--- sequence used to generate values for REF_ADDRESS_ID column and attach to column. start at 510000 is arbitrary. 
+-- sequence used to generate values for REF_ADDRESS_ID column and attach to column. start at 510000 is arbitrary.
 CREATE SEQUENCE dm_addresses_ref_address_id_seq START 510000 OWNED BY DM_ADDRESSES.REF_ADDRESS_ID;

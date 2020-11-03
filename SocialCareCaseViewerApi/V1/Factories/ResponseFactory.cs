@@ -78,12 +78,14 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new CareCaseData
             {
+                RecordId = formData.RecordId,
                 FirstName = formData.FirstName,
                 LastName = formData.LastName,
                 DateOfBirth = formData.DateOfBirth,
                 OfficerEmail = formData.OfficerEmail,
                 FormName = formData.FormName,
                 CaseFormUrl = formData.CaseFormUrl,
+                CaseFormTimestamp = formData.CaseFormTimestamp,
                 PersonId = formData.PersonId,
                 CaseFormData = rawData.ToJson()
             };

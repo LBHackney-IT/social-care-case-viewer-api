@@ -28,8 +28,13 @@ namespace SocialCareCaseViewerApi.V1.Domain
         [JsonProperty("workerEmail")]
         [BsonElement("worker_email")]
         public string OfficerEmail { get; set; }
+        [JsonProperty("timestamp")]
+        [BsonElement("timestamp")]
+        public string CaseFormTimestamp { get; set; }
         [JsonProperty("formUrl")]
         [BsonElement("form_url")]
         public string CaseFormUrl { get; set; }
+
+
     }
 }
