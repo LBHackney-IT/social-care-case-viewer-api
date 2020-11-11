@@ -11,5 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
 
         List<CfsAllocation> SelectCfsAllocations(long? mosaicId, string officerEmail);
+
+        List<AscAllocation> SelectAscAllocations(long? mosaicId, string officerEmail);
     }
 }

@@ -11,5 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<Person> Persons { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<CfsAllocationSet> CfsAllocations { get; set; }
+        public DbSet<AscAllocationSet> AscAllocations { get; set; }
     }
 }
