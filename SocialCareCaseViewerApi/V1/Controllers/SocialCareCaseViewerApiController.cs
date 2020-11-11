@@ -121,8 +121,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Find acs allocations by Mosaic ID or officer email
         /// </summary>
-        /// <repsonse code="200">Success. Returns allocations related to the specified ID or officer email</repsonse>
-        /// <response code="400">No allocations found for the specified ID or officer email</response>
+        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
         [ProducesResponseType(typeof(AscAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("asc_allocations")]
