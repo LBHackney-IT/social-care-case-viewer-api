@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No allocations found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("cfs_allocations")]
+        [Route("cfs-allocations")]
         public IActionResult GetChildrensAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_childrenAllocationUseCase.Execute(request));
