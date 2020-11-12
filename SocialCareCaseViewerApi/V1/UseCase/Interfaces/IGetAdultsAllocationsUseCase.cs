@@ -5,6 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IGetAdultsAllocationsUseCase
     {
-        AscAllocationList Execute(ListAllocationsRequest request);
+        AscAllocationList Execute(ListAscAllocationsRequest request);
     }
 }

@@ -14,9 +14,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public AscAllocationList Execute(ListAllocationsRequest request)
+        public AscAllocationList Execute(ListAscAllocationsRequest request)
         {
-            return new AscAllocationList { AscAllocations = _databaseGateway.SelectAscAllocations(request.MosaicId, request.WorkerEmail) };
+            return new AscAllocationList { AscAllocations = _databaseGateway.SelectAscAllocations(request.MosaicId, request.AllocatedWorker) };
         }
     }
 }
