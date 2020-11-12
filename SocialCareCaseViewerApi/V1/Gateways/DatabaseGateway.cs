@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var allocations = query.Select(r => new AscAllocation
             {
-                PersonId = r.Id.ToString(),
+                PersonId = r.Id,
                 LastName = r.LastName,
                 FirstName = r.FirstName,
                 DateOfBirth = r.DateOfBirth != null ? Convert.ToDateTime(r.DateOfBirth).ToString("dd-MM-yyyy") : null,

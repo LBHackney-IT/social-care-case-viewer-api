@@ -1,17 +1,11 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class AscAllocation
     {
-        [Required]
-        public string PersonId { get; set; }
+        public long PersonId { get; set; }
 
-        [Required]
         public string LastName { get; set; }
 
-        [Required]
         public string FirstName { get; set; }
 
         public string DateOfBirth { get; set; }
@@ -38,7 +32,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string HouseholdComposition { get; set; }
 
-        [Required]
         public string Fullname { get; set; }
     }
 }
