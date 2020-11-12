@@ -24,14 +24,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
         private readonly IGetChildrenAllocationUseCase _childrenAllocationUseCase;
+        private readonly IGetAdultsAllocationsUseCase _adultsAllocationUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IGetChildrenAllocationUseCase childrenAllocationUseCase)
+            IProcessDataUseCase processDataUsecase, IGetChildrenAllocationUseCase childrenAllocationUseCase, IGetAdultsAllocationsUseCase adultsAllocationsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _childrenAllocationUseCase = childrenAllocationUseCase;
+            _adultsAllocationUseCase = adultsAllocationsUseCase;
         }
 
         /// <summary>
@@ -114,6 +116,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult GetChildrensAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_childrenAllocationUseCase.Execute(request));
+        }
+
+        /// <summary>
+        /// Find acs allocations by Mosaic ID or officer email
+        /// </summary>
+        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
+        [ProducesResponseType(typeof(AscAllocationList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("asc-allocations")]
+        public IActionResult GetAdultsAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        {
+            return Ok(_adultsAllocationUseCase.Execute(request));
         }
 
         /// <summary>

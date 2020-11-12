@@ -62,6 +62,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
+        public List<AscAllocation> SelectAscAllocations(long? mosaicId, string officerEmail)
+        {
+            var allocations = _databaseContext.AscAllocations
+                .Where(r => (mosaicId == null) || r.Id == mosaicId)
+                .Where(r => string.IsNullOrEmpty(officerEmail) || r.AllocatedWorker.Contains(officerEmail))
+                .Select(r => new AscAllocation
+                {
+                    PersonId = r.Id.ToString(),
+                    LastName = r.LastName,
+                    FirstName = r.FirstName,
+                    DateOfBirth = r.DateOfBirth != null ? r.DateOfBirth.ToString() : null,
+                    Age = r.Age,
+                    PrimarySupportReason = r.PrimarySupportReason,
+                    AllocatedTeam = r.AllocatedTeam,
+                    AllocatedWorker = r.AllocatedWorker,
+                    Address = r.Address,
+                    Postcode = r.PostCode,
+                    Uprn = r.Uprn,
+                    LongTermService = r.LongTermService,
+                    SocialCareInvolvement = r.SocialCareInvolvement,
+                    ShortTermSupport = r.ShortTermSupport,
+                    HouseholdComposition = r.HouseholdComposition,
+                    Fullname = r.FullName
+                }).ToList();
+
+            return allocations;
+        }
+
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
