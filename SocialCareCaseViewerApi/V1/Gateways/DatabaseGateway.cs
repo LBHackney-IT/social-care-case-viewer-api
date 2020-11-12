@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     PersonId = r.Id.ToString(),
                     LastName = r.LastName,
                     FirstName = r.FirstName,
-                    DateOfBirth = r.DateOfBirth != null ? r.DateOfBirth.ToString() : null,
+                    DateOfBirth = r.DateOfBirth != null ? Convert.ToDateTime(r.DateOfBirth).ToString("dd-MM-yyyy") : null,
                     Age = r.Age,
                     PrimarySupportReason = r.PrimarySupportReason,
                     AllocatedTeam = r.AllocatedTeam,
