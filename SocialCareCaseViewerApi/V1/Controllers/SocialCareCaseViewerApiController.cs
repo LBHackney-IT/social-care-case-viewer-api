@@ -125,7 +125,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(AscAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("asc-allocations")]
-        public IActionResult GetAdultsAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        public IActionResult GetAdultsAllocatedWorker([FromQuery] ListAscAllocationsRequest request)
         {
             return Ok(_adultsAllocationUseCase.Execute(request));
         }

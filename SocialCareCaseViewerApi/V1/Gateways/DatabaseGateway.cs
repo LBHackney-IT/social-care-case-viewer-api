@@ -62,11 +62,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
-        public List<AscAllocation> SelectAscAllocations(long? mosaicId, string officerEmail)
+        public List<AscAllocation> SelectAscAllocations(long? mosaicId, string allocatedWorker)
         {
             var allocations = _databaseContext.AscAllocations
                 .Where(r => (mosaicId == null) || r.Id == mosaicId)
-                .Where(r => string.IsNullOrEmpty(officerEmail) || r.AllocatedWorker.Contains(officerEmail))
+                .Where(r => string.IsNullOrWhiteSpace(allocatedWorker) || r.AllocatedWorker.ToLower() == allocatedWorker.ToLower())
                 .Select(r => new AscAllocation
                 {
                     PersonId = r.Id.ToString(),
