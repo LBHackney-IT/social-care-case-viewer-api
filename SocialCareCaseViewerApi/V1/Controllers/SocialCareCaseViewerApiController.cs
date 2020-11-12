@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
         [ProducesResponseType(typeof(AscAllocationList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("asc_allocations")]
+        [Route("asc-allocations")]
         public IActionResult GetAdultsAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_adultsAllocationUseCase.Execute(request));
