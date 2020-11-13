@@ -64,11 +64,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public List<AscAllocation> SelectAscAllocations(long? mosaicId, string allocatedWorker)
         {
-            //var query = _databaseContext.AscAllocations.AsQueryable();
+            var query = _databaseContext.AscAllocations.AsQueryable();
 
-            //if (mosaicId != null) query = query.Where(r => r.Id == mosaicId);
+            if (mosaicId != null) query = query.Where(r => r.Id == mosaicId);
 
-            //if (!string.IsNullOrWhiteSpace(allocatedWorker)) query = query.Where(r => r.AllocatedWorker.ToLower() == allocatedWorker.ToLower());
+            if (!string.IsNullOrWhiteSpace(allocatedWorker)) query = query.Where(r => r.AllocatedWorker.ToLower() == allocatedWorker.ToLower());
 
             //var allocations = query.Select(r => new AscAllocation
             //{
