@@ -64,34 +64,30 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public List<AscAllocation> SelectAscAllocations(long? mosaicId, string allocatedWorker)
         {
-            var query = _databaseContext.AscAllocations.AsQueryable();
-
-            if (mosaicId != null) query = query.Where(r => r.Id == mosaicId);
-
-            if (!string.IsNullOrWhiteSpace(allocatedWorker)) query = query.Where(r => r.AllocatedWorker.ToLower() == allocatedWorker.ToLower());
-
-            var allocations = query.Select(r => new AscAllocation
-            {
-                PersonId = r.Id,
-                LastName = r.LastName
-                //    FirstName = r.FirstName,
-                //    DateOfBirth = r.DateOfBirth != null ? Convert.ToDateTime(r.DateOfBirth).ToString("dd-MM-yyyy") : null,
-                //    Age = r.Age,
-                //    PrimarySupportReason = r.PrimarySupportReason,
-                //    AllocatedTeam = r.AllocatedTeam,
-                //    AllocatedWorker = r.AllocatedWorker,
-                //    Address = r.Address,
-                //    Postcode = r.PostCode,
-                //    Uprn = r.Uprn,
-                //    LongTermService = r.LongTermService,
-                //    SocialCareInvolvement = r.SocialCareInvolvement,
-                //    ShortTermSupport = r.ShortTermSupport,
-                //    HouseholdComposition = r.HouseholdComposition,
-                //    Fullname = r.FullName
-            }).ToList();
+            var allocations = _databaseContext.AscAllocations
+                .Where(r => (mosaicId == null) || r.Id == mosaicId)
+                .Where(r => string.IsNullOrWhiteSpace(allocatedWorker) ||  r.AllocatedWorker.ToLower() == allocatedWorker.ToLower())
+                .Select(r => new AscAllocation
+                {
+                    PersonId = r.Id,
+                    LastName = r.LastName,
+                    FirstName = r.FirstName,
+                    DateOfBirth = r.DateOfBirth != null ? Convert.ToDateTime(r.DateOfBirth).ToString("dd-MM-yyyy") : null,
+                    Age = r.Age,
+                    PrimarySupportReason = r.PrimarySupportReason,
+                    AllocatedTeam = r.AllocatedTeam,
+                    AllocatedWorker = r.AllocatedWorker,
+                    Address = r.Address,
+                    Postcode = r.PostCode,
+                    Uprn = r.Uprn,
+                    LongTermService = r.LongTermService,
+                    SocialCareInvolvement = r.SocialCareInvolvement,
+                    ShortTermSupport = r.ShortTermSupport,
+                    HouseholdComposition = r.HouseholdComposition,
+                    Fullname = r.FullName
+                }).ToList();
 
             return allocations;
-            //return new List<AscAllocation>();
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
