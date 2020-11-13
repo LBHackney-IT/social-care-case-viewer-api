@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     {
         [Column("mosaic_id"), Required]
         [MaxLength(16)]
-        public long Id { get; set; }
+        public long? Id { get; set; }
 
         [Column("last_name"), Required]
         [MaxLength(30)]
@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? DateOfBirth { get; set; }
 
         [Column("age")]
-        public int Age { get; set; }
+        public int? Age { get; set; }
 
         [Column("primary_support_reason")]
         [MaxLength(100)]
@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string PostCode { get; set; }
 
         [Column("uprn")]
-        public long Uprn { get; set; }
+        public long? Uprn { get; set; }
 
         [Column("long_term_service")]
         [MaxLength(4)]
