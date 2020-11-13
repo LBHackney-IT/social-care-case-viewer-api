@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var allocations = _databaseContext.AscAllocations
                 .Where(r => (mosaicId == null) || r.Id == mosaicId)
-                .Where(r => string.IsNullOrWhiteSpace(allocatedWorker) ||  r.AllocatedWorker.ToLower() == allocatedWorker.ToLower())
+                .Where(r => string.IsNullOrWhiteSpace(allocatedWorker) || r.AllocatedWorker.ToLower() == allocatedWorker.ToLower())
                 .Select(r => new AscAllocation
                 {
                     PersonId = r.Id,
