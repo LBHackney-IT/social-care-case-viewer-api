@@ -13,6 +13,18 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
+
+        [FromQuery(Name = "first_name")]
+        public string FirstName { get; set; }
+
+        [FromQuery(Name = "last_name")]
+        public string LastName { get; set; }
+
+        [FromQuery(Name = "date_of_birth")]
+        public string DateOfBirth { get; set; }
+
+        [FromQuery(Name = "postcode")]
+        public string Postcode { get; set; }
     }
 
     public class ListAllocationsRequest

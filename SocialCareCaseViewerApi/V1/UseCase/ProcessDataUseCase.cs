@@ -25,9 +25,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public CareCaseDataList Execute(long mosaicId, string officerEmail)
+        public CareCaseDataList Execute(long mosaicId, string officerEmail, string firstName, string lastName, string dateOfBirth, string postcode)
         {
-            var result = _processDataGateway.GetProcessData(mosaicId, officerEmail);
+            var result = _processDataGateway.GetProcessData(mosaicId, officerEmail, firstName, lastName, dateOfBirth, postcode);
 
             return new CareCaseDataList
             {
