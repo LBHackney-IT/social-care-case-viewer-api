@@ -134,11 +134,11 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "production"
+  # terraform-init-and-apply-to-production:
+    # executor: docker-terraform
+    # steps:
+      # - terraform-init-then-apply:
+          # environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -204,23 +204,23 @@ workflows:
           filters:
             branches:
               only: master
-      - permit-production-terraform-release:
-          type: approval
-          requires:
-            - deploy-to-staging
+      # - permit-production-terraform-release:
+          # type: approval
+          # requires:
+            # - deploy-to-staging
       - assume-role-production:
           context: api-assume-role-production-context
-          requires:
-              - permit-production-terraform-release
+          # requires:
+              # - permit-production-terraform-release
           filters:
             branches:
               only: master
-      - terraform-init-and-apply-to-production:
-          requires:
-            - assume-role-production
-          filters:
-            branches:
-              only: master
+      # - terraform-init-and-apply-to-production:
+          # requires:
+            # - assume-role-production
+          # filters:
+            # branches:
+              # only: master
       - permit-production-release:
           type: approval
           requires:
