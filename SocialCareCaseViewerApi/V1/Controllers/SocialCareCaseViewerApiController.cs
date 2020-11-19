@@ -161,7 +161,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                return Ok(_processDataUsecase.Execute(mosaicId, request.WorkerEmail));
+                return Ok(_processDataUsecase.Execute(mosaicId, request.WorkerEmail, request.FirstName,
+                    request.LastName, request.DateOfBirth, request.Postcode));
             }
             catch (DocumentNotFoundException e)
             {

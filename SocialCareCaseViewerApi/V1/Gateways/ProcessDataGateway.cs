@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Infrastructure;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
-using System.Threading.Tasks;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -38,11 +39,29 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     throw new Exception();
                 }
             }
-            var filter = !string.IsNullOrEmpty(request.WorkerEmail) ?
-                Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail)
-                : "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
+            var officerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
+                Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail) : null;
+            var mosaicIdFilter = !string.IsNullOrWhiteSpace(request.MosaicId) ?
+                Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
+            var firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
+                Builders<BsonDocument>.Filter.Regex("first_name".ToUpper(), request.FirstName.ToUpper()) : null;
+            var lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
+                Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), request.LastName.ToUpper()) : null;
+            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(request.DateOfBirth.ToString()) ?
+                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), request.DateOfBirth.ToString()) : null;
+            var postCodeFilter = !string.IsNullOrWhiteSpace(request.Postcode) ?
+                Builders<BsonDocument>.Filter.Regex("postcode".ToUpper(), request.Postcode.ToUpper()) : null;
 
-            var result = _sccvDbContext.getCollection().Find(filter).ToList();
+            var result = _sccvDbContext
+                .getCollection()
+                .AsQueryable()
+                .Where(db => officerEmailFilter.Inject())
+                .Where(db => mosaicIdFilter.Inject())
+                .Where(db => firstNameFilter.Inject())
+                .Where(db => lastNameFilter.Inject())
+                .Where(db => dateOfBirthFilter.Inject())
+                .Where(db => postCodeFilter.Inject())
+                .ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {
@@ -51,18 +70,31 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return ResponseFactory.ToResponse(result);
         }
 
-        public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string officerEmail)
+        public IEnumerable<CareCaseData> GetProcessData(long? mosaicId, string officerEmail, string firstName, string lastName, string dateOfBirth, string postcode)
         {
-            var filter = !string.IsNullOrEmpty(officerEmail) ?
-               Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail)
-               : "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
+            var officerEmailFilter = !string.IsNullOrWhiteSpace(officerEmail) ?
+                Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail) : null;
+            var mosaicIdFilter = mosaicId == null ?
+                Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
+            var firstNameFilter = !string.IsNullOrWhiteSpace(firstName) ?
+                Builders<BsonDocument>.Filter.Regex("first_name".ToUpper(), firstName.ToUpper()) : null;
+            var lastNameFilter = !string.IsNullOrWhiteSpace(lastName) ?
+                Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), lastName.ToUpper()) : null;
+            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(dateOfBirth) ?
+                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), dateOfBirth) : null;
+            var postCodeFilter = !string.IsNullOrWhiteSpace(postcode) ?
+                Builders<BsonDocument>.Filter.Regex("postcode".ToUpper(), postcode.ToUpper()) : null;
 
-            /*var sFilter = "{ $expr: " +
-                                "{ $regexMatch: " +
-                                    "{ input: { $toString: $mosaic_id }, $regex: /" + mosaicId.ToString() + "/ } " +
-                            "} }";*/
-
-            var result = _sccvDbContextTemp.getCollection().Find(filter).ToList();
+            var result = _sccvDbContextTemp
+                .getCollection()
+                .AsQueryable()
+                .Where(db => officerEmailFilter.Inject())
+                .Where(db => mosaicIdFilter.Inject())
+                .Where(db => firstNameFilter.Inject())
+                .Where(db => lastNameFilter.Inject())
+                .Where(db => dateOfBirthFilter.Inject())
+                .Where(db => postCodeFilter.Inject())
+                .ToList();
 
             if (result == null)
             {
