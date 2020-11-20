@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var mosaicIdFilter = !string.IsNullOrWhiteSpace(request.MosaicId) ?
                 Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
             var firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
-                Builders<BsonDocument>.Filter.Eq("first_name".ToUpper(), request.FirstName.ToUpper()) : null;
+                Builders<BsonDocument>.Filter.Eq("first_name", request.FirstName) : null;
             var lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
                 Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), request.LastName.ToUpper()) : null;
             var dateOfBirthFilter = !string.IsNullOrWhiteSpace(request.DateOfBirth) ?
@@ -82,7 +82,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var mosaicIdFilter = mosaicId == null ?
                 Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
             var firstNameFilter = !string.IsNullOrWhiteSpace(firstName) ?
-                Builders<BsonDocument>.Filter.Eq("first_name".ToUpper(), firstName.ToUpper()) : null;
+                Builders<BsonDocument>.Filter.Eq("first_name", firstName) : null;
             var lastNameFilter = !string.IsNullOrWhiteSpace(lastName) ?
                 Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), lastName.ToUpper()) : null;
             var dateOfBirthFilter = !string.IsNullOrWhiteSpace(dateOfBirth) ?
