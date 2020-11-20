@@ -55,18 +55,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var result = _sccvDbContext
                 .getCollection()
                 .AsQueryable()
-                .Where(db =>
-                    string.IsNullOrEmpty(request.WorkerEmail) || officerEmailFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(request.MosaicId) || mosaicIdFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(request.WorkerEmail) || officerEmailFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(request.MosaicId) || mosaicIdFilter.Inject())
                 .Where(db =>
                     string.IsNullOrEmpty(request.FirstName) || firstNameFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(request.LastName) || lastNameFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(request.DateOfBirth) || dateOfBirthFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(request.Postcode) || postCodeFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(request.LastName) || lastNameFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(request.DateOfBirth) || dateOfBirthFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(request.Postcode) || postCodeFilter.Inject())
                 .ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
@@ -94,18 +94,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var result = _sccvDbContextTemp
                 .getCollection()
                 .AsQueryable()
-                .Where(db =>
-                    string.IsNullOrEmpty(officerEmail) || officerEmailFilter.Inject())
-                .Where(db =>
-                    mosaicId == null || mosaicIdFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(officerEmail) || officerEmailFilter.Inject())
+                // .Where(db =>
+                //     mosaicId == null || mosaicIdFilter.Inject())
                 .Where(db =>
                     string.IsNullOrEmpty(firstName) || firstNameFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(lastName) || lastNameFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(dateOfBirth) || dateOfBirthFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(postcode) || postCodeFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(lastName) || lastNameFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(dateOfBirth) || dateOfBirthFilter.Inject())
+                // .Where(db =>
+                //     string.IsNullOrEmpty(postcode) || postCodeFilter.Inject())
                 .ToList();
 
             if (result == null)
