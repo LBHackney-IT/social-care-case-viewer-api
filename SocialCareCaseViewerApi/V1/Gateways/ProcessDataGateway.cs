@@ -47,8 +47,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Builders<BsonDocument>.Filter.Regex("first_name".ToUpper(), request.FirstName.ToUpper()) : null;
             var lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
                 Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), request.LastName.ToUpper()) : null;
-            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(request.DateOfBirth.ToString()) ?
-                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), request.DateOfBirth.ToString()) : null;
+            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(request.DateOfBirth) ?
+                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), request.DateOfBirth) : null;
             var postCodeFilter = !string.IsNullOrWhiteSpace(request.Postcode) ?
                 Builders<BsonDocument>.Filter.Regex("postcode".ToUpper(), request.Postcode.ToUpper()) : null;
 
