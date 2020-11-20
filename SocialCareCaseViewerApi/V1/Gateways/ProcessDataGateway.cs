@@ -59,8 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //     string.IsNullOrEmpty(request.WorkerEmail) || officerEmailFilter.Inject())
                 // .Where(db =>
                 //     string.IsNullOrEmpty(request.MosaicId) || mosaicIdFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(request.FirstName) || firstNameFilter.Inject())
+                .Where(db => firstNameFilter.Inject())
                 // .Where(db =>
                 //     string.IsNullOrEmpty(request.LastName) || lastNameFilter.Inject())
                 // .Where(db =>
@@ -98,8 +97,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //     string.IsNullOrEmpty(officerEmail) || officerEmailFilter.Inject())
                 // .Where(db =>
                 //     mosaicId == null || mosaicIdFilter.Inject())
-                .Where(db =>
-                    string.IsNullOrEmpty(firstName) || firstNameFilter.Inject())
+                .Where(db => firstNameFilter.Inject())
                 // .Where(db =>
                 //     string.IsNullOrEmpty(lastName) || lastNameFilter.Inject())
                 // .Where(db =>
