@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public interface IProcessDataUseCase
     {
         CareCaseDataList Execute(ListCasesRequest request);
-        CareCaseDataList Execute(long mosaicId, string officerEmail, string firstName, string lastName, string dateOfBirth, string postcode);
+        CareCaseDataList Execute(string firstName, string lastName, string officerEmail, string caseNoteType);
         Task<string> Execute(CaseNotesDocument caseNotesDoc);
     }
 }

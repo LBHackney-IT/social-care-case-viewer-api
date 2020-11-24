@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -30,43 +31,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
-            long mosaicId = 0;
-            if (!string.IsNullOrEmpty(request.MosaicId))
-            {
-
-                if (!Int64.TryParse(request.MosaicId, out mosaicId))
-                {
-                    throw new Exception();
-                }
-            }
-            var officerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
-                Builders<BsonDocument>.Filter.Eq("worker_email", request.WorkerEmail) : null;
-            var mosaicIdFilter = !string.IsNullOrWhiteSpace(request.MosaicId) ?
-                Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
             var firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
-                Builders<BsonDocument>.Filter.Eq("first_name", request.FirstName) : null;
+                Builders<BsonDocument>.Filter.Regex("first_name", BsonRegularExpression.Create(new Regex(request.FirstName, RegexOptions.IgnoreCase))) : null;
             var lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
-                Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), request.LastName.ToUpper()) : null;
-            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(request.DateOfBirth) ?
-                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), request.DateOfBirth) : null;
-            var postCodeFilter = !string.IsNullOrWhiteSpace(request.Postcode) ?
-                Builders<BsonDocument>.Filter.Regex("postcode".ToUpper(), request.Postcode.ToUpper()) : null;
+                Builders<BsonDocument>.Filter.Regex("last_name", BsonRegularExpression.Create(new Regex(request.LastName, RegexOptions.IgnoreCase))) : null;
+            var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
+                Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
+            var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
+                Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
 
-            var result = _sccvDbContext
-                .getCollection()
-                .AsQueryable()
-                // .Where(db =>
-                //     string.IsNullOrEmpty(request.WorkerEmail) || officerEmailFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(request.MosaicId) || mosaicIdFilter.Inject())
-                .Where(db => firstNameFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(request.LastName) || lastNameFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(request.DateOfBirth) || dateOfBirthFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(request.Postcode) || postCodeFilter.Inject())
-                .ToList();
+            var query = _sccvDbContext.getCollection().AsQueryable();
+
+            if (firstNameFilter != null) query = query.Where(db => firstNameFilter.Inject());
+            if (lastNameFilter != null) query = query.Where(db => lastNameFilter.Inject());
+            if (workerEmailFilter != null) query = query.Where(db => workerEmailFilter.Inject());
+            if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
+
+
+            var result = query.ToList();
             //if document does not exist in the DB, then thrown a corresponsing error.
             if (result == null)
             {
@@ -75,36 +57,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return ResponseFactory.ToResponse(result);
         }
 
-        public IEnumerable<CareCaseData> GetProcessData(long? mosaicId, string officerEmail, string firstName, string lastName, string dateOfBirth, string postcode)
+        public IEnumerable<CareCaseData> GetProcessData(string firstName, string lastName, string officerEmail, string caseNoteType)
         {
-            var officerEmailFilter = !string.IsNullOrWhiteSpace(officerEmail) ?
-                Builders<BsonDocument>.Filter.Eq("worker_email", officerEmail) : null;
-            var mosaicIdFilter = mosaicId == null ?
-                Builders<BsonDocument>.Filter.Eq("mosaic_id", mosaicId.ToString()) : null;
             var firstNameFilter = !string.IsNullOrWhiteSpace(firstName) ?
-                Builders<BsonDocument>.Filter.Eq("first_name", firstName) : null;
+                Builders<BsonDocument>.Filter.Regex("first_name", BsonRegularExpression.Create(new Regex(firstName, RegexOptions.IgnoreCase))) : null;
             var lastNameFilter = !string.IsNullOrWhiteSpace(lastName) ?
-                Builders<BsonDocument>.Filter.Regex("last_name".ToUpper(), lastName.ToUpper()) : null;
-            var dateOfBirthFilter = !string.IsNullOrWhiteSpace(dateOfBirth) ?
-                Builders<BsonDocument>.Filter.Eq("date_of_birth".ToString(), dateOfBirth) : null;
-            var postCodeFilter = !string.IsNullOrWhiteSpace(postcode) ?
-                Builders<BsonDocument>.Filter.Regex("postcode".ToUpper(), postcode.ToUpper()) : null;
+                Builders<BsonDocument>.Filter.Regex("last_name", BsonRegularExpression.Create(new Regex(lastName, RegexOptions.IgnoreCase))) : null;
+            var officerEmailFilter = !string.IsNullOrWhiteSpace(officerEmail) ?
+                Builders<BsonDocument>.Filter.Eq("worker_email", BsonRegularExpression.Create(new Regex(officerEmail, RegexOptions.IgnoreCase))) : null;
+            var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(caseNoteType) ?
+                Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(caseNoteType, RegexOptions.IgnoreCase))) : null;
 
-            var result = _sccvDbContextTemp
-                .getCollection()
-                .AsQueryable()
-                // .Where(db =>
-                //     string.IsNullOrEmpty(officerEmail) || officerEmailFilter.Inject())
-                // .Where(db =>
-                //     mosaicId == null || mosaicIdFilter.Inject())
-                .Where(db => firstNameFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(lastName) || lastNameFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(dateOfBirth) || dateOfBirthFilter.Inject())
-                // .Where(db =>
-                //     string.IsNullOrEmpty(postcode) || postCodeFilter.Inject())
-                .ToList();
+            var query = _sccvDbContextTemp.getCollection().AsQueryable();
+
+            if (firstNameFilter != null) query = query.Where(db => firstNameFilter.Inject());
+            if (lastNameFilter != null) query = query.Where(db => lastNameFilter.Inject());
+            if (officerEmailFilter != null) query = query.Where(db => officerEmailFilter.Inject());
+            if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
+
+            var result = query.ToList();
 
             if (result == null)
             {

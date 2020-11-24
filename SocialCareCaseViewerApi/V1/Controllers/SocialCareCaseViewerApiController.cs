@@ -156,13 +156,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("cases-test")]
         public IActionResult ListCasesTest([FromQuery] ListCasesRequest request)
         {
-            long mosaicId = 0;
-            _ = Int64.TryParse(request.MosaicId, out mosaicId);
-
             try
             {
-                return Ok(_processDataUsecase.Execute(mosaicId, request.WorkerEmail, request.FirstName,
-                    request.LastName, request.DateOfBirth, request.Postcode));
+                return Ok(_processDataUsecase.Execute(request.FirstName, request.LastName,
+                    request.WorkerEmail, request.CaseNoteType));
             }
             catch (DocumentNotFoundException e)
             {
