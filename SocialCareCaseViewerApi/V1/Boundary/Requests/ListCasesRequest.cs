@@ -22,6 +22,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "case_note_type")]
         public string CaseNoteType { get; set; }
+
+        [FromQuery(Name = "start_date")]
+        public DateTime? StartDate { get; set; }
+
+        [FromQuery(Name = "end_date")]
+        public DateTime? EndDate { get; set; }
     }
 
     public class ListAllocationsRequest

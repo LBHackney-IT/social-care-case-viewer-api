@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -16,6 +17,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -69,10 +71,52 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 throw new DocumentNotFoundException("document not found");
             }
-            return ResponseFactory.ToResponse(result);
+
+            var response = ResponseFactory.ToResponse(result);
+
+            if (request.StartDate != null)
+            {
+                response = response
+                    .Where(x =>
+                    {
+                        DateTime outSource;
+                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                        {
+                            return outSource > request.StartDate;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    })
+                    .ToList();
+            }
+
+            if (request.EndDate != null)
+            {
+                response = response
+                    .Where(x =>
+                    {
+                        DateTime outSource;
+                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                        {
+                            return outSource < request.EndDate;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    })
+                    .ToList();
+            }
+
+
+
+            return response;
         }
 
-        public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType)
+        public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType,
+            DateTime? providedStartDate, DateTime? providedEndDate)
         {
             List<BsonDocument> result;
             if (mosaicId != 0)
@@ -101,12 +145,52 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
 
                 result = query.ToList();
+
             }
             if (result == null)
             {
                 throw new DocumentNotFoundException("document not found");
             }
-            return ResponseFactory.ToResponse(result);
+
+            var response = ResponseFactory.ToResponse(result);
+
+            if (providedStartDate != null)
+            {
+                response = response
+                    .Where(x =>
+                    {
+                        DateTime outSource;
+                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                        {
+                            return outSource > providedStartDate;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    })
+                    .ToList();
+            }
+
+            if (providedEndDate != null)
+            {
+                response = response
+                    .Where(x =>
+                    {
+                        DateTime outSource;
+                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                        {
+                            return outSource < providedEndDate;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    })
+                    .ToList();
+            }
+
+            return response;
         }
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
