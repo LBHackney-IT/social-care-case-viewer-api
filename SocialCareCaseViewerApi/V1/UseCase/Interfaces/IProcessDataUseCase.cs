@@ -12,7 +12,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public interface IProcessDataUseCase
     {
         CareCaseDataList Execute(ListCasesRequest request);
-        CareCaseDataList Execute(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType);
+        CareCaseDataList Execute(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType,
+            DateTime? providedStartDate, DateTime? providedEndDate);
         Task<string> Execute(CaseNotesDocument caseNotesDoc);
     }
 }
