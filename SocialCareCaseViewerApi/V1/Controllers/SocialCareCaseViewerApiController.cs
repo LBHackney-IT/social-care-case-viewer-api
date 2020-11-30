@@ -144,30 +144,5 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
         }
-
-
-        /// <summary>
-        /// Find cases by Mosaic ID or officer email
-        /// </summary>
-        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
-        /// <response code="404">No cases found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("cases-test")]
-        public IActionResult ListCasesTest([FromQuery] ListCasesRequest request)
-        {
-            long mosaicId = 0;
-            _ = Int64.TryParse(request.MosaicId, out mosaicId);
-
-            try
-            {
-                return Ok(_processDataUsecase.Execute(mosaicId, request.FirstName, request.LastName,
-                    request.WorkerEmail, request.CaseNoteType, request.StartDate, request.EndDate));
-            }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
     }
 }

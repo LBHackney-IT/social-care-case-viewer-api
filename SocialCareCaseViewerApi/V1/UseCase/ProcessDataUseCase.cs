@@ -25,17 +25,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public CareCaseDataList Execute(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType,
-            DateTime? providedStartDate, DateTime? providedEndDate)
-        {
-            var result = _processDataGateway.GetProcessData(mosaicId, firstName, lastName, officerEmail, caseNoteType, providedStartDate, providedEndDate);
-
-            return new CareCaseDataList
-            {
-                Cases = result.ToList()
-            };
-        }
-
         public Task<string> Execute(CaseNotesDocument caseNotesDoc)
         {
             return _processDataGateway.InsertCaseNoteDocument(caseNotesDoc);
