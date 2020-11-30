@@ -118,7 +118,6 @@ namespace SocialCareCaseViewerApi
                 opt => opt.UseNpgsql(connectionString));
 
             services.AddSingleton<ISccvDbContext, SccvDbContext>();
-            services.AddSingleton<ISccvDbContextTemp, SccvDbContextTemp>();
         }
 
         private static void RegisterGateways(IServiceCollection services)

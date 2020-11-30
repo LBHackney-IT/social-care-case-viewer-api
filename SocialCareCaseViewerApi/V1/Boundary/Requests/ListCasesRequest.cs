@@ -11,6 +11,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "mosaic_id")]
         public string MosaicId { get; set; }
 
+        [FromQuery(Name = "exact_name_match")]
+        public Boolean ExactNameMatch { get; set; } = false;
         [FromQuery(Name = "first_name")]
         public string FirstName { get; set; }
 

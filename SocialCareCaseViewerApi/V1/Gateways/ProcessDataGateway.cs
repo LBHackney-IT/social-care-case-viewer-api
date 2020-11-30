@@ -24,16 +24,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
-        private ISccvDbContextTemp _sccvDbContextTemp;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext, ISccvDbContextTemp sccvDbContextTemp)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext)
         {
             _sccvDbContext = sccvDbContext;
-            _sccvDbContextTemp = sccvDbContextTemp;
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
             List<BsonDocument> result;
+            FilterDefinition<BsonDocument> firstNameFilter;
+            FilterDefinition<BsonDocument> lastNameFilter;
             long mosaicId = 0;
             if (!string.IsNullOrEmpty(request.MosaicId))
             {
@@ -47,10 +47,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             else
             {
-                var firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
-                    Builders<BsonDocument>.Filter.Regex("first_name", BsonRegularExpression.Create(new Regex(request.FirstName, RegexOptions.IgnoreCase))) : null;
-                var lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
-                    Builders<BsonDocument>.Filter.Regex("last_name", BsonRegularExpression.Create(new Regex(request.LastName, RegexOptions.IgnoreCase))) : null;
+                if (!request.ExactNameMatch)
+                {
+                    firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
+                        Builders<BsonDocument>.Filter.Regex("first_name", BsonRegularExpression.Create(new Regex(request.FirstName, RegexOptions.IgnoreCase))) : null;
+                    lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
+                        Builders<BsonDocument>.Filter.Regex("last_name", BsonRegularExpression.Create(new Regex(request.LastName, RegexOptions.IgnoreCase))) : null;
+                }
+                else
+                {
+                    firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
+                        Builders<BsonDocument>.Filter.Regex("first_name", new BsonRegularExpression("^" + request.FirstName + "$", "i")) : null;
+                    lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
+                        Builders<BsonDocument>.Filter.Regex("Last_name", new BsonRegularExpression("^" + request.LastName + "$", "i")) : null;
+                }
                 var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
                 var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
@@ -111,84 +121,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
 
-
-            return response;
-        }
-
-        public IEnumerable<CareCaseData> GetProcessData(long mosaicId, string firstName, string lastName, string officerEmail, string caseNoteType,
-            DateTime? providedStartDate, DateTime? providedEndDate)
-        {
-            List<BsonDocument> result;
-            if (mosaicId != 0)
-            {
-
-                var filter = "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
-
-                result = _sccvDbContext.getCollection().Find(filter).ToList();
-            }
-            else
-            {
-                var firstNameFilter = !string.IsNullOrWhiteSpace(firstName) ?
-                    Builders<BsonDocument>.Filter.Regex("first_name", BsonRegularExpression.Create(new Regex(firstName, RegexOptions.IgnoreCase))) : null;
-                var lastNameFilter = !string.IsNullOrWhiteSpace(lastName) ?
-                    Builders<BsonDocument>.Filter.Regex("last_name", BsonRegularExpression.Create(new Regex(lastName, RegexOptions.IgnoreCase))) : null;
-                var officerEmailFilter = !string.IsNullOrWhiteSpace(officerEmail) ?
-                    Builders<BsonDocument>.Filter.Eq("worker_email", BsonRegularExpression.Create(new Regex(officerEmail, RegexOptions.IgnoreCase))) : null;
-                var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(caseNoteType) ?
-                    Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(caseNoteType, RegexOptions.IgnoreCase))) : null;
-
-                var query = _sccvDbContextTemp.getCollection().AsQueryable();
-
-                if (firstNameFilter != null) query = query.Where(db => firstNameFilter.Inject());
-                if (lastNameFilter != null) query = query.Where(db => lastNameFilter.Inject());
-                if (officerEmailFilter != null) query = query.Where(db => officerEmailFilter.Inject());
-                if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
-
-                result = query.ToList();
-
-            }
-            if (result == null)
-            {
-                throw new DocumentNotFoundException("document not found");
-            }
-
-            var response = ResponseFactory.ToResponse(result);
-
-            if (providedStartDate != null)
-            {
-                response = response
-                    .Where(x =>
-                    {
-                        DateTime outSource;
-                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
-                        {
-                            return outSource > providedStartDate;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    })
-                    .ToList();
-            }
-
-            if (providedEndDate != null)
-            {
-                response = response
-                    .Where(x =>
-                    {
-                        DateTime outSource;
-                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
-                        {
-                            return outSource < providedEndDate;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    })
-                    .ToList();
-            }
 
             return response;
         }
