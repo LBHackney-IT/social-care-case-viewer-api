@@ -31,6 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
+            Console.WriteLine("Entry into GetProcessData");
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
@@ -86,6 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.StartDate != null)
             {
+                Console.WriteLine("If statement for start date");
                 response = response
                     .Where(x =>
                     {

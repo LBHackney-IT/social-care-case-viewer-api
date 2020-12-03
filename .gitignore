@@ -60,6 +60,7 @@ bin/
 tmp/
 .vs/
 /base-api.Tests/Properties/launchSettings.json
+SocialCareCaseViewerApi/Properties/launchSettings.json
 
 .fake
 .ionide
