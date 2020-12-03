@@ -87,6 +87,10 @@ resources:
                       - ""
                       - - "arn:aws:s3:::"
                         - "Ref": "ServerlessDeploymentBucket"
+                - Effect: "Allow"
+                  Action:
+                    - "s3:GetObject"
+                  Resource: "arn:aws:s3:::test-social-care-data"
           - PolicyName: lambdaInvocation
             PolicyDocument:
               Version: '2012-10-17'
