@@ -83,7 +83,7 @@ commands:
       - run:
           name: Build mongodb import lambda
           command: |
-            cd ./mongodbimport/
+            cd ./MongoDBImport/
             chmod +x ./build.sh
             ./build.sh
       # - run:
