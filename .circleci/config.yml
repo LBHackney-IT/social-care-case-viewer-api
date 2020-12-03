@@ -85,6 +85,17 @@ commands:
           command: |
             cd ./SocialCareCaseViewerApi/
             sls deploy --stage <<parameters.stage>> --conceal
+      - run:
+          name: Build MongoDB import lambda
+          command: |
+            cd ./MongoDBImport/
+            chmod +x ./build.sh
+            ./build.sh
+      - run:
+          name: Deploy MongoDB import lambda
+          command: |
+            cd ./MongoDBImport/
+            sls deploy --stage <<parameters.stage>> --conceal
 
 jobs:
   check-code-formatting:
@@ -191,19 +202,19 @@ workflows:
               #- build-and-test
           filters:
             branches:
-              only: master
+              only: feature/mongodb-import
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
-              only: master
+              only: feature/mongodb-import
       - deploy-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
-              only: master
+              only: feature/mongodb-import
       - permit-production-release:
           type: approval
           requires:

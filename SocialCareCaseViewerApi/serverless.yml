@@ -37,6 +37,13 @@ functions:
           path: /{proxy+}
           method: ANY
           private: true
+  mongoDBImport:
+    name: social-care-case-viewer-mongodb-import-${self:provider.stage}
+    handler: MongoDBImport::MongoDBImport.Handler::ImportFormData
+    role: lambdaExecutionRole
+    timeout: 60
+    package:
+      artifact: ./MongoDBImport/bin/release/netcoreapp3.1/mongodb-import.zip
 resources:
   Resources:
     lambdaExecutionRole:
