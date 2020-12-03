@@ -87,7 +87,7 @@ commands:
             chmod +x ./build.sh
             ./build.sh
       - run:
-         name: Deploy lambda
+          name: Deploy lambda
           command: |
             cd ./SocialCareCaseViewerApi/
             sls deploy --stage <<parameters.stage>> --conceal
