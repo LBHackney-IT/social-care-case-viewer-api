@@ -58,7 +58,7 @@ commands:
             cd ./terraform/<<parameters.environment>>/
             terraform apply -auto-approve
   deploy-lambda:
-    description: "Deploys API via Serverless"
+    description: "Deploys API and lambdas via Serverless"
     parameters:
       stage:
         type: string
@@ -73,17 +73,15 @@ commands:
             apt-get update && apt-get install -y nodejs
       - run:
           name: Install serverless CLI
-          command: npm i -g serverless
+          command: npm i -g serverless            
       - run:
           name: Build lambda
           command: |
-            cd ./SocialCareCaseViewerApi/
             chmod +x ./build.sh
             ./build.sh
       - run:
           name: Deploy lambda
           command: |
-            cd ./SocialCareCaseViewerApi/
             sls deploy --stage <<parameters.stage>> --conceal
 
 jobs:
