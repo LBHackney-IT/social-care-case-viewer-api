@@ -109,7 +109,7 @@ resources:
                 - Effect: "Allow"
                   Action:
                     - "s3:GetObject"
-                  Resource: 'arn:aws:s3:::${self:custom.mongoDBImportBucket.${self:provider.stage}}'
+                  Resource: 'arn:aws:s3:::${self:custom.mongoDBImportBucket.${self:provider.stage}}/*'
                   
 custom:
   vpc:
