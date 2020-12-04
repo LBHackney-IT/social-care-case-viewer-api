@@ -40,35 +40,49 @@ namespace MongoDBImport
                             Key = record.S3.Object.Key
                         };
                         LambdaLogger.Log($"getting object:{ request.BucketName}{ request.Key}");
-
-                        GetObjectResponse response = s3Client.GetObjectAsync(request).Result;
-                        LambdaLogger.Log("response:" + response.HttpStatusCode.ToString());
-
-                        if (response.ResponseStream != null)
+                        GetObjectResponse response = null;
+                        try
                         {
-                            using (var reader = new StreamReader(response.ResponseStream))
-                            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                            response = s3Client.GetObjectAsync(request).Result;
+                            LambdaLogger.Log("response:" + response.HttpStatusCode.ToString());
+                        }
+                        catch(Exception ex)
+                        {
+                            LambdaLogger.Log("s3 client connection error:" +ex.Message);
+                        }
+
+                        if (response?.ResponseStream != null)
+                        {
+                            try
                             {
-                                var records = csv.GetRecords<dynamic>(); //will read in chunks as longs as .ToList() etc. is not used 
-
-                                //tidy up the data set to ensure we don't have '.'s in the field names since they are invalid in Mongo. This can be removed after data cleansing
-                                foreach (var cvsRecord in records)
+                                using (var reader = new StreamReader(response.ResponseStream))
+                                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                                 {
-                                    var tmpItem = (IDictionary<string, object>) cvsRecord;
+                                    var records = csv.GetRecords<dynamic>(); //will read in chunks as longs as .ToList() etc. is not used 
 
-                                    Dictionary<string, object> newItem = new Dictionary<string, object>();
-
-                                    foreach (var keyValuePair in tmpItem)
+                                    //tidy up the data set to ensure we don't have '.'s in the field names since they are invalid in Mongo. This can be removed after data cleansing
+                                    foreach (var cvsRecord in records)
                                     {
-                                        newItem.Add(!keyValuePair.Key.Contains('.') ? keyValuePair.Key : keyValuePair.Key.Replace(".", ""), keyValuePair.Value);
+                                        var tmpItem = (IDictionary<string, object>) cvsRecord;
+
+                                        Dictionary<string, object> newItem = new Dictionary<string, object>();
+
+                                        foreach (var keyValuePair in tmpItem)
+                                        {
+                                            newItem.Add(!keyValuePair.Key.Contains('.') ? keyValuePair.Key : keyValuePair.Key.Replace(".", ""), keyValuePair.Value);
+                                        }
+
+                                        BsonDocument bd = newItem.ToBsonDocument();
+
+                                        csvToBsonRecords.Add(bd);
                                     }
-
-                                    BsonDocument bd = newItem.ToBsonDocument();
-
-                                    csvToBsonRecords.Add(bd);
                                 }
+                                LambdaLogger.Log($"{csvToBsonRecords.Count} records to be processed");
                             }
-                            LambdaLogger.Log($"{csvToBsonRecords.Count} records to be processed");
+                            catch(Exception ex)
+                            {
+                                LambdaLogger.Log("csv stream handling error:" + ex.Message);
+                            }
                         }
                         else
                         {
