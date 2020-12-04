@@ -103,7 +103,7 @@ namespace MongoDBImport
                 //import the records
                 try
                 {
-                    //TODO: make sure client is handled globally as singleton
+                    //TODO: use use case 
                     var client = new MongoClient(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING"));
 
                     var database = client.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));

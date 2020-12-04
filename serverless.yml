@@ -109,7 +109,7 @@ resources:
                 - Effect: "Allow"
                   Action:
                     - "s3:GetObject"
-                  Resource: "arn:aws:s3:::test-social-care-data"
+                  Resource: 'arn:aws:s3:::${self:custom.mongoDBImportBucket.${self:custom.stage}}'
                   
 custom:
   vpc:
@@ -129,3 +129,6 @@ custom:
       subnetIds:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34
+  mongoDBImportBucket:
+    staging: test-social-care-data
+    production: mosaic-social-care-csv-prod
