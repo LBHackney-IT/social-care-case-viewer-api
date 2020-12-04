@@ -16,6 +16,10 @@ namespace MongoDBImport
 {
     public class Handler
     {
+        private static string _collectionName = Environment.GetEnvironmentVariable("SCCV_MONGO_IMPORT_COLLECTION_NAME");
+        private static string _importFileName = Environment.GetEnvironmentVariable("SCCV_MONGO_IMPORT_FILE_NAME");
+        private static string _uniqueId = "unique_id";
+
         public void ImportFormData(S3EventNotification s3Event, ILambdaContext context)
         {
             //Add proper triggers and env vars once POC phase is done
@@ -24,12 +28,10 @@ namespace MongoDBImport
             //check the events
             foreach (var record in s3Event.Records)
             {
-                //only handle hard coded test file for now, these need to be added to serverless trigger setup
-                if (record.AwsRegion.ToString().ToUpper() == "EU-WEST-2"
-                        && record.S3.Bucket.Name.ToUpper() == "TEST-SOCIAL-CARE-DATA"
-                        && record.S3.Object.Key.ToUpper() == "SAMPLECSV.CSV")
+                //only handle single, predefined import file for now
+                if (record.S3.Object.Key.ToUpper() == _importFileName.ToUpper())
                 {
-                    LambdaLogger.Log($"Correct file: {record.AwsRegion}/{record.S3.Bucket.Name}/{record.S3.Object.Key}, processing");
+                    LambdaLogger.Log($"File to be processed: {record.AwsRegion}/{record.S3.Bucket.Name}/{record.S3.Object.Key}, processing");
 
                     //load the file from the bucket
                     using (var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.EUWest2))
@@ -60,7 +62,7 @@ namespace MongoDBImport
                                 {
                                     var records = csv.GetRecords<dynamic>(); //will read in chunks as longs as .ToList() etc. is not used 
 
-                                    //tidy up the data set to ensure we don't have '.'s in the field names since they are invalid in Mongo. This can be removed after data cleansing
+                                    //tidy up the data set to ensure we don't have '.'s in the field names since they are invalid in Mongo
                                     foreach (var cvsRecord in records)
                                     {
                                         var tmpItem = (IDictionary<string, object>) cvsRecord;
@@ -103,23 +105,21 @@ namespace MongoDBImport
                 //import the records
                 try
                 {
-                    //TODO: use use case 
                     var client = new MongoClient(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING"));
 
                     var database = client.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
 
-                    //TODO: use correct collection
-                    var userCollection = database.GetCollection<BsonDocument>("s3_csv_test");
+                    var userCollection = database.GetCollection<BsonDocument>(_collectionName); 
 
-                    var requests = csvToBsonRecords.Select(record => new ReplaceOneModel<BsonDocument>(new BsonDocument("unique_id", record.GetValue("unique_id")), record) { IsUpsert = true });
+                    var requests = csvToBsonRecords.Select(record => new ReplaceOneModel<BsonDocument>(new BsonDocument(_uniqueId, record.GetValue(_uniqueId)), record) { IsUpsert = true });
 
                     var bulkUpsertResult = userCollection.BulkWrite(requests, new BulkWriteOptions { IsOrdered = false });
 
                     var upserts = bulkUpsertResult.Upserts.ToList();
 
-                    Console.WriteLine($"OK?: {bulkUpsertResult.IsAcknowledged}");
-                    Console.WriteLine($"Updated: {bulkUpsertResult.ModifiedCount}");
-                    Console.WriteLine($"Added: {bulkUpsertResult.Upserts.Count}");
+                    Console.WriteLine($"Bulk upsert operation successful? {bulkUpsertResult.IsAcknowledged}");
+                    Console.WriteLine($"Updated: {bulkUpsertResult.ModifiedCount} records");
+                    Console.WriteLine($"Added: {bulkUpsertResult.Upserts.Count} records");
                 }
                 catch (Exception ex)
                 {

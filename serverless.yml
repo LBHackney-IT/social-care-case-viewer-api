@@ -41,7 +41,7 @@ functions:
     name: social-care-case-viewer-mongodb-import-${self:provider.stage}
     handler: MongoDBImport::MongoDBImport.Handler::ImportFormData
     role: lambdaExecutionRole
-    timeout: 30
+    timeout: 600
     package:
       artifact: ./MongoDBImport/bin/release/netcoreapp3.1/mongodb-import.zip
     environment:
@@ -51,6 +51,9 @@ functions:
       SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
       RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
+      SCCV_MONGO_IMPORT_COLLECTION_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/collection-name}
+      SCCV_MONGO_IMPORT_FILE_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/file-name}
+    #s3 event not added here to simplify the usage of existing buckets
 resources:
   Resources:
     lambdaExecutionRole:
