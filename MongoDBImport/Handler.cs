@@ -42,7 +42,9 @@ namespace MongoDBImport
                             Key = record.S3.Object.Key
                         };
                         LambdaLogger.Log($"getting object:{ request.BucketName}{ request.Key}");
+
                         GetObjectResponse response = null;
+
                         try
                         {
                             response = s3Client.GetObjectAsync(request).Result;
@@ -105,15 +107,15 @@ namespace MongoDBImport
                 //import the records
                 try
                 {
-                    var client = new MongoClient(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING"));
+                    var mongoClient = new MongoClient(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING"));
 
-                    var database = client.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
+                    var database = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
 
-                    var userCollection = database.GetCollection<BsonDocument>(_collectionName); 
+                    var collection = database.GetCollection<BsonDocument>(_collectionName);
 
-                    var requests = csvToBsonRecords.Select(record => new ReplaceOneModel<BsonDocument>(new BsonDocument(_uniqueId, record.GetValue(_uniqueId)), record) { IsUpsert = true });
+                    var records = csvToBsonRecords.Select(record => new ReplaceOneModel<BsonDocument>(new BsonDocument(_uniqueId, record.GetValue(_uniqueId)), record) { IsUpsert = true });
 
-                    var bulkUpsertResult = userCollection.BulkWrite(requests, new BulkWriteOptions { IsOrdered = false });
+                    var bulkUpsertResult = collection.BulkWrite(records, new BulkWriteOptions { IsOrdered = false });
 
                     var upserts = bulkUpsertResult.Upserts.ToList();
 
