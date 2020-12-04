@@ -46,9 +46,9 @@ namespace MongoDBImport
                             response = s3Client.GetObjectAsync(request).Result;
                             LambdaLogger.Log("response:" + response.HttpStatusCode.ToString());
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
-                            LambdaLogger.Log("s3 client connection error:" +ex.Message);
+                            LambdaLogger.Log("s3 client connection error:" + ex.Message);
                         }
 
                         if (response?.ResponseStream != null)
@@ -79,7 +79,7 @@ namespace MongoDBImport
                                 }
                                 LambdaLogger.Log($"{csvToBsonRecords.Count} records to be processed");
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 LambdaLogger.Log("csv stream handling error:" + ex.Message);
                             }
@@ -98,7 +98,7 @@ namespace MongoDBImport
 
             //check if we have anything to process
             //TODO: use proper usecases for this
-            if(csvToBsonRecords.Count > 0)
+            if (csvToBsonRecords.Count > 0)
             {
                 //import the records
                 try
