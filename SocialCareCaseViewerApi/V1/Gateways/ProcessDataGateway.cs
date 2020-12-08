@@ -1,22 +1,18 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
-using MongoDB.Driver.Linq;
-using Newtonsoft.Json;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -87,42 +83,43 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.StartDate != null)
             {
-                Console.WriteLine("If statement for start date");
-                response = response
-                    .Where(x =>
-                    {
-                        DateTime outSource;
-                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                if (DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                {
+                    response = response
+                        .Where(x =>
                         {
-                            return outSource > request.StartDate;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    })
-                    .ToList();
+                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            {
+                                return date.Date >= startDate.Date;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        })
+                        .ToList();
+                }
             }
 
             if (request.EndDate != null)
             {
-                response = response
-                    .Where(x =>
-                    {
-                        DateTime outSource;
-                        if (DateTime.TryParse(x.CaseFormTimestamp, out outSource))
+                if (DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+                {
+                    response = response
+                        .Where(x =>
                         {
-                            return outSource < request.EndDate;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    })
-                    .ToList();
+                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            {
+                                return date.Date <= endDate.Date;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        })
+                        .ToList();
+                }
             }
-
-
 
             return response;
         }
