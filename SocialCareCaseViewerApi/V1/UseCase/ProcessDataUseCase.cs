@@ -15,13 +15,18 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             _processDataGateway = processDataGateway;
         }
-        public CareCaseDataList Execute(ListCasesRequest request)
+        public CareCaseDataList Execute(ListCasesRequest request, int cursor, int limit)
         {
-            var result = _processDataGateway.GetProcessData(request);
+            limit = limit < 10 ? 10 : limit;
+            limit = limit > 100 ? 100 : limit;
+            var result = _processDataGateway.GetProcessData(cursor: cursor, limit: limit, request);
+
+            var nextCursor = result.Count() == limit ? result.Max(r => Int64.Parse(r.RecordId)).ToString() : "";
 
             return new CareCaseDataList
             {
-                Cases = result.ToList()
+                Cases = result.ToList(),
+                NextCursor = nextCursor
             };
         }
 

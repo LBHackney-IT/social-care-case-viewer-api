@@ -29,9 +29,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
+        public IEnumerable<CareCaseData> GetProcessData(int cursor, int limit, ListCasesRequest request)
         {
-            Console.WriteLine("Entry into GetProcessData");
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
@@ -66,6 +65,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
                 var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
                     Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
+                var sort = Builders<BsonDocument>.Sort.Ascending("first_name");
 
                 var query = _sccvDbContext.getCollection().AsQueryable();
 
@@ -73,8 +73,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (lastNameFilter != null) query = query.Where(db => lastNameFilter.Inject());
                 if (workerEmailFilter != null) query = query.Where(db => workerEmailFilter.Inject());
                 if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
-
-
                 result = query.ToList();
             }
             //if document does not exist in the DB, then thrown a corresponsing error.
@@ -83,11 +81,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new DocumentNotFoundException("document not found");
             }
 
-            var response = ResponseFactory.ToResponse(result);
+            var response = ResponseFactory
+                .ToResponse(result)
+                .OrderBy(x => x.FirstName)
+                .Skip(cursor)
+                .Take(limit);
 
             if (request.StartDate != null)
             {
-                Console.WriteLine("If statement for start date");
                 response = response
                     .Where(x =>
                     {

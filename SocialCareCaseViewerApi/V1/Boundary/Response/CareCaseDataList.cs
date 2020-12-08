@@ -5,5 +5,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     public class CareCaseDataList
     {
         public List<CareCaseData> Cases { get; set; }
+        public string NextCursor { get; set; }
     }
 }
