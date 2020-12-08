@@ -133,5 +133,5 @@ custom:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34
   mongoDBImportBucket:
-    staging: test-social-care-data
+    staging: qlik-bucket-csv-to-postgres-staging
     production: mosaic-social-care-csv-prod
