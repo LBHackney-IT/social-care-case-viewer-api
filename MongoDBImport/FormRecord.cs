@@ -20,7 +20,6 @@ namespace MongoDBImport
         [Name("unique_id")]
         [BsonElement("unique_id")]
         public string UniqueId { get; set; }
-        //new props
 
         [Name("form_name")]
         [BsonElement("form_name")]
