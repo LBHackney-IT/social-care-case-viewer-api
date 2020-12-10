@@ -62,24 +62,7 @@ namespace MongoDBImport
                                 using (var reader = new StreamReader(response.ResponseStream))
                                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                                 {
-                                    var records = csv.GetRecords<dynamic>(); //will read in chunks as longs as .ToList() etc. is not used 
-
-                                    //tidy up the data set to ensure we don't have '.'s in the field names since they are invalid in Mongo
-                                    foreach (var cvsRecord in records)
-                                    {
-                                        var tmpItem = (IDictionary<string, object>) cvsRecord;
-
-                                        Dictionary<string, object> newItem = new Dictionary<string, object>();
-
-                                        foreach (var keyValuePair in tmpItem)
-                                        {
-                                            newItem.Add(!keyValuePair.Key.Contains('.') ? keyValuePair.Key : keyValuePair.Key.Replace(".", ""), keyValuePair.Value);
-                                        }
-
-                                        BsonDocument bd = newItem.ToBsonDocument();
-
-                                        csvToBsonRecords.Add(bd);
-                                    }
+                                    csvToBsonRecords = csv.GetRecords<FormRecord>().Select(x => x.ToBsonDocument()).ToList();
                                 }
                                 LambdaLogger.Log($"{csvToBsonRecords.Count} records to be processed");
                             }
@@ -101,7 +84,6 @@ namespace MongoDBImport
             }
 
             //check if we have anything to process
-            //TODO: use proper usecases for this
             if (csvToBsonRecords.Count > 0)
             {
                 //import the records
