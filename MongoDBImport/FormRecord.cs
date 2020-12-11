@@ -27,7 +27,7 @@ namespace MongoDBImport
 
         [Name("mosaic_id")]
         [BsonElement("mosaic_id")]
-        public object PersonId { get; set; }
+        public string PersonId { get; set; }
 
         [Name("first_name")]
         [BsonElement("first_name")]
