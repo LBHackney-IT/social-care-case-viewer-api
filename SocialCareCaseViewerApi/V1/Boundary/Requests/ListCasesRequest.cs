@@ -30,6 +30,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "end_date")]
         public DateTime? EndDate { get; set; }
+
+        [FromQuery(Name = "cursor")]
+        public int Cursor { get; set; } = 0;
+
+        [FromQuery(Name = "limit")]
+        public int Limit { get; set; }
     }
 
     public class ListAllocationsRequest

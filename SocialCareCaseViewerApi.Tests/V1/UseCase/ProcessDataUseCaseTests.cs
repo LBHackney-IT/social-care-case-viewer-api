@@ -28,11 +28,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteIfLimitLessThanTheMinimumWillUseTheMinimumLimit()
         {
             var stubbedRequest = new ListCasesRequest();
+            stubbedRequest.Limit = 10;
             _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(0, 10, stubbedRequest))
+                x.GetProcessData(stubbedRequest))
                 .Returns(new List<CareCaseData>()).Verifiable();
 
-            _classUnderTest.Execute(stubbedRequest, 0, 4);
+            stubbedRequest.Limit = 4;
+            _classUnderTest.Execute(stubbedRequest);
 
             _mockProcessDataGateway.Verify();
         }
@@ -41,11 +43,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteIfLimitMoreThanTheMaximumWillUseTheMaximumLimit()
         {
             var stubbedRequest = new ListCasesRequest();
+            stubbedRequest.Limit = 100;
             _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(0, 100, stubbedRequest))
+                x.GetProcessData(stubbedRequest))
                 .Returns(new List<CareCaseData>()).Verifiable();
 
-            _classUnderTest.Execute(stubbedRequest, 0, 400);
+            stubbedRequest.Limit = 400;
+            _classUnderTest.Execute(stubbedRequest);
 
             _mockProcessDataGateway.Verify();
         }
@@ -63,11 +67,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             }
             var expectedNextCursor = stubbedCases.Max(r => r.RecordId);
 
+            stubbedRequest.Cursor = 0;
             _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(0, 10, stubbedRequest))
+                x.GetProcessData(stubbedRequest))
                 .Returns(stubbedCases.ToList());
 
-            _classUnderTest.Execute(stubbedRequest, 0, 10).NextCursor.Should().Be(expectedNextCursor);
+            _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be(expectedNextCursor);
         }
 
         [Test]
@@ -77,10 +82,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var stubbedCases = _fixture.CreateMany<CareCaseData>(7);
 
             _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(0, 10, stubbedRequest))
+                x.GetProcessData(stubbedRequest))
                 .Returns(stubbedCases.ToList());
 
-            _classUnderTest.Execute(stubbedRequest, 0, 10).NextCursor.Should().Be("");
+            _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be("");
         }
     }
 }

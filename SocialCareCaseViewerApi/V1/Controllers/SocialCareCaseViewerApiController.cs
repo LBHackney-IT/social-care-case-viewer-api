@@ -92,11 +92,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
-        public IActionResult ListCases([FromQuery] ListCasesRequest request, int? cursor = 0, int? limit = 100)
+        public IActionResult ListCases([FromQuery] ListCasesRequest request)
         {
             try
             {
-                return Ok(_processDataUsecase.Execute(request, (int) cursor, (int) limit));
+                return Ok(_processDataUsecase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {

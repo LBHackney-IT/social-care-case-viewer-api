@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public IEnumerable<CareCaseData> GetProcessData(int cursor, int limit, ListCasesRequest request)
+        public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
@@ -84,8 +84,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var response = ResponseFactory
                 .ToResponse(result)
                 .OrderBy(x => x.FirstName)
-                .Skip(cursor)
-                .Take(limit);
+                .Skip(request.Cursor)
+                .Take(request.Limit);
 
             if (request.StartDate != null)
             {

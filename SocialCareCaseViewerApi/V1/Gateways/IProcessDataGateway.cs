@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IProcessDataGateway
     {
-        IEnumerable<CareCaseData> GetProcessData(int cursor, int limit, ListCasesRequest request);
+        IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request);
         Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc);
     }
 }

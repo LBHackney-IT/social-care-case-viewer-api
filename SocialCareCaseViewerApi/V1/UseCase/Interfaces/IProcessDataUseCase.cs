@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public interface IProcessDataUseCase
     {
-        CareCaseDataList Execute(ListCasesRequest request, int cursor, int limit);
+        CareCaseDataList Execute(ListCasesRequest request);
         Task<string> Execute(CaseNotesDocument caseNotesDoc);
     }
 }
