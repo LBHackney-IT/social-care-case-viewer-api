@@ -41,9 +41,19 @@ functions:
     name: social-care-case-viewer-mongodb-import-${self:provider.stage}
     handler: MongoDBImport::MongoDBImport.Handler::ImportFormData
     role: lambdaExecutionRole
-    timeout: 10
+    timeout: 600
     package:
       artifact: ./MongoDBImport/bin/release/netcoreapp3.1/mongodb-import.zip
+    environment:
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
+      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
+      SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
+      SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
+      SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
+      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
+      SCCV_MONGO_IMPORT_COLLECTION_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/collection-name}
+      SCCV_MONGO_IMPORT_FILE_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/file-name}
+    #s3 event not added here to simplify the usage of existing buckets
 resources:
   Resources:
     lambdaExecutionRole:
@@ -95,6 +105,15 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
+          - PolicyName: allowS3readAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "s3:GetObject"
+                  Resource: 'arn:aws:s3:::${self:custom.mongoDBImportBucket.${self:provider.stage}}/*'
+                  
 custom:
   vpc:
     development:
@@ -113,3 +132,6 @@ custom:
       subnetIds:
         - subnet-01d3657f97a243261
         - subnet-0b7b8fea07efabf34
+  mongoDBImportBucket:
+    staging: qlik-bucket-csv-to-postgres-staging
+    production: mosaic-social-care-csv-prod

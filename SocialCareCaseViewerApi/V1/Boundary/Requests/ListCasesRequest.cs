@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -26,11 +23,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CaseNoteType { get; set; }
 
         [FromQuery(Name = "start_date")]
-        public DateTime? StartDate { get; set; }
+        public string StartDate { get; set; }
 
         [FromQuery(Name = "end_date")]
-        public DateTime? EndDate { get; set; }
-
+        public string EndDate { get; set; }
+      
         [FromQuery(Name = "cursor")]
         public int Cursor { get; set; } = 0;
 
