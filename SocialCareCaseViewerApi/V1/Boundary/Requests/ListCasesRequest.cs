@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "end_date")]
         public string EndDate { get; set; }
-      
+
         [FromQuery(Name = "cursor")]
         public int Cursor { get; set; } = 0;
 
