@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -7,12 +13,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -27,7 +27,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
         public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
         {
-            Console.WriteLine("Entry into GetProcessData");
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
@@ -69,8 +68,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (lastNameFilter != null) query = query.Where(db => lastNameFilter.Inject());
                 if (workerEmailFilter != null) query = query.Where(db => workerEmailFilter.Inject());
                 if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
-
-
                 result = query.ToList();
             }
             //if document does not exist in the DB, then thrown a corresponsing error.
@@ -79,7 +76,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new DocumentNotFoundException("document not found");
             }
 
-            var response = ResponseFactory.ToResponse(result);
+            var response = ResponseFactory
+                .ToResponse(result);
 
             if (request.StartDate != null)
             {
@@ -120,6 +118,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         .ToList();
                 }
             }
+
+            response = response
+                .OrderByDescending(x => x.CaseFormTimestamp)
+                .Skip(request.Cursor)
+                .Take(request.Limit)
+                .ToList();
 
             return response;
         }
