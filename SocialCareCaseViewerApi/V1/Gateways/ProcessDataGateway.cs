@@ -61,7 +61,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
                 var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
                     Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
-                var sort = Builders<BsonDocument>.Sort.Ascending("first_name");
 
                 var query = _sccvDbContext.getCollection().AsQueryable();
 
@@ -121,7 +120,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             response = response
-                .OrderBy(x => x.CaseFormTimestamp)
+                .OrderByDescending(x => x.CaseFormTimestamp)
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
