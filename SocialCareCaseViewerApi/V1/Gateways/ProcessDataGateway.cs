@@ -78,10 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var response = ResponseFactory
-                .ToResponse(result)
-                .OrderBy(x => x.FirstName)
-                .Skip(request.Cursor)
-                .Take(request.Limit);
+                .ToResponse(result);
 
             if (request.StartDate != null)
             {
@@ -122,6 +119,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         .ToList();
                 }
             }
+
+            response = response
+                .OrderBy(x => x.CaseFormTimestamp)
+                .Skip(request.Cursor)
+                .Take(request.Limit)
+                .ToList();
 
             return response;
         }
