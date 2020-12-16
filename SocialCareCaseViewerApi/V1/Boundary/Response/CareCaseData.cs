@@ -26,6 +26,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string CaseFormUrl { get; set; }
         [JsonProperty("timestamp")]
         public string CaseFormTimestamp { get; set; }
+        [JsonProperty("dateOfEvent")]
+        public string DateOfEvent { get; set; }
         [JsonProperty("form_data")]
         public object CaseFormData { get; set; }
     }
