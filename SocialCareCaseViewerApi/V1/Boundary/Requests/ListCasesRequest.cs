@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public int Cursor { get; set; } = 0;
 
         [FromQuery(Name = "limit")]
-        public int Limit { get; set; }
+        public int Limit { get; set; } = 20;
     }
 
     public class ListAllocationsRequest
