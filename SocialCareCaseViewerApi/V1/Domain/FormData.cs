@@ -7,7 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
     [BsonIgnoreExtraElements]
     public class FormData
     {
-        [JsonProperty("_id")]
+        [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string RecordId { get; set; }
         [JsonProperty("formName")]

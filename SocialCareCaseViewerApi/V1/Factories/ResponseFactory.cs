@@ -76,6 +76,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
         private static CareCaseData ToResponse(this FormData formData, BsonDocument rawData)
         {
+            var dummyFormData = formData;
             return new CareCaseData
             {
                 RecordId = formData.RecordId,
