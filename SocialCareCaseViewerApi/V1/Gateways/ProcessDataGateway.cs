@@ -120,7 +120,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             response = response
-                .OrderByDescending(x => x.DateOfEvent)
+                .OrderByDescending(x => !string.IsNullOrWhiteSpace(x.DateOfEvent) ? x.DateOfEvent : x.CaseFormTimestamp)
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
