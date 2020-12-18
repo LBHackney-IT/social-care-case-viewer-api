@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
             }
             //TODO: add better Mosaic API error handling
-            catch(MosaicApiException ex)
+            catch (MosaicApiException ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.GetType().Name.ToString()} : {ex.Message}");
             }

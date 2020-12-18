@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {
-       
+
 
         public static AddNewResidentResponse ToResponse(this Person resident, AddressDomain address)
         {
