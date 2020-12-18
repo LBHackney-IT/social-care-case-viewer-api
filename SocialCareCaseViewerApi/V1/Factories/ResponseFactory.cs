@@ -1,51 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Address = SocialCareCaseViewerApi.V1.Domain.Address;
-using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
-using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
-using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        public static ResidentInformationResponse ToResponse(this ResidentInformation domain)
-        {
-            return new ResidentInformationResponse
-            {
-                PersonId = domain.PersonId,
-                Title = domain.Title,
-                FirstName = domain.FirstName,
-                LastName = domain.LastName,
-                DateOfBirth = domain.DateOfBirth,
-                Gender = domain.Gender,
-                Nationality = domain.Nationality,
-                AddressList = domain.AddressList?.ToResponse(),
-                NhsNumber = domain.NhsNumber
-            };
-        }
-        public static List<ResidentInformationResponse> ToResponse(this IEnumerable<ResidentInformation> people)
-        {
-            return people.Select(p => p.ToResponse()).ToList();
-        }
 
-        private static List<AddressResponse> ToResponse(this List<Address> addresses)
-        {
-            return addresses.Select(add => new AddressResponse
-            {
-                AddressLine1 = add.AddressLine1,
-                AddressLine2 = add.AddressLine2,
-                AddressLine3 = add.AddressLine3,
-                PostCode = add.PostCode
-            }).ToList();
-        }
 
         public static AddNewResidentResponse ToResponse(this Person resident, AddressDomain address)
         {

@@ -1,7 +1,13 @@
+using System;
+
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class Address
     {
+        public DateTime? EndDate { get; set; }
+        public string ContactAddressFlag { get; set; }
+        public string DisplayAddressFlag { get; set; }
+
         /// <example>
         /// 4 Green Road
         /// </example>

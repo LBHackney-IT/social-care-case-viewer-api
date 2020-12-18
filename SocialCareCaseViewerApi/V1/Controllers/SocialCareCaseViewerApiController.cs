@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -49,6 +50,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
+            }
+            //TODO: add better Mosaic API error handling
+            catch (MosaicApiException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.GetType().Name.ToString()} : {ex.Message}");
             }
             catch (InvalidQueryParameterException e)
             {
