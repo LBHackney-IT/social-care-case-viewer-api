@@ -1,8 +1,5 @@
-using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -11,25 +8,27 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public class GetAllUseCase : IGetAllUseCase
     {
         private IDatabaseGateway _databaseGateway;
-        public GetAllUseCase(IDatabaseGateway databaseGateway)
+        private IMosaicAPIGateway _mosaicAPIGateway;
+        public GetAllUseCase(IDatabaseGateway databaseGateway, IMosaicAPIGateway mosaicAPIGateway)
         {
             _databaseGateway = databaseGateway;
+            _mosaicAPIGateway = mosaicAPIGateway;
         }
 
         public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
         {
-            limit = limit < 10 ? 10 : limit;
-            limit = limit > 100 ? 100 : limit;
-            var residents = _databaseGateway.GetAllResidents(
-                cursor: cursor, limit: limit, rqp.FirstName, rqp.LastName,
-                rqp.DateOfBirth, rqp.PersonId, rqp.AgeGroup);
-
-            var nextCursor = residents.Count == limit ? residents.Max(r => r.PersonId) : "";
-            return new ResidentInformationList
+            //check mosaic id                        
+            if (!string.IsNullOrWhiteSpace(rqp.MosaicId) && rqp.MosaicId.ToUpper().StartsWith("NC"))
             {
-                Residents = residents.ToResponse(),
-                NextCursor = nextCursor
-            };
+                string mosaicID = _databaseGateway.GetPersonIdByNCReference(rqp.MosaicId.ToUpper());
+
+                if (!string.IsNullOrEmpty(mosaicID))
+                {
+                    rqp.MosaicId = mosaicID;
+                }
+            }
+            
+            return _mosaicAPIGateway.GetResidents(rqp, cursor, limit);
         }
     }
 }

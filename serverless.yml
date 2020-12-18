@@ -32,6 +32,8 @@ functions:
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
       RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
       HOME: /tmp
+      MOSAIC_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-token~true}
+      MOSAIC_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-url}
     events:
       - http:
           path: /{proxy+}

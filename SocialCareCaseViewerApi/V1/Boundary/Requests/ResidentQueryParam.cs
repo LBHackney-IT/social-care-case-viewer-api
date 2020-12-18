@@ -4,31 +4,40 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ResidentQueryParam
     {
+        [FromQuery(Name = "mosaic_id")]
+        public string MosaicId { get; set; }
+
         /// <example>
         /// Ciasom
         /// </example>
         /// Databind to first_name
         [FromQuery(Name = "first_name")]
         public string FirstName { get; set; }
+
         /// <example>
         /// Tessellate
         /// </example>
         /// Databind to last_name
         [FromQuery(Name = "last_name")]
         public string LastName { get; set; }
-
-        /// <example>
-        /// 01-01-2001
-        /// </example>
-        /// Databind to date_of_birth
         [FromQuery(Name = "date_of_birth")]
         public string DateOfBirth { get; set; }
 
+        /// <example>
+        /// 1 Montage street
+        /// </example>
+        /// Databind to address
+        [FromQuery(Name = "address")]
+        public string Address { get; set; }
 
-        [FromQuery(Name = "person_id")]
-        public string PersonId { get; set; }
+        /// <example>
+        /// E8 1DY
+        /// </example>
+        /// Databind to post_code
+        [FromQuery(Name = "postcode")]
+        public string Postcode { get; set; }
 
         [FromQuery(Name = "context_flag")]
-        public string AgeGroup { get; set; }
+        public string ContextFlag { get; set; }
     }
 }

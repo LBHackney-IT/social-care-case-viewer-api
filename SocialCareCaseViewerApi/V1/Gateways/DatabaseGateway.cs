@@ -201,6 +201,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new AddressCouldNotBeInsertedException($"Error with inserting address has occurred - {ex.Message} - {ex.InnerException}");
             }
         }
+        public string GetPersonIdByNCReference(string ncId)
+        {
+            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == ncId).FirstOrDefault();
+
+            return lookup?.MosaicId;
+        }
+
+        public string GetNCReferenceByPersonId(string personId)
+        {
+            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.MosaicId == personId).FirstOrDefault();
+
+            return lookup?.NCId;
+        }
     }
 
 }
