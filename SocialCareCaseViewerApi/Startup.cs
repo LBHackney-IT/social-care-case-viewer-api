@@ -124,6 +124,7 @@ namespace SocialCareCaseViewerApi
         {
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
             services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
+            services.AddScoped<IMosaicAPIGateway, MosaicAPIGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

@@ -30,16 +30,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
-            long mosaicId = 0;
-            if (!string.IsNullOrEmpty(request.MosaicId))
-            {
-                if (!Int64.TryParse(request.MosaicId, out mosaicId))
-                {
-                    throw new Exception();
-                }
-                var filter = "{$or: [{ mosaic_id: " + mosaicId.ToString() + "}, { mosaic_id: /" + mosaicId.ToString() + "/}]}";
 
-                result = _sccvDbContext.getCollection().Find(filter).ToList();
+            if (!string.IsNullOrWhiteSpace(request.MosaicId))
+            {
+                var query = _sccvDbContext.getCollection().AsQueryable();
+                var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
+                query = query.Where(db => mosaicIDFilter.Inject());
+
+                result = query.ToList();
             }
             else
             {
