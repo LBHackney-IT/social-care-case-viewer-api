@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     rqp.MosaicId = mosaicID;
                 }
             }
-            
+
             return _mosaicAPIGateway.GetResidents(rqp, cursor, limit);
         }
     }

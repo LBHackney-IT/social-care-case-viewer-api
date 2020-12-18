@@ -33,12 +33,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (statusCode != HttpStatusCode.OK)
             {
-                throw new MosaicApiException($"Fetching data from mosaic API failed"); 
+                throw new MosaicApiException($"Fetching data from mosaic API failed");
             }
 
             string result = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
-            return JsonConvert.DeserializeObject<ResidentInformationList>(result);          
-        }        
+            return JsonConvert.DeserializeObject<ResidentInformationList>(result);
+        }
     }
 }
