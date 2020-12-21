@@ -1,57 +1,58 @@
 CREATE SCHEMA IF NOT EXISTS dbo;
 
-create table dbo.ASC_ALLOCATIONS
-(
-    MOSAIC_ID                   bigint not null,     
-    LAST_NAME                   varchar(30) not null,
-    FIRST_NAME                  varchar(30) not null, 
-    DATE_OF_BIRTH               timestamp,
-    AGE                         int,
-    PRIMARY_SUPPORT_REASON      varchar(100),
-    ALLOCATED_TEAM              varchar(50),
-    ALLOCATED_WORKER            varchar(90),
-    ADDRESS                     varchar(255),
-    POST_CODE                   varchar(10),
-    UPRN                        bigint,
-    LONG_TERM_SERVICE           varchar(4),
-    SOCIAL_CARE_INVOLVEMENT     varchar(4),
-    SHORT_TERM_SUPPORT          varchar(4),
-    HOUSEHOLD_COMPOSITION       varchar(50),
-    FULL_NAME                   varchar(62) not null
-);
+--Obsolete as of 21/12/2020
+-- create table dbo.ASC_ALLOCATIONS
+-- (
+    -- MOSAIC_ID                   bigint not null,     
+    -- LAST_NAME                   varchar(30) not null,
+    -- FIRST_NAME                  varchar(30) not null, 
+    -- DATE_OF_BIRTH               timestamp,
+    -- AGE                         int,
+    -- PRIMARY_SUPPORT_REASON      varchar(100),
+    -- ALLOCATED_TEAM              varchar(50),
+    -- ALLOCATED_WORKER            varchar(90),
+    -- ADDRESS                     varchar(255),
+    -- POST_CODE                   varchar(10),
+    -- UPRN                        bigint,
+    -- LONG_TERM_SERVICE           varchar(4),
+    -- SOCIAL_CARE_INVOLVEMENT     varchar(4),
+    -- SHORT_TERM_SUPPORT          varchar(4),
+    -- HOUSEHOLD_COMPOSITION       varchar(50),
+    -- FULL_NAME                   varchar(62) not null
+-- );
 
-create table dbo.CFS_ALLOCATIONS
-(
-    MOSAIC_ID                   bigint not null,      
-    FULL_NAME                   varchar(62) not null,
-    GROUP_ID                    bigint,
-    ETHNICITY                   varchar(33),
-    SUB_ETHNICITY               varchar(33),
-    RELIGION                    varchar(30),
-    GENDER                      varchar(1),
-    DATE_OF_BIRTH               timestamp,
-    SERVICE_USER_GROUP          varchar(30),
-    SCHOOL_NAME                 varchar(255),
-    SCHOOL_ADDRESS              varchar(255),
-    GP_NAME                     varchar(62),
-    GP_ADDRESS                  varchar(150),
-    GP_SURGERY                  varchar(100),
-    ALLOCATED_WORKER            varchar(90),
-    WORKER_TYPE                 varchar(100),
-    ALLOCATED_WORKER_TEAM       varchar(50),
-    TEAM_NAME                   varchar(50),
-    ALLOCATION_START_DATE       timestamp,
-    ALLOCATION_END_DATE         timestamp,
-    LEGAL_STATUS                varchar(255),
-    PLACEMENT                   varchar(255),
-    ON_CP_REGISTER              varchar(3),
-    CONTACT_ADDRESS             varchar(255),
-    CASE_STATUS_OPEN_CLOSED     varchar(7),
-    CLOSURE_DATE_IF_CLOSED      timestamp,
-    LAST_NAME                   varchar(30) not null,
-    FIRST_NAME                  varchar(30) not null,
-    WORKER_EMAIL                varchar(62)
-);
+-- create table dbo.CFS_ALLOCATIONS
+-- (
+    -- MOSAIC_ID                   bigint not null,      
+    -- FULL_NAME                   varchar(62) not null,
+    -- GROUP_ID                    bigint,
+    -- ETHNICITY                   varchar(33),
+    -- SUB_ETHNICITY               varchar(33),
+    -- RELIGION                    varchar(30),
+    -- GENDER                      varchar(1),
+    -- DATE_OF_BIRTH               timestamp,
+    -- SERVICE_USER_GROUP          varchar(30),
+    -- SCHOOL_NAME                 varchar(255),
+    -- SCHOOL_ADDRESS              varchar(255),
+    -- GP_NAME                     varchar(62),
+    -- GP_ADDRESS                  varchar(150),
+    -- GP_SURGERY                  varchar(100),
+    -- ALLOCATED_WORKER            varchar(90),
+    -- WORKER_TYPE                 varchar(100),
+    -- ALLOCATED_WORKER_TEAM       varchar(50),
+    -- TEAM_NAME                   varchar(50),
+    -- ALLOCATION_START_DATE       timestamp,
+    -- ALLOCATION_END_DATE         timestamp,
+    -- LEGAL_STATUS                varchar(255),
+    -- PLACEMENT                   varchar(255),
+    -- ON_CP_REGISTER              varchar(3),
+    -- CONTACT_ADDRESS             varchar(255),
+    -- CASE_STATUS_OPEN_CLOSED     varchar(7),
+    -- CLOSURE_DATE_IF_CLOSED      timestamp,
+    -- LAST_NAME                   varchar(30) not null,
+    -- FIRST_NAME                  varchar(30) not null,
+    -- WORKER_EMAIL                varchar(62)
+-- );
 
 create table dbo.DM_PERSONS
 (
@@ -129,3 +130,83 @@ create table dbo.DM_ADDRESSES
 
 -- sequence used to generate values for REF_ADDRESS_ID column and attach to column. start at 510000 is arbitrary.
 CREATE SEQUENCE dm_addresses_ref_address_id_seq START 510000 OWNED BY DM_ADDRESSES.REF_ADDRESS_ID;
+
+--support for data import
+create table dbo.SCCV_PERSONS_IMPORT
+(
+    PERSON_ID             varchar(100) not null constraint XPKDM_PERSONS_IMPORT primary key,
+    SSDA903_ID            varchar(10),
+    NHS_ID                numeric(10),
+    SCN_ID                numeric(9),
+    UPN_ID                varchar(13),
+    FORMER_UPN_ID         varchar(13),
+    FULL_NAME             varchar(255) not null,
+    TITLE                 varchar(8),
+    FIRST_NAME            varchar(100),
+    LAST_NAME             varchar(100),
+    DATE_OF_BIRTH         timestamp,
+    DATE_OF_DEATH         timestamp,
+    GENDER                varchar(1),
+    RESTRICTED            varchar(1),
+    PERSON_ID_LEGACY      varchar(16),
+    FULL_ETHNICITY_CODE   varchar(33),
+    COUNTRY_OF_BIRTH_CODE varchar(16),
+    IS_CHILD_LEGACY       varchar(1),
+    IS_ADULT_LEGACY       varchar(1),
+    NATIONALITY           varchar(80),
+    RELIGION              varchar(80),
+    MARITAL_STATUS        varchar(80),
+    FIRST_LANGUAGE        varchar(100),
+    FLUENCY_IN_ENGLISH    varchar(100),
+    EMAIL_ADDRESS         varchar(240),
+    CONTEXT_FLAG          varchar(1),
+    SCRA_ID               varchar(13),
+    INTERPRETER_REQUIRED  varchar(1),
+    FROM_DM_PERSON        varchar(1)
+);
+
+create table dbo.SCCV_PERSONS_LOOKUP
+(
+    PERSON_ID             varchar(100) not null constraint XPKDM_PERSONS_LOOKUP primary key,
+    NC_ID            	  varchar(100) not null,
+    CREATED_ON            timestamp not null default now(),	
+	CONSTRAINT unique_ids UNIQUE (NC_ID)
+);
+-- alter person table to support longer names
+ALTER TABLE dbo.DM_PERSONS ALTER COLUMN FIRST_NAME TYPE varchar(100);
+ALTER TABLE dbo.DM_PERSONS ALTER COLUMN LAST_NAME TYPE varchar(100);
+ALTER TABLE dbo.DM_PERSONS ALTER COLUMN FULL_NAME TYPE varchar(255);
+
+create table dbo.SCCV_ALLOCATIONS
+(
+    MOSAIC_ID                   varchar(100) not null,      
+    FULL_NAME                   varchar(62) not null,
+    GROUP_ID                    bigint,
+    ETHNICITY                   varchar(33),
+    SUB_ETHNICITY               varchar(33),
+    RELIGION                    varchar(30),
+    GENDER                      varchar(1),
+    DATE_OF_BIRTH               timestamp,
+    SERVICE_USER_GROUP          varchar(30),
+    SCHOOL_NAME                 varchar(255),
+    SCHOOL_ADDRESS              varchar(255),
+    GP_NAME                     varchar(62),
+    GP_ADDRESS                  varchar(150),
+    GP_SURGERY                  varchar(100),
+    ALLOCATED_WORKER            varchar(90),
+    WORKER_TYPE                 varchar(100),
+    ALLOCATED_WORKER_TEAM       varchar(50),
+    TEAM_NAME                   varchar(50),
+    ALLOCATION_START_DATE       timestamp,
+    ALLOCATION_END_DATE         timestamp,
+    LEGAL_STATUS                varchar(255),
+    PLACEMENT                   varchar(255),
+    ON_CP_REGISTER              varchar(3),
+    CONTACT_ADDRESS             varchar(255),
+    CASE_STATUS_OPEN_CLOSED     varchar(7),
+    CLOSURE_DATE_IF_CLOSED      timestamp,
+    LAST_NAME                   varchar(30) not null,
+    FIRST_NAME                  varchar(30) not null,
+    WORKER_EMAIL                varchar(62),
+	LAC varchar(10)
+);
