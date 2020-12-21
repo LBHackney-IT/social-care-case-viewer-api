@@ -24,17 +24,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
-        private readonly IGetChildrenAllocationUseCase _childrenAllocationUseCase;
-        private readonly IGetAdultsAllocationsUseCase _adultsAllocationUseCase;
+        private readonly IGetAllocationUseCase _allocationUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IGetChildrenAllocationUseCase childrenAllocationUseCase, IGetAdultsAllocationsUseCase adultsAllocationsUseCase)
+            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
             _addNewResidentUseCase = addNewResidentUseCase;
-            _childrenAllocationUseCase = childrenAllocationUseCase;
-            _adultsAllocationUseCase = adultsAllocationsUseCase;
+            _allocationUseCase = allocationUseCase;
         }
 
         /// <summary>
@@ -131,25 +129,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
         /// <response code="404">No allocations found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CfsAllocationList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AllocationList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("cfs-allocations")]
-        public IActionResult GetChildrensAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        [Route("allocations")]
+        public IActionResult GetAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
-            return Ok(_childrenAllocationUseCase.Execute(request));
+            return Ok(_allocationUseCase.Execute(request));
         }
 
-        /// <summary>
-        /// Find acs allocations by Mosaic ID or officer email
-        /// </summary>
-        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
-        [ProducesResponseType(typeof(AscAllocationList), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("asc-allocations")]
-        public IActionResult GetAdultsAllocatedWorker([FromQuery] ListAscAllocationsRequest request)
-        {
-            return Ok(_adultsAllocationUseCase.Execute(request));
-        }
+
 
         /// <summary>
         /// Create new case note record for mosaic client

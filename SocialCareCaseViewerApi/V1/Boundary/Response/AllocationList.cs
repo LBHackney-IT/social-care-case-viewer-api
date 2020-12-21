@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class AscAllocationList
+    public class AllocationList
     {
-        public IList<AscAllocation> AscAllocations { get; set; }
+        public IList<Allocation> Allocations { get; set; }
     }
 }

@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class CfsAllocation
+    public class Allocation
     {
         /// <example>
         /// abc123
@@ -51,5 +46,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string CaseStatus { get; set; }
         public string CaseClosureDate { get; set; }
         public string WorkerEmail { get; set; }
+        public string LAC { get; set; }
     }
 }
