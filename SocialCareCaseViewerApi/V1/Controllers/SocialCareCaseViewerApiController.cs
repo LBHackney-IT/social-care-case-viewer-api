@@ -137,7 +137,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return Ok(_allocationUseCase.Execute(request));
         }
 
-       
+
 
         /// <summary>
         /// Create new case note record for mosaic client

@@ -41,5 +41,5 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "mosaic_id")]
         [Required]
         public string MosaicId { get; set; }
-    }       
+    }
 }
