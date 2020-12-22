@@ -123,12 +123,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             response = response
                 .OrderByDescending(x =>
                 {
-                    _ = DateTime.TryParse(x.DateOfEvent, out DateTime dt);
+                    _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
                     return dt;
                 })
                 .ThenByDescending(x =>
                 {
-                    _ = DateTime.TryParse(x.CaseFormTimestamp, out DateTime dt);
+                    _ = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
                     return dt;
                 })
                 .Skip(request.Cursor)
