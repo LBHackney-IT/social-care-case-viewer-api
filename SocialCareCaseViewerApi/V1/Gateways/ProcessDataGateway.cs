@@ -57,8 +57,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
                 var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
-                var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
-                    Builders<BsonDocument>.Filter.Regex("form_name", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
+                var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.FormName) ?
+                    Builders<BsonDocument>.Filter.Regex("form_name", BsonRegularExpression.Create(new Regex(request.FormName, RegexOptions.IgnoreCase))) : null;
 
                 var query = _sccvDbContext.getCollection().AsQueryable();
 
@@ -119,8 +119,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             int totalCount = response.Count;
 
+            //sort by date of event by default, then by datestamp
             response = response
-                .OrderByDescending(x => !string.IsNullOrWhiteSpace(x.DateOfEvent) ? x.DateOfEvent : x.CaseFormTimestamp)
+                .OrderByDescending(x =>
+                {
+                    _ = DateTime.TryParse(x.DateOfEvent, out DateTime dt);
+                    return dt;
+                })
+                .ThenByDescending(x =>
+                {
+                    _ = DateTime.TryParse(x.CaseFormTimestamp, out DateTime dt);
+                    return dt;
+                })
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();

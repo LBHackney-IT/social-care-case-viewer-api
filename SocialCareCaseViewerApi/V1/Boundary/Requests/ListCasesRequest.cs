@@ -20,8 +20,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
 
-        [FromQuery(Name = "case_note_type")]
-        public string CaseNoteType { get; set; }
+        [FromQuery(Name = "form_name")]
+        public string FormName { get; set; }
 
         [FromQuery(Name = "start_date")]
         public string StartDate { get; set; }
