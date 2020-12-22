@@ -3,8 +3,8 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public interface IGetChildrenAllocationUseCase
+    public interface IGetAllocationUseCase
     {
-        CfsAllocationList Execute(ListAllocationsRequest request);
+        AllocationList Execute(ListAllocationsRequest request);
     }
 }
