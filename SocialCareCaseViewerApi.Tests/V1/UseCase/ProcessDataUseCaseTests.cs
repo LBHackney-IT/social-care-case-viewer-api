@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteReturnsCursor()
         {
             var stubbedRequest = new ListCasesRequest();
-            var stubbedCases = _fixture.CreateMany<CareCaseData>(10);
+            var stubbedCases = _fixture.CreateMany<CareCaseData>(20);
             int idCount = 10;
             foreach (CareCaseData careCase in stubbedCases)
             {

@@ -94,6 +94,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Find cases by Mosaic ID or officer email
         /// </summary>
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
+        /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
