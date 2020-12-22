@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
@@ -117,13 +117,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            int totalCount = response.Count;
+
             response = response
                 .OrderByDescending(x => !string.IsNullOrWhiteSpace(x.DateOfEvent) ? x.DateOfEvent : x.CaseFormTimestamp)
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
 
-            return response;
+            return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
