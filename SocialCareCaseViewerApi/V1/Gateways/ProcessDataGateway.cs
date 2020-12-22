@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
                 var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
-                    Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
+                    Builders<BsonDocument>.Filter.Regex("form_name", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
 
                 var query = _sccvDbContext.getCollection().AsQueryable();
 
