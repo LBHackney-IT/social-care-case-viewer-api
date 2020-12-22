@@ -121,7 +121,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             //sort by date of event by default, then by datestamp
             response = response
-                .OrderByDescending(x => {
+                .OrderByDescending(x =>
+                {
                     _ = DateTime.TryParse(x.DateOfEvent, out DateTime dt);
                     return dt;
                 })
