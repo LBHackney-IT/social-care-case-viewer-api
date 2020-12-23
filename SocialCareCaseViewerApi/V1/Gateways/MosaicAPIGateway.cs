@@ -17,11 +17,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             string dateOfBirth = rqp.DateOfBirth;
             string mosaicId = rqp.MosaicId;
             string contextFlag = rqp.ContextFlag;
+            string postCode = rqp.Postcode;
 
             string apiUrl = Environment.GetEnvironmentVariable("MOSAIC_API_URL");
             string token = Environment.GetEnvironmentVariable("MOSAIC_API_TOKEN");
 
-            var queryURI = new Uri($"{apiUrl}residents?first_name={firstName}&last_name={lastName}&date_of_birth={dateOfBirth}&mosaic_id={mosaicId}&context_flag={contextFlag}&cursor={cursor}&limit={limit}");
+            var queryURI = new Uri($"{apiUrl}residents?first_name={firstName}&last_name={lastName}&date_of_birth={dateOfBirth}&mosaic_id={mosaicId}&context_flag={contextFlag}&cursor={cursor}&limit={limit}&postcode={postCode}");
 
             HttpClient _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Remove("Authorization");
