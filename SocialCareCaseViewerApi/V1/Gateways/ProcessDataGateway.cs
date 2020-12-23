@@ -84,7 +84,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     response = response
                         .Where(x =>
                         {
-                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                             {
                                 return date.Date >= startDate.Date;
                             }
@@ -104,7 +104,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     response = response
                         .Where(x =>
                         {
-                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                             {
                                 return date.Date <= endDate.Date;
                             }
