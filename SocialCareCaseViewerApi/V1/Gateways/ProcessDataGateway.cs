@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
                         Builders<BsonDocument>.Filter.Regex("first_name", new BsonRegularExpression("^" + request.FirstName + "$", "i")) : null;
                     lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
-                        Builders<BsonDocument>.Filter.Regex("Last_name", new BsonRegularExpression("^" + request.LastName + "$", "i")) : null;
+                        Builders<BsonDocument>.Filter.Regex("last_name", new BsonRegularExpression("^" + request.LastName + "$", "i")) : null;
                 }
                 var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
