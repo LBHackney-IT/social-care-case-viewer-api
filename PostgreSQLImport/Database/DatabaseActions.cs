@@ -62,7 +62,7 @@ namespace PostgreSQLImport.Database
 
             return rowsAffected;
         }
-       
+
         public int ChangeDateStyleToDMY(NpgsqlTransaction transaction)
         {
             var changeDateStyleCommand = _npgsqlConnection.CreateCommand();
