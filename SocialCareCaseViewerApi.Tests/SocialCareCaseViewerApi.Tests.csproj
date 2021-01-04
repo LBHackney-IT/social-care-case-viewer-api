@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PostgreSQLImport\PostgreSQLImport\PostgreSQLImport.csproj" />
     <ProjectReference Include="..\SocialCareCaseViewerApi\SocialCareCaseViewerApi.csproj" />
   </ItemGroup>
 

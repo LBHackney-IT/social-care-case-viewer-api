@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialCareCaseViewerApi", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialCareCaseViewerApi.Tests", "SocialCareCaseViewerApi.Tests\SocialCareCaseViewerApi.Tests.csproj", "{DE8E4E61-EB76-416B-8417-E8F2F6A0C0D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDBImport", "MongoDBImport\MongoDBImport.csproj", "{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDBImport", "MongoDBImport\MongoDBImport.csproj", "{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLImport", "PostgreSQLImport\PostgreSQLImport\PostgreSQLImport.csproj", "{10C36CBA-400A-4DF7-8362-EE4D19F68787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10C36CBA-400A-4DF7-8362-EE4D19F68787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10C36CBA-400A-4DF7-8362-EE4D19F68787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10C36CBA-400A-4DF7-8362-EE4D19F68787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10C36CBA-400A-4DF7-8362-EE4D19F68787}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
