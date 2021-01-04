@@ -52,7 +52,7 @@ namespace PostgreSQLImport.Database
             loadDataCommand.Parameters.AddWithValue("awsregion", awsRegion);
 
             var rowsAffected = loadDataCommand.ExecuteNonQuery();
-
+            //TODO: get actual affected rows in all methods where appropriate
             if (rowsAffected == 0)
             {
                 //no insert has occured

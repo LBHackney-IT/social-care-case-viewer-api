@@ -32,23 +32,23 @@ namespace PostgreSQLImport
                 {
                     switch (record.S3.Object.Key.ToUpper())
                     {
-                        case "CFS_ALLOCATIONS_REMOVE_ME_.CSV": //TODO: remove after initial POC
+                        case "CFS_ALLOCATIONS.CSV":
                             {
                                 using (var transaction = connection.BeginTransaction()) //TODO: check transaction handling
                                 {
                                     //change date style for this session
                                     //TODO: do this at db level once format has been standardised
                                     int changeDateStyleResult = _databaseActions.ChangeDateStyleToDMY(transaction);
-                                    LambdaLogger.Log($"Date style change result: {changeDateStyleResult}");
+                                    LambdaLogger.Log($"Date style change complete");
 
                                     //truncate table
                                     int truncateResult = _databaseActions.TruncateTable(context, "dbo.sccv_allocations", transaction);
-                                    LambdaLogger.Log($"{truncateResult} rows affected");
+                                    LambdaLogger.Log("Table truncate complete");
 
                                     //import data
                                     int importResult = _databaseActions.CopyDataToDatabase(context, record.AwsRegion, record.S3.Bucket.Name, record.S3.Object.Key, "dbo.sccv_allocations", transaction);
-                                    LambdaLogger.Log($"{importResult} rows affected");
-                                    transaction.Commit(); //in case of an error, transaction will be rolled back
+                                    LambdaLogger.Log("Data import complete");
+                                    transaction.Commit(); //in case of an exception, transaction will be rolled back
                                 }
                                 return;
                             }
