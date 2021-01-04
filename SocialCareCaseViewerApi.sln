@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialCareCaseViewerApi.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDBImport", "MongoDBImport\MongoDBImport.csproj", "{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLImport", "PostgreSQLImport\PostgreSQLImport\PostgreSQLImport.csproj", "{10C36CBA-400A-4DF7-8362-EE4D19F68787}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLImport", "PostgreSQLImport\PostgreSQLImport.csproj", "{10C36CBA-400A-4DF7-8362-EE4D19F68787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

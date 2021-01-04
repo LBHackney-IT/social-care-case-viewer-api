@@ -10,7 +10,7 @@ namespace PostgreSQLImport.Database
         public NpgsqlConnection SetupDatabase(ILambdaContext context)
         {
             LambdaLogger.Log("set up DB");
-            var connString = $"{Environment.GetEnvironmentVariable("CONNECTION_STRING")};CommandTimeout=60;";
+            var connString = $"{Environment.GetEnvironmentVariable("CONNECTION_STRING")};CommandTimeout=30;";
 
             try
             {
@@ -27,20 +27,23 @@ namespace PostgreSQLImport.Database
             }
         }
 
-        public int TruncateTable(ILambdaContext context, string tableName)
+        public int TruncateTable(ILambdaContext context, string tableName, NpgsqlTransaction transaction)
         {
-            var npgsqlCommand = _npgsqlConnection.CreateCommand();
+            var truncateCommand = _npgsqlConnection.CreateCommand();
+            truncateCommand.Transaction = transaction;
+
             LambdaLogger.Log($"Table name to truncate {tableName}");
             var truncateTableQuery = $"TRUNCATE TABLE {tableName};";
-            npgsqlCommand.CommandText = truncateTableQuery;
-            var rowsAffected = npgsqlCommand.ExecuteNonQuery();
+            truncateCommand.CommandText = truncateTableQuery;
+            var rowsAffected = truncateCommand.ExecuteNonQuery();
 
             return rowsAffected;
         }
 
-        public int CopyDataToDatabase(ILambdaContext context, string awsRegion, string bucketName, string objectKey, string tableName)
+        public int CopyDataToDatabase(ILambdaContext context, string awsRegion, string bucketName, string objectKey, string tableName, NpgsqlTransaction transaction)
         {
             var loadDataCommand = _npgsqlConnection.CreateCommand();
+            loadDataCommand.Transaction = transaction;
 
             var loadDataFromCSV = $@"SELECT aws_s3.table_import_from_s3('{tableName}','','(FORMAT csv, HEADER)',@bucket, @objectkey, @awsregion);";
             loadDataCommand.CommandText = loadDataFromCSV;
