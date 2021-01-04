@@ -43,7 +43,7 @@
 //    //        mockDatabaseActions.Setup(x => x.CopyDataToDatabase(contextMock.Object, testRecord.AwsRegion, bucketData.Bucket.Name, bucketData.Object.Key, tableName));
 //    //        mockDatabaseActions.Setup(x => x.TruncateTable(contextMock.Object, It.IsAny<string>()));
 //    //        mockDatabaseActions.Setup(x => x.SetupDatabase(contextMock.Object)).Returns(() => dbConnection);
-                  
+
 
 //    //        Assert.DoesNotThrow(() => handler.ImportData(s3EventMock, contextMock.Object));
 //    //        mockDatabaseActions.Verify(y => y.SetupDatabase(contextMock.Object), Times.Once);

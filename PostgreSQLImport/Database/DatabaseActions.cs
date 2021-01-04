@@ -17,7 +17,7 @@ namespace PostgreSQLImport.Database
                 var connection = new NpgsqlConnection(connString);
                 LambdaLogger.Log("Opening DB connection");
                 connection.Open();
-                _npgsqlConnection = connection; 
+                _npgsqlConnection = connection;
                 return connection;
             }
             catch (Exception ex)
