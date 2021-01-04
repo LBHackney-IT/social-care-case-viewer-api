@@ -36,6 +36,11 @@ namespace PostgreSQLImport
                             {
                                 using (var transaction = connection.BeginTransaction()) //TODO: check transaction handling
                                 {
+                                    //change date style for this session
+                                    //TODO: do this at db level once format has been standardised
+                                    int changeDateStyleResult = _databaseActions.ChangeDateStyleToDMY(transaction);
+                                    LambdaLogger.Log($"Date style change result: {changeDateStyleResult}");
+
                                     //truncate table
                                     int truncateResult = _databaseActions.TruncateTable(context, "dbo.sccv_allocations", transaction);
                                     LambdaLogger.Log($"{truncateResult} rows affected");

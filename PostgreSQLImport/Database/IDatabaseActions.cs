@@ -8,5 +8,6 @@ namespace PostgreSQLImport.Database
         int TruncateTable(ILambdaContext context, string tableName, NpgsqlTransaction transaction);
         int CopyDataToDatabase(ILambdaContext context, string awsRegion, string bucketName, string objectKey, string tableName, NpgsqlTransaction transaction);
         NpgsqlConnection SetupDatabase(ILambdaContext context);
+        int ChangeDateStyleToDMY(NpgsqlTransaction transaction);
     }
 }
