@@ -37,11 +37,11 @@ namespace PostgreSQLImport
                                 using (var transaction = connection.BeginTransaction()) //TODO: check transaction handling
                                 {
                                     //truncate table
-                                    int truncateResult = _databaseActions.TruncateTable(context, "SCCV_ALLOCATIONS", transaction);
+                                    int truncateResult = _databaseActions.TruncateTable(context, "dbo.sccv_allocations", transaction);
                                     LambdaLogger.Log($"{truncateResult} rows affected");
 
                                     //import data
-                                    int importResult = _databaseActions.CopyDataToDatabase(context, record.AwsRegion, record.S3.Bucket.Name, record.S3.Object.Key, "SCCV_ALLOCATIONS", transaction);
+                                    int importResult = _databaseActions.CopyDataToDatabase(context, record.AwsRegion, record.S3.Bucket.Name, record.S3.Object.Key, "dbo.sccv_allocations", transaction);
                                     LambdaLogger.Log($"{importResult} rows affected");
                                     transaction.Commit(); //in case of an error, transaction will be rolled back
                                 }
