@@ -189,19 +189,19 @@ workflows:
               #- build-and-test
           filters:
             branches:
-              only: feature/allocations-import-lambda
+              only: master
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
-              only: feature/allocations-import-lambda
+              only: master
       - deploy-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
-              only: feature/allocations-import-lambda
+              only: master
       - permit-production-release:
           type: approval
           requires:
