@@ -1,10 +1,10 @@
+using System;
+using FluentAssertions;
+using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
 using SocialCareCaseViewerApi.V1.Factories;
-using FluentAssertions;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
