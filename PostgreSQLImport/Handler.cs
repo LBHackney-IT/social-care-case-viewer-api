@@ -1,8 +1,8 @@
+using System;
 using Amazon.Lambda.Core;
 using Amazon.S3.Util;
 using Npgsql;
 using PostgreSQLImport.Database;
-using System;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 namespace PostgreSQLImport

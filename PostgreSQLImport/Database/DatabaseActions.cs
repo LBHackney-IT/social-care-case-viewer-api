@@ -1,6 +1,6 @@
+using System;
 using Amazon.Lambda.Core;
 using Npgsql;
-using System;
 
 namespace PostgreSQLImport.Database
 {

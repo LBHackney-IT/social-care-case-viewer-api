@@ -1,10 +1,10 @@
 using System.Threading;
-using SocialCareCaseViewerApi.V1.UseCase;
 using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.HealthChecks;
 using Moq;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {

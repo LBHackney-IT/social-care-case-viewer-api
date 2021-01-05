@@ -1,6 +1,6 @@
-using SocialCareCaseViewerApi.V1.UseCase;
 using FluentAssertions;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {

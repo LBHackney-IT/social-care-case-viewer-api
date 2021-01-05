@@ -25,24 +25,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [SetUp]
         public void SetUp()
         {
-           _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-           _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-           _classUnderTest = new ProcessDataUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+            _mockDatabaseGateway = new Mock<IDatabaseGateway>();
+            _classUnderTest = new ProcessDataUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
         }
 
-        [Test]
-        public void ExecuteReturnsCareCaseDataListWhenProvidedListCasesRequest()
-        {
-            var stubbedCaseData = _fixture.CreateMany<CareCaseData>();
+        // [Test]
+        // public void ExecuteReturnsCareCaseDataListWhenProvidedListCasesRequest()
+        // {
+        //     var stubbedCaseData = _fixture.CreateMany<CareCaseData>();
 
-            _mockProcessDataGateway.Setup(x => x.GetProcessData(It.IsAny<ListCasesRequest>()))
-                .Returns(stubbedCaseData.ToList());
+        //     _mockProcessDataGateway.Setup(x => x.GetProcessData(It.IsAny<ListCasesRequest>()))
+        //         .Returns(stubbedCaseData.ToList());
 
-            var response = _classUnderTest.Execute(new ListCasesRequest());
+        //     var response = _classUnderTest.Execute(new ListCasesRequest());
 
-            response.Should().NotBeNull();
-            response.Cases.Should().BeEquivalentTo(stubbedCaseData);
-        }
+        //     response.Should().NotBeNull();
+        //     response.Cases.Should().BeEquivalentTo(stubbedCaseData);
+        // }
 
         [Test]
         public async Task ExecuteReturnsStringWhenProvidedCaseNoteDocument()
