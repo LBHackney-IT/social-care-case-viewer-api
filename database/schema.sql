@@ -180,7 +180,7 @@ ALTER TABLE dbo.DM_PERSONS ALTER COLUMN FULL_NAME TYPE varchar(255);
 create table dbo.SCCV_ALLOCATIONS
 (
     MOSAIC_ID                   varchar(100) not null,      
-    FULL_NAME                   varchar(62) not null,
+    FULL_NAME                   varchar(255) not null,
     GROUP_ID                    bigint,
     ETHNICITY                   varchar(33),
     SUB_ETHNICITY               varchar(33),
@@ -205,8 +205,8 @@ create table dbo.SCCV_ALLOCATIONS
     CONTACT_ADDRESS             varchar(255),
     CASE_STATUS_OPEN_CLOSED     varchar(7),
     CLOSURE_DATE_IF_CLOSED      timestamp,
-    LAST_NAME                   varchar(30) not null,
-    FIRST_NAME                  varchar(30) not null,
+    LAST_NAME                   varchar(100),
+    FIRST_NAME                  varchar(100),
     WORKER_EMAIL                varchar(62),
 	LAC 						varchar(10)
 );

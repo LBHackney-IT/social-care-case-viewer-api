@@ -44,5 +44,9 @@ namespace MongoDBImport
         [Name("form_url")]
         [BsonElement("form_url")]
         public string CaseFormUrl { get; set; }
+
+        [Name("date_of_event")]
+        [BsonElement("date_of_event")]
+        public string DateOfEvent { get; set; }
     }
 }

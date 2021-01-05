@@ -25,9 +25,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [SetUp]
         public void SetUp()
         {
-            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-            _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _classUnderTest = new ProcessDataUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
+           _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+           _mockDatabaseGateway = new Mock<IDatabaseGateway>();
+           _classUnderTest = new ProcessDataUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
         }
 
         [Test]
@@ -56,68 +56,78 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeOfType<string>();
         }
 
-        [Test]
-        public void ExecuteIfLimitLessThanTheMinimumWillUseTheMinimumLimit()
-        {
-            var stubbedRequest = new ListCasesRequest();
-            stubbedRequest.Limit = 10;
-            _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(stubbedRequest))
-                .Returns(new List<CareCaseData>()).Verifiable();
+        // [Test]
+        // public void ExecuteIfLimitLessThanTheMinimumWillUseTheMinimumLimit()
+        // {
+        //     var stubbedRequest = new ListCasesRequest();
+        //     stubbedRequest.Limit = 10;
+        //     _mockProcessDataGateway.Setup(x =>
+        //         x.GetProcessData(stubbedRequest))
+        //         .Returns(new List<CareCaseData>()).Verifiable();
+        // }
 
-            stubbedRequest.Limit = 4;
-            _classUnderTest.Execute(stubbedRequest);
+        //[Test]
+        //public void ExecuteIfLimitLessThanTheMinimumWillUseTheMinimumLimit()
+        //{
+        //    var stubbedRequest = new ListCasesRequest();
+        //    stubbedRequest.Limit = 10;
+        //    _mockProcessDataGateway.Setup(x =>
+        //        x.GetProcessData(stubbedRequest))
+        //        .Returns(new List<CareCaseData>()).Verifiable();
 
-            _mockProcessDataGateway.Verify();
-        }
+        //    stubbedRequest.Limit = 4;
+        //    _classUnderTest.Execute(stubbedRequest);
 
-        [Test]
-        public void ExecuteIfLimitMoreThanTheMaximumWillUseTheMaximumLimit()
-        {
-            var stubbedRequest = new ListCasesRequest();
-            stubbedRequest.Limit = 100;
-            _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(stubbedRequest))
-                .Returns(new List<CareCaseData>()).Verifiable();
+        //    _mockProcessDataGateway.Verify();
+        //}
 
-            stubbedRequest.Limit = 400;
-            _classUnderTest.Execute(stubbedRequest);
+        //[Test]
+        //public void ExecuteIfLimitMoreThanTheMaximumWillUseTheMaximumLimit()
+        //{
+        //    var stubbedRequest = new ListCasesRequest();
+        //    stubbedRequest.Limit = 100;
+        //    _mockProcessDataGateway.Setup(x =>
+        //        x.GetProcessData(stubbedRequest))
+        //        .Returns(new List<CareCaseData>()).Verifiable();
 
-            _mockProcessDataGateway.Verify();
-        }
+        //    stubbedRequest.Limit = 400;
+        //    _classUnderTest.Execute(stubbedRequest);
 
-        [Test]
-        public void ExecuteReturnsCursor()
-        {
-            var stubbedRequest = new ListCasesRequest();
-            var stubbedCases = _fixture.CreateMany<CareCaseData>(20);
-            int idCount = 10;
-            foreach (CareCaseData careCase in stubbedCases)
-            {
-                idCount++;
-                careCase.RecordId = idCount.ToString();
-            }
-            var expectedNextCursor = stubbedCases.Max(r => r.RecordId);
+        //    _mockProcessDataGateway.Verify();
+        //}
 
-            stubbedRequest.Cursor = 0;
-            _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(stubbedRequest))
-                .Returns(stubbedCases.ToList());
+        //[Test]
+        //public void ExecuteReturnsCursor()
+        //{
+        //    var stubbedRequest = new ListCasesRequest();
+        //    var stubbedCases = _fixture.CreateMany<CareCaseData>(20);
+        //    int idCount = 10;
+        //    foreach (CareCaseData careCase in stubbedCases)
+        //    {
+        //        idCount++;
+        //        careCase.RecordId = idCount.ToString();
+        //    }
+        //    var expectedNextCursor = stubbedCases.Max(r => r.RecordId);
 
-            _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be(expectedNextCursor);
-        }
+        //    stubbedRequest.Cursor = 0;
+        //    _mockProcessDataGateway.Setup(x =>
+        //        x.GetProcessData(stubbedRequest))
+        //        .Returns(stubbedCases.ToList());
 
-        [Test]
-        public void WhenAtTheEndOfTheCaseListReturnsTheNextCursorAsEmptyString()
-        {
-            var stubbedRequest = new ListCasesRequest();
-            var stubbedCases = _fixture.CreateMany<CareCaseData>(7);
+        //    _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be(expectedNextCursor);
+        //}
 
-            _mockProcessDataGateway.Setup(x =>
-                x.GetProcessData(stubbedRequest))
-                .Returns(stubbedCases.ToList());
+        //[Test]
+        //public void WhenAtTheEndOfTheCaseListReturnsTheNextCursorAsEmptyString()
+        //{
+        //    var stubbedRequest = new ListCasesRequest();
+        //    var stubbedCases = _fixture.CreateMany<CareCaseData>(7);
 
-            _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be("");
-        }
+        //    _mockProcessDataGateway.Setup(x =>
+        //        x.GetProcessData(stubbedRequest))
+        //        .Returns(stubbedCases.ToList());
+
+        //    _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be("");
+        //}
     }
 }
