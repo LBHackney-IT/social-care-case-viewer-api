@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     WorkerType = rec.WorkerType,
                     AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
                     TeamName = rec.TeamName,
-                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationEndDate.ToString() : null,
+                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationStartDate.ToString() : null,
                     AllocationEndDate = (rec.AllocationEndDate != null) ? rec.AllocationEndDate.ToString() : null,
                     LegalStatus = rec.LegalStatus,
                     Placement = rec.Placement,
