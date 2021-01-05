@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public IEnumerable<CareCaseData> GetProcessData(ListCasesRequest request)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
@@ -53,12 +53,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     firstNameFilter = !string.IsNullOrWhiteSpace(request.FirstName) ?
                         Builders<BsonDocument>.Filter.Regex("first_name", new BsonRegularExpression("^" + request.FirstName + "$", "i")) : null;
                     lastNameFilter = !string.IsNullOrWhiteSpace(request.LastName) ?
-                        Builders<BsonDocument>.Filter.Regex("Last_name", new BsonRegularExpression("^" + request.LastName + "$", "i")) : null;
+                        Builders<BsonDocument>.Filter.Regex("last_name", new BsonRegularExpression("^" + request.LastName + "$", "i")) : null;
                 }
                 var workerEmailFilter = !string.IsNullOrWhiteSpace(request.WorkerEmail) ?
                     Builders<BsonDocument>.Filter.Regex("worker_email", BsonRegularExpression.Create(new Regex(request.WorkerEmail, RegexOptions.IgnoreCase))) : null;
-                var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.CaseNoteType) ?
-                    Builders<BsonDocument>.Filter.Regex("case_note_type", BsonRegularExpression.Create(new Regex(request.CaseNoteType, RegexOptions.IgnoreCase))) : null;
+                var caseNoteTypeFilter = !string.IsNullOrWhiteSpace(request.FormName) ?
+                    Builders<BsonDocument>.Filter.Regex("form_name", BsonRegularExpression.Create(new Regex(request.FormName, RegexOptions.IgnoreCase))) : null;
 
                 var query = _sccvDbContext.getCollection().AsQueryable();
 
@@ -84,7 +84,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     response = response
                         .Where(x =>
                         {
-                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                             {
                                 return date.Date >= startDate.Date;
                             }
@@ -104,7 +104,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     response = response
                         .Where(x =>
                         {
-                            if (DateTime.TryParse(x.CaseFormTimestamp, out DateTime date))
+                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                             {
                                 return date.Date <= endDate.Date;
                             }
@@ -117,13 +117,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            int totalCount = response.Count;
+
+            //sort by date of event by default, then by datestamp
             response = response
-                .OrderByDescending(x => !string.IsNullOrWhiteSpace(x.DateOfEvent) ? x.DateOfEvent : x.CaseFormTimestamp)
+                .OrderByDescending(x =>
+                {
+                    _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                    return dt;
+                })
+                .ThenByDescending(x =>
+                {
+                    _ = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                    return dt;
+                })
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
 
-            return response;
+            return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)

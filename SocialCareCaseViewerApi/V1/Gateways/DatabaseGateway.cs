@@ -21,14 +21,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public List<CfsAllocation> SelectCfsAllocations(long? mosaicId, string officerEmail)
+        public List<Allocation> SelectAllocations(string mosaicId)
         {
-            var allocations = _databaseContext.CfsAllocations
-                .Where(rec => (mosaicId == null) || rec.Id == mosaicId)
-                .Where(rec => string.IsNullOrEmpty(officerEmail) || rec.WorkerEmail.Contains(officerEmail))
-                .Select(rec => new CfsAllocation
+            //check if we have lookup details for this id
+            string personId = GetNCReferenceByPersonId(mosaicId);
+
+            if (!string.IsNullOrEmpty(personId)) mosaicId = personId;
+
+            var allocations = _databaseContext.Allocations.Where(x => x.Id.ToUpper() == mosaicId.ToUpper())
+                .Select(rec => new Allocation
                 {
-                    PersonId = rec.Id.ToString(),
+                    PersonId = rec.Id,
                     FirstName = rec.FirstName,
                     LastName = rec.LastName,
                     DateOfBirth = (rec.DateOfBirth != null) ? rec.DateOfBirth.ToString() : null,
@@ -47,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     WorkerType = rec.WorkerType,
                     AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
                     TeamName = rec.TeamName,
-                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationEndDate.ToString() : null,
+                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationStartDate.ToString() : null,
                     AllocationEndDate = (rec.AllocationEndDate != null) ? rec.AllocationEndDate.ToString() : null,
                     LegalStatus = rec.LegalStatus,
                     Placement = rec.Placement,
@@ -56,36 +59,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CaseStatus = rec.CaseStatus,
                     CaseClosureDate = (rec.CaseClosureDate != null) ? rec.CaseClosureDate.ToString() : null,
                     WorkerEmail = rec.WorkerEmail,
+                    LAC = rec.LAC
                 }
                 ).ToList();
-
-            return allocations;
-        }
-
-        public List<AscAllocation> SelectAscAllocations(long? mosaicId, string allocatedWorker)
-        {
-            var allocations = _databaseContext.AscAllocations
-                .Where(r => (mosaicId == null) || r.Id == mosaicId)
-                .Where(r => string.IsNullOrWhiteSpace(allocatedWorker) || r.AllocatedWorker.ToLower() == allocatedWorker.ToLower())
-                .Select(r => new AscAllocation
-                {
-                    PersonId = r.Id,
-                    LastName = r.LastName,
-                    FirstName = r.FirstName,
-                    DateOfBirth = r.DateOfBirth != null ? Convert.ToDateTime(r.DateOfBirth).ToString("dd-MM-yyyy") : null,
-                    Age = r.Age,
-                    PrimarySupportReason = r.PrimarySupportReason,
-                    AllocatedTeam = r.AllocatedTeam,
-                    AllocatedWorker = r.AllocatedWorker,
-                    Address = r.Address,
-                    Postcode = r.PostCode,
-                    Uprn = r.Uprn,
-                    LongTermService = r.LongTermService,
-                    SocialCareInvolvement = r.SocialCareInvolvement,
-                    ShortTermSupport = r.ShortTermSupport,
-                    HouseholdComposition = r.HouseholdComposition,
-                    Fullname = r.FullName
-                }).ToList();
 
             return allocations;
         }

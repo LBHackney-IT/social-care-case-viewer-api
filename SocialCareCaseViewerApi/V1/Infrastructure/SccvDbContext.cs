@@ -42,7 +42,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                 localTrustStore.Close();
             }
 
-
             _mongoClient = new MongoClient(new MongoUrl(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
             //create a new blank database if database does not exist, otherwise get existing database
             _mongoDatabase = _mongoClient.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));

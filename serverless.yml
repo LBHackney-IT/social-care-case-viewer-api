@@ -23,6 +23,7 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: SocialCareCaseViewerApi::SocialCareCaseViewerApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    timeout: 30
     environment:
 # TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name
       CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
@@ -56,6 +57,15 @@ functions:
       SCCV_MONGO_IMPORT_COLLECTION_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/collection-name}
       SCCV_MONGO_IMPORT_FILE_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/file-name}
     #s3 event not added here to simplify the usage of existing buckets
+  postgreSQLImport:
+    name: social-care-case-viewer-postgresql-import-${self:provider.stage}
+    handler: PostgreSQLImport::PostgreSQLImport.Handler::ImportData
+    role: lambdaExecutionRole
+    timeout: 60
+    package:
+      artifact: ./PostgreSQLImport/bin/release/netcoreapp3.1/postgresql-import.zip
+    environment:
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
 resources:
   Resources:
     lambdaExecutionRole:

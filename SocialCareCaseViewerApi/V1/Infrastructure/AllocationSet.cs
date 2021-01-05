@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("cfs_allocations", Schema = "dbo")]
-    public class CfsAllocationSet
+    [Table("sccv_allocations", Schema = "dbo")]
+    public class AllocationSet
     {
         [Column("mosaic_id")]
         [MaxLength(16)]
-        public long? Id { get; set; }
+        public string Id { get; set; }
 
         [Column("first_name")]
         [MaxLength(30)]
@@ -117,5 +117,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("worker_email")]
         [MaxLength(62)]
         public string WorkerEmail { get; set; }
+
+        [Column("lac")]
+        [MaxLength(10)]
+        public string LAC { get; set; }
     }
 }
