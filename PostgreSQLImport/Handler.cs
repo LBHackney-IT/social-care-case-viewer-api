@@ -24,6 +24,8 @@ namespace PostgreSQLImport
         {
             try
             {
+                LambdaLogger.Log($"File to be processed: {_awsRegion}/{_bucketName}/{_importFileName}, processing");
+
                 NpgsqlConnection connection = _databaseActions.SetupDatabase(context);
 
                 using (var transaction = connection.BeginTransaction())
