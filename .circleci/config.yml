@@ -107,11 +107,11 @@ jobs:
           #name: Run tests
           #command: docker-compose run social-care-case-viewer-api-test
 
-  assume-role-development:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_DEVELOPMENT
+  # assume-role-development:
+    # executor: docker-python
+    # steps:
+      # - assume-role-and-persist-workspace:
+          # aws-account: $AWS_ACCOUNT_DEVELOPMENT
   assume-role-staging:
     executor: docker-python
     steps:
@@ -122,11 +122,11 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "development"
+  # terraform-init-and-apply-to-development:
+    # executor: docker-terraform
+    # steps:
+      # - terraform-init-then-apply:
+          # environment: "development"
   terraform-init-and-apply-to-staging:
     executor: docker-terraform
     steps:
@@ -137,11 +137,11 @@ jobs:
     # steps:
       # - terraform-init-then-apply:
           # environment: "production"
-  deploy-to-development:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "development"
+  # deploy-to-development:
+    # executor: docker-dotnet
+    # steps:
+      # - deploy-lambda:
+          # stage: "development"
   deploy-to-staging:
     executor: docker-dotnet
     steps:
@@ -158,25 +158,25 @@ workflows:
     jobs:
       - check-code-formatting
       #- build-and-test
-      - assume-role-development:
-          context: api-assume-role-development-context
-          #requires:
-            #- build-and-test
-          filters:
-            branches:
-              only: development
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: development
-      - deploy-to-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: development
+      # - assume-role-development:
+          # context: api-assume-role-development-context
+          # #requires:
+            # #- build-and-test
+          # filters:
+            # branches:
+              # only: development
+      # - terraform-init-and-apply-to-development:
+          # requires:
+            # - assume-role-development
+          # filters:
+            # branches:
+              # only: development
+      # - deploy-to-development:
+          # requires:
+            # - assume-role-development
+          # filters:
+            # branches:
+              # only: development
   check-and-deploy-staging-and-production:
       jobs:
       #- build-and-test:
