@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private ProcessDataUseCase _classUnderTest;
-        private Fixture _fixture = new Fixture();
+        //private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
