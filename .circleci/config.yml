@@ -189,7 +189,7 @@ workflows:
               #- build-and-test
           filters:
             branches:
-              only: master
+              only: fix/lambda-config
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
@@ -201,7 +201,7 @@ workflows:
             - assume-role-staging
           filters:
             branches:
-              only: master
+              only: fix/lambda-config
       - permit-production-release:
           type: approval
           requires:
