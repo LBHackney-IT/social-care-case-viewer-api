@@ -164,6 +164,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListWorkersResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
+        [HttpGet]
         [Route("workers")]
         public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
         {
@@ -177,6 +178,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
+        [HttpGet]
         [Route("teams")]
         public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
         {
