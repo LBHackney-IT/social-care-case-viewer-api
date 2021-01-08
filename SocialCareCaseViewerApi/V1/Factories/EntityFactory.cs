@@ -4,6 +4,10 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -36,6 +40,35 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AddressLine1 = address.AddressLines,
                 PostCode = address.PostCode
             };
+        }
+
+        public static Worker ToDomain(this DbWorker worker)
+        {
+            return new Worker
+            {
+                FirstName = worker.FirstName,
+                LastName = worker.LastName,
+                Id = worker.Id
+            };
+        }
+
+        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers)
+        {
+            return workers.Select(w => w.ToDomain()).ToList();
+        }
+
+        public static Team ToDomain(this DbTeam team)
+        {
+            return new Team
+            {
+                Id = team.Id,
+                Name = team.Name
+            };
+        }
+
+        public static List<Team> ToDomain(this IEnumerable<DbTeam> teams)
+        {
+            return teams.Select(t => t.ToDomain()).ToList();
         }
     }
 }
