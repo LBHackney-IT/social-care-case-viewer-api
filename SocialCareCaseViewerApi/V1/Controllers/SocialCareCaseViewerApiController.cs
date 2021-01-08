@@ -25,14 +25,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
         private readonly IGetAllocationUseCase _allocationUseCase;
+        private readonly IWorkersUseCase _workersUseCase;
+        private readonly ITeamsUseCase _teamsUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase)
+            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
+            _workersUseCase = workersUseCase;
+            _teamsUseCase = teamsUseCase;
         }
 
         /// <summary>
@@ -138,8 +142,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return Ok(_allocationUseCase.Execute(request));
         }
 
-
-
         /// <summary>
         /// Create new case note record for mosaic client
         /// </summary>
@@ -153,6 +155,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
+        }
+
+        /// <summary>
+        /// Get a list of workers by team id
+        /// </summary>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListWorkersResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [Route("workers")]
+        public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
+        {
+            return Ok(_workersUseCase.ExecuteGet(request));
+        }
+
+        /// <summary>
+        /// Get a list of teams by context
+        /// </summary>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [Route("teams")]
+        public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
+        {
+            return Ok(_teamsUseCase.ExecuteGet(request));
         }
     }
 }

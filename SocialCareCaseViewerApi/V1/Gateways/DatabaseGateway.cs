@@ -9,6 +9,8 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -195,6 +197,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return lookup?.NCId;
         }
-    }
 
+        public List<Worker> GetWorkers(int teamId)
+        {
+            return _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList();
+        }
+
+        public List<Team> GetTeams(string context)
+        {
+            return _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList();
+        }
+    }
 }

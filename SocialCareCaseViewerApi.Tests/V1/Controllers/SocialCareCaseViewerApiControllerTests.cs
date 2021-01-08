@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +19,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllUseCase> _mockGetAllUseCase;
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
-        private Mock<IGetAllocationUseCase> _mockGetAllocationUseCase;
+        private Mock<IGetAllocationUseCase> _mockGetAllocationsUseCase;
+        private Mock<IWorkersUseCase> _mockWorkersUseCase;
+        private Mock<ITeamsUseCase> _mockTeamsUseCase;
 
         private Fixture _fixture;
 
@@ -31,9 +31,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllUseCase = new Mock<IGetAllUseCase>();
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
-            _mockGetAllocationUseCase = new Mock<IGetAllocationUseCase>();
+            _mockGetAllocationsUseCase = new Mock<IGetAllocationUseCase>();
+            _mockWorkersUseCase = new Mock<IWorkersUseCase>();
+            _mockTeamsUseCase = new Mock<ITeamsUseCase>();
+
+
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-                _mockProcessDataUseCase.Object, _mockGetAllocationUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockGetAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -78,8 +82,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().BeEquivalentTo(addNewResidentResponse);
         }
 
-        // To Do: Add 400 response for invalid or missing parameters
-
         [Test]
         public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
         {
@@ -120,36 +122,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().BeEquivalentTo(careCaseDataList);
         }
 
-        // [Test]
-        // public void ListCasesReturns400WhenStartDateIsInvalid()
-        // {
-        //     var badDateRequest = new ListCasesRequest
-        //     {
-        //         StartDate = "Bad Date"
-        //     };
-
-        //     var response = _classUnderTest.ListCases(new ListCasesRequest());
-
-        //     response.Should().NotBeNull();
-        // response.StatusCode.Should().Be(400);
-        // response.Value.Should().Be("Invalid start date");
-        // }
-
-        // [Test]
-        // public void ListCasesReturns400WhenEndDateIsInvalid()
-        // {
-        //     var badDateRequest = new ListCasesRequest
-        //     {
-        //         EndDate = "Bad Date"
-        //     };
-
-        //     var response = _classUnderTest.ListCases(new ListCasesRequest()) as BadRequestObjectResult;
-
-        //     response.Should().NotBeNull();
-        //     response.StatusCode.Should().Be(400);
-        //     response.Value.Should().Be("Invalid end date");
-        // }
-
         [Test]
         public void ListCasesReturns404WhenNoCasesAreFound()
         {
@@ -163,37 +135,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().Be("Document Not Found");
         }
 
+        #region Workers
         [Test]
-        public void GetAllocatedWorkerReturns200WhenSuccessful()
+        public void GetWorkersReturns200WhenSuccessful()
         {
-            var childAllocationList = _fixture.Create<AllocationList>();
-            var listAllocationsRequest = new ListAllocationsRequest();
+            var request = new ListWorkersRequest() { TeamId = 5 };
 
-            _mockGetAllocationUseCase.Setup(x => x.Execute(listAllocationsRequest)).Returns(childAllocationList);
-            var response = _classUnderTest.GetAllocatedWorker(listAllocationsRequest) as OkObjectResult;
+            var workersList = _fixture.Create<ListWorkersResponse>();
+
+            _mockWorkersUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListWorkersRequest>())).Returns(workersList);
+
+            var response = _classUnderTest.ListWorkers(request);
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(childAllocationList);
+
         }
+        #endregion
 
-        //To Do: add 404 response for no allocations found
+        #region Teams
+        [Test]
+        public void GetTeamsReturns200WhenSuccessful()
+        {
+            var request = new ListTeamsRequest() { Context = "A" };
 
-        // [Test]
-        // public async Task CreateCaseNoteReturns201WhenSuccessful()
-        // {
-        //     var taskResponse = _fixture.Create<string>();
-        //     var caseNotesDocument = _fixture.Create<CaseNotesDocument>();
+            var teamsList = _fixture.Create<ListTeamsResponse>();
 
-        //     _mockProcessDataUseCase.Setup(x => x.Execute(caseNotesDocument)).Returns(Task.FromResult(taskResponse));
-        //     var response = await _classUnderTest.CreateCaseNote(caseNotesDocument).ConfigureAwait(true) as CreatedAtActionResult;
+            _mockTeamsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListTeamsRequest>())).Returns(teamsList);
 
-        //     response.Should().NotBeNull();
-        //     response.StatusCode.Should().Be(201);
-        //     response.Value.Should().BeEquivalentTo(taskResponse);
-        // }
+            var response = _classUnderTest.ListTeams(request);
 
-        // To Do: add 400 response for invalid or missing parameters
-        // To Do: Add 500 response for problem generating token
+            response.Should().NotBeNull();
+
+        }
+        #endregion
     }
 }
