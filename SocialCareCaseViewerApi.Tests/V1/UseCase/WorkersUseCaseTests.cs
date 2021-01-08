@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _workersUseCase = new WorkersUseCase(_mockDataBaseGateway.Object);
             _faker = new Faker();
         }
-               
+
         [Test]
         public void GetWorkersByTeamIdReturnsListWorkersReponseObject()
         {
@@ -39,6 +39,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             Assert.IsInstanceOf<ListWorkersResponse>(result);
             Assert.IsInstanceOf<List<Worker>>(result.Workers);
-        }       
+        }
     }
 }

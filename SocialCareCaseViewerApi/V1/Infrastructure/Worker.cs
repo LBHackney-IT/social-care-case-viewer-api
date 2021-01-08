@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("sccv_worker", Schema="dbo")]
+    [Table("sccv_worker", Schema = "dbo")]
     public class Worker
     {
         [Column("id")]
