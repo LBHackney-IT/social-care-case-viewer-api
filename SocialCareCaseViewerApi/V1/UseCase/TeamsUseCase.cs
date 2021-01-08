@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public ListTeamsResponse ExecuteGet(ListTeamsRequest request)
         {
-            var teams = _databaseGateway.GetTeams(request.Context);
+            var teams = _databaseGateway.GetTeams(request.ContextFlag);
 
             return new ListTeamsResponse() { Teams = EntityFactory.ToDomain(teams) };
         }

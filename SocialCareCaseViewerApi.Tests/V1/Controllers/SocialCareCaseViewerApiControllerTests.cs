@@ -176,7 +176,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamsReturns200WhenSuccessful()
         {
-            var request = new ListTeamsRequest() { Context = "A" };
+            var request = new ListTeamsRequest() { ContextFlag = "A" };
 
             var teamsList = _fixture.Create<ListTeamsResponse>();
 
