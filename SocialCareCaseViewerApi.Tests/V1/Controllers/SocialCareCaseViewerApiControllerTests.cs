@@ -21,8 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllUseCase> _mockGetAllUseCase;
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
-        private Mock<IGetChildrenAllocationUseCase> _mockGetChildrenAllocationUseCase;
-        private Mock<IGetAdultsAllocationsUseCase> _mockGetAdultsAllocationsUseCase;
+        private Mock<IGetAllocationUseCase> _mockGetAllocationUseCase;
 
         private Fixture _fixture;
 
@@ -32,10 +31,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllUseCase = new Mock<IGetAllUseCase>();
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
-            _mockGetChildrenAllocationUseCase = new Mock<IGetChildrenAllocationUseCase>();
-            _mockGetAdultsAllocationsUseCase = new Mock<IGetAdultsAllocationsUseCase>();
+            _mockGetAllocationUseCase = new Mock<IGetAllocationUseCase>();
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-                _mockProcessDataUseCase.Object, _mockGetChildrenAllocationUseCase.Object, _mockGetAdultsAllocationsUseCase.Object);
+                _mockProcessDataUseCase.Object, _mockGetAllocationUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -166,33 +164,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetChildrensAllocatedWorkerReturns200WhenSuccessful()
+        public void GetAllocatedWorkerReturns200WhenSuccessful()
         {
-            var childAllocationList = _fixture.Create<CfsAllocationList>();
+            var childAllocationList = _fixture.Create<AllocationList>();
             var listAllocationsRequest = new ListAllocationsRequest();
 
-            _mockGetChildrenAllocationUseCase.Setup(x => x.Execute(listAllocationsRequest)).Returns(childAllocationList);
-            var response = _classUnderTest.GetChildrensAllocatedWorker(listAllocationsRequest) as OkObjectResult;
+            _mockGetAllocationUseCase.Setup(x => x.Execute(listAllocationsRequest)).Returns(childAllocationList);
+            var response = _classUnderTest.GetAllocatedWorker(listAllocationsRequest) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(childAllocationList);
-        }
-
-        //To Do: add 404 response for no allocations found
-
-        [Test]
-        public void GetAdultsAllocatedWorkerReturns200WhenSuccessful()
-        {
-            var adultAllocationList = _fixture.Create<AscAllocationList>();
-            var listAcsAllocationRequest = new ListAscAllocationsRequest();
-
-            _mockGetAdultsAllocationsUseCase.Setup(x => x.Execute(listAcsAllocationRequest)).Returns(adultAllocationList);
-            var response = _classUnderTest.GetAdultsAllocatedWorker(listAcsAllocationRequest) as OkObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(adultAllocationList);
         }
 
         //To Do: add 404 response for no allocations found

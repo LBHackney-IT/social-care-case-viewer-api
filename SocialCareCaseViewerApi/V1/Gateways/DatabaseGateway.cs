@@ -66,6 +66,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
+        public AddNewAllocationResponse CreateAllocation(AddNewAllocationRequest request)
+        {
+            return new AddNewAllocationResponse();
+        }
+
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
         {
