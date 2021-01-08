@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.Tests
                    $"Port={Environment.GetEnvironmentVariable("DB_PORT") ?? "5432"};" +
                    $"Username={Environment.GetEnvironmentVariable("DB_USERNAME") ?? "postgres"};" +
                    $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "mypassword"};" +
-                   $"Database={Environment.GetEnvironmentVariable("DB_DATABASE") ?? "mosaic-test"}";
+                   $"Database={Environment.GetEnvironmentVariable("DB_DATABASE") ?? "testdb"}";
         }
     }
 }

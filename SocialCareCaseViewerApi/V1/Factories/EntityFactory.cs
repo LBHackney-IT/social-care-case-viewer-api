@@ -8,6 +8,7 @@ using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -69,6 +70,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static List<Team> ToDomain(this IEnumerable<DbTeam> teams)
         {
             return teams.Select(t => t.ToDomain()).ToList();
+        }
+
+        public static AllocationSet ToEntity(this CreateAllocationRequest request)
+        {
+            return new AllocationSet
+            {
+                Id = request.MosaicId.ToString(),
+                WorkerEmail = request.WorkerEmail,
+                AllocatedWorkerTeam = request.AllocatedWorkerTeam
+            };
         }
     }
 }

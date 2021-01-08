@@ -23,12 +23,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
-            var request = _fixture.Build<AddNewAllocationRequest>().Create();
-            var query = DatabaseContext.Allocations;
+            var request = _fixture.Build<CreateAllocationRequest>().Create();
 
             _classUnderTest.CreateAllocation(request);
 
+            var query = DatabaseContext.Allocations;
+
             query.Count().Should().Be(1);
+
+            var insertedRecord = query.First();
+            insertedRecord.Id.Should().NotBeNullOrEmpty();
+            insertedRecord.Id.Should().BeEquivalentTo(request.MosaicId.ToString());
+            insertedRecord.WorkerEmail.Should().BeEquivalentTo(request.WorkerEmail);
+            insertedRecord.AllocatedWorkerTeam.Should().BeEquivalentTo(request.AllocatedWorkerTeam);
         }
     }
 }

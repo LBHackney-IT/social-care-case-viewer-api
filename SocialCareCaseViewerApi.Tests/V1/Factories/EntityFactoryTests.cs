@@ -5,6 +5,10 @@ using SocialCareCaseViewerApi.V1.Factories;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
+using Team = SocialCareCaseViewerApi.V1.Domain.Team;
+using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -70,6 +74,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             dbTeam.ToDomain().Should().BeEquivalentTo(exptectedResponse);
+        }
+
+        [Test]
+        public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
+        {
+            var id = _faker.Random.Long();
+            var email = _faker.Name.ToString();
+            var team = _faker.Company.ToString();
+
+            var allocationRequest = new CreateAllocationRequest()
+            {
+                MosaicId = id,
+                WorkerEmail = email,
+                AllocatedWorkerTeam = team
+            };
+
+            var expectedResponse = new AllocationSet()
+            {
+                Id = id.ToString(),
+                WorkerEmail = email,
+                AllocatedWorkerTeam = team
+            };
+
+            allocationRequest.ToEntity().Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

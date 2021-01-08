@@ -68,9 +68,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
-        public AddNewAllocationResponse CreateAllocation(AddNewAllocationRequest request)
+        public CreateAllocationRequest CreateAllocation(CreateAllocationRequest request)
         {
-            return new AddNewAllocationResponse();
+            var entity = request.ToEntity();
+            _databaseContext.Allocations.Add(entity);
+            _databaseContext.SaveChanges();
+            return request;
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
