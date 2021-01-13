@@ -1,7 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Boundary.Requests
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {

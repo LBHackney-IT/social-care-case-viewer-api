@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Bogus;
 using Moq;
 using NUnit.Framework;
@@ -6,7 +7,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System.Collections.Generic;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase

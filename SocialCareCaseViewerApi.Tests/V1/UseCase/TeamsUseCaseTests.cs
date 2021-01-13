@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -6,7 +7,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System.Collections.Generic;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
