@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         #region model validation
         [Test]
-        public void ModelValidationFailsIfTeamIdIsNotBiggerThan1() //TODO: move message check to separate tests
+        public void ModelValidationFailsIfTeamIdIsNotBiggerThan0() //TODO: move message check to separate tests
         {
             ListWorkersRequest request = new ListWorkersRequest();
             var errors = ValidationHelper.ValidateModel(request);

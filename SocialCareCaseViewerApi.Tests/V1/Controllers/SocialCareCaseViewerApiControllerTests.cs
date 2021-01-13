@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -19,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllUseCase> _mockGetAllUseCase;
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
-        private Mock<IGetAllocationUseCase> _mockGetAllocationsUseCase;
+        private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
 
@@ -31,13 +32,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllUseCase = new Mock<IGetAllUseCase>();
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
-            _mockGetAllocationsUseCase = new Mock<IGetAllocationUseCase>();
+            _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
 
-
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockGetAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -148,7 +148,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListWorkers(request);
 
             response.Should().NotBeNull();
-
         }
         #endregion
 
@@ -165,8 +164,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListTeams(request);
 
             response.Should().NotBeNull();
-
         }
+        #endregion
+
+        #region Allocations
+        [Test]
+        public void UpdateAllocationReturns200WhenSuccessful()
+        {
+            var request = new UpdateAllocationRequest() { Id = _fixture.Create<int>() };
+
+            bool result = true;
+
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
+
+            var response = _classUnderTest.UpdateAllocation(request);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdateAllocationReturns500WhenUpdateFails()
+        {
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new EntityUpdateException("Unable to update allocation"));
+
+            var response = _classUnderTest.UpdateAllocation(new UpdateAllocationRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+        //TODO: test other exception types
+
         #endregion
     }
 }

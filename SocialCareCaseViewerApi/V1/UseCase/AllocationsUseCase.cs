@@ -4,10 +4,10 @@ using SocialCareCaseViewerApi.V1.Gateways;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class GetAllocationUseCase : IGetAllocationUseCase
+    public class AllocationsUseCase : IAllocationsUseCase
     {
         private IDatabaseGateway _databaseGateway;
-        public GetAllocationUseCase(IDatabaseGateway databaseGateway)
+        public AllocationsUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
         }
@@ -17,6 +17,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Allocations = _databaseGateway.SelectAllocations(request.MosaicId)
             };
+        }
+
+        public UpdateAllocationResponse ExecuteUpdate(UpdateAllocationRequest request)
+        {
+            return _databaseGateway.UpdateAllocation(request);
         }
     }
 }

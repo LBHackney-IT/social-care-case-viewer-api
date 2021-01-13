@@ -211,6 +211,10 @@ create table dbo.SCCV_ALLOCATIONS
 	LAC 						varchar(10)
 );
 
+--update to support allocation management from application
+
+alter table dbo.SCCV_ALLOCATIONS ADD COLUMN Id SERIAL PRIMARY KEY;
+
 --import new persons script
 do
 $$
