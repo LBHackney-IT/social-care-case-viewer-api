@@ -5,10 +5,10 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return teams.Select(t => t.ToDomain()).ToList();
         }
-
+      
         public static AllocationSet ToEntity(this CreateAllocationRequest request)
         {
             return new AllocationSet

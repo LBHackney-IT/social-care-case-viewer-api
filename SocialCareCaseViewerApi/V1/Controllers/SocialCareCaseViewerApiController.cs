@@ -27,7 +27,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllocationUseCase _allocationUseCase;
         private readonly IWorkersUseCase _workersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
-
         private readonly ICreateAllocationUseCase _createAllocationUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,

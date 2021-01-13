@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Domain;
+using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {

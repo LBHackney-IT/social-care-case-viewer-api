@@ -22,9 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllocationUseCase> _mockGetAllocationsUseCase;
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
-
         private Mock<ICreateAllocationUseCase> __mockCreateAllocationUseCase;
-
         private Fixture _fixture;
 
         [SetUp]
