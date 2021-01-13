@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using System.Collections.Generic;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
-using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {

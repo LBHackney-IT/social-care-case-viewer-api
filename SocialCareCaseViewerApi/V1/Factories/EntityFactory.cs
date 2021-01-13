@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
