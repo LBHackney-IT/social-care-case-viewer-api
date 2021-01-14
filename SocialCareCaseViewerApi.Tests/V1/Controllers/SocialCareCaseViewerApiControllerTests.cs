@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllocationUseCase> _mockGetAllocationsUseCase;
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
-
+        private Mock<ICreateAllocationUseCase> _mockCreateAllocationUseCase;
         private Fixture _fixture;
 
         [SetUp]
@@ -34,10 +34,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllocationsUseCase = new Mock<IGetAllocationUseCase>();
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
+            _mockCreateAllocationUseCase = new Mock<ICreateAllocationUseCase>();
 
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockGetAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockGetAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object,
+            _mockCreateAllocationUseCase.Object);
+
             _fixture = new Fixture();
         }
 
@@ -66,6 +69,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(400);
             response.Value.Should().Be("Invalid Parameters");
+        }
+
+        [Test]
+        public void CreateAllocationReturns201WhenSuccessful()
+        {
+            var request = _fixture.Create<CreateAllocationRequest>();
+
+            _mockCreateAllocationUseCase.Setup(x => x.Execute(request))
+                .Returns(request);
+
+            var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(request);
         }
 
         [Test]

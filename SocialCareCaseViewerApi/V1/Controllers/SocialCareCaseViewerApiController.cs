@@ -27,9 +27,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllocationUseCase _allocationUseCase;
         private readonly IWorkersUseCase _workersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
+        private readonly ICreateAllocationUseCase _createAllocationUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase)
+            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase, IWorkersUseCase workersUseCase,
+            ITeamsUseCase teamsUseCase, ICreateAllocationUseCase createAllocationUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -37,6 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _allocationUseCase = allocationUseCase;
             _workersUseCase = workersUseCase;
             _teamsUseCase = teamsUseCase;
+            _createAllocationUseCase = createAllocationUseCase;
         }
 
         /// <summary>
@@ -140,6 +143,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult GetAllocatedWorker([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_allocationUseCase.Execute(request));
+        }
+
+        /// <summary>
+        /// create new allocations for workers
+        /// </summary>
+        /// <response code="201">Allocation successfully inserted</response>
+        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("allocations")]
+        public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
+        {
+            var result = _createAllocationUseCase.Execute(request);
+            return CreatedAtAction("CreateAllocation", result, result);
         }
 
         /// <summary>
