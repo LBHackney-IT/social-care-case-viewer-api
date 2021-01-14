@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetAllocationUseCase> _mockGetAllocationsUseCase;
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
-        private Mock<ICreateAllocationUseCase> __mockCreateAllocationUseCase;
+        private Mock<ICreateAllocationUseCase> _mockCreateAllocationUseCase;
         private Fixture _fixture;
 
         [SetUp]
@@ -34,12 +34,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllocationsUseCase = new Mock<IGetAllocationUseCase>();
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
-            __mockCreateAllocationUseCase = new Mock<ICreateAllocationUseCase>();
+            _mockCreateAllocationUseCase = new Mock<ICreateAllocationUseCase>();
 
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockGetAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            __mockCreateAllocationUseCase.Object);
+            _mockCreateAllocationUseCase.Object);
 
             _fixture = new Fixture();
         }
@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = _fixture.Create<CreateAllocationRequest>();
 
-            __mockCreateAllocationUseCase.Setup(x => x.Execute(request))
+            _mockCreateAllocationUseCase.Setup(x => x.Execute(request))
                 .Returns(request);
 
             var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;

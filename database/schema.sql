@@ -211,6 +211,7 @@ create table dbo.SCCV_ALLOCATIONS
 	LAC 						varchar(10)
 );
 
+alter table dbo.sccv_allocations alter column full_name drop not null;
 --import new persons script
 do
 $$
@@ -276,7 +277,7 @@ CREATE TABLE DBO.SCCV_WORKER
 	FIRST_NAME	varchar(100) NOT NULL,
 	LAST_NAME	varchar(100) NOT NULL,
 	TEAM_ID		bigint,
-	ROLE		varchar(200)	
+	ROLE		varchar(200)
 );
 
 CREATE TABLE DBO.SCCV_TEAM
