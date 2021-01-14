@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(30)]
         public string LastName { get; set; }
 
-        [Column("full_name"), Required]
+        [Column("full_name")]
         [MaxLength(62)]
         public string FullName { get; set; }
 
