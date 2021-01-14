@@ -201,9 +201,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public List<Worker> GetWorkers(int teamId)
+        public List<Worker> GetWorkers(int? teamId = null, int? id = null)
         {
-            return _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList();
+            return (teamId != null) ?
+                _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList() :
+                _databaseContext.Workers.Where(x => x.Id == id).ToList();
+            ;
         }
 
         public List<Team> GetTeams(string context)

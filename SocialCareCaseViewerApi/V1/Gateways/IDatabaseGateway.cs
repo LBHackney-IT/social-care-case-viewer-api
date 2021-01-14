@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         CreateAllocationRequest CreateAllocation(CreateAllocationRequest request);
         string GetPersonIdByNCReference(string nfReference);
         string GetNCReferenceByPersonId(string personId);
-        List<Worker> GetWorkers(int teamId);
+        List<Worker> GetWorkers(int? teamId, int? id);
         List<Team> GetTeams(string context);
     }
 }
