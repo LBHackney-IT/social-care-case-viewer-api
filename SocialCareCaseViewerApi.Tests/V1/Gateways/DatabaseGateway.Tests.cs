@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -13,11 +14,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     {
         private DatabaseGateway _classUnderTest;
         private Fixture _fixture = new Fixture();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new DatabaseGateway(DatabaseContext);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
         }
 
         [Test]
@@ -32,8 +35,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             query.Count().Should().Be(1);
 
             var insertedRecord = query.First();
-            insertedRecord.Id.Should().NotBeNullOrEmpty();
-            insertedRecord.Id.Should().BeEquivalentTo(request.MosaicId.ToString());
+            insertedRecord.MosaicId.Should().NotBeNullOrEmpty();
+            insertedRecord.MosaicId.Should().BeEquivalentTo(request.MosaicId.ToString());
             insertedRecord.WorkerEmail.Should().BeEquivalentTo(request.WorkerEmail);
             insertedRecord.AllocatedWorkerTeam.Should().BeEquivalentTo(request.AllocatedWorkerTeam);
         }

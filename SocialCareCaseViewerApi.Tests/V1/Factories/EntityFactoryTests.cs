@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new AllocationSet()
             {
-                Id = id.ToString(),
+                MosaicId = id.ToString(),
                 WorkerEmail = email,
                 AllocatedWorkerTeam = team
             };

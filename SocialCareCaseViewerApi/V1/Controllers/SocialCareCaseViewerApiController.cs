@@ -143,6 +143,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// create new allocations for workers
+        /// </summary>
+        /// <response code="201">Allocation successfully inserted</response>
+        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("allocations")]
+        public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
+        {
+            var result = _allocationUseCase.ExecutePost(request);
+            return CreatedAtAction("CreateAllocation", result, result);
+        }
+
+        /// <summary>
         /// Deallocate worker. Other allocation updates are not supported at the moment
         /// <response code="200">Record successfully updated</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>

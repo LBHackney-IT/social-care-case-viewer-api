@@ -214,6 +214,7 @@ create table dbo.SCCV_ALLOCATIONS
 --update to support allocation management from application
 
 alter table dbo.SCCV_ALLOCATIONS ADD COLUMN Id SERIAL PRIMARY KEY;
+alter table dbo.sccv_allocations alter column full_name drop not null;
 
 --import new persons script
 do

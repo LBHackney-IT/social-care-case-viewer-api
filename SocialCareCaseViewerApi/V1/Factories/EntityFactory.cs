@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new AllocationSet
             {
-                Id = request.MosaicId.ToString(),
+                MosaicId = request.MosaicId.ToString(),
                 WorkerEmail = request.WorkerEmail,
                 AllocatedWorkerTeam = request.AllocatedWorkerTeam
             };

@@ -207,6 +207,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList();
         }
 
+        public CreateAllocationRequest CreateAllocation(CreateAllocationRequest request)
+        {
+            var entity = request.ToEntity();
+            _databaseContext.Allocations.Add(entity);
+            _databaseContext.SaveChanges();
+            return request;
+        }
+
         public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
         {
             DateTime dt = DateTime.Now;

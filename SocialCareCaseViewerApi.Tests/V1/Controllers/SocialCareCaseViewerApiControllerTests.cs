@@ -169,11 +169,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
         #region Allocations
         [Test]
+        public void CreateAllocationReturns201WhenSuccessful()
+        {
+            var request = _fixture.Create<CreateAllocationRequest>();
+
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
+                .Returns(request);
+
+            var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(request);
+        }
+
+        [Test]
         public void UpdateAllocationReturns200WhenSuccessful()
         {
             var request = new UpdateAllocationRequest() { Id = _fixture.Create<int>() };
 
-            bool result = true;
+            UpdateAllocationResponse result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() }; //TODO: test end to end with valid format
 
             _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
 

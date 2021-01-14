@@ -1,3 +1,5 @@
+using AutoFixture;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -12,6 +14,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private AllocationsUseCase _allocationsUseCase;
+        private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -41,15 +44,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void UpdateAllocationReturnsCorrectIntValue()
+        public void UpdateAllocationReturnsCorrectCaseNoteId()
         {
             UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1 };
 
-            _mockDatabaseGateway.Setup(x => x.UpdateAllocation(It.Is<UpdateAllocationRequest>(x => x == request))).Returns(new UpdateAllocationResponse());
+            UpdateAllocationResponse expectedResponse = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
+
+            _mockDatabaseGateway.Setup(x => x.UpdateAllocation(It.Is<UpdateAllocationRequest>(x => x == request))).Returns(expectedResponse);
 
             var response = _allocationsUseCase.ExecuteUpdate(request);
 
-            Assert.AreEqual(1, response);
+            Assert.AreEqual(expectedResponse.CaseNoteId, response.CaseNoteId);
+        }
+
+        [Test]
+        public void ExecuteReturnsTheRequest()
+        {
+            var stubbedRequest = _fixture.Create<CreateAllocationRequest>();
+
+            _mockDatabaseGateway.Setup(x => x.CreateAllocation(It.IsAny<CreateAllocationRequest>()))
+                .Returns(stubbedRequest);
+
+            var response = _allocationsUseCase.ExecutePost(new CreateAllocationRequest());
+
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(stubbedRequest);
         }
     }
 }

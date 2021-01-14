@@ -23,5 +23,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             return _databaseGateway.UpdateAllocation(request);
         }
+
+        public CreateAllocationRequest ExecutePost(CreateAllocationRequest request)
+        {
+            return _databaseGateway.CreateAllocation(request);
+        }
     }
 }
