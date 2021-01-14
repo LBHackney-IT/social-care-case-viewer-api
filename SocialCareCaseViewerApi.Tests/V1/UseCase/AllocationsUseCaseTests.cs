@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1 };
 
-            _mockDatabaseGateway.Setup(x => x.UpdateAllocation(It.Is<UpdateAllocationRequest>(x => x == request))).Returns(new UpdateAllocationResponse());  
+            _mockDatabaseGateway.Setup(x => x.UpdateAllocation(It.Is<UpdateAllocationRequest>(x => x == request))).Returns(new UpdateAllocationResponse());
 
             var response = _allocationsUseCase.ExecuteUpdate(request);
 
