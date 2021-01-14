@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = new ListWorkersResponse();
 
-            _mockDataBaseGateway.Setup(x => x.GetWorkers(It.IsAny<int>())).Returns(new List<DbWorker>());
+            _mockDataBaseGateway.Setup(x => x.GetWorkers(It.IsAny<int>(), It.IsAny<int>())).Returns(new List<DbWorker>());
 
             var result = _workersUseCase.ExecuteGet(request);
 

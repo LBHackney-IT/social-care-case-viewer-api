@@ -184,6 +184,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("workers")]
         public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
         {
+            if (request.Id != null)
+            {
+                if (request.Id < 1)
+                {
+                    return StatusCode(400, "Please enter a value bigger than 0");
+                }
+                else if (request.Id > int.MaxValue)
+                {
+                    return StatusCode(400, "Id value to large");
+
+                }
+            }
+
+            if (request.TeamId != null)
+            {
+                if (request.TeamId < 1)
+                {
+                    return StatusCode(400, "Please enter a value bigger than 0");
+                }
+                else if (request.TeamId > int.MaxValue)
+                {
+                    return StatusCode(400, "Id value to large");
+
+                }
+            }
+
             return Ok(_workersUseCase.ExecuteGet(request));
         }
 

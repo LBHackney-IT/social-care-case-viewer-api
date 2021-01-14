@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public ListWorkersResponse ExecuteGet(ListWorkersRequest request)
         {
-            var workers = _databasegateway.GetWorkers(request.TeamId);
+            var workers = _databasegateway.GetWorkers(request.TeamId, request.Id);
 
             return new ListWorkersResponse() { Workers = EntityFactory.ToDomain(workers) };
         }
