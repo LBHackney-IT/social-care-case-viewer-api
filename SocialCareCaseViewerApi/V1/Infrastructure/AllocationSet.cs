@@ -7,13 +7,18 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("sccv_allocations", Schema = "dbo")]
     public class AllocationSet
     {
+        [Column("id")]
+        [Key]
+        public int Id { get; set; }
+
         [Column("mosaic_id")]
         [MaxLength(16)]
-        public string Id { get; set; }
+        public string MosaicId { get; set; }
 
         [Column("first_name")]
         [MaxLength(30)]
         public string FirstName { get; set; }
+
         [Column("last_name")]
         [MaxLength(30)]
         public string LastName { get; set; }
@@ -121,5 +126,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("lac")]
         [MaxLength(10)]
         public string LAC { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

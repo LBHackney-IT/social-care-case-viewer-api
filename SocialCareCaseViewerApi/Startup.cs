@@ -132,7 +132,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IGetAllUseCase, GetAllUseCase>();
             services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
             services.AddScoped<IProcessDataUseCase, ProcessDataUseCase>();
-            services.AddScoped<IGetAllocationUseCase, GetAllocationUseCase>();
+            services.AddScoped<IAllocationsUseCase, AllocationsUseCase>();
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
             services.AddScoped<ITeamsUseCase, TeamsUseCase>();
         }

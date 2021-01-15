@@ -3,9 +3,9 @@ CREATE SCHEMA IF NOT EXISTS dbo;
 --Obsolete as of 21/12/2020
 -- create table dbo.ASC_ALLOCATIONS
 -- (
-    -- MOSAIC_ID                   bigint not null,
+    -- MOSAIC_ID                   bigint not null,     
     -- LAST_NAME                   varchar(30) not null,
-    -- FIRST_NAME                  varchar(30) not null,
+    -- FIRST_NAME                  varchar(30) not null, 
     -- DATE_OF_BIRTH               timestamp,
     -- AGE                         int,
     -- PRIMARY_SUPPORT_REASON      varchar(100),
@@ -23,7 +23,7 @@ CREATE SCHEMA IF NOT EXISTS dbo;
 
 -- create table dbo.CFS_ALLOCATIONS
 -- (
-    -- MOSAIC_ID                   bigint not null,
+    -- MOSAIC_ID                   bigint not null,      
     -- FULL_NAME                   varchar(62) not null,
     -- GROUP_ID                    bigint,
     -- ETHNICITY                   varchar(33),
@@ -169,7 +169,7 @@ create table dbo.SCCV_PERSONS_LOOKUP
 (
     PERSON_ID             varchar(100) not null constraint XPKDM_PERSONS_LOOKUP primary key,
     NC_ID            	  varchar(100) not null,
-    CREATED_ON            timestamp not null default now(),
+    CREATED_ON            timestamp not null default now(),	
 	CONSTRAINT unique_ids UNIQUE (NC_ID)
 );
 -- alter person table to support longer names
@@ -179,8 +179,8 @@ ALTER TABLE dbo.DM_PERSONS ALTER COLUMN FULL_NAME TYPE varchar(255);
 
 create table dbo.SCCV_ALLOCATIONS
 (
-    MOSAIC_ID                   varchar(100) not null,
-    FULL_NAME                   varchar(255),
+    MOSAIC_ID                   varchar(100) not null,      
+    FULL_NAME                   varchar(255) not null,
     GROUP_ID                    bigint,
     ETHNICITY                   varchar(33),
     SUB_ETHNICITY               varchar(33),
@@ -211,7 +211,11 @@ create table dbo.SCCV_ALLOCATIONS
 	LAC 						varchar(10)
 );
 
+--update to support allocation management from application
+
+alter table dbo.SCCV_ALLOCATIONS ADD COLUMN Id SERIAL PRIMARY KEY;
 alter table dbo.sccv_allocations alter column full_name drop not null;
+
 --import new persons script
 do
 $$
@@ -277,7 +281,7 @@ CREATE TABLE DBO.SCCV_WORKER
 	FIRST_NAME	varchar(100) NOT NULL,
 	LAST_NAME	varchar(100) NOT NULL,
 	TEAM_ID		bigint,
-	ROLE		varchar(200)
+	ROLE		varchar(200)	
 );
 
 CREATE TABLE DBO.SCCV_TEAM
