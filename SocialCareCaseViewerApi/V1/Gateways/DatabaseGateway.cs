@@ -207,12 +207,96 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList();
         }
 
-        public CreateAllocationRequest CreateAllocation(CreateAllocationRequest request)
+        public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
-            var entity = request.ToEntity();
+            CreateAllocationResponse response = new CreateAllocationResponse();
+
+            //get worker details
+            Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
+
+            if (string.IsNullOrEmpty(worker?.Email))
+            {
+                throw new CreateAllocationException("Worker details cannot be found");
+            }
+
+            //get team details for the note
+            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == worker.TeamId);
+
+            if (team?.Id == null)
+            {
+                throw new CreateAllocationException("Team details cannot be found");
+            }
+
+            var entity = request.ToEntity(worker.Email);
             _databaseContext.Allocations.Add(entity);
+                
+
+            //grab id of the newly created entity so it can be deleted
+
             _databaseContext.SaveChanges();
-            return request;
+
+            int allocationId = entity.Id; //new given id will be available here
+
+            //check that person exists
+            Person person = _databaseContext.Persons.Where(x => x.Id == request.MosaicId).FirstOrDefault();
+
+            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.AllocatedBy);
+
+            //TOOD check that allocated by user exists
+
+            if (person == null)
+            {
+                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
+                _databaseContext.Allocations.Remove(allocationToDelete);
+                _databaseContext.SaveChanges();
+
+                throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
+            }
+
+            if (allocatedBy == null)
+            {
+                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
+                _databaseContext.Allocations.Remove(allocationToDelete);
+                _databaseContext.SaveChanges();
+
+                throw new CreateAllocationException($"Worker with given allocated by email address ({request.AllocatedBy}) not found");
+            }
+
+            //Add note
+            try
+            {
+                DateTime dt = DateTime.Now;
+
+                //add case note
+                AllocationCaseNote note = new AllocationCaseNote()
+                {
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    MosaicId = person.Id.ToString(),
+                    Timestamp = dt,
+                    WorkerEmail = worker.Email,
+                    Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                    FormNameOverall = "API_Allocation" 
+                };
+
+                CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+                {
+                    CaseFormData = JsonConvert.SerializeObject(note)
+                };
+
+                response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+            }
+            catch (Exception ex)
+            {
+                //roll back allocation record
+                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
+                _databaseContext.Allocations.Remove(allocationToDelete);
+                _databaseContext.SaveChanges();
+
+                throw new UpdateAllocationException($"Unable to create a case note. Allocation not created: {ex.Message}");
+            }
+
+            return response;
         }
 
         public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)

@@ -18,6 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("first_name")]
         [MaxLength(30)]
         public string FirstName { get; set; }
+
         [Column("last_name")]
         [MaxLength(30)]
         public string LastName { get; set; }

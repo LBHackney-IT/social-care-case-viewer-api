@@ -16,4 +16,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public UpdateAllocationException(string message) : base(message) { }
     }
+
+    public class CreateAllocationException : Exception
+    {
+        public CreateAllocationException(string message) : base(message) { }
+    }
 }

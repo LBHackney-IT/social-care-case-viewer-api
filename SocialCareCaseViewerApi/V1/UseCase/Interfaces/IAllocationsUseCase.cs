@@ -9,7 +9,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         UpdateAllocationResponse ExecuteUpdate(UpdateAllocationRequest request);
 
-        CreateAllocationRequest ExecutePost(CreateAllocationRequest request);
-
+        CreateAllocationResponse ExecutePost(CreateAllocationRequest request);
     }
 }

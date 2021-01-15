@@ -72,13 +72,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static AllocationSet ToEntity(this CreateAllocationRequest request)
+        public static AllocationSet ToEntity(this CreateAllocationRequest request, string workerEmail)
         {
             return new AllocationSet
             {
                 MosaicId = request.MosaicId.ToString(),
-                WorkerEmail = request.WorkerEmail,
-                AllocatedWorkerTeam = request.AllocatedWorkerTeam
+                WorkerEmail = workerEmail
             };
         }
     }

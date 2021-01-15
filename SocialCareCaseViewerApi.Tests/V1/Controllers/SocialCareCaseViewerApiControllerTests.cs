@@ -172,15 +172,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void CreateAllocationReturns201WhenSuccessful()
         {
             var request = _fixture.Create<CreateAllocationRequest>();
+            var responseObject = new CreateAllocationResponse();
 
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
-                .Returns(request);
+                .Returns(responseObject);
 
             var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(request);
+            response.Value.Should().BeEquivalentTo(responseObject);
         }
 
         [Test]

@@ -79,25 +79,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
-            var id = _faker.Random.Long();
-            var email = _faker.Name.ToString();
-            var team = _faker.Company.ToString();
+            var personId = _faker.Random.Long();
+            var allocatedBy = _faker.Internet.Email(); //email
+            var workerId = _faker.Random.Number();
+
+            //from lookup
+            var workerEmail = _faker.Internet.Email();
 
             var allocationRequest = new CreateAllocationRequest()
             {
-                MosaicId = id,
-                WorkerEmail = email,
-                AllocatedWorkerTeam = team
+                MosaicId = personId,
+                AllocatedBy = allocatedBy,
+                AllocatedWorkerId = workerId
             };
 
             var expectedResponse = new AllocationSet()
             {
-                MosaicId = id.ToString(),
-                WorkerEmail = email,
-                AllocatedWorkerTeam = team
+                MosaicId = personId.ToString(),
+                WorkerEmail = workerEmail
             };
 
-            allocationRequest.ToEntity().Should().BeEquivalentTo(expectedResponse);
+            allocationRequest.ToEntity(workerEmail).Should().BeEquivalentTo(expectedResponse);
         }
     }
 }
