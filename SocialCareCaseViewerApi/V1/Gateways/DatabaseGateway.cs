@@ -230,19 +230,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var entity = request.ToEntity(worker.Email);
             _databaseContext.Allocations.Add(entity);
 
-
-            //grab id of the newly created entity so it can be deleted
-
             _databaseContext.SaveChanges();
 
             int allocationId = entity.Id; //new given id will be available here
 
-            //check that person exists
+            //check that required records exist
             Person person = _databaseContext.Persons.Where(x => x.Id == request.MosaicId).FirstOrDefault();
 
             Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.AllocatedBy);
-
-            //TOOD check that allocated by user exists
 
             if (person == null)
             {
@@ -267,7 +262,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 DateTime dt = DateTime.Now;
 
-                //add case note
                 AllocationCaseNote note = new AllocationCaseNote()
                 {
                     FirstName = person.FirstName,
@@ -332,10 +326,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     _databaseContext.SaveChanges();
 
-                    //TODO: come up with proper architecture for this kind of updates. Ideally using transactions against single data source
+                    //TODO: use single data source for records and case notes
                     try
                     {
-                        //add case note
                         DeallocationCaseNote note = new DeallocationCaseNote()
                         {
                             FirstName = person.FirstName,
