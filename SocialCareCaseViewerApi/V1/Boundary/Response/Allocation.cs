@@ -47,5 +47,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string CaseClosureDate { get; set; }
         public string WorkerEmail { get; set; }
         public string LAC { get; set; }
+        public int Id { get; set; }
     }
 }

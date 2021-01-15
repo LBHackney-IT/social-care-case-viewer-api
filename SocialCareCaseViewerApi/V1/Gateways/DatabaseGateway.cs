@@ -65,7 +65,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CaseStatus = rec.CaseStatus,
                     CaseClosureDate = (rec.CaseClosureDate != null) ? rec.CaseClosureDate.ToString() : null,
                     WorkerEmail = rec.WorkerEmail,
-                    LAC = rec.LAC
+                    LAC = rec.LAC,
+                    Id = rec.Id
                 }
                 ).ToList();
 
