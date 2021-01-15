@@ -205,7 +205,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public List<Team> GetTeams(string context)
         {
-            return _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList();
+            return (context.ToUpper()) switch
+            {
+                "B" => _databaseContext.Teams.ToList(),
+                _ => _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList(),
+            };
         }
 
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
