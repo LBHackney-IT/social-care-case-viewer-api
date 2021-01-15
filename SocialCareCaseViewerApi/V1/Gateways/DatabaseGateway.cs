@@ -229,7 +229,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var entity = request.ToEntity(worker.Email);
             _databaseContext.Allocations.Add(entity);
-                
+
 
             //grab id of the newly created entity so it can be deleted
 
@@ -276,7 +276,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt,
                     WorkerEmail = worker.Email,
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
-                    FormNameOverall = "API_Allocation" 
+                    FormNameOverall = "API_Allocation"
                 };
 
                 CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
