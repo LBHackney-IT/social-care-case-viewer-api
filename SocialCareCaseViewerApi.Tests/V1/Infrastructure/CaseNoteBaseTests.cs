@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void CaseNoteBaseHasTimestamp()
         {
-            Assert.AreEqual(new DateTime(), _caseNoteBase.Timestamp);
+            Assert.AreEqual(null, _caseNoteBase.Timestamp);
         }
 
         [Test]
@@ -52,6 +52,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         public void CaseNoteBaseHasFormNameOverall()
         {
             Assert.CatchAsync(null, _caseNoteBase.FormNameOverall);
+        }
+
+        [Test]
+        public void CaseNoteBaseHasIsImported()
+        {
+            Assert.IsFalse(_caseNoteBase.IsImported);
         }
     }
 }

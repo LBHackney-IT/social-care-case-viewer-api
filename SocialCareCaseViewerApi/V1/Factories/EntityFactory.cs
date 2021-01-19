@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -72,12 +73,14 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static AllocationSet ToEntity(this CreateAllocationRequest request, string workerEmail)
+        public static AllocationSet ToEntity(this CreateAllocationRequest request, long workerId, DateTime allocationStartDate, string caseStatus)
         {
             return new AllocationSet
             {
-                MosaicId = request.MosaicId.ToString(),
-                WorkerEmail = workerEmail
+                MosaicId = request.MosaicId,
+                WorkerId = workerId,
+                AllocationStartDate = allocationStartDate,
+                CaseStatus = caseStatus
             };
         }
     }

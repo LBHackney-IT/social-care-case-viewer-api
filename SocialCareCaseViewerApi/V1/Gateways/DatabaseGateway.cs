@@ -27,48 +27,29 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _processDataGateway = processDataGateway;
         }
 
-        public List<Allocation> SelectAllocations(string mosaicId)
-        {
-            //check if we have lookup details for this id
-            string personId = GetNCReferenceByPersonId(mosaicId);
+        public List<Allocation> SelectAllocations(long mosaicId) {
 
-            if (!string.IsNullOrEmpty(personId)) mosaicId = personId;
+            List<Allocation> allocations = (
+                from allocation in _databaseContext.Allocations
 
-            var allocations = _databaseContext.Allocations.Where(x => x.MosaicId.ToUpper() == mosaicId.ToUpper())
-                .Select(rec => new Allocation
-                {
-                    PersonId = rec.MosaicId,
-                    FirstName = rec.FirstName,
-                    LastName = rec.LastName,
-                    DateOfBirth = (rec.DateOfBirth != null) ? rec.DateOfBirth.ToString() : null,
-                    Gender = rec.Gender,
-                    GroupId = (rec.GroupId != null) ? rec.GroupId : null,
-                    Ethnicity = rec.Ethnicity,
-                    SubEthnicity = rec.SubEthnicity,
-                    Religion = rec.Religion,
-                    ServiceUserGroup = rec.ServiceUserGroup,
-                    SchoolName = rec.SchoolName,
-                    SchoolAddress = rec.SchoolAddress,
-                    GpName = rec.GpName,
-                    GpAddress = rec.GpAddress,
-                    GpSurgery = rec.GpSurgery,
-                    AllocatedWorker = rec.AllocatedWorker,
-                    WorkerType = rec.WorkerType,
-                    AllocatedWorkerTeam = rec.AllocatedWorkerTeam,
-                    TeamName = rec.TeamName,
-                    AllocationStartDate = (rec.AllocationStartDate != null) ? rec.AllocationStartDate.ToString() : null,
-                    AllocationEndDate = (rec.AllocationEndDate != null) ? rec.AllocationEndDate.ToString() : null,
-                    LegalStatus = rec.LegalStatus,
-                    Placement = rec.Placement,
-                    OnCpRegister = rec.OnCpRegister,
-                    ContactAddress = rec.ContactAddress,
-                    CaseStatus = rec.CaseStatus,
-                    CaseClosureDate = (rec.CaseClosureDate != null) ? rec.CaseClosureDate.ToString() : null,
-                    WorkerEmail = rec.WorkerEmail,
-                    LAC = rec.LAC,
-                    Id = rec.Id
-                }
-                ).ToList();
+                join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
+                from w in Workers.DefaultIfEmpty()
+
+                join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
+                from t in Teams.DefaultIfEmpty()
+
+                    select new Allocation()
+                    {
+                        PersonId = allocation.MosaicId,
+                        AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
+                        AllocatedWorkerTeam = t.Name,
+                        WorkerType = w.Role,
+                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.ToString() : null,
+                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.ToString() : null,
+                        CaseStatus = allocation.CaseStatus,
+                    }
+
+                ).Where(x => x.PersonId == mosaicId).ToList();
 
             return allocations;
         }
@@ -232,17 +213,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CreateAllocationException("Team details cannot be found");
             }
 
-            var entity = request.ToEntity(worker.Email);
+            var entity = request.ToEntity(worker.Id, DateTime.Now, "Open");
             _databaseContext.Allocations.Add(entity);
-
             _databaseContext.SaveChanges();
 
             int allocationId = entity.Id; //new given id will be available here
 
             //check that required records exist
-            Person person = _databaseContext.Persons.Where(x => x.Id == request.MosaicId).FirstOrDefault();
+            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
 
-            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.AllocatedBy);
+            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.AllocatedBy.ToUpper());
 
             if (person == null)
             {
@@ -272,7 +252,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     FirstName = person.FirstName,
                     LastName = person.LastName,
                     MosaicId = person.Id.ToString(),
-                    Timestamp = dt,
+                    Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = worker.Email,
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation"
@@ -314,14 +294,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         throw new UpdateAllocationException("Allocation already closed");
                     }
 
-                    long mosaicId = Convert.ToInt64(allocation.MosaicId);
-
                     //check that person exists
-                    Person person = _databaseContext.Persons.Where(x => x.Id == mosaicId).FirstOrDefault();
+                    Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.MosaicId);
 
                     if (person == null)
                     {
                         throw new UpdateAllocationException("Person not found");
+                    }
+
+                    Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == allocation.WorkerId);
+
+                    if(worker == null)
+                    {
+                        throw new UpdateAllocationException("Worker now found");
                     }
 
                     //copy existing values in case adding note fails
@@ -339,8 +324,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             FirstName = person.FirstName,
                             LastName = person.LastName,
                             MosaicId = person.Id.ToString(),
-                            Timestamp = dt,
-                            WorkerEmail = tmpAllocation.WorkerEmail,
+                            Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), 
+                            WorkerEmail = worker.Email, //required for my cases search
                             DeallocationReason = request.DeallocationReason,
                             FormNameOverall = "API_Deallocation" //prefix API notes so they are easy to identify
                         };
@@ -379,25 +364,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt)
         {
-            allocation.AllocatedWorker = "";
-            allocation.WorkerType = "";
-            allocation.AllocatedWorkerTeam = "";
-            allocation.TeamName = "";
             allocation.AllocationEndDate = dt;
             allocation.CaseStatus = "Closed";
-            allocation.WorkerEmail = "";
+            allocation.WorkerId = null;
             allocation.CaseClosureDate = dt;
         }
 
         private static void RestoreAllocationValues(AllocationSet tmpAllocation, AllocationSet allocationToRestore)
         {
-            allocationToRestore.AllocatedWorker = tmpAllocation.AllocatedWorker;
-            allocationToRestore.WorkerType = tmpAllocation.WorkerType;
-            allocationToRestore.AllocatedWorkerTeam = tmpAllocation.AllocatedWorkerTeam;
-            allocationToRestore.TeamName = tmpAllocation.TeamName;
             allocationToRestore.AllocationEndDate = tmpAllocation.AllocationEndDate;
             allocationToRestore.CaseStatus = tmpAllocation.CaseStatus;
-            allocationToRestore.WorkerEmail = tmpAllocation.WorkerEmail;
+            allocationToRestore.WorkerId = tmpAllocation.WorkerId;
             allocationToRestore.CaseClosureDate = tmpAllocation.CaseClosureDate;
         }
     }

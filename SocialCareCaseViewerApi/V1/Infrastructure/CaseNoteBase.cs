@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -12,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string LastName { get; set; }
 
         [JsonProperty("timestamp")]
-        public DateTime Timestamp { get; set; }
+        public string Timestamp { get; set; }
 
         [JsonProperty("mosaic_id")]
         public string MosaicId { get; set; }
@@ -22,5 +21,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [JsonProperty("form_name_overall")]
         public string FormNameOverall { get; set; }
+
+        [JsonProperty("is_imported")]
+        public bool IsImported { get; set; } = false;
     }
 }

@@ -90,12 +90,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.Allocations;
 
             //TODO: set this up so that local testing is easy and always run against clean datasets
-            var insertedRecord = query.FirstOrDefault(x => x.MosaicId == mosaicId.ToString());
+            var insertedRecord = query.FirstOrDefault(x => x.MosaicId == mosaicId);
 
             Assert.IsNotNull(insertedRecord);
-            insertedRecord.MosaicId.Should().NotBeNullOrEmpty();
-            insertedRecord.MosaicId.Should().BeEquivalentTo(request.MosaicId.ToString());
-            insertedRecord.WorkerEmail.Should().BeEquivalentTo(workerEmail);
+            insertedRecord.MosaicId.Should().NotBe(null);
+            Assert.AreEqual(insertedRecord.MosaicId, request.MosaicId);
+            Assert.AreEqual(insertedRecord.WorkerId, workerId);
         }
     }
 }

@@ -211,10 +211,17 @@ create table dbo.SCCV_ALLOCATIONS
 	LAC 						varchar(10)
 );
 
---update to support allocation management from application
-
-alter table dbo.SCCV_ALLOCATIONS ADD COLUMN Id SERIAL PRIMARY KEY;
-alter table dbo.sccv_allocations alter column full_name drop not null;
+-- new simplified allocations table. Person, worker and team details are now available in separate tables
+create table dbo.SCCV_ALLOCATIONS_COMBINED
+(
+    ID SERIAL PRIMARY KEY,
+	MOSAIC_ID                   bigint not null, 
+	WORKER_ID                	bigint,
+	ALLOCATION_START_DATE       timestamp,
+    ALLOCATION_END_DATE         timestamp,
+	CASE_STATUS_OPEN_CLOSED     varchar(7),
+    CLOSURE_DATE_IF_CLOSED      timestamp
+);
 
 --import new persons script
 do

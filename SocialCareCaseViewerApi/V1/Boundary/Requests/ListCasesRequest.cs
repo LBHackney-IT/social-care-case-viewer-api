@@ -1,6 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -34,12 +33,5 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "limit")]
         public int Limit { get; set; } = 20;
-    }
-
-    public class ListAllocationsRequest
-    {
-        [FromQuery(Name = "mosaic_id")]
-        [Required]
-        public string MosaicId { get; set; }
     }
 }

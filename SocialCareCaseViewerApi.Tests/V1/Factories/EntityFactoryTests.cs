@@ -5,6 +5,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
@@ -82,9 +83,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var personId = _faker.Random.Long();
             var allocatedBy = _faker.Internet.Email(); //email
             var workerId = _faker.Random.Number();
-
-            //from lookup
-            var workerEmail = _faker.Internet.Email();
+            var dt = DateTime.Now;
+            var caseStatus = "Open";
 
             var allocationRequest = new CreateAllocationRequest()
             {
@@ -95,11 +95,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new AllocationSet()
             {
-                MosaicId = personId.ToString(),
-                WorkerEmail = workerEmail
+                MosaicId = personId,
+                WorkerId = workerId,
+                AllocationStartDate = dt,
+                CaseStatus = caseStatus
             };
 
-            allocationRequest.ToEntity(workerEmail).Should().BeEquivalentTo(expectedResponse);
+            allocationRequest.ToEntity(workerId, dt, caseStatus).Should().BeEquivalentTo(expectedResponse);
         }
     }
 }
