@@ -14,5 +14,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
 
         public string Role { get; set; }
 
+        public int AllocationCount { get; set; }
     }
 }

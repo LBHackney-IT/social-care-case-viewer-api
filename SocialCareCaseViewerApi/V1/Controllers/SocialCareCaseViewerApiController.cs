@@ -130,14 +130,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
 
         /// <summary>
-        /// Find cfs allocations by Mosaic ID or officer email
+        /// Find allocations by Mosaic ID or officer email
         /// </summary>
         /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
-        /// <response code="404">No allocations found for the specified ID or officer email</response>
+        /// <response code="404">No allocations found for the specified mosaic id or worker id</response>
         [ProducesResponseType(typeof(AllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("allocations")]
-        public IActionResult GetAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        public IActionResult GetAllocations([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_allocationUseCase.Execute(request));
         }

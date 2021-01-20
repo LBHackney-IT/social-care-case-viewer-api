@@ -19,7 +19,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var workers = _databasegateway.GetWorkers(request.TeamId);
 
-            return new ListWorkersResponse() { Workers = EntityFactory.ToDomain(workers) };
+            //get allocations
+            //TODO: refactor to use db view or proper queries
+            var allocationDetails = _databasegateway.GetWorkerAllocations(workers);
+
+            return new ListWorkersResponse() { Workers = EntityFactory.ToDomain(workers, allocationDetails) };
         }
     }
 }

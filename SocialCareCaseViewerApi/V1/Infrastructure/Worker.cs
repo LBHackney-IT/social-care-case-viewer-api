@@ -32,6 +32,5 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("role")]
         [MaxLength(200)]
         public string Role { get; set; }
-
     }
 }

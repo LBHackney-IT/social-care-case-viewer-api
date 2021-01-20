@@ -49,5 +49,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         {
             Assert.IsNull(_worker.Role);
         }
+
+        [Test]
+        public void WorkerHasAllocationsCount()
+        {
+            Assert.AreEqual(0, _worker.AllocationCount);
+        }
     }
 }
