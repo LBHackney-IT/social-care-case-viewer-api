@@ -23,14 +23,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(0, _request.MosaicId);
         }
 
+        [Test]
+        public void RequestHasWorkerId()
+        {
+            Assert.AreEqual(0, _request.WorkerId);
+        }
+
         #region Model validation
         [Test]
-        public void ValidationFailsIfMosaicIdIsNotBiggerThan0()
+        public void ValidationFailsWhenMosaicIdAndWorkerIdAreNotProvided()
         {
             var errors = ValidationHelper.ValidateModel(_request);
 
             Assert.AreEqual(errors.Count, 1);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide either mosaic_id or worker_id")));
+        }
+
+        [Test]
+        public void ValidationFailsWhenBothMosaicIdAndWorkerIdAreProvided()
+        {
+            _request.MosaicId = 50;
+            _request.WorkerId = 30;
+
+            var errors = ValidationHelper.ValidateModel(_request);
+
+            Assert.AreEqual(errors.Count, 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide only mosaic_id or worker_id, but not both")));
         }
         #endregion
     }

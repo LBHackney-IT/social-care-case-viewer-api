@@ -27,16 +27,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _processDataGateway = processDataGateway;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId) {
+        public List<Allocation> SelectAllocations(long mosaicId, long workerId) {
 
-            List<Allocation> allocations = (
-                from allocation in _databaseContext.Allocations
+            List<Allocation> allocations = new List<Allocation>();
+            //TODO: look into using navigation properties
+            if (mosaicId != 0)  
+            {
+                allocations = (
+                    from allocation in _databaseContext.Allocations
 
-                join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
-                from w in Workers.DefaultIfEmpty()
+                    join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
+                    from w in Workers.DefaultIfEmpty()
 
-                join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
-                from t in Teams.DefaultIfEmpty()
+                    join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
+                    from t in Teams.DefaultIfEmpty()
+
+                    where allocation.MosaicId == mosaicId
 
                     select new Allocation()
                     {
@@ -44,12 +50,39 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
-                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.ToString() : null,
-                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.ToString() : null,
-                        CaseStatus = allocation.CaseStatus,
+                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.Value.ToString("dd/MM/yyyy") : null,
+                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.Value.ToString("dd/MM/yyyy") : null,
+                        CaseStatus = allocation.CaseStatus
                     }
 
-                ).Where(x => x.PersonId == mosaicId).ToList();
+                    ).ToList();
+            }
+            else if(workerId != 0)
+            {
+                allocations = (
+                    from allocation in _databaseContext.Allocations
+
+                    join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
+                    from w in Workers.DefaultIfEmpty()
+
+                    join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
+                    from t in Teams.DefaultIfEmpty()
+
+                    where w.Id == workerId
+
+                    select new Allocation()
+                    {
+                        PersonId = allocation.MosaicId,
+                        AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
+                        AllocatedWorkerTeam = t.Name,
+                        WorkerType = w.Role,
+                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.Value.ToString("dd/MM/yyyy") : null,
+                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.Value.ToString("dd/MM/yyyy") : null,
+                        CaseStatus = allocation.CaseStatus
+                    }
+
+                    ).ToList();
+            }
 
             return allocations;
         }
