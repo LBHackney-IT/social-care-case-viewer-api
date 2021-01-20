@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             {
                 return new ValidationResult($"Please provide either mosaic_id or worker_id");
             }
-            else if(mosaicId != 0 && workerId != 0)
+            else if (mosaicId != 0 && workerId != 0)
             {
                 return new ValidationResult($"Please provide only mosaic_id or worker_id, but not both");
             }

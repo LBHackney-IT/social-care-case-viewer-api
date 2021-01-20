@@ -27,11 +27,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _processDataGateway = processDataGateway;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId, long workerId) {
+        public List<Allocation> SelectAllocations(long mosaicId, long workerId)
+        {
 
             List<Allocation> allocations = new List<Allocation>();
             //TODO: look into using navigation properties
-            if (mosaicId != 0)  
+            if (mosaicId != 0)
             {
                 allocations = (
                     from allocation in _databaseContext.Allocations
@@ -57,7 +58,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     ).ToList();
             }
-            else if(workerId != 0)
+            else if (workerId != 0)
             {
                 allocations = (
                     from allocation in _databaseContext.Allocations
@@ -222,7 +223,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             List<dynamic> allocationsPerWorker = new List<dynamic>();
 
-            foreach(var worker in workers)
+            foreach (var worker in workers)
             {
                 allocationsPerWorker.Add(new { WorkerId = worker.Id, AllocationCount = _databaseContext.Allocations.Where(x => x.WorkerId == worker.Id).Count() });
             }
@@ -350,7 +351,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == allocation.WorkerId);
 
-                    if(worker == null)
+                    if (worker == null)
                     {
                         throw new UpdateAllocationException("Worker now found");
                     }
@@ -370,7 +371,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             FirstName = person.FirstName,
                             LastName = person.LastName,
                             MosaicId = person.Id.ToString(),
-                            Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), 
+                            Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
                             WorkerEmail = worker.Email, //required for my cases search
                             DeallocationReason = request.DeallocationReason,
                             FormNameOverall = "API_Deallocation" //prefix API notes so they are easy to identify
