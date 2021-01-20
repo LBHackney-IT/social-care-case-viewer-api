@@ -44,19 +44,22 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Worker ToDomain(this DbWorker worker)
+        public static Worker ToDomain(this DbWorker worker, List<dynamic> allocationDetails)
         {
+            var allocation = allocationDetails.Where(x => x.WorkerId == worker.Id).FirstOrDefault();
+
             return new Worker
             {
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                Id = worker.Id
+                Id = worker.Id,
+                AllocationCount = allocation?.AllocationCount == null ? 0 : allocation.AllocationCount
             };
         }
 
-        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers)
+        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers, List<dynamic> allocationDetails)
         {
-            return workers.Select(w => w.ToDomain()).ToList();
+            return workers.Select(w => w.ToDomain(allocationDetails)).ToList();
         }
 
         public static Team ToDomain(this DbTeam team)

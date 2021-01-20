@@ -25,12 +25,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("allocation_end_date")]
         public DateTime? AllocationEndDate { get; set; }
 
-        [Column("case_status_open_closed")]
-        [MaxLength(7)]
+        [Column("case_status")]
         public string CaseStatus { get; set; }
 
         [Column("closure_date_if_closed")]
-        public DateTime? CaseClosureDate { get; set; }      
+        public DateTime? CaseClosureDate { get; set; }
 
         public object Clone()
         {

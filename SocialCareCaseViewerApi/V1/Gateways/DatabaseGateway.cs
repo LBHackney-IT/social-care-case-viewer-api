@@ -217,6 +217,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList();
         }
 
+        //TODO: use db views or queries 
+        public List<dynamic> GetWorkerAllocations(List<Worker> workers)
+        {
+            List<dynamic> allocationsPerWorker = new List<dynamic>();
+
+            foreach(var worker in workers)
+            {
+                allocationsPerWorker.Add(new { WorkerId = worker.Id, AllocationCount = _databaseContext.Allocations.Where(x => x.WorkerId == worker.Id).Count() });
+            }
+
+            return allocationsPerWorker;
+        }
+
         public List<Team> GetTeams(string context)
         {
             return (context.ToUpper()) switch

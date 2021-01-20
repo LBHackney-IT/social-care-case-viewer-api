@@ -219,7 +219,7 @@ create table dbo.SCCV_ALLOCATIONS_COMBINED
 	WORKER_ID                	bigint,
 	ALLOCATION_START_DATE       timestamp,
     ALLOCATION_END_DATE         timestamp,
-	CASE_STATUS_OPEN_CLOSED     varchar(7),
+	CASE_STATUS					varchar(200),
     CLOSURE_DATE_IF_CLOSED      timestamp
 );
 
