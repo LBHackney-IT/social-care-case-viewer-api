@@ -171,6 +171,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = personId,
                 PostCode = addressRequest.Postcode,
                 Uprn = addressRequest.Uprn,
+                DisplayAddressFlag = "Y",
                 DataIsFromDmPersonsBackup = "N"
             };
 

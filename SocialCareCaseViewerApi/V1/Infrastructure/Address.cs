@@ -40,6 +40,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(15)]
         public long? Uprn { get; set; }
 
+        [Column("is_display_address")]
+        [MaxLength(1)]
+        public string DisplayAddressFlag { get; set; }
+
         [Column("from_dm_person")]
         [MaxLength(1)]
         public string DataIsFromDmPersonsBackup { get; set; }
