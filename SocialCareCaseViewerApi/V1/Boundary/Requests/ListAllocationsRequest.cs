@@ -5,7 +5,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListAllocationsRequest
     {
-        [AllocationRequest]
+        [ListAllocationsRequestValidator]
         [FromQuery(Name = "mosaic_id")]
         public long MosaicId { get; set; }
 
@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long WorkerId { get; set; }
     }
 
-    public class AllocationRequestAttribute : ValidationAttribute
+    public class ListAllocationsRequestValidator : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
