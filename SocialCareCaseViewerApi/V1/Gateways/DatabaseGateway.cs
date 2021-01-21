@@ -47,12 +47,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     select new Allocation()
                     {
+                        Id = allocation.Id,
                         PersonId = allocation.MosaicId,
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
-                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.Value.ToString("dd/MM/yyyy") : null,
-                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.Value.ToString("dd/MM/yyyy") : null,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        AllocationEndDate = allocation.AllocationEndDate,
                         CaseStatus = allocation.CaseStatus
                     }
 
@@ -73,12 +74,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     select new Allocation()
                     {
+                        Id = allocation.Id,
                         PersonId = allocation.MosaicId,
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
-                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate.Value.ToString("dd/MM/yyyy") : null,
-                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate.Value.ToString("dd/MM/yyyy") : null,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        AllocationEndDate = allocation.AllocationEndDate,
                         CaseStatus = allocation.CaseStatus
                     }
 

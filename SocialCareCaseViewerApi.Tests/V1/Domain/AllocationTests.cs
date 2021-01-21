@@ -15,6 +15,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         }
 
         [Test]
+        public void AllocationHasId()
+        {
+            Assert.AreEqual(0, _allocation.Id);
+        }
+
+        [Test]
         public void AllocationHasPersonId()
         {
             Assert.AreEqual(0, _allocation.PersonId);
