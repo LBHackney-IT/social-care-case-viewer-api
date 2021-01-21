@@ -52,8 +52,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
-                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate : null,
-                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate : null,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        AllocationEndDate = allocation.AllocationEndDate,
                         CaseStatus = allocation.CaseStatus
                     }
 
@@ -79,8 +79,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
-                        AllocationStartDate = (allocation.AllocationStartDate != null) ? allocation.AllocationStartDate : null,
-                        AllocationEndDate = (allocation.AllocationEndDate != null) ? allocation.AllocationEndDate : null,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        AllocationEndDate = allocation.AllocationEndDate,
                         CaseStatus = allocation.CaseStatus
                     }
 
