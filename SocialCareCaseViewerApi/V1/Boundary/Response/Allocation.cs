@@ -6,6 +6,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     {
         public int Id { get; set; }
         public long PersonId { get; set; }
+        public string PersonName { get; set; }
+        public string PersonAddress { get; set; }
+        public DateTime? PersonDateOfBirth { get; set; }
         public string AllocatedWorker { get; set; }
         public string WorkerType { get; set; }
         public string AllocatedWorkerTeam { get; set; }
