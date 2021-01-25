@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
                     from p in Person.DefaultIfEmpty()
 
-                    join address in _databaseContext.Addresses.Where(x => x.IsDisplayAddress == "Y") on p.Id equals address.PersonId into Address
+                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
                     from a in Address.DefaultIfEmpty()
 
                     where allocation.MosaicId == mosaicId
@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
                     from p in Person.DefaultIfEmpty()
 
-                    join address in _databaseContext.Addresses.Where(x => x.IsDisplayAddress == "Y") on p.Id equals address.PersonId into Address
+                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
                     from a in Address.DefaultIfEmpty()
 
                     where w.Id == workerId
