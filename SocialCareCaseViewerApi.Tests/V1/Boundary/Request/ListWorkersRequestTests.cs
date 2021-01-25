@@ -17,6 +17,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void RequestHasId()
+        {
+            Assert.AreEqual(0, _listWorkersRequest.WorkerId);
+        }
+
+        [Test]
         public void RequestHasTeamID()
         {
             Assert.AreEqual(0, _listWorkersRequest.TeamId);
@@ -24,12 +30,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         #region model validation
         [Test]
-        public void ModelValidationFailsIfTeamIdIsNotBiggerThan0() //TODO: move message check to separate tests
+        public void ValidationFailsWhenTeamIdAndIdAreNotProvided()
         {
-            ListWorkersRequest request = new ListWorkersRequest();
-            var errors = ValidationHelper.ValidateModel(request);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
-            Assert.IsTrue(errors.Count == 1);
+            var errors = ValidationHelper.ValidateModel(_listWorkersRequest);
+
+            Assert.AreEqual(errors.Count, 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide either worker id or team id")));
+
+        }
+
+        [Test]
+        public void ValidationFailsWhenBothMosaicIdAndWorkerIdAreProvided()
+        {
+            _listWorkersRequest.WorkerId = 50;
+            _listWorkersRequest.TeamId = 30;
+
+            var errors = ValidationHelper.ValidateModel(_listWorkersRequest);
+
+            Assert.AreEqual(errors.Count, 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide only worker id or team id, but not both")));
         }
         #endregion
     }
