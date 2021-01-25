@@ -46,11 +46,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             ListTeamsRequest request = new ListTeamsRequest() { ContextFlag = "d" };
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Count == 1);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The context_flag must be either 'A' or 'C' only")));
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The context_flag must be 'A', 'B' or 'C' only")));
         }
 
         [Test]
         [TestCase("A")]
+        [TestCase("B")]
         [TestCase("C")]
         public void ModelValidationSucceedsIfContextIsProvidedAndTheValueIsValid(string context)
         {
@@ -61,6 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         [Test]
         [TestCase("a")]
+        [TestCase("b")]
         [TestCase("c")]
         public void ModelValidationSucceedsIfContextIsProvidedAndTheValueIsValidIgnoringCase(string context)
         {

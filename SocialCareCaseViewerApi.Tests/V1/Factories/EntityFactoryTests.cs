@@ -5,6 +5,9 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
@@ -27,11 +30,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapWorkerFromInfrastructureToDomain()
         {
             var email = _faker.Internet.Email();
-            var firstName = _faker.Name.ToString();
-            var lastName = _faker.Name.ToString();
-            var id = _faker.Random.Number();
+            var firstName = _faker.Name.FirstName();
+            var lastName = _faker.Name.LastName();
+            var id = 1;
             var role = _faker.Random.Word();
             int? teamId = null;
+            int allocationCount = 2;
 
             var dbWorker = new dbWorker()
             {
@@ -47,10 +51,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Id = id
+                Id = id,
+                AllocationCount = allocationCount
             };
 
-            dbWorker.ToDomain().Should().BeEquivalentTo(expectedResponse);
+            dynamic allocationDetail = new ExpandoObject();
+            allocationDetail.WorkerId = id;
+            allocationDetail.AllocationCount = allocationCount;
+
+            List<dynamic> allocationDetails = new List<dynamic>
+            {
+                allocationDetail
+            };
+
+            dbWorker.ToDomain(allocationDetails).Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
@@ -79,25 +93,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
-            var id = _faker.Random.Long();
-            var email = _faker.Name.ToString();
-            var team = _faker.Company.ToString();
+            var personId = _faker.Random.Long();
+            var allocatedBy = _faker.Internet.Email(); //email
+            var workerId = _faker.Random.Number();
+            var dt = DateTime.Now;
+            var caseStatus = "Open";
 
             var allocationRequest = new CreateAllocationRequest()
             {
-                MosaicId = id,
-                WorkerEmail = email,
-                AllocatedWorkerTeam = team
+                MosaicId = personId,
+                AllocatedBy = allocatedBy,
+                AllocatedWorkerId = workerId
             };
 
             var expectedResponse = new AllocationSet()
             {
-                Id = id.ToString(),
-                WorkerEmail = email,
-                AllocatedWorkerTeam = team
+                MosaicId = personId,
+                WorkerId = workerId,
+                AllocationStartDate = dt,
+                CaseStatus = caseStatus
             };
 
-            allocationRequest.ToEntity().Should().BeEquivalentTo(expectedResponse);
+            allocationRequest.ToEntity(workerId, dt, caseStatus).Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

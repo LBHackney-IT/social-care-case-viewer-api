@@ -22,15 +22,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(0, _listWorkersRequest.TeamId);
         }
 
-        // #region model validation
-        // [Test]
-        // public void ModelValidationFailsIfTeamIdIsNotBiggerThan1() //TODO: move message check to separate tests
-        // {
-        //     ListWorkersRequest request = new ListWorkersRequest();
-        //     var errors = ValidationHelper.ValidateModel(request);
-        //     Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
-        //     Assert.IsTrue(errors.Count == 1);
-        // }
-        // #endregion
+        #region model validation
+        [Test]
+        public void ModelValidationFailsIfTeamIdIsNotBiggerThan0() //TODO: move message check to separate tests
+        {
+            ListWorkersRequest request = new ListWorkersRequest();
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
+            Assert.IsTrue(errors.Count == 1);
+        }
+        #endregion
     }
 }

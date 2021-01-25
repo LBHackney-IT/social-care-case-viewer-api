@@ -24,14 +24,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUsecase;
-        private readonly IGetAllocationUseCase _allocationUseCase;
+        private readonly IAllocationsUseCase _allocationUseCase;
         private readonly IWorkersUseCase _workersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
-        private readonly ICreateAllocationUseCase _createAllocationUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IGetAllocationUseCase allocationUseCase, IWorkersUseCase workersUseCase,
-            ITeamsUseCase teamsUseCase, ICreateAllocationUseCase createAllocationUseCase)
+            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -39,7 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _allocationUseCase = allocationUseCase;
             _workersUseCase = workersUseCase;
             _teamsUseCase = teamsUseCase;
-            _createAllocationUseCase = createAllocationUseCase;
         }
 
         /// <summary>
@@ -133,14 +130,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
 
         /// <summary>
-        /// Find cfs allocations by Mosaic ID or officer email
+        /// Find allocations by Mosaic ID or officer email
         /// </summary>
         /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
-        /// <response code="404">No allocations found for the specified ID or officer email</response>
+        /// <response code="404">No allocations found for the specified mosaic id or worker id</response>
         [ProducesResponseType(typeof(AllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("allocations")]
-        public IActionResult GetAllocatedWorker([FromQuery] ListAllocationsRequest request)
+        public IActionResult GetAllocations([FromQuery] ListAllocationsRequest request)
         {
             return Ok(_allocationUseCase.Execute(request));
         }
@@ -154,8 +151,29 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
         {
-            var result = _createAllocationUseCase.Execute(request);
+            var result = _allocationUseCase.ExecutePost(request);
             return CreatedAtAction("CreateAllocation", result, result);
+        }
+
+        /// <summary>
+        /// Deallocate worker. Other allocation updates are not supported at the moment
+        /// <response code="200">Record successfully updated</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <reponse code="500">There was a problem updating the record</reponse>
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("allocations")]
+        public IActionResult UpdateAllocation([FromBody] UpdateAllocationRequest request)
+        {
+            try
+            {
+                return Ok(_allocationUseCase.ExecuteUpdate(request));
+            }
+            catch (EntityUpdateException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
