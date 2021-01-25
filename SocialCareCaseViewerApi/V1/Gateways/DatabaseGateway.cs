@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     {
                         Id = allocation.Id,
                         PersonId = allocation.MosaicId,
-                        PersonDateOfBirth = p.DateOfBirth, 
+                        PersonDateOfBirth = p.DateOfBirth,
                         PersonName = ToFullPersonName(p.FirstName, p.LastName),
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,

@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
             _address = new Address();
         }
 
-        [Test]    
+        [Test]
         public void AddressHasPersonAddressId()
         {
             Assert.AreEqual(0, _address.PersonAddressId);
