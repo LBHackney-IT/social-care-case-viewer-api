@@ -62,5 +62,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         {
             Assert.IsNull(_allocation.CaseStatus);
         }
+
+        [Test]
+        public void AllocationHasPersonName()
+        {
+            Assert.IsNull(_allocation.PersonName);
+        }
+
+        [Test]
+        public void AllocationHasPersonAddress()
+        {
+            Assert.IsNull(_allocation.PersonAddress);
+        }
+
+        [Test]
+        public void AllocationHasPersonDateOfBirth()
+        {
+            Assert.IsNull(_allocation.PersonDateOfBirth);
+        }
     }
 }
