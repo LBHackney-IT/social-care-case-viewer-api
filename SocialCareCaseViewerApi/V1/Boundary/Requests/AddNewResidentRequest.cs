@@ -1,9 +1,7 @@
+using SocialCareCaseViewerApi.V1.Domain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -20,13 +18,19 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [Required]
         public DateTime? DateOfBirth { get; set; }
+
         public long? NhsNumber { get; set; }
 
         [Required]
         [MaxLength(1)]
-        public string AgeGroup { get; set; }
+        public string ContextFlag { get; set; }
+
         public string Nationality { get; set; }
+
+        public string Ethnicity { get; set; }
+
         public AddressDomain Address { get; set; }
+
         public List<PhoneNumber> PhoneNumbers { get; set; }
     }
 

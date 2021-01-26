@@ -65,11 +65,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Inserts a new record in the DM_PERSONS table
+        /// Creates a new person record and adds all related entities
         /// </summary>
-        /// <response code="201">Record successfully inserted</response>
+        /// <response code="201">Records successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem generating a token.</response>
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
@@ -80,7 +79,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var response = _addNewResidentUseCase.Execute(residentRequest);
 
-                return CreatedAtAction("GetResident", new { id = response.PersonId }, response);
+                return CreatedAtAction("GetResident", new { id = response.PersonId }, response); //TODO: return object with IDs for all related entities
             }
             catch (ResidentCouldNotBeinsertedException ex)
             {

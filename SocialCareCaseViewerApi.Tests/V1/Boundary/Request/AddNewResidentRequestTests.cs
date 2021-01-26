@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 Gender = "F",
                 DateOfBirth = DateTime.Now.AddYears(-30),
                 NhsNumber = _faker.Random.Number(),
-                AgeGroup = "A",
+                ContextFlag = "A",
                 Nationality = "British",
                 Address =  new AddressDomain()
                 {
@@ -52,22 +52,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasTitle()
+        public void RequestHasTitle() //
         {
             Assert.IsNull(_request.Title);
         }
 
         [Test]
-        public void RequestHasFirstName()
+        public void RequestHasFirstName() //required
         {
             Assert.IsNull(_request.FirstName);
         }
 
         [Test]
-        public void RequestHasLastName()
+        public void RequestHasLastName() //required
         {
             Assert.IsNull(_request.LastName);
         }
+
+        //other names?!
 
         [Test]
         public void RequestHasGender()
@@ -87,10 +89,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.IsNull(_request.NhsNumber);
         }
 
+        //TODO: add valid values
         [Test]
-        public void RequestHasAgeGroup()
+        public void RequestHasContextFlag()
         {
-            Assert.IsNull(_request.AgeGroup);
+            Assert.IsNull(_request.ContextFlag);
         }
 
         [Test]
@@ -109,6 +112,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void RequestHasPhoneNumbers()
         {
             Assert.IsNull(_request.PhoneNumbers);
+        }
+
+        [Test]
+        public void RequestHasEthnicity()
+        {
+            Assert.IsNull(_request.Ethnicity);
         }
 
         #region Model validation
