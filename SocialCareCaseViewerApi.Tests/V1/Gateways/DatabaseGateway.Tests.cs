@@ -27,7 +27,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        [Ignore("dbo.sccv_team does not exist")]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
             int workerId = 555666;

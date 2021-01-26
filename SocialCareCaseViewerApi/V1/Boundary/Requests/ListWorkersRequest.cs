@@ -7,11 +7,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         [ListWorkersRequestValidator]
         [FromQuery(Name = "team_id")]
-        // [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than 0")]
         public int TeamId { get; set; }
 
         [FromQuery(Name = "id")]
-        // [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than 0")]
         public int WorkerId { get; set; }
     }
 

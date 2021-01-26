@@ -215,15 +215,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public List<Worker> GetWorkers(int? teamId = null, int? id = null)
+        public List<Worker> GetWorkers(int teamId, int workerId)
         {
-            return (teamId != null) ?
+            return (teamId != 0) ?
                 _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList() :
-                _databaseContext.Workers.Where(x => x.Id == id).ToList();
+                _databaseContext.Workers.Where(x => x.Id == workerId).ToList();
             ;
         }
 
-        //TODO: use db views or queries 
+        //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
         {
             List<dynamic> allocationsPerWorker = new List<dynamic>();
