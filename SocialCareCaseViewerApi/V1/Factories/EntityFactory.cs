@@ -50,9 +50,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new Worker
             {
+                Id = worker.Id,
+                Email = worker.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                Id = worker.Id,
+                TeamId = worker.TeamId,
+                Role = worker.Role,
                 AllocationCount = allocation?.AllocationCount == null ? 0 : allocation.AllocationCount
             };
         }
