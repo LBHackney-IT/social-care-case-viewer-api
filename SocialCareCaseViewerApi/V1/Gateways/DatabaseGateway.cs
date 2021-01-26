@@ -13,8 +13,6 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using SocialCareCaseViewerApi.V1.Exceptions;
-using Newtonsoft.Json;
 using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
