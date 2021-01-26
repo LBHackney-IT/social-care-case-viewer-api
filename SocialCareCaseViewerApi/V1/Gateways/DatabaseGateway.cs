@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
-using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
-using SocialCareCaseViewerApi.V1.Exceptions;
-using Newtonsoft.Json;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -234,12 +234,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public List<Worker> GetWorkers(int teamId)
+        public List<Worker> GetWorkers(int teamId, int workerId)
         {
-            return _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList();
+            return (teamId != 0) ?
+                _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList() :
+                _databaseContext.Workers.Where(x => x.Id == workerId).ToList();
+            ;
         }
 
-        //TODO: use db views or queries 
+        //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
         {
             List<dynamic> allocationsPerWorker = new List<dynamic>();

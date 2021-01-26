@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
@@ -5,9 +8,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
