@@ -13,6 +13,9 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using SocialCareCaseViewerApi.V1.Exceptions;
+using Newtonsoft.Json;
+using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -43,18 +46,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
                     from t in Teams.DefaultIfEmpty()
 
+                    join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
+                    from p in Person.DefaultIfEmpty()
+
+                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
+                    from a in Address.DefaultIfEmpty()
+
                     where allocation.MosaicId == mosaicId
 
                     select new Allocation()
                     {
                         Id = allocation.Id,
                         PersonId = allocation.MosaicId,
+                        PersonDateOfBirth = p.DateOfBirth,
+                        PersonName = ToFullPersonName(p.FirstName, p.LastName),
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
                         AllocationStartDate = allocation.AllocationStartDate,
                         AllocationEndDate = allocation.AllocationEndDate,
-                        CaseStatus = allocation.CaseStatus
+                        CaseStatus = allocation.CaseStatus,
+                        PersonAddress = a.AddressLines
                     }
 
                     ).ToList();
@@ -70,18 +82,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
                     from t in Teams.DefaultIfEmpty()
 
+                    join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
+                    from p in Person.DefaultIfEmpty()
+
+                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
+                    from a in Address.DefaultIfEmpty()
+
                     where w.Id == workerId
 
                     select new Allocation()
                     {
                         Id = allocation.Id,
                         PersonId = allocation.MosaicId,
+                        PersonDateOfBirth = p.DateOfBirth,
+                        PersonName = ToFullPersonName(p.FirstName, p.LastName),
                         AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
                         AllocatedWorkerTeam = t.Name,
                         WorkerType = w.Role,
                         AllocationStartDate = allocation.AllocationStartDate,
                         AllocationEndDate = allocation.AllocationEndDate,
-                        CaseStatus = allocation.CaseStatus
+                        CaseStatus = allocation.CaseStatus,
+                        PersonAddress = a.AddressLines
                     }
 
                     ).ToList();
@@ -428,6 +449,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             allocationToRestore.CaseStatus = tmpAllocation.CaseStatus;
             allocationToRestore.WorkerId = tmpAllocation.WorkerId;
             allocationToRestore.CaseClosureDate = tmpAllocation.CaseClosureDate;
+        }
+
+        private static string ToFullPersonName(string firstName, string lastName)
+        {
+            string first = string.IsNullOrWhiteSpace(firstName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower());
+            string last = string.IsNullOrWhiteSpace(lastName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());
+
+            return (first + " " + last).TrimStart().TrimEnd();
         }
     }
 }
