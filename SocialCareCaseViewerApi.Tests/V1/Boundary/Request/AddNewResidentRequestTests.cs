@@ -72,15 +72,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         //other names?!
 
         [Test]
-        public void RequestHasGender()
+        public void RequestHasGender() //
         {
             Assert.IsNull(_request.Gender);
         }
 
         [Test]
-        public void RequestHasDateOfBirth()
+        public void RequestHasDateOfBirth() //required
         {
             Assert.IsNull(_request.DateOfBirth);
+        }
+
+        [Test]
+        public void RequestHasDateOfDeath()
+        {
+            Assert.IsNull(_request.DateOfDeath);
+        }
+
+
+        [Test]
+        public void RequestHasEthnicity()
+        {
+            Assert.IsNull(_request.Ethnicity);
+        }
+
+        [Test]
+        public void RequestHasFirstLanguage()
+        {
+            Assert.IsNull(_request.FirstLanguage);
+        }
+
+        [Test]
+        public void RequestHasReligion()
+        {
+            Assert.IsNull(_request.Religion);
+        }
+
+        [Test]
+        public void RequestHasSexualOrientation() //new property
+        {
+            Assert.IsNull(_request.SexualOrientation);
         }
 
         [Test]
@@ -89,25 +120,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.IsNull(_request.NhsNumber);
         }
 
-        //TODO: add valid values
-        [Test]
-        public void RequestHasContextFlag()
-        {
-            Assert.IsNull(_request.ContextFlag);
-        }
-
-        [Test]
-        public void RequestHasNationality()
-        {
-            Assert.IsNull(_request.Nationality);
-        }
-
+        //TODO: test address domain
         [Test]
         public void RequestHasAddress()
         {
             Assert.IsNull(_request.Address);
         }
 
+        //TODO: test phone number object
         [Test]
         public void RequestHasPhoneNumbers()
         {
@@ -115,10 +135,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasEthnicity()
+        public void RequestHasEmailAddress()
         {
-            Assert.IsNull(_request.Ethnicity);
+            Assert.IsNull(_request.EmailAddress);
         }
+
+        [Test]
+        public void RequestHasPreferredMethodOfContact() //new property
+        {
+            Assert.IsNull(_request.PreferredMethodOfContact);
+        }
+
+        //TODO new object
+        [Test]
+        public void RequestHasEmergencyContactDetails() //new property/object
+        {
+            Assert.IsNull(_request.EmergencyContactDetails);
+        }
+
+
+        //TODO new object
+        [Test]
+        public void RequestHasGPInformation() //new property/object
+        {
+            Assert.IsNull(_request.GPInformation);
+        }
+
+        //missing from UI
+        //TODO: add valid values
+        [Test]
+        public void RequestHasContextFlag()
+        {
+            Assert.IsNull(_request.ContextFlag);
+        }
+        
 
         #region Model validation
         [Test]
