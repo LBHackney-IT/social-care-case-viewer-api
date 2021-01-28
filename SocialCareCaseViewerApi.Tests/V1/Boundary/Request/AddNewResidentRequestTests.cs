@@ -6,6 +6,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
@@ -13,7 +14,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     public class AddNewResidentRequestTests
     {
         private AddNewResidentRequest _request;
-        private AddNewResidentRequest _validRequest;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -23,64 +23,68 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             _fixture = new Fixture();
             _faker = new Faker();
             _request = new AddNewResidentRequest();
+        }
 
-            _validRequest = new AddNewResidentRequest()
+        private AddNewResidentRequest GetValidRequest()
+        {
+            return new AddNewResidentRequest()
             {
-                Title = "Mr",
+                Title = "Title",
                 FirstName = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName(),
-                Gender = "F",
+                OtherNames = _fixture.Create<List<OtherName>>(),
+                Gender = "M", //TODO: set and test valid values
                 DateOfBirth = DateTime.Now.AddYears(-30),
+                DateOfDeath = DateTime.Now,             
+                Ethnicity = "Ethinicity",
+                FirstLanguage = "English",
+                Religion = "Religion",
+                SexualOrientation = "Sexual orientation",
                 NhsNumber = _faker.Random.Number(),
-                ContextFlag = "A",
-                Nationality = "British",
-                Address =  new AddressDomain()
-                {
-                    Address = "Flat 1, Street 2",
-                    Postcode = "E8",
-                    Uprn = 123456
-                },
-                PhoneNumbers = new List<PhoneNumber>()
-                {
-                    new PhoneNumber()
-                    {
-                        Number = _faker.Phone.PhoneNumber(),
-                        Type = "Mobile"
-                    }
-                }
+                Address = _fixture.Create<AddressDomain>(),
+                PhoneNumbers = _fixture.Create<List<PhoneNumber>>(), //TODO: make sure only one is set to main
+                EmailAddress = _faker.Internet.Email(),
+                PreferredMethodOfContact = "Email", //TOOD: set and test valid values?
+                ContextFlag = "A", //TOOD: set and test valid values,
+                CreatedBy = _faker.Internet.Email()
             };
         }
 
+        #region Model
         [Test]
-        public void RequestHasTitle() //
+        public void RequestHasTitle() 
         {
             Assert.IsNull(_request.Title);
         }
 
         [Test]
-        public void RequestHasFirstName() //required
+        public void RequestHasFirstName() 
         {
             Assert.IsNull(_request.FirstName);
         }
 
         [Test]
-        public void RequestHasLastName() //required
+        public void RequestHasLastName() 
         {
             Assert.IsNull(_request.LastName);
         }
 
-        //other names?!
+        [Test]
+        public void RequestHasOtherNames()
+        {
+            Assert.IsNull(_request.OtherNames);
+        }
 
         [Test]
-        public void RequestHasGender() //
+        public void RequestHasGender() 
         {
             Assert.IsNull(_request.Gender);
         }
 
         [Test]
-        public void RequestHasDateOfBirth() //required
+        public void RequestHasDateOfBirth() 
         {
-            Assert.IsNull(_request.DateOfBirth);
+            Assert.AreEqual(null, _request.DateOfBirth);
         }
 
         [Test]
@@ -109,7 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasSexualOrientation() //new property
+        public void RequestHasSexualOrientation()
         {
             Assert.IsNull(_request.SexualOrientation);
         }
@@ -120,14 +124,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.IsNull(_request.NhsNumber);
         }
 
-        //TODO: test address domain
         [Test]
         public void RequestHasAddress()
         {
             Assert.IsNull(_request.Address);
         }
 
-        //TODO: test phone number object
         [Test]
         public void RequestHasPhoneNumbers()
         {
@@ -141,55 +143,107 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasPreferredMethodOfContact() //new property
+        public void RequestHasPreferredMethodOfContact()
         {
             Assert.IsNull(_request.PreferredMethodOfContact);
         }
 
-        //TODO new object
-        [Test]
-        public void RequestHasEmergencyContactDetails() //new property/object
-        {
-            Assert.IsNull(_request.EmergencyContactDetails);
-        }
-
-
-        //TODO new object
-        [Test]
-        public void RequestHasGPInformation() //new property/object
-        {
-            Assert.IsNull(_request.GPInformation);
-        }
-
-        //missing from UI
-        //TODO: add valid values
         [Test]
         public void RequestHasContextFlag()
         {
             Assert.IsNull(_request.ContextFlag);
         }
-        
+
+        [Test]
+        public void RequestHasCreatedBy()
+        {
+            Assert.IsNull(_request.CreatedBy);
+        }
+        #endregion
 
         #region Model validation
+
+        [Test]
+        public void ValidationPassesWhenAllPropertiesAreSetWithValidValues()
+        {
+            var request = GetValidRequest();
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(0, errors.Count);
+
+        }
+
         [Test]
         public void ValidationFailsIfFirstNameIsNotProvided()
         {
-            _validRequest.FirstName = null;
+            var request = GetValidRequest();
 
-            var errors = ValidationHelper.ValidateModel(_request);
+            request.FirstName = null;
+
+            var errors = ValidationHelper.ValidateModel(request);
 
             Assert.AreEqual(1, errors.Count);
+            Assert.IsTrue(errors.First().ErrorMessage == "The FirstName field is required.");
+        }
+        [Test]
+        public void ValidationFailsIfLastNameIsNotProvided()
+        {
+            var request = GetValidRequest();
+            request.LastName = null;
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.IsTrue(errors.First().ErrorMessage == "The LastName field is required.");
         }
 
-        //[Test]
-        //public void ValidationFailsIfLastNameIsNotProvided()
-        //{
-        //    _validRequest.
+        [Test]
+        public void ValidationFailsIfDateOfBirthIsNotProvided()
+        {
+            var request = GetValidRequest();
+            request.DateOfBirth = null;
 
-        //    var errors = ValidationHelper.ValidateModel(_request);
+            var errors = ValidationHelper.ValidateModel(request);
 
-        //    Assert.AreEqual(1, errors.Count);
-        //}
+            Assert.AreEqual(1, errors.Count);
+            Assert.IsTrue(errors.First().ErrorMessage == "The DateOfBirth field is required.");
+        }
+
+        [Test]
+        public void ValidationFailsIfEmailAddressIsNotInValidFormat()
+        {
+            var request = GetValidRequest();
+            request.EmailAddress = "this is not valid email address";
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.IsTrue(errors.First().ErrorMessage == "The EmailAddress field is not a valid e-mail address.");
+        }
+
+        [Test]
+        public void ValidationPassesIfEmailAddressIsInValidFormat()
+        {
+            var request = GetValidRequest();
+            request.EmailAddress = "valid@domain.com";
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        [Test]
+        public void ValidationFailsIfCreatedByEmailAddressIsNotInValidFormat()
+        {
+            var request = GetValidRequest();
+            request.CreatedBy = "this is not valid email address";
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.IsTrue(errors.First().ErrorMessage == "The CreatedBy field is not a valid e-mail address.");
+        }
 
 
         #endregion

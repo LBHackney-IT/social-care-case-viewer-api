@@ -11,6 +11,8 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -173,35 +175,79 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
         {
-            var resident = new Person
-            {
-                DateOfBirth = request.DateOfBirth,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                FullName = $"{request.FirstName} {request.LastName}",
-                Gender = request.Gender,
-                Nationality = request.Nationality,
-                NhsNumber = request.NhsNumber,
-                Title = request.Title,
-                AgeContext = request.ContextFlag,
-                DataIsFromDmPersonsBackup = "N"
-            };
+            Address address = null;
+            List<PersonOtherName> names = null;
+            Person resident;
+            List<dbPhoneNumber> phoneNumbers = null;
+
             try
             {
+                resident = AddNewPerson(request);
+
+                if (request.Address != null)
+                {
+                    address = AddResidentAddress(request.Address, resident.Id);
+                    resident.Addresses = new List<Address>
+                    {
+                        address
+                    };
+                }
+
+                if(request.OtherNames?.Count > 0)
+                {
+                    names = AddOtherNames(request.OtherNames, resident.Id);
+                    resident.OtherNames = new List<PersonOtherName>();
+                    resident.OtherNames.AddRange(names);
+                }
+                if(request.PhoneNumbers?.Count > 0)
+                {
+                    phoneNumbers = AddPhoneNumbers(request.PhoneNumbers, resident.Id);
+                    resident.PhoneNumbers = new List<dbPhoneNumber>();
+                    resident.PhoneNumbers.AddRange(phoneNumbers);
+                }
+
                 _databaseContext.Persons.Add(resident);
                 _databaseContext.SaveChanges();
             }
             catch (DbUpdateException ex)
             {
-                throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message} - {ex.InnerException}");
+                throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message}");
             }
-            AddResidentAddress(request.Address, resident.Id);
-            return resident.ToResponse(request.Address);
+
+            return resident.ToResponse(address.PersonAddressId, names, phoneNumbers); 
         }
 
-        public void AddResidentAddress(AddressDomain addressRequest, long personId)
+        public static Person AddNewPerson(AddNewResidentRequest request)
         {
-            var address = new Address
+            return new Person
+            {
+                Title = request.Title,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                //othernames
+                Gender = request.Gender,
+                DateOfBirth = request.DateOfBirth,
+                DateOfDeath = request.DateOfDeath,
+                Ethnicity = request.Ethnicity,
+                FirstLanguage = request.FirstLanguage,
+                Religion = request.Religion,
+                SexualOrientation = request.SexualOrientation,
+                NhsNumber = request.NhsNumber,
+                //address
+                //phonenumbers
+                EmailAddress = request.EmailAddress,
+                PreferredMethodOfContact = request.PreferredMethodOfContact,
+                AgeContext = request.ContextFlag,
+
+                //calculated and additional values
+                FullName = $"{request.FirstName} {request.LastName}",
+                DataIsFromDmPersonsBackup = "N"
+            };
+        }
+
+        public static Address AddResidentAddress(AddressDomain addressRequest, long personId)
+        {
+            return new Address
             {
                 AddressLines = addressRequest.Address,
                 PersonId = personId,
@@ -209,17 +255,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Uprn = addressRequest.Uprn,
                 DataIsFromDmPersonsBackup = "N"
             };
-
-            try
-            {
-                _databaseContext.Addresses.Add(address);
-                _databaseContext.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new AddressCouldNotBeInsertedException($"Error with inserting address has occurred - {ex.Message} - {ex.InnerException}");
-            }
         }
+
+        public static List<PersonOtherName> AddOtherNames(List<OtherName> names, long personId)
+        {
+            return names.Select(x => x.ToEntity(personId)).ToList();
+        }
+
+        public static List<dbPhoneNumber> AddPhoneNumbers(List<PhoneNumber> numbers, long personId)
+        {
+            return numbers.Select(x => x.ToEntity(personId)).ToList();
+        }
+
         public string GetPersonIdByNCReference(string ncId)
         {
             PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == ncId).FirstOrDefault();

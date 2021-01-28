@@ -14,5 +14,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PersonIdLookup> PersonLookups { get; set; }
         public DbSet<Worker> Workers { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<PersonOtherName> PersonOtherNames { get; set; }
+        public DbSet<PhoneNumber> PhoneNumbers { get; set; }
     }
 }
