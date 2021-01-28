@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string Religion { get; set; }
 
-        public string  SexualOrientation { get; set; }
+        public string SexualOrientation { get; set; }
 
         public long? NhsNumber { get; set; }
         public AddressDomain Address { get; set; }

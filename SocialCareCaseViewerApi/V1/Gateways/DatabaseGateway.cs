@@ -193,13 +193,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     };
                 }
 
-                if(request.OtherNames?.Count > 0)
+                if (request.OtherNames?.Count > 0)
                 {
                     names = AddOtherNames(request.OtherNames, resident.Id);
                     resident.OtherNames = new List<PersonOtherName>();
                     resident.OtherNames.AddRange(names);
                 }
-                if(request.PhoneNumbers?.Count > 0)
+                if (request.PhoneNumbers?.Count > 0)
                 {
                     phoneNumbers = AddPhoneNumbers(request.PhoneNumbers, resident.Id);
                     resident.PhoneNumbers = new List<dbPhoneNumber>();
@@ -214,7 +214,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message}");
             }
 
-            return resident.ToResponse(address.PersonAddressId, names, phoneNumbers); 
+            return resident.ToResponse(address.PersonAddressId, names, phoneNumbers);
         }
 
         public static Person AddNewPerson(AddNewResidentRequest request)

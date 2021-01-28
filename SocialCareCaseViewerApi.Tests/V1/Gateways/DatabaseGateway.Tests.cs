@@ -189,7 +189,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 PreferredMethodOfContact = preferredMethodOfContact,
                 ContextFlag = contextFlag,
                 CreatedBy = createdBy
-            };            
+            };
 
             AddNewResidentResponse response = _classUnderTest.AddNewResident(request);
 

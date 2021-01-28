@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 OtherNames = _fixture.Create<List<OtherName>>(),
                 Gender = "M", //TODO: set and test valid values
                 DateOfBirth = DateTime.Now.AddYears(-30),
-                DateOfDeath = DateTime.Now,             
+                DateOfDeath = DateTime.Now,
                 Ethnicity = "Ethinicity",
                 FirstLanguage = "English",
                 Religion = "Religion",
@@ -52,19 +52,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         #region Model
         [Test]
-        public void RequestHasTitle() 
+        public void RequestHasTitle()
         {
             Assert.IsNull(_request.Title);
         }
 
         [Test]
-        public void RequestHasFirstName() 
+        public void RequestHasFirstName()
         {
             Assert.IsNull(_request.FirstName);
         }
 
         [Test]
-        public void RequestHasLastName() 
+        public void RequestHasLastName()
         {
             Assert.IsNull(_request.LastName);
         }
@@ -76,13 +76,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasGender() 
+        public void RequestHasGender()
         {
             Assert.IsNull(_request.Gender);
         }
 
         [Test]
-        public void RequestHasDateOfBirth() 
+        public void RequestHasDateOfBirth()
         {
             Assert.AreEqual(null, _request.DateOfBirth);
         }

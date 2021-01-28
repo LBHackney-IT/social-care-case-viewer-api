@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void NameHasPersonId()
         {
-            Assert.AreEqual(0,_otherName.PersonId);
+            Assert.AreEqual(0, _otherName.PersonId);
         }
 
         [Test]

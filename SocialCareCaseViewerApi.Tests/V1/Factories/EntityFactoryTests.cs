@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var domainOtherName = new OtherName()
             {
                 FirstName = firstName,
-                LastName = lastName               
+                LastName = lastName
             };
 
             long personId = 123;
