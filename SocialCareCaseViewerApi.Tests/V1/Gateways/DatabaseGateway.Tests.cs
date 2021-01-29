@@ -144,6 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string addressLine = "1 Test Street";
             long uprn = 1234567;
             string postCode = "E18";
+            string isDiplayAddress = "Y";
 
             AddressDomain address = new AddressDomain()
             {
@@ -236,6 +237,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(addressLine, person.Addresses.First().AddressLines);
             Assert.AreEqual(postCode, person.Addresses.First().PostCode);
             Assert.AreEqual(uprn, person.Addresses.First().Uprn);
+            Assert.AreEqual(isDiplayAddress, person.Addresses.First().IsDisplayAddress);
 
             //check that phone numbers were created with correct values
             Assert.AreEqual(2, person.PhoneNumbers.Count);

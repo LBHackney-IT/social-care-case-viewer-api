@@ -69,5 +69,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
             Assert.IsNull(_address.DataIsFromDmPersonsBackup);
         }
 
+        [Test]
+        public void AddressHasIsDisplayAddress()
+        {
+            Assert.IsNull(_address.IsDisplayAddress);
+        }
     }
 }

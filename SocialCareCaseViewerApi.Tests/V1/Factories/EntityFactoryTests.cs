@@ -54,7 +54,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FirstName = firstName,
                 LastName = lastName,
                 Id = id,
-                AllocationCount = allocationCount
+                AllocationCount = allocationCount,
+                Email = email,
+                Role = role,
+                TeamId = teamId
             };
 
             dynamic allocationDetail = new ExpandoObject();
