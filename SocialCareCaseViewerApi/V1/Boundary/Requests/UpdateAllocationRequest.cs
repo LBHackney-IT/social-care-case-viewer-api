@@ -16,5 +16,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Required(ErrorMessage = "Please provide deallocation reason")]
         public string DeallocationReason { get; set; }
 
+        [FromBody]
+        [Required]
+        public string AllocationId { get; set; }
+
+        [FromBody]
+        [Required]
+        public string CreatedBy { get; set; }
     }
 }

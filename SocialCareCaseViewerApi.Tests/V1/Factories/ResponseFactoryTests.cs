@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Collections.Generic;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
