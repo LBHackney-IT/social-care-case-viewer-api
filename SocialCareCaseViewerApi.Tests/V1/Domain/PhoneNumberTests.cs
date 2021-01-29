@@ -20,9 +20,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
             Assert.IsNull(_phoneNumber.Number);
         }
 
+        [Test]
         public void PhoneNumberHasType()
         {
             Assert.IsNull(_phoneNumber.Type);
         }
+
+        [Test]
+        public void ValidationFailsIfNumberIsNotProvided()
+        {
+            _ = new PhoneNumber()
+            {
+                Type = "Test type"
+            };
+        }
+
+        [Test]
+        public void ValidationFailsIfTypeIsNotProvided()
+        {
+            _ = new PhoneNumber()
+            {
+                Number = "777 6666 7777"
+            };
+        }
+
     }
 }

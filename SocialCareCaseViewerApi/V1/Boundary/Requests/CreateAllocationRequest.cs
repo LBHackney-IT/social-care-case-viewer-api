@@ -16,9 +16,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string AllocatedBy { get; set; }
 
         [Required]
-        public string AllocationId { get; set; }
-
-        [Required]
         public string CreatedBy { get; set; }
     }
 }
