@@ -214,7 +214,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message}");
             }
 
-            return resident.ToResponse(address.PersonAddressId, names, phoneNumbers);
+            return resident.ToResponse(address, names, phoneNumbers);
         }
 
         public static Person AddNewPerson(AddNewResidentRequest request)
@@ -376,7 +376,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
-                    AllocationId = request.AllocationId,
+                    AllocationId = entity.Id.ToString(),
                     CreatedBy = request.CreatedBy
                 };
 

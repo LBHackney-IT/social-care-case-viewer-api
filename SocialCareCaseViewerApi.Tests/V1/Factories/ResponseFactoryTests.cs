@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             };
 
-            person.ToResponse(newAddress.AddressId, names, phoneNumbers).Should().BeEquivalentTo(expectedResponse);
+            person.ToResponse(newAddress, names, phoneNumbers).Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

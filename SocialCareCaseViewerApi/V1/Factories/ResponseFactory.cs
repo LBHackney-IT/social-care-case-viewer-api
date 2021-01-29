@@ -6,17 +6,18 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        public static AddNewResidentResponse ToResponse(this Person resident, long addressId, List<PersonOtherName> names, List<dbPhoneNumber> phoneNumbers)
+        public static AddNewResidentResponse ToResponse(this Person resident, dbAddress address, List<PersonOtherName> names, List<dbPhoneNumber> phoneNumbers)
         {
             return new AddNewResidentResponse
             {
                 PersonId = resident.Id,
-                AddressId = addressId,
+                AddressId = address?.AddressId,
                 OtherNameIds = names?.Count > 0 ? names.Select(x => x.Id).ToList() : null,
                 PhoneNumberIds = phoneNumbers?.Count > 0 ? phoneNumbers.Select(x => x.Id).ToList() : null
             };
