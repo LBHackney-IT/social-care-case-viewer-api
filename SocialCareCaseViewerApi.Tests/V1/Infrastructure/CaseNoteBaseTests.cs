@@ -55,6 +55,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
+        public void CaseNoteBaseHasFormName()
+        {
+            Assert.AreEqual(null, _caseNoteBase.FormName);
+        }
+
+        [Test]
         public void CaseNoteBaseHasIsImported()
         {
             Assert.IsFalse(_caseNoteBase.IsImported);

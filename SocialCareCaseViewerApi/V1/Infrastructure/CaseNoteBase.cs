@@ -22,6 +22,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [JsonProperty("form_name_overall")]
         public string FormNameOverall { get; set; }
 
+        [JsonProperty("form_name")]
+        public string FormName { get; set; }
+
         [JsonProperty("is_imported")]
         public bool IsImported { get; set; } = false;
     }

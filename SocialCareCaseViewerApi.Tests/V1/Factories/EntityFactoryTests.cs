@@ -8,12 +8,12 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
-using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
-using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {

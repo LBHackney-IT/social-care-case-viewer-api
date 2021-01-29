@@ -6,12 +6,12 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
-using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
-using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {

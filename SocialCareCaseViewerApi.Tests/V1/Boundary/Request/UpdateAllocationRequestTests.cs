@@ -28,6 +28,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             Assert.AreEqual(null, _updateAllocationRequest.DeallocationReason);
         }
+
+        [Test]
+        public void RequestHasAllocationId()
+        {
+            Assert.AreEqual(null, _updateAllocationRequest.AllocationId);
+        }
+
+        [Test]
+        public void RequestHasCreatedBy()
+        {
+            Assert.AreEqual(null, _updateAllocationRequest.CreatedBy);
+        }
         #endregion
 
         #region validation
@@ -35,6 +47,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ModelValidationFailsIfIdIsNotBiggerThan0()
         {
             _updateAllocationRequest.DeallocationReason = "Sample reason";
+            _updateAllocationRequest.AllocationId = "Sample Id";
+            _updateAllocationRequest.CreatedBy = "Sample Creator";
 
             var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
 
@@ -52,6 +66,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ModelValidationFailsIfDeallocationReasonIsNotProvided()
         {
             _updateAllocationRequest.Id = 1;
+            _updateAllocationRequest.AllocationId = "Sample Id";
+            _updateAllocationRequest.CreatedBy = "Sample Creator";
+
 
             var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
             Assert.IsTrue(errors.Count == 1);
@@ -64,6 +81,43 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide deallocation reason")));
         }
 
+        [Test]
+        public void ModelValidationFailsIfAllocationIdIsNotProvided()
+        {
+            _updateAllocationRequest.Id = 1;
+            _updateAllocationRequest.DeallocationReason = "Sample reason";
+            _updateAllocationRequest.CreatedBy = "Sample Creator";
+
+
+            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            Assert.IsTrue(errors.Count == 1);
+        }
+
+        [Test]
+        public void ModelValidationReturnsCorrectErrorMessageIfAllocationIdIsNotProvided()
+        {
+            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("AllocationId field is required")));
+        }
+
+        [Test]
+        public void ModelValidationFailsIfCreatedByIsNotProvided()
+        {
+            _updateAllocationRequest.Id = 1;
+            _updateAllocationRequest.DeallocationReason = "Sample reason";
+            _updateAllocationRequest.AllocationId = "Sample Id";
+
+
+            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            Assert.IsTrue(errors.Count == 1);
+        }
+
+        [Test]
+        public void ModelValidationReturnsCorrectErrorMessageIfCreatedByIsNotProvided()
+        {
+            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("CreatedBy field is required")));
+        }
         #endregion
     }
 }

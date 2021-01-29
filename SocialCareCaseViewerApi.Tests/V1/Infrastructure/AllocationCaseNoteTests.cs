@@ -19,5 +19,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.AreEqual(null, _allocationCaseNote.Note);
         }
+
+        [Test]
+        public void CaseNoteBaseHasAllocationId()
+        {
+            Assert.AreEqual(null, _allocationCaseNote.AllocationId);
+        }
+
+        [Test]
+        public void CaseNoteBaseHasCreatedBy()
+        {
+            Assert.AreEqual(null, _allocationCaseNote.CreatedBy);
+        }
     }
 }

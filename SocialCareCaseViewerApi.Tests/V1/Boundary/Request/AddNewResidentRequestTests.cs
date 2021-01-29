@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using Bogus;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {

@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
-using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
-using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
-using SocialCareCaseViewerApi.V1.Exceptions;
-using Newtonsoft.Json;
-using System.Globalization;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
+using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -374,7 +374,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = worker.Email,
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
-                    FormNameOverall = "API_Allocation"
+                    FormNameOverall = "API_Allocation",
+                    FormName = "Worker allocated",
+                    AllocationId = request.AllocationId,
+                    CreatedBy = request.CreatedBy
                 };
 
                 CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
@@ -446,7 +449,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
                             WorkerEmail = worker.Email, //required for my cases search
                             DeallocationReason = request.DeallocationReason,
-                            FormNameOverall = "API_Deallocation" //prefix API notes so they are easy to identify
+                            FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
+                            FormName = "Worker deallocated",
+                            AllocationId = request.AllocationId,
+                            CreatedBy = request.CreatedBy
                         };
 
                         CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
