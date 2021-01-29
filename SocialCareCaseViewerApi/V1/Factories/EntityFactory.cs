@@ -10,6 +10,8 @@ using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -87,6 +89,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 WorkerId = workerId,
                 AllocationStartDate = allocationStartDate,
                 CaseStatus = caseStatus
+            };
+        }
+
+        public static PersonOtherName ToEntity(this OtherName name, long personId)
+        {
+            return new PersonOtherName
+            {
+                FirstName = name.FirstName,
+                LastName = name.LastName,
+                PersonId = personId
+            };
+        }
+
+        public static dbPhoneNumber ToEntity(this PhoneNumber number, long personId)
+        {
+            return new dbPhoneNumber
+            {
+                Number = number.Number,
+                Type = number.Type,
+                PersonId = personId
             };
         }
     }

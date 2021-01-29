@@ -12,6 +12,8 @@ using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -115,6 +117,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             allocationRequest.ToEntity(workerId, dt, caseStatus).Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapOtherNameFromDomainToInfrastructure()
+        {
+            var firstName = _faker.Name.FirstName();
+            var lastName = _faker.Name.LastName();
+
+            var domainOtherName = new OtherName()
+            {
+                FirstName = firstName,
+                LastName = lastName
+            };
+
+            long personId = 123;
+
+            var infrastructureOtherName = new PersonOtherName()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                PersonId = personId
+            };
+
+            domainOtherName.ToEntity(personId).Should().BeEquivalentTo(infrastructureOtherName);
+        }
+
+        [Test]
+        public void CanMapPhoneNumberFromDomainToInfrastructure()
+        {
+            string phoneNumber = _faker.Phone.PhoneNumber();
+            string phoneNumberType = "Mobile";
+            long personId = 123;
+
+            var domainNumber = new PhoneNumber()
+            {
+                Number = phoneNumber,
+                Type = phoneNumberType
+            };
+
+            var infrastructurePhoneNumber = new dbPhoneNumber()
+            {
+                Number = phoneNumber,
+                PersonId = personId,
+                Type = phoneNumberType
+            };
+
+            domainNumber.ToEntity(personId).Should().BeEquivalentTo(infrastructurePhoneNumber);
         }
     }
 }

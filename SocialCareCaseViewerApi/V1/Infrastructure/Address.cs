@@ -7,18 +7,19 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("dm_addresses", Schema = "dbo")]
     public class Address
     {
+        [ForeignKey("PersonId")]
+        public Person Person { get; set; }
+
         [Column("ref_addresses_people_id")]
         [MaxLength(9)]
         [Key]
         public long PersonAddressId { get; set; }
+
         //Tell EF core to use database generated value
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ref_address_id")]
         [MaxLength(9)]
         public long AddressId { get; set; }
-
-        [ForeignKey("PersonId")]
-        public Person Person { get; set; }
 
         [Column("person_id")]
         [MaxLength(16)]
