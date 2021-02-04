@@ -5,8 +5,8 @@ using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {

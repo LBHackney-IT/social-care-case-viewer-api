@@ -120,12 +120,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             int totalCount = response.Count;
 
             //sort by date of event by default, then by datestamp
-            response = response
-                .OrderByDescending(x =>
-                {
-                    _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                    return dt;
-                })
+            response = SortData(request.SortBy, request.OrderBy, response)
                 .ThenByDescending(x =>
                 {
                     _ = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
@@ -137,6 +132,54 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
+
+        public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
+        {
+            switch (sortBy)
+            {
+                case "firstName":
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x => x.FirstName) :
+                        response.OrderByDescending(x => x.FirstName);
+                case "lastName":
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x => x.LastName) :
+                        response.OrderByDescending(x => x.LastName);
+                case "caseFormUrl":
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x => x.CaseFormUrl) :
+                        response.OrderByDescending(x => x.CaseFormUrl);
+                case "dateOfBirth":
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x =>
+                        {
+                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                            return dt;
+                        }) :
+                        response.OrderByDescending(x =>
+                        {
+                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                            return dt;
+                        });
+                case "officerEmail":
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x => x.OfficerEmail) :
+                        response.OrderByDescending(x => x.OfficerEmail);
+                default:
+                    return (orderBy == "asc") ?
+                        response.OrderBy(x =>
+                        {
+                            _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                            return dt;
+                        }) :
+                        response.OrderByDescending(x =>
+                        {
+                            _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
+                            return dt;
+                        });
+            }
+        }
+
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
