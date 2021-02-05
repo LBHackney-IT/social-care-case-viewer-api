@@ -84,5 +84,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("sccv_preferred_method_of_contact")]
         [MaxLength(100)]
         public string PreferredMethodOfContact { get; set; }
+
+        [Column("restricted")]
+        [MaxLength(1)]
+        public string RestrictedFlag { get; set; }
     }
 }

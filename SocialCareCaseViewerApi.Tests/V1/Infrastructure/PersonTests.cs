@@ -117,5 +117,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_person.PreferredMethodOfContact);
         }
+
+        [Test]
+        public void PersonHasRestrictedFlag()
+        {
+            Assert.IsNull(_person.RestrictedFlag);
+        }
     }
 }
