@@ -27,19 +27,19 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.WorkerId != 0)
             {
-               dbWorker dbWorker = _databasegateway.GetWorker(request.WorkerId);
+                dbWorker dbWorker = _databasegateway.GetWorker(request.WorkerId);
 
                 if (dbWorker == null) throw new WorkerNotFoundException("Worker not found");
                 workers.Add(dbWorker);
                 domainWorkers = EntityFactory.ToDomain(workers, true);
             }
-            if(request.TeamId != 0)
+            if (request.TeamId != 0)
             {
                 var teams = _databasegateway.GetWorkersByTeamId(request.TeamId).ToList();
 
                 if (teams.Count == 0) throw new TeamNotFoundException("Team not found");
 
-                foreach(var t in teams)
+                foreach (var t in teams)
                 {
                     foreach (var w in t.WorkerTeams)
                     {

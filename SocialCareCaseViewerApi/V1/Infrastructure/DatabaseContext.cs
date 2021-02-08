@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             {
                 //TODO: add support for delete
                 if (entry.Entity is IAuditEntity auditEntity)
-                {   
+                {
                     //ignore entities we don't want to add audit records for
                     if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
                         continue;
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                     var auditEntry = new AuditEntry
                     {
                         TableName = entry.Metadata.GetTableName(),
-                        DateTime = dateTimeNow                
+                        DateTime = dateTimeNow
                     };
 
                     foreach (var property in entry.Properties)
@@ -77,7 +77,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                             auditEntry.KeyValues[propertyName] = property.CurrentValue;
                             continue;
                         }
-                                       
+
                         var createdBy = auditEntity.CreatedBy;
                         var updatedBy = auditEntity.LastModifiedBy;
 
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                             case EntityState.Added:
                                 auditEntity.CreatedAt = dateTimeNow;
                                 auditEntity.CreatedBy = createdBy;
-                                auditEntry.NewValues[propertyName] = property.CurrentValue;                         
+                                auditEntry.NewValues[propertyName] = property.CurrentValue;
                                 break;
                         }
                     }
@@ -111,14 +111,14 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             {
                 Audits.Add(auditEntry.ToAudit());
             }
-            
+
             return auditEntries.Where(_ => _.HasTemporaryProperties).ToList();
         }
 
         private int OnAfterSaveChanges(List<AuditEntry> auditEntries)
         {
             if (auditEntries == null || auditEntries.Count == 0)
-                return 0; 
+                return 0;
 
             foreach (var auditEntry in auditEntries)
             {

@@ -59,6 +59,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         public void AuditHasNewValues()
         {
             Assert.IsNull(_audit.NewValues);
-        }       
+        }
     }
 }

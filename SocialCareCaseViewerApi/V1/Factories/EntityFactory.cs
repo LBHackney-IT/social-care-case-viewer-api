@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastName = worker.LastName,
                 Role = worker.Role,
                 AllocationCount = worker?.Allocations == null ? 0 : worker.Allocations.Count,
-                Teams = includeTeamData ? worker.WorkerTeams.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name }).ToList() : null 
+                Teams = includeTeamData ? worker.WorkerTeams.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name }).ToList() : null
             };
         }
 

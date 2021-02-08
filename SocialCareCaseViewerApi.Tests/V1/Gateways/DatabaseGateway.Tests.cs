@@ -142,7 +142,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string workerEmail = _faker.Internet.Email();
             string deallocationReason = "Test reason";
             int teamId = 1000;
-            string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";         
+            string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
 
             DateTime allocationStartDate = DateTime.Now.AddDays(-60);
 
@@ -429,7 +429,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
 
             //address record
-            var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() ==  person.Id);
+            var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Id);
             Assert.IsNotNull(addressRecord.KeyValues.RootElement.GetProperty("PersonAddressId").GetInt64());
 
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("Uprn").GetInt64() == person.Addresses.First().Uprn);

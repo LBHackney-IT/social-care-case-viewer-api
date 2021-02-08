@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             Assert.AreEqual(0, _createAllocationRequest.AllocatedWorkerId);
         }
-               
+
         [Test]
         public void RequestHasCreatedBy()
         {
@@ -100,7 +100,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             CreateAllocationRequest request = GetValidCreateAllocationRequest();
             request.CreatedBy = null;
-           
+
             var errors = ValidationHelper.ValidateModel(request);
 
             Assert.AreEqual(errors.Count, 1);

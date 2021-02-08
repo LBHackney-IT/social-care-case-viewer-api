@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             _auditEntry = new AuditEntry();
         }
-              
+
 
         [Test]
         public void AuditEntryTableName()

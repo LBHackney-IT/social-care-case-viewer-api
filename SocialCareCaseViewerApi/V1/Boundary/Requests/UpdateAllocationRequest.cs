@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromBody]
         [Required(ErrorMessage = "Please provide deallocation reason")]
         public string DeallocationReason { get; set; }
-       
+
         [FromBody]
         [Required]
         [EmailAddress]

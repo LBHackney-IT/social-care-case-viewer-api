@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 SexualOrientation = "Sexual orientation",
                 NhsNumber = _faker.Random.Number(),
                 Address = _fixture.Create<AddressDomain>(),
-                PhoneNumbers = _fixture.Create<List<PhoneNumber>>(), 
+                PhoneNumbers = _fixture.Create<List<PhoneNumber>>(),
                 EmailAddress = _faker.Internet.Email(),
                 PreferredMethodOfContact = "Email", //TOOD: set and test valid values?
                 ContextFlag = "A", //TOOD: set and test valid values,

@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             Assert.AreEqual(null, _updateAllocationRequest.DeallocationReason);
         }
-       
+
         [Test]
         public void RequestHasCreatedBy()
         {

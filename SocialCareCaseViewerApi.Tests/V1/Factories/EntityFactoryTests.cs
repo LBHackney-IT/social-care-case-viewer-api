@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
             var personId = _faker.Random.Long();
-            var createdBy = _faker.Internet.Email(); 
+            var createdBy = _faker.Internet.Email();
             var workerId = _faker.Random.Number();
             var dt = DateTime.Now;
             var caseStatus = "Open";
