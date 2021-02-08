@@ -16,6 +16,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
+        public void AddressIsAuditEntity()
+        {
+            Assert.IsInstanceOf<IAuditEntity>(_address);
+        }
+
+        [Test]
         public void AddressHasPersonAddressId()
         {
             Assert.AreEqual(0, _address.PersonAddressId);
@@ -74,5 +80,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_address.IsDisplayAddress);
         }
+
+        #region Audit properties
+
+        [Test]
+        public void AddressHasCreatedAt()
+        {
+            Assert.IsNull(_address.CreatedAt);
+        }
+
+        [Test]
+        public void AddressHasCreatedBy()
+        {
+            Assert.IsNull(_address.CreatedBy);
+        }
+
+        [Test]
+        public void AddressHasLastUpdatedAt()
+        {
+            Assert.IsNull(_address.LastModifiedAt);
+        }
+
+        [Test]
+        public void AddressHasLastUpdatedBy()
+        {
+            Assert.IsNull(_address.LastModifiedBy);
+        }
+        #endregion
     }
 }

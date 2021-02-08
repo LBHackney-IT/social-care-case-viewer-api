@@ -19,5 +19,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Response
         {
             Assert.AreEqual(null, _createAllocationResponse.CaseNoteId);
         }
+
+        [Test]
+        public void ResponseHasAllocationId()
+        {
+            Assert.AreEqual(0, _createAllocationResponse.AllocationId);
+        }
     }
 }

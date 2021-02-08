@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,5 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("context")]
         [MaxLength(1)]
         public string Context { get; set; }
+
+        public ICollection<WorkerTeam> WorkerTeams { get; set; }
     }
 }

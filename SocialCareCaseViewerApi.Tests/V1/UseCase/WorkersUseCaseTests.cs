@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
@@ -27,13 +28,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void GetWorkerByWorkerIdReturnsListWorkersReponseObject()
+        {
+            var request = new ListWorkersRequest();
+
+            var response = new ListWorkersResponse();
+
+            _mockDataBaseGateway.Setup(x => x.GetWorker(It.IsAny<int>())).Returns(new DbWorker());
+
+            var result = _workersUseCase.ExecuteGet(request);
+
+            Assert.IsInstanceOf<ListWorkersResponse>(result);
+            Assert.IsInstanceOf<List<Worker>>(result.Workers);
+        }
+
+        [Test]
         public void GetWorkersByTeamIdReturnsListWorkersReponseObject()
         {
             var request = new ListWorkersRequest();
 
             var response = new ListWorkersResponse();
 
-            _mockDataBaseGateway.Setup(x => x.GetWorkers(It.IsAny<int>(), It.IsAny<int>())).Returns(new List<DbWorker>());
+            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(It.IsAny<int>())).Returns(new List<dbTeam>());
 
             var result = _workersUseCase.ExecuteGet(request);
 

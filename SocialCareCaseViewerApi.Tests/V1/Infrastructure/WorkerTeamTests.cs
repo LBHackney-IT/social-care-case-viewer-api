@@ -17,13 +17,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void WorkerTeamHasWorkerId()
         {
-            Assert.IsNull(_workerTeam.WorkerId);
+            Assert.AreEqual(0, _workerTeam.WorkerId);
         }
 
         [Test]
         public void WorkerTeamHasTeamId()
         {
-            Assert.IsNull(_workerTeam.TeamId);
+            Assert.AreEqual(0, _workerTeam.TeamId);
         }
 
         [Test]

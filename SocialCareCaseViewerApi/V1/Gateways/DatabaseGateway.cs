@@ -32,80 +32,55 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public List<Allocation> SelectAllocations(long mosaicId, long workerId)
         {
-
             List<Allocation> allocations = new List<Allocation>();
-            //TODO: look into using navigation properties
+
+            //TODO: optimise these queries
             if (mosaicId != 0)
             {
-                allocations = (
-                    from allocation in _databaseContext.Allocations
+                allocations = _databaseContext.Allocations
+                    .Where(x => x.PersonId == mosaicId)
+                    .Include(x => x.Team)
+                    .Include(x => x.Person)
+                    .ThenInclude(y => y.Addresses)
+                    .Select(x => new Allocation()
+                        {
+                            Id = x.Id,
+                            PersonId = x.PersonId,
+                            PersonDateOfBirth = x.Person.DateOfBirth,
+                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName }",
+                            AllocatedWorkerTeam = x.Team.Name,
+                            WorkerType = x.Worker.Role,
+                            AllocationStartDate = x.AllocationStartDate,
+                            AllocationEndDate = x.AllocationEndDate,
+                            CaseStatus = x.CaseStatus,
+                            PersonAddress = x.Person.Addresses.FirstOrDefault(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") == null ? null : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y").AddressLines
+                        }
+                    ).AsNoTracking().ToList();
 
-                    join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
-                    from w in Workers.DefaultIfEmpty()
-
-                    join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
-                    from t in Teams.DefaultIfEmpty()
-
-                    join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
-                    from p in Person.DefaultIfEmpty()
-
-                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
-                    from a in Address.DefaultIfEmpty()
-
-                    where allocation.MosaicId == mosaicId
-
-                    select new Allocation()
-                    {
-                        Id = allocation.Id,
-                        PersonId = allocation.MosaicId,
-                        PersonDateOfBirth = p.DateOfBirth,
-                        PersonName = ToFullPersonName(p.FirstName, p.LastName),
-                        AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
-                        AllocatedWorkerTeam = t.Name,
-                        WorkerType = w.Role,
-                        AllocationStartDate = allocation.AllocationStartDate,
-                        AllocationEndDate = allocation.AllocationEndDate,
-                        CaseStatus = allocation.CaseStatus,
-                        PersonAddress = a.AddressLines
-                    }
-
-                    ).ToList();
             }
             else if (workerId != 0)
             {
-                allocations = (
-                    from allocation in _databaseContext.Allocations
-
-                    join worker in _databaseContext.Workers on allocation.WorkerId equals worker.Id into Workers
-                    from w in Workers.DefaultIfEmpty()
-
-                    join team in _databaseContext.Teams on w.TeamId equals team.Id into Teams
-                    from t in Teams.DefaultIfEmpty()
-
-                    join person in _databaseContext.Persons on allocation.MosaicId equals person.Id into Person
-                    from p in Person.DefaultIfEmpty()
-
-                    join address in _databaseContext.Addresses.Where(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") on p.Id equals address.PersonId into Address
-                    from a in Address.DefaultIfEmpty()
-
-                    where w.Id == workerId
-
-                    select new Allocation()
-                    {
-                        Id = allocation.Id,
-                        PersonId = allocation.MosaicId,
-                        PersonDateOfBirth = p.DateOfBirth,
-                        PersonName = ToFullPersonName(p.FirstName, p.LastName),
-                        AllocatedWorker = w == null ? null : $"{w.FirstName} {w.LastName }",
-                        AllocatedWorkerTeam = t.Name,
-                        WorkerType = w.Role,
-                        AllocationStartDate = allocation.AllocationStartDate,
-                        AllocationEndDate = allocation.AllocationEndDate,
-                        CaseStatus = allocation.CaseStatus,
-                        PersonAddress = a.AddressLines
-                    }
-
-                    ).ToList();
+                allocations = _databaseContext.Allocations
+                    .Where(x => x.WorkerId == workerId)
+                    .Include(x => x.Team)
+                    .Include(x => x.Person)
+                    .ThenInclude(y => y.Addresses)
+                    .Select(x => new Allocation()
+                        {
+                            Id = x.Id,
+                            PersonId = x.PersonId,
+                            PersonDateOfBirth = x.Person.DateOfBirth,
+                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName }",
+                            AllocatedWorkerTeam = x.Team.Name,
+                            WorkerType = x.Worker.Role,
+                            AllocationStartDate = x.AllocationStartDate,
+                            AllocationEndDate = x.AllocationEndDate,
+                            CaseStatus = x.CaseStatus,
+                            PersonAddress = x.Person.Addresses.FirstOrDefault(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") == null ? null : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y").AddressLines
+                        }
+                    ).AsNoTracking().ToList();
             }
 
             return allocations;
@@ -186,7 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (request.Address != null)
                 {
-                    address = AddResidentAddress(request.Address, resident.Id);
+                    address = AddResidentAddress(request.Address, resident.Id, request.CreatedBy);
                     resident.Addresses = new List<Address>
                     {
                         address
@@ -195,17 +170,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (request.OtherNames?.Count > 0)
                 {
-                    names = AddOtherNames(request.OtherNames, resident.Id);
+                    names = AddOtherNames(request.OtherNames, resident.Id, request.CreatedBy);
                     resident.OtherNames = new List<PersonOtherName>();
                     resident.OtherNames.AddRange(names);
                 }
                 if (request.PhoneNumbers?.Count > 0)
                 {
-                    phoneNumbers = AddPhoneNumbers(request.PhoneNumbers, resident.Id);
+                    phoneNumbers = AddPhoneNumbers(request.PhoneNumbers, resident.Id, request.CreatedBy);
                     resident.PhoneNumbers = new List<dbPhoneNumber>();
                     resident.PhoneNumbers.AddRange(phoneNumbers);
                 }
-
+                
                 _databaseContext.Persons.Add(resident);
                 _databaseContext.SaveChanges();
             }
@@ -241,11 +216,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 //calculated and additional values
                 FullName = $"{request.FirstName} {request.LastName}",
-                DataIsFromDmPersonsBackup = "N"
+                DataIsFromDmPersonsBackup = "N",
+                CreatedBy = request.CreatedBy
             };
         }
 
-        public static Address AddResidentAddress(AddressDomain addressRequest, long personId)
+        public static Address AddResidentAddress(AddressDomain addressRequest, long personId, string createdBy)
         {
             return new Address
             {
@@ -254,18 +230,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PostCode = addressRequest.Postcode,
                 Uprn = addressRequest.Uprn,
                 DataIsFromDmPersonsBackup = "N",
-                IsDisplayAddress = "Y"
+                IsDisplayAddress = "Y",
+                CreatedBy = createdBy
             };
         }
 
-        public static List<PersonOtherName> AddOtherNames(List<OtherName> names, long personId)
+        public static List<PersonOtherName> AddOtherNames(List<OtherName> names, long personId, string createdBy)
         {
-            return names.Select(x => x.ToEntity(personId)).ToList();
+            return names.Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
-        public static List<dbPhoneNumber> AddPhoneNumbers(List<PhoneNumber> numbers, long personId)
+        public static List<dbPhoneNumber> AddPhoneNumbers(List<PhoneNumber> numbers, long personId, string createdBy)
         {
-            return numbers.Select(x => x.ToEntity(personId)).ToList();
+            return numbers.Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
         public string GetPersonIdByNCReference(string ncId)
@@ -282,12 +259,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public List<Worker> GetWorkers(int teamId, int workerId)
+        public Worker GetWorker(int workerId)
         {
-            return (teamId != 0) ?
-                _databaseContext.Workers.Where(x => x.TeamId == teamId).ToList() :
-                _databaseContext.Workers.Where(x => x.Id == workerId).ToList();
-            ;
+            return _databaseContext.Workers
+                .Where(x => x.Id == workerId)
+                .Include(x => x.Allocations)
+                .Include(x => x.WorkerTeams)
+                .ThenInclude(y => y.Team)
+                .FirstOrDefault();
+        }
+
+        public List<Team> GetWorkersByTeamId(int teamId)
+        {
+
+            return _databaseContext.Teams
+                .Where(x => x.Id == teamId)
+                .Include(x => x.WorkerTeams)
+                .ThenInclude(x => x.Worker)
+                .ThenInclude(x => x.Allocations)
+                .ToList();
         }
 
         //TODO: use db views or queries 
@@ -316,7 +306,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             CreateAllocationResponse response = new CreateAllocationResponse();
 
-            //get worker details
+            //make sure we have all related entities
+            //worker
             Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
 
             if (string.IsNullOrEmpty(worker?.Email))
@@ -324,42 +315,42 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CreateAllocationException("Worker details cannot be found");
             }
 
-            //get team details for the note
-            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == worker.TeamId);
+            //team
+            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
 
-            if (team?.Id == null)
+            if (team == null)
             {
                 throw new CreateAllocationException("Team details cannot be found");
             }
 
-            var entity = request.ToEntity(worker.Id, DateTime.Now, "Open");
-            _databaseContext.Allocations.Add(entity);
-            _databaseContext.SaveChanges();
-
-            int allocationId = entity.Id; //new given id will be available here
-
-            //check that required records exist
+            //person
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
-
-            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.AllocatedBy.ToUpper());
 
             if (person == null)
             {
-                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
-                _databaseContext.Allocations.Remove(allocationToDelete);
-                _databaseContext.SaveChanges();
-
                 throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
             }
 
+            //createdBy
+            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
+
             if (allocatedBy == null)
             {
-                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
-                _databaseContext.Allocations.Remove(allocationToDelete);
-                _databaseContext.SaveChanges();
-
-                throw new CreateAllocationException($"Worker with given allocated by email address ({request.AllocatedBy}) not found");
+                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
             }
+
+            AllocationSet allocation = new AllocationSet()
+            {
+                PersonId = person.Id,
+                WorkerId = worker.Id,
+                TeamId = team.Id,
+                AllocationStartDate = DateTime.Now,
+                CaseStatus = "Open",
+                CreatedBy = allocatedBy.Email
+            };
+
+            _databaseContext.Allocations.Add(allocation);
+            _databaseContext.SaveChanges();
 
             //Add note
             try
@@ -376,7 +367,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
-                    AllocationId = entity.Id.ToString(),
+                    AllocationId = allocation.Id.ToString(),
                     CreatedBy = request.CreatedBy
                 };
 
@@ -386,12 +377,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 };
 
                 response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                response.AllocationId = allocation.Id;
             }
             catch (Exception ex)
             {
                 //roll back allocation record
-                AllocationSet allocationToDelete = _databaseContext.Allocations.Where(x => x.Id == allocationId).FirstOrDefault();
-                _databaseContext.Allocations.Remove(allocationToDelete);
+                _databaseContext.Allocations.Remove(allocation);
                 _databaseContext.SaveChanges();
 
                 throw new UpdateAllocationException($"Unable to create a case note. Allocation not created: {ex.Message}");
@@ -417,7 +408,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     }
 
                     //check that person exists
-                    Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.MosaicId);
+                    Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
 
                     if (person == null)
                     {
@@ -428,13 +419,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     if (worker == null)
                     {
-                        throw new UpdateAllocationException("Worker now found");
+                        throw new UpdateAllocationException("Worker not found");
+                    }
+
+                    Worker createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.CreatedBy);
+
+                    if (createdBy == null)
+                    {
+                        throw new UpdateAllocationException("CreatedBy not found");
                     }
 
                     //copy existing values in case adding note fails
                     AllocationSet tmpAllocation = (AllocationSet) allocation.Clone();
 
-                    SetDeallocationValues(allocation, dt);
+                    SetDeallocationValues(allocation, dt, request.CreatedBy);
 
                     _databaseContext.SaveChanges();
 
@@ -451,7 +449,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             DeallocationReason = request.DeallocationReason,
                             FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
                             FormName = "Worker deallocated",
-                            AllocationId = request.AllocationId,
+                            AllocationId = request.Id.ToString(),
                             CreatedBy = request.CreatedBy
                         };
 
@@ -487,12 +485,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
-        private static void SetDeallocationValues(AllocationSet allocation, DateTime dt)
+        private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
+            //keep workerId and TeamId in the record so they can be easily exposed to front end
             allocation.AllocationEndDate = dt;
             allocation.CaseStatus = "Closed";
-            allocation.WorkerId = null;
             allocation.CaseClosureDate = dt;
+            allocation.LastModifiedBy = modifiedBy;
         }
 
         private static void RestoreAllocationValues(AllocationSet tmpAllocation, AllocationSet allocationToRestore)
@@ -500,10 +499,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             allocationToRestore.AllocationEndDate = tmpAllocation.AllocationEndDate;
             allocationToRestore.CaseStatus = tmpAllocation.CaseStatus;
             allocationToRestore.WorkerId = tmpAllocation.WorkerId;
+            allocationToRestore.TeamId = tmpAllocation.TeamId;
             allocationToRestore.CaseClosureDate = tmpAllocation.CaseClosureDate;
         }
 
-        private static string ToFullPersonName(string firstName, string lastName)
+        private static string ToTitleCaseFullPersonName(string firstName, string lastName)
         {
             string first = string.IsNullOrWhiteSpace(firstName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower());
             string last = string.IsNullOrWhiteSpace(lastName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());

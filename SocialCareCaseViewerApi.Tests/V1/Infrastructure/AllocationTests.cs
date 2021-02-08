@@ -14,6 +14,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
             _allocationSet = new AllocationSet();
         }
 
+
+        [Test]
+        public void AllocationIsAuditEntity()
+        {
+            Assert.IsInstanceOf<IAuditEntity>(_allocationSet);
+        }
+
         [Test]
         public void AllocationHasId()
         {
@@ -21,9 +28,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
-        public void AllocationHasMosaicId()
+        public void AllocationHasPersonId()
         {
-            Assert.AreEqual(0, _allocationSet.MosaicId);
+            Assert.AreEqual(0, _allocationSet.PersonId);
         }
 
         [Test]
@@ -55,5 +62,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_allocationSet.CaseClosureDate);
         }
+
+        [Test]
+        public void AllocationHasWorker()
+        {
+            Assert.IsNull(_allocationSet.Worker);
+        }
+
+        [Test]
+        public void AllocationHasTeam()
+        {
+            Assert.IsNull(_allocationSet.Team);
+        }
+
+        #region Audit properties
+
+        [Test]
+        public void AllocationHasCreatedAt()
+        {
+            Assert.IsNull(_allocationSet.CreatedAt);
+        }
+
+        [Test]
+        public void AllocationHasCreatedBy()
+        {
+            Assert.IsNull(_allocationSet.CreatedBy);
+        }
+
+        [Test]
+        public void AllocationHasLastUpdatedAt()
+        {
+            Assert.IsNull(_allocationSet.LastModifiedAt);
+        }
+
+        [Test]
+        public void AllocationHasLastUpdatedBy()
+        {
+            Assert.IsNull(_allocationSet.LastModifiedBy);
+        }
+        #endregion
     }
 }

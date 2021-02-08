@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class Worker
@@ -10,10 +12,10 @@ namespace SocialCareCaseViewerApi.V1.Domain
 
         public string LastName { get; set; }
 
-        public int? TeamId { get; set; }
-
         public string Role { get; set; }
 
         public int AllocationCount { get; set; }
+
+        public IList<Team> Teams { get; set; } = new List<Team>();
     }
 }

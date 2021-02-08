@@ -16,6 +16,7 @@ using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -50,7 +51,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             {
                 AllocatedWorkerId = workerId,
                 MosaicId = mosaicId,
-                AllocatedBy = allocatedByEmail
+                CreatedBy = allocatedByEmail,
+                AllocatedTeamId = teamId
             };
 
             //add test worker and team
@@ -59,8 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 Email = workerEmail,
                 Id = workerId,
                 FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                TeamId = teamId
+                LastName = _faker.Name.LastName()
             };
 
             Worker allocatedByWorker = new Worker()
@@ -68,8 +69,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 Email = allocatedByEmail,
                 Id = _faker.Random.Number(),
                 FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName(),
-                TeamId = teamId
+                LastName = _faker.Name.LastName()
             };
 
             Team team = new Team()
@@ -95,21 +95,166 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //TODO: add process data gw tests
             _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
-            _classUnderTest.CreateAllocation(request);
+            var response = _classUnderTest.CreateAllocation(request);
 
             var query = DatabaseContext.Allocations;
 
-            //TODO: set this up so that local testing is easy and always run against clean datasets
-            var insertedRecord = query.FirstOrDefault(x => x.MosaicId == mosaicId);
+            var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
             Assert.IsNotNull(insertedRecord);
-            insertedRecord.MosaicId.Should().NotBe(null);
-            Assert.AreEqual(insertedRecord.MosaicId, request.MosaicId);
+            insertedRecord.PersonId.Should().NotBe(null);
+            Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
             Assert.AreEqual(insertedRecord.WorkerId, workerId);
+
+            //audit properties
+            Assert.AreEqual(insertedRecord.CreatedBy, allocatedByEmail);
+            Assert.IsNotNull(insertedRecord.CreatedAt);
+            Assert.AreNotEqual(DateTime.MinValue, insertedRecord.CreatedAt);
+            Assert.IsNull(insertedRecord.LastModifiedAt);
+            Assert.IsNull(insertedRecord.LastModifiedBy);
+
+            //audit record
+            var auditRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetString() == insertedRecord.Id.ToString());
+            Assert.AreEqual(auditRecord.KeyValues.RootElement.GetProperty("Id").GetInt64(), response.AllocationId);
+
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("TeamId").GetInt64(), teamId);
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("WorkerId").GetInt64(), workerId);
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
+
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("AllocationEndDate").GetString() == null);
+            Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("AllocationStartDate").GetDateTime());
+
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == allocatedByEmail);
+            Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
 
         [Test]
-        public void CreatingAPersonShouldCreateCorrectRecordsInTheDatabase()
+        //deallocation
+        public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
+        {
+            int workerId = 555666;
+            long mosaicId = 5000555;
+            string deAllocatedByEmail = _faker.Internet.Email();
+            string workerEmail = _faker.Internet.Email();
+            string deallocationReason = "Test reason";
+            int teamId = 1000;
+            string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";         
+
+            DateTime allocationStartDate = DateTime.Now.AddDays(-60);
+
+            //add test data
+            //TODO: add helper for setting up test data
+            Worker worker = new Worker()
+            {
+                Email = workerEmail,
+                Id = workerId,
+                FirstName = _faker.Name.FirstName(),
+                LastName = _faker.Name.LastName()
+            };
+
+            Worker deAllocatedByWorker = new Worker()
+            {
+                Email = deAllocatedByEmail,
+                Id = _faker.Random.Number(),
+                FirstName = _faker.Name.FirstName(),
+                LastName = _faker.Name.LastName()
+            };
+
+            Team team = new Team()
+            {
+                Context = "A",
+                Id = teamId,
+                Name = "Test team"
+            };
+
+            Person person = new Person()
+            {
+                Id = mosaicId,
+                FullName = personName
+            };
+
+            string createdByEmail = _faker.Internet.Email();
+
+            Allocation allocation = new Allocation()
+            {
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = createdByEmail,
+                LastModifiedBy = null,
+                PersonId = mosaicId,
+                TeamId = teamId,
+                WorkerId = workerId
+            };
+
+            DatabaseContext.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            var request = new UpdateAllocationRequest()
+            {
+                CreatedBy = deAllocatedByEmail,
+                DeallocationReason = deallocationReason,
+                Id = allocation.Id
+            };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+
+            DatabaseContext.SaveChanges();
+
+            //TODO: add process data gw tests
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+
+            var response = _classUnderTest.UpdateAllocation(request);
+
+            var query = DatabaseContext.Allocations;
+
+            var updatedRecord = query.First(x => x.Id == allocation.Id);
+
+            Assert.IsNotNull(updatedRecord);
+            Assert.IsNotNull(updatedRecord.AllocationEndDate);
+            Assert.AreEqual("Closed", updatedRecord.CaseStatus);
+            Assert.AreEqual(workerId, updatedRecord.WorkerId);
+            Assert.AreEqual(teamId, updatedRecord.TeamId);
+            Assert.IsNotNull(updatedRecord.CaseClosureDate);
+
+            //audit properties
+            Assert.AreEqual(updatedRecord.CreatedBy, createdByEmail);
+            Assert.IsNotNull(updatedRecord.CreatedAt);
+            Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
+            Assert.IsNotNull(updatedRecord.LastModifiedAt);
+            Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByEmail);
+
+            //audit record
+            var auditRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetString() == updatedRecord.Id.ToString() && x.EntityState == "Modified");
+
+            //key value
+            Assert.AreEqual(auditRecord.KeyValues.RootElement.GetProperty("Id").GetInt64(), allocation.Id);
+
+            //old values
+            Assert.AreEqual(auditRecord.OldValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
+            Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+            Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
+            Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("AllocationEndDate").GetString() == null);
+
+            //new values
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Closed");
+            Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == deAllocatedByEmail);
+            Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetDateTime());
+            Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("AllocationEndDate").GetDateTime());
+        }
+
+        [Test]
+        public void CreatingAPersonShouldCreateCorrectRecordsAndAuditRecordsInTheDatabase()
         {
             string title = "Mr";
             string firstName = _faker.Name.FirstName();
@@ -145,6 +290,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             long uprn = 1234567;
             string postCode = "E18";
             string isDiplayAddress = "Y";
+            string dataIsFromDmPersonsBackup = "N";
 
             AddressDomain address = new AddressDomain()
             {
@@ -153,10 +299,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 Uprn = uprn
             };
 
-            string phoneNumberOne = "077 5555 5555";
+            string phoneNumberOne = "07755555555";
             string phoneNumberTypeOne = "Mobile";
 
-            string phoneNumberTwo = "079 7777 7777";
+            string phoneNumberTwo = "07977777777";
             string phoneNumberTypeTwo = "Fax";
 
             List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
@@ -238,16 +384,112 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(postCode, person.Addresses.First().PostCode);
             Assert.AreEqual(uprn, person.Addresses.First().Uprn);
             Assert.AreEqual(isDiplayAddress, person.Addresses.First().IsDisplayAddress);
+            Assert.AreEqual(dataIsFromDmPersonsBackup, person.Addresses.First().DataIsFromDmPersonsBackup);
 
             //check that phone numbers were created with correct values
             Assert.AreEqual(2, person.PhoneNumbers.Count);
-            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberOne));
+            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberOne.ToString()));
             Assert.IsTrue(person.PhoneNumbers.Any(x => x.Type == phoneNumberTypeOne));
-            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberTwo));
+            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberTwo.ToString()));
             Assert.IsTrue(person.PhoneNumbers.Any(x => x.Type == phoneNumberTypeTwo));
             Assert.IsTrue(person.PhoneNumbers.All(x => x.PersonId == person.Id));
 
-            //TODO: add audit 
+            //audit details
+            Assert.AreEqual(createdBy, person.CreatedBy);
+            Assert.IsNotNull(person.CreatedAt);
+
+            Assert.IsTrue(person.Addresses.All(x => x.CreatedBy == createdBy));
+            Assert.IsTrue(person.Addresses.All(x => x.CreatedBy != null));
+
+            Assert.IsTrue(person.OtherNames.All(x => x.CreatedBy == createdBy));
+            Assert.IsTrue(person.OtherNames.All(x => x.CreatedBy != null));
+
+            Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy == createdBy));
+            Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy != null));
+
+            //person audit record
+            var personRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetInt64() == person.Id);
+            Assert.IsNotNull(personRecord.KeyValues.RootElement.GetProperty("Id").GetInt64());
+
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Title").GetString() == person.Title);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("FirstName").GetString() == person.FirstName);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("LastName").GetString() == person.LastName);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Gender").GetString() == person.Gender);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("DateOfBirth").GetDateTime() == person.DateOfBirth);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("DateOfDeath").GetDateTime() == person.DateOfDeath);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Ethnicity").GetString() == person.Ethnicity);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("FirstLanguage").GetString() == person.FirstLanguage);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Religion").GetString() == person.Religion);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("SexualOrientation").GetString() == person.SexualOrientation);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("NhsNumber").GetInt64() == person.NhsNumber);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("EmailAddress").GetString() == person.EmailAddress);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("PreferredMethodOfContact").GetString() == person.PreferredMethodOfContact);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("AgeContext").GetString() == person.AgeContext);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+
+            //address record
+            var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() ==  person.Id);
+            Assert.IsNotNull(addressRecord.KeyValues.RootElement.GetProperty("PersonAddressId").GetInt64());
+
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("Uprn").GetInt64() == person.Addresses.First().Uprn);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("EndDate").GetString() == null);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Addresses.First().PersonId);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("PostCode").GetString() == person.Addresses.First().PostCode);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("AddressLines").GetString() == person.Addresses.First().AddressLines);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("IsDisplayAddress").GetString() == person.Addresses.First().IsDisplayAddress);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("DataIsFromDmPersonsBackup").GetString() == person.Addresses.First().DataIsFromDmPersonsBackup);
+
+            //other names
+            var otherNamesRecordOne = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstOne);
+            Assert.IsNotNull(otherNamesRecordOne.KeyValues.RootElement.GetProperty("Id").GetInt64());
+
+            Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstOne);
+            Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("LastName").GetString(), otherNameLastOne);
+            Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+
+            var otherNamesRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstTwo);
+            Assert.IsNotNull(otherNamesRecordTwo.KeyValues.RootElement.GetProperty("Id").GetInt64());
+
+            Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstTwo);
+            Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("LastName").GetString(), otherNameLastTwo);
+            Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
+            Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+
+            //phone numbers
+            var phoneNumberRecordOne = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberOne.ToString());
+
+            Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeOne);
+            Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberOne.ToString());
+            Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
+
+            Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(phoneNumberRecordOne.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+
+            var phoneNumberRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberTwo.ToString());
+
+            Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeTwo);
+            Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberTwo.ToString());
+            Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
+
+            Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
+            Assert.IsNotNull(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+            Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
+            Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
     }
 }
+
