@@ -47,5 +47,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("from_dm_person")]
         [MaxLength(1)]
         public string DataIsFromDmPersonsBackup { get; set; }
+
+        [Column("restricted")]
+        [MaxLength(1)]
+        public string Restricted { get; set; }
     }
 }
