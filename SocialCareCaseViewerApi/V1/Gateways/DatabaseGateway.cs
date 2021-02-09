@@ -237,7 +237,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public static List<PersonOtherName> AddOtherNames(List<OtherName> names, long personId, string createdBy)
         {
-            return names.Select(x => x.ToEntity(personId, createdBy)).ToList();
+            return names.Where(x => x.FirstName != null || x.LastName != null).Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
         public static List<dbPhoneNumber> AddPhoneNumbers(List<PhoneNumber> numbers, long personId, string createdBy)
