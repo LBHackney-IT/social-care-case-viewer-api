@@ -197,7 +197,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.First().ErrorMessage == "The LastName field is required.");
         }
-        
+
         [Test]
         public void ValidationFailsIfDateOfBirthIsNotProvided()
         {
