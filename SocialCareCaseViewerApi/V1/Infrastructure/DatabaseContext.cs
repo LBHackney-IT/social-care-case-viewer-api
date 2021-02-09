@@ -49,7 +49,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
             foreach (var entry in ChangeTracker.Entries())
             {
-                //TODO: add support for delete
                 if (entry.Entity is IAuditEntity auditEntity)
                 {
                     //ignore entities we don't want to add audit records for
@@ -100,6 +99,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                                 auditEntity.CreatedAt = dateTimeNow;
                                 auditEntity.CreatedBy = createdBy;
                                 auditEntry.NewValues[propertyName] = property.CurrentValue;
+                                break;
+
+                            case EntityState.Deleted:
+                                auditEntry.OldValues[propertyName] = property.OriginalValue;
                                 break;
                         }
                     }
