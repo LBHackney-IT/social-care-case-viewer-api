@@ -40,5 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         /// 450 557 7104
         /// </example>
         public string NhsNumber { get; set; }
+
+        public string Restricted { get; set; }
     }
 }
