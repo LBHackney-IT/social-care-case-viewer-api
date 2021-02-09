@@ -147,5 +147,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_person.Allocations);
         }
+
+        [Test]
+        public void PersonHasRestricted()
+        {
+            Assert.IsNull(_person.Restricted);
+        }
     }
 }

@@ -85,6 +85,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(100)]
         public string PreferredMethodOfContact { get; set; }
 
+        [Column("restricted")]
+        [MaxLength(1)]
+        public string Restricted { get; set; }
+
         //audit props
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }
