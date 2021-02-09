@@ -15,6 +15,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
+        public void PhoneNamberIsAuditEntity()
+        {
+            Assert.IsInstanceOf<IAuditEntity>(_phoneNumber);
+        }
+
+        [Test]
         public void PhoneNumberHasPersonId()
         {
             Assert.AreEqual(0, _phoneNumber.PersonId);
@@ -29,5 +35,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_phoneNumber.Type);
         }
+
+        #region Audit properties
+
+        [Test]
+        public void PhoneNumberHasCreatedAt()
+        {
+            Assert.IsNull(_phoneNumber.CreatedAt);
+        }
+
+        [Test]
+        public void PhoneNumberHasCreatedBy()
+        {
+            Assert.IsNull(_phoneNumber.CreatedBy);
+        }
+
+        [Test]
+        public void PhoneNumberHasLastUpdatedAt()
+        {
+            Assert.IsNull(_phoneNumber.LastModifiedAt);
+        }
+
+        [Test]
+        public void PhoneNumberHasLastUpdatedBy()
+        {
+            Assert.IsNull(_phoneNumber.LastModifiedBy);
+        }
+        #endregion
     }
 }

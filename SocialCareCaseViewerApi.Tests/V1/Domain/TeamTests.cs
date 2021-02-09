@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         [Test]
         public void TeamHasName()
         {
-            Assert.AreEqual(null, _team.Name);
+            Assert.IsNull(_team.Name);
         }
     }
 }

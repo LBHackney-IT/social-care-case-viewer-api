@@ -18,10 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromBody]
         [Required]
-        public string AllocationId { get; set; }
-
-        [FromBody]
-        [Required]
+        [EmailAddress]
         public string CreatedBy { get; set; }
     }
 }

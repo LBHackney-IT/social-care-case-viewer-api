@@ -15,6 +15,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
+        public void PersonIsAuditEntity()
+        {
+            Assert.IsInstanceOf<IAuditEntity>(_person);
+        }
+
+        [Test]
         public void PersonHasId()
         {
             Assert.AreEqual(0, _person.Id);
@@ -116,6 +122,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         public void PersonHasPreferredMethodOfContact()
         {
             Assert.IsNull(_person.PreferredMethodOfContact);
+        }
+
+        [Test]
+        public void PersonHasAddresses()
+        {
+            Assert.IsNull(_person.Addresses);
+        }
+
+        [Test]
+        public void PersonHasOtherNamest()
+        {
+            Assert.IsNull(_person.OtherNames);
+        }
+
+        [Test]
+        public void PersonHasPhoneNumbers()
+        {
+            Assert.IsNull(_person.PhoneNumbers);
+        }
+
+        [Test]
+        public void PersonHasAllocations()
+        {
+            Assert.IsNull(_person.Allocations);
+        }
+
+        [Test]
+        public void PersonHasRestricted()
+        {
+            Assert.IsNull(_person.Restricted);
         }
     }
 }

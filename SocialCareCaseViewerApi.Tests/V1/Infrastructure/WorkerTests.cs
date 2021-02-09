@@ -39,12 +39,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
-        public void WorkerHasTeamId()
-        {
-            Assert.IsNull(_worker.TeamId);
-        }
-
-        [Test]
         public void WorkerHasRole()
         {
             Assert.IsNull(_worker.Role);

@@ -30,15 +30,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasAllocationId()
-        {
-            Assert.AreEqual(null, _updateAllocationRequest.AllocationId);
-        }
-
-        [Test]
         public void RequestHasCreatedBy()
         {
             Assert.AreEqual(null, _updateAllocationRequest.CreatedBy);
+        }
+
+        private static UpdateAllocationRequest GetValidUpdateAllocationRequest()
+        {
+            return new UpdateAllocationRequest()
+            {
+                CreatedBy = "test@.domain.",
+                DeallocationReason = "My reason",
+                Id = 1
+            };
         }
         #endregion
 
@@ -46,77 +50,83 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ModelValidationFailsIfIdIsNotBiggerThan0()
         {
-            _updateAllocationRequest.DeallocationReason = "Sample reason";
-            _updateAllocationRequest.AllocationId = "Sample Id";
-            _updateAllocationRequest.CreatedBy = "Sample Creator";
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.Id = 0;
 
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            var errors = ValidationHelper.ValidateModel(_request);
 
             Assert.IsTrue(errors.Count == 1);
         }
 
         [Test]
-        public void ModelValidationReturnsCorrectErrroMessageWhenIdIsNotBiggerThan0()
+        public void ModelValidationReturnsCorrectErrorMessageWhenIdIsNotBiggerThan0()
         {
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.Id = 0;
+
+            var errors = ValidationHelper.ValidateModel(_request);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
         }
 
         [Test]
         public void ModelValidationFailsIfDeallocationReasonIsNotProvided()
         {
-            _updateAllocationRequest.Id = 1;
-            _updateAllocationRequest.AllocationId = "Sample Id";
-            _updateAllocationRequest.CreatedBy = "Sample Creator";
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.DeallocationReason = null;
 
-
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            var errors = ValidationHelper.ValidateModel(_request);
             Assert.IsTrue(errors.Count == 1);
         }
 
         [Test]
-        public void ModelValidationFailsIfDeallocationReasonIsNullOrEmpty()
+        public void ModelValidationReturnsCorrectErrorMessageIfDeallocationReasonIsNullOrEmpty()
         {
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.DeallocationReason = null;
+
+            var errors = ValidationHelper.ValidateModel(_request);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide deallocation reason")));
         }
 
-        [Test]
-        public void ModelValidationFailsIfAllocationIdIsNotProvided()
-        {
-            _updateAllocationRequest.Id = 1;
-            _updateAllocationRequest.DeallocationReason = "Sample reason";
-            _updateAllocationRequest.CreatedBy = "Sample Creator";
-
-
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
-            Assert.IsTrue(errors.Count == 1);
-        }
 
         [Test]
-        public void ModelValidationReturnsCorrectErrorMessageIfAllocationIdIsNotProvided()
+        public void ModelValidationReturnsCorrectErrorMessageIfIdIsNotProvided()
         {
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("AllocationId field is required")));
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.Id = 0;
+
+            var errors = ValidationHelper.ValidateModel(_request);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
         }
 
         [Test]
         public void ModelValidationFailsIfCreatedByIsNotProvided()
         {
-            _updateAllocationRequest.Id = 1;
-            _updateAllocationRequest.DeallocationReason = "Sample reason";
-            _updateAllocationRequest.AllocationId = "Sample Id";
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.CreatedBy = null;
 
-
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            var errors = ValidationHelper.ValidateModel(_request);
             Assert.IsTrue(errors.Count == 1);
         }
 
         [Test]
         public void ModelValidationReturnsCorrectErrorMessageIfCreatedByIsNotProvided()
         {
-            var errors = ValidationHelper.ValidateModel(_updateAllocationRequest);
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.CreatedBy = null;
+
+            var errors = ValidationHelper.ValidateModel(_request);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("CreatedBy field is required")));
+        }
+
+        [Test]
+        public void ModelValidationReturnsCorrectErrorMessageIfCreatedByIsNotValidEmailAddress()
+        {
+            UpdateAllocationRequest _request = GetValidUpdateAllocationRequest();
+            _request.CreatedBy = "invalidEmailAddress";
+
+            var errors = ValidationHelper.ValidateModel(_request);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The CreatedBy field is not a valid e-mail address.")));
         }
         #endregion
     }

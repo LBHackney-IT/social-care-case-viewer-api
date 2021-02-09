@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 SexualOrientation = "Sexual orientation",
                 NhsNumber = _faker.Random.Number(),
                 Address = _fixture.Create<AddressDomain>(),
-                PhoneNumbers = _fixture.Create<List<PhoneNumber>>(), //TODO: make sure only one is set to main
+                PhoneNumbers = _fixture.Create<List<PhoneNumber>>(),
                 EmailAddress = _faker.Internet.Email(),
                 PreferredMethodOfContact = "Email", //TOOD: set and test valid values?
                 ContextFlag = "A", //TOOD: set and test valid values,
@@ -234,6 +234,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void ValidationPassesIfEmailAddressIsEmptyString()
+        {
+            var request = GetValidRequest();
+            request.EmailAddress = "";
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        [Test]
+        [TestCase("A")]
+        [TestCase("C")]
+        public void ModelValidationSucceedsIfContextIsProvidedAndTheValueIsValid(string context)
+        {
+            var request = GetValidRequest();
+            request.ContextFlag = context;
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 0);
+        }
+
+        [Test]
+        public void ModelValidationFailsIfContextIsProvidedButTheValueIsNotEitherAorC()
+        {
+            var request = GetValidRequest();
+            request.ContextFlag = "d";
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The context_flag must be 'A' or 'C' only")));
+        }
+
+        [Test]
         public void ValidationFailsIfCreatedByEmailAddressIsNotInValidFormat()
         {
             var request = GetValidRequest();
@@ -244,8 +278,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.First().ErrorMessage == "The CreatedBy field is not a valid e-mail address.");
         }
-
-
         #endregion
     }
 }

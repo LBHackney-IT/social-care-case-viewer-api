@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_allocations_combined", Schema = "dbo")]
-    public class AllocationSet
+    public class AllocationSet : IAuditEntity
     {
         [Column("id")]
         [Key]
@@ -13,11 +13,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("mosaic_id")]
         [Required]
-        public long MosaicId { get; set; }
+        public long PersonId { get; set; }
 
         [Column("worker_id")]
         [MaxLength(62)]
-        public long? WorkerId { get; set; }
+        public int? WorkerId { get; set; }
+
+        [Column("team_id")]
+        [MaxLength(62)]
+        public int? TeamId { get; set; }
 
         [Column("allocation_start_date")]
         public DateTime? AllocationStartDate { get; set; }
@@ -30,6 +34,26 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("closure_date_if_closed")]
         public DateTime? CaseClosureDate { get; set; }
+
+
+        //nav props
+        public Worker Worker { get; set; }
+        public Team Team { get; set; }
+
+        public Person Person { get; set; }
+
+        //audit props
+        [Column("sccv_created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [Column("sccv_created_by")]
+        public string CreatedBy { get; set; }
+
+        [Column("sccv_last_modified_at")]
+        public DateTime? LastModifiedAt { get; set; }
+
+        [Column("sccv_last_modified_by")]
+        public string LastModifiedBy { get; set; }
 
         public object Clone()
         {

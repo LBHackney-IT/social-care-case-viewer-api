@@ -39,12 +39,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         }
 
         [Test]
-        public void WorkerHasTeamId()
-        {
-            Assert.IsNull(_worker.TeamId);
-        }
-
-        [Test]
         public void WorkerHasRole()
         {
             Assert.IsNull(_worker.Role);
@@ -54,6 +48,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         public void WorkerHasAllocationsCount()
         {
             Assert.AreEqual(0, _worker.AllocationCount);
+        }
+
+        [Test]
+        public void WorkerHasTeams()
+        {
+            Assert.IsEmpty(_worker.Teams);
         }
     }
 }

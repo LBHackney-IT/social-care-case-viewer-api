@@ -7,6 +7,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class AddNewResidentRequest
     {
+        private string _email;
+
         public string Title { get; set; }
 
         [Required]
@@ -37,12 +39,24 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
         [EmailAddress]
-        public string EmailAddress { get; set; }
+        //allow front end to send empty string for email
+        public string EmailAddress
+        {
+            get
+            {
+                return _email;
+            }
+            set
+            {
+                _email = string.IsNullOrWhiteSpace(value) ? null : value;
+            }
+        }
 
         public string PreferredMethodOfContact { get; set; }
 
         [Required]
         [MaxLength(1)]
+        [RegularExpression("(?i:^A|C)", ErrorMessage = "The context_flag must be 'A' or 'C' only.")]
         public string ContextFlag { get; set; }
 
         [Required]
