@@ -5,6 +5,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListCasesRequest
     {
+        [FromQuery(Name = "record_id")]
+        public string RecordId { get; set; }
+
         [FromQuery(Name = "mosaic_id")]
         public string MosaicId { get; set; }
 

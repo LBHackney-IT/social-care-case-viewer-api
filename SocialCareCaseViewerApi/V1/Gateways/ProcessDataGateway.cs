@@ -31,11 +31,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
 
-            if (!string.IsNullOrWhiteSpace(request.MosaicId))
+            if (!string.IsNullOrWhiteSpace(request.RecordId))
             {
-                var query = _sccvDbContext.getCollection().AsQueryable();
-                var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
-                query = query.Where(db => mosaicIDFilter.Inject());
+                var collection = _sccvDbContext.getCollection();
+                var recordIDFilter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(request.RecordId));
+                var query = collection.Find<BsonDocument>(recordIDFilter);
 
                 result = query.ToList();
             }
