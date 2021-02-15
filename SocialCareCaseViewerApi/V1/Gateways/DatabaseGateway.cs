@@ -402,7 +402,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (allocation != null)
                 {
-                    if (allocation.CaseStatus == "Closed")
+                    if (allocation.CaseStatus?.ToUpper() == "CLOSED")
                     {
                         throw new UpdateAllocationException("Allocation already closed");
                     }
@@ -422,7 +422,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         throw new UpdateAllocationException("Worker not found");
                     }
 
-                    Worker createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.CreatedBy);
+                    Worker createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
 
                     if (createdBy == null)
                     {
