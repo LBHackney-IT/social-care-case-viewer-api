@@ -316,7 +316,7 @@ CREATE TABLE DBO.SCCV_WORKER
 );
 
 ALTER TABLE DBO.SCCV_WORKER DROP COLUMN TEAM_ID;
-
+ALTER TABLE DBO.SCCV_WORKER ADD CONSTRAINT sccv_worker_unique_email UNIQUE (EMAIL);
 
 CREATE TABLE DBO.SCCV_TEAM
 (
@@ -376,3 +376,12 @@ create table dbo.sccv_audit
 	NEW_values json
 )
 
+--worker import
+create table dbo.sccv_worker_import(
+AllocatedWorker varchar(300),
+FirstName varchar(300),
+Surname varchar(300),
+Email  varchar(300),
+WorkerType  varchar(300),
+team_name varchar(300)
+);
