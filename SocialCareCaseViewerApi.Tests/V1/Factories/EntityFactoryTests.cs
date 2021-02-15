@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var lastName = _faker.Name.LastName();
             var id = 1;
             var role = _faker.Random.Word();
-            int allocationCount = 2;
+            int allocationCount = 1;
 
             var dbWorker = new dbWorker()
             {
@@ -46,8 +46,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Id = id,
                 Role = role,
                 Allocations = new List<AllocationSet>() {
-                    new AllocationSet() { Id = 1, PersonId = 2 },
-                    new AllocationSet() { Id = 2, PersonId = 3 }
+                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Open" },
+                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Closed" }
                 }
             };
 
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var lastName = _faker.Name.LastName();
             var id = 1;
             var role = _faker.Random.Word();
-            int allocationCount = 2;
+            int allocationCount = 1; //open allocations
 
             var dbWorker = new dbWorker()
             {
@@ -83,8 +83,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Id = id,
                 Role = role,
                 Allocations = new List<AllocationSet>() {
-                    new AllocationSet() { Id = 1, PersonId = 2 },
-                    new AllocationSet() { Id = 2, PersonId = 3 }
+                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Closed" },
+                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Open" }
                 },
                 WorkerTeams = new List<WorkerTeam>()
                 {
