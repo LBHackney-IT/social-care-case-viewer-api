@@ -45,15 +45,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //TODO: add support for modified data
                 Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == Convert.ToInt64(request.MosaicId));
 
-                result.Add(new BsonDocument(
-                        new List<BsonElement>
-                        {
+                if (person != null && person.CreatedAt != null && person.CreatedBy != null)
+                {
+                    result.Add(new BsonDocument(
+                            new List<BsonElement>
+                            {
                             new BsonElement("worker_email", person.CreatedBy),
                             new BsonElement("timestamp", person.CreatedAt.ToString()),
                             new BsonElement("form_name_overall", "API_Audit_Person_Created"),
                             new BsonElement("form_name", "Person added")
-                        }
-                    ));
+                            }
+                        ));
+                }
             }
             else
             {
