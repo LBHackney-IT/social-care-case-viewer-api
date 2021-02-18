@@ -8,5 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public long? AddressId { get; set; }
         public List<int> OtherNameIds { get; set; }
         public List<int> PhoneNumberIds { get; set; }
+        public string CaseNoteId { get; set; }
+        public string CaseNoteErrorMessage { get; set; }
     }
 }

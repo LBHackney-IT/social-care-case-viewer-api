@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -148,6 +149,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return $"%{str?.Replace(" ", "")}%";
         }
 
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Include case note creation error as a message to the response until this is refactored to new pattern")]
+        //Handle case note creation exception like below for now
         public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
         {
             Address address = null;
@@ -188,8 +191,41 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message}");
             }
+            string caseNoteId = null;
+            string caseNoteErrorMessage = null;
 
-            return resident.ToResponse(address, names, phoneNumbers);
+            //Add note
+            DateTime dt = DateTime.Now;
+
+            CreatePersonCaseNote note = new CreatePersonCaseNote()
+            {
+                FirstName = resident.FirstName,
+                LastName = resident.LastName,
+                MosaicId = resident.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                WorkerEmail = request.CreatedBy,
+                Note = $"{dt.ToShortDateString()} Person added - by {request.CreatedBy}.",
+                FormNameOverall = "API_Create_Person",
+                FormName = "Person added",
+                CreatedBy = request.CreatedBy
+            };
+
+            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            //TODO: refactor to appropriate pattern when using base API
+            try
+            {
+                caseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+            }
+            catch(Exception ex)
+            {
+                caseNoteErrorMessage = $"Unable to create a case note for creating a person {resident.Id}: {ex.Message}";
+            }
+
+            return resident.ToResponse(address, names, phoneNumbers, caseNoteId, caseNoteErrorMessage);
         }
 
         public static Person AddNewPerson(AddNewResidentRequest request)

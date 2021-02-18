@@ -15,6 +15,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapResidentAndAddressFromDomainToResponse()
         {
             var testDateOfBirth = DateTime.Now;
+            string caseNoteId = "1234ghjut";
+            string caseNoteErrorMessage = "Error";
 
             Person person = new Person
             {
@@ -48,11 +50,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 PersonId = 123,
                 AddressId = newAddress.AddressId,
                 OtherNameIds = new List<int>() { 1, 2 },
-                PhoneNumberIds = new List<int> { 1, 2 }
-
+                PhoneNumberIds = new List<int> { 1, 2 },
+                CaseNoteId = caseNoteId,
+                CaseNoteErrorMessage = caseNoteErrorMessage
             };
 
-            person.ToResponse(newAddress, names, phoneNumbers).Should().BeEquivalentTo(expectedResponse);
+            person.ToResponse(newAddress, names, phoneNumbers, caseNoteId, caseNoteErrorMessage).Should().BeEquivalentTo(expectedResponse);
         }
     }
 }
