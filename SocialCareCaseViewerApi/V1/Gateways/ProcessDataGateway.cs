@@ -20,12 +20,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
-        private DatabaseContext _databaseContext;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext, DatabaseContext databaseContext)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext)
         {
             _sccvDbContext = sccvDbContext;
-            _databaseContext = databaseContext;
         }
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request)
         {
@@ -40,23 +38,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 query = query.Where(db => mosaicIDFilter.Inject());
 
                 result = query.ToList();
-
-                //grab details from person data, so person record history can be displayed on the case notes 
-                //TODO: add support for modified data
-                Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == Convert.ToInt64(request.MosaicId));
-
-                if (person != null && person.CreatedAt != null && person.CreatedBy != null)
-                {
-                    result.Add(new BsonDocument(
-                            new List<BsonElement>
-                            {
-                            new BsonElement("worker_email", person.CreatedBy),
-                            new BsonElement("timestamp", person.CreatedAt.ToString()),
-                            new BsonElement("form_name_overall", "API_Audit_Person_Created"),
-                            new BsonElement("form_name", "Person added")
-                            }
-                        ));
-                }
             }
             else
             {
