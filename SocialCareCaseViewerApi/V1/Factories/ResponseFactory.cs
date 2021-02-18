@@ -12,14 +12,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        public static AddNewResidentResponse ToResponse(this Person resident, dbAddress address, List<PersonOtherName> names, List<dbPhoneNumber> phoneNumbers)
+        public static AddNewResidentResponse ToResponse(this Person resident, dbAddress address, List<PersonOtherName> names, List<dbPhoneNumber> phoneNumbers, string caseNoteId, string caseNoteErrorMessage)
         {
             return new AddNewResidentResponse
             {
                 PersonId = resident.Id,
                 AddressId = address?.AddressId,
                 OtherNameIds = names?.Count > 0 ? names.Select(x => x.Id).ToList() : null,
-                PhoneNumberIds = phoneNumbers?.Count > 0 ? phoneNumbers.Select(x => x.Id).ToList() : null
+                PhoneNumberIds = phoneNumbers?.Count > 0 ? phoneNumbers.Select(x => x.Id).ToList() : null,
+                CaseNoteId = caseNoteId,
+                CaseNoteErrorMessage = caseNoteErrorMessage
             };
         }
 
