@@ -220,7 +220,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 caseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 caseNoteErrorMessage = $"Unable to create a case note for creating a person {resident.Id}: {ex.Message}";
             }
