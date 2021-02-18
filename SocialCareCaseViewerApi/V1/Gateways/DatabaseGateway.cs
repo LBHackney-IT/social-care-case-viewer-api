@@ -218,7 +218,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 };
 
                 //TODO: refactor to appropriate pattern when using base API
-         
+
                 caseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
             }
             catch (Exception ex)
