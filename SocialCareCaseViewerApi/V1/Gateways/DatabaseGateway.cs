@@ -195,29 +195,30 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             string caseNoteErrorMessage = null;
 
             //Add note
-            DateTime dt = DateTime.Now;
-
-            CreatePersonCaseNote note = new CreatePersonCaseNote()
-            {
-                FirstName = resident.FirstName,
-                LastName = resident.LastName,
-                MosaicId = resident.Id.ToString(),
-                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
-                WorkerEmail = request.CreatedBy,
-                Note = $"{dt.ToShortDateString()} Person added - by {request.CreatedBy}.",
-                FormNameOverall = "API_Create_Person",
-                FormName = "Person added",
-                CreatedBy = request.CreatedBy
-            };
-
-            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
-            {
-                CaseFormData = JsonConvert.SerializeObject(note)
-            };
-
-            //TODO: refactor to appropriate pattern when using base API
             try
             {
+                DateTime dt = DateTime.Now;
+
+                CreatePersonCaseNote note = new CreatePersonCaseNote()
+                {
+                    FirstName = resident.FirstName,
+                    LastName = resident.LastName,
+                    MosaicId = resident.Id.ToString(),
+                    Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                    WorkerEmail = request.CreatedBy,
+                    Note = $"{dt.ToShortDateString()} Person added - by {request.CreatedBy}.",
+                    FormNameOverall = "API_Create_Person",
+                    FormName = "Person added",
+                    CreatedBy = request.CreatedBy
+                };
+
+                CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+                {
+                    CaseFormData = JsonConvert.SerializeObject(note)
+                };
+
+                //TODO: refactor to appropriate pattern when using base API
+         
                 caseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
             }
             catch (Exception ex)
