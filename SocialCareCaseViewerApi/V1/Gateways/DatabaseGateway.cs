@@ -400,7 +400,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     LastName = person.LastName,
                     MosaicId = person.Id.ToString(),
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
-                    WorkerEmail = worker.Email,
+                    WorkerEmail = allocatedBy.Email,
                     Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
@@ -482,7 +482,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             LastName = person.LastName,
                             MosaicId = person.Id.ToString(),
                             Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
-                            WorkerEmail = worker.Email, //required for my cases search
+                            WorkerEmail = createdBy.Email, //required for my cases search
                             DeallocationReason = request.DeallocationReason,
                             FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
                             FormName = "Worker deallocated",
