@@ -20,24 +20,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
+        private DatabaseContext _databaseContext;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, DatabaseContext databaseContext)
         {
             _sccvDbContext = sccvDbContext;
+            _databaseContext = databaseContext;
         }
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
+            var collection = _sccvDbContext.getCollection();
 
             if (!string.IsNullOrWhiteSpace(request.RecordId))
             {
-                var collection = _sccvDbContext.getCollection();
-                var recordIDFilter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(request.RecordId));
-                var query = collection.Find<BsonDocument>(recordIDFilter);
+                var recordIdFilter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(request.RecordId));
+                var recordIdQuery = collection.Find<BsonDocument>(recordIdFilter);
 
-                result = query.ToList();
+                result = recordIdQuery.ToList();
+            }
+            else if (!string.IsNullOrWhiteSpace(request.MosaicId))
+            {
+                var queryableCollection = collection.AsQueryable();
+                var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
+                var mosaicIdQuery = queryableCollection.Where(db => mosaicIDFilter.Inject());
+
+                result = mosaicIdQuery.ToList();
             }
             else
             {
