@@ -385,3 +385,6 @@ Email  varchar(300),
 WorkerType  varchar(300),
 team_name varchar(300)
 );
+
+--indexes to improve performance
+create index dm_addresses_person_id_idx on dbo.dm_addresses(person_id);
