@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -130,6 +130,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 .Throws(new DocumentNotFoundException("Document Not Found"));
 
             var response = _classUnderTest.ListCases(new ListCasesRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Document Not Found");
+        }
+
+        [Test]
+        public void GetCaseByIdReturns200WhenSuccessful()
+        {
+            var stubbedCaseData = _fixture.Create<CareCaseData>();
+
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
+            var response = _classUnderTest.GetCaseByRecordId("test record id") as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void GetCaseByIdReturnsCareCaseDataWhenSuccessful()
+        {
+            var stubbedCaseData = _fixture.Create<CareCaseData>();
+
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
+            var response = _classUnderTest.GetCaseByRecordId("test record id") as OkObjectResult;
+
+            response.Value.Should().BeEquivalentTo(stubbedCaseData);
+        }
+
+        [Test]
+        public void GetCaseByIdReturns404WhenNoCaseisFound()
+        {
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()))
+                .Throws(new DocumentNotFoundException("Document Not Found"));
+
+            var response = _classUnderTest.GetCaseByRecordId("test record id") as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(404);

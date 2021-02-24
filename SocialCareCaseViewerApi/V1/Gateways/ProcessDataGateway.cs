@@ -32,20 +32,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
-            var collection = _sccvDbContext.getCollection();
 
-            if (!string.IsNullOrWhiteSpace(request.RecordId))
+            if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var recordIdFilter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(request.RecordId));
-                var recordIdQuery = collection.Find<BsonDocument>(recordIdFilter);
-
-                result = recordIdQuery.ToList();
-            }
-            else if (!string.IsNullOrWhiteSpace(request.MosaicId))
-            {
-                var queryableCollection = collection.AsQueryable();
+                var collection = _sccvDbContext.getCollection().AsQueryable();
                 var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
-                var mosaicIdQuery = queryableCollection.Where(db => mosaicIDFilter.Inject());
+                var mosaicIdQuery = collection.Where(db => mosaicIDFilter.Inject());
 
                 result = mosaicIdQuery.ToList();
             }
@@ -148,6 +140,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
+        public CareCaseData GetCaseById(string recordId)
+        {
+            var collection = _sccvDbContext.getCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
+            // var query = collection.Find(filter).FirstOrDefault();
+            var query = collection.AsQueryable().Where(db => filter.Inject());
+
+            var result = query.ToList();
+            var response = ResponseFactory.ToResponse(result);
+            return response.FirstOrDefault();
+        }
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
             var doc = BsonSerializer.Deserialize<BsonDocument>(caseNotesDoc.CaseFormData);
