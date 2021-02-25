@@ -184,7 +184,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [HttpPost]
         [Route("cases")]
-        public async Task<IActionResult> CreateCaseNote([FromBody] CaseNotesDocument request)
+        public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request) //use case note base here, new boundary object based on base. Validate 
         {
             var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });

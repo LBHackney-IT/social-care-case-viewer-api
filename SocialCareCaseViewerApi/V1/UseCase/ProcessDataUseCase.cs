@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -43,9 +45,41 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public Task<string> Execute(CaseNotesDocument caseNotesDoc)
+        public Task<string> Execute(CreateCaseNoteRequest request)
         {
-            return _processDataGateway.InsertCaseNoteDocument(caseNotesDoc);
+            //convert to case note document
+
+            dynamic bob = new
+            {
+                CaseFormTimestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
+                DateOfBirth = request.DateOfBirth.ToString(),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                FormName = request.FormName, 
+                OfficerEmail = request.WorkerEmail,
+                PersonId = request.PersonId,
+                CaseFormData = request.CaseFormData
+            };
+
+            CaseNotesDocument doc = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(bob)
+            };
+
+
+            //CaseNotesDocument doc = new CaseNotesDocument()
+            //{
+            //    CaseFormData = request.CaseFormData,
+            //    CaseFormTimestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
+            //    DateOfBirth = request.DateOfBirth.ToString(),
+            //    FirstName = request.FirstName,
+            //    LastName = request.LastName,
+            //    FormName = request.FormName, //form name overall????!!
+            //    OfficerEmail = request.WorkerEmail,
+            //    PersonId = request.PersonId
+            //};
+
+            return _processDataGateway.InsertCaseNoteDocument(doc);
         }
     }
 }
