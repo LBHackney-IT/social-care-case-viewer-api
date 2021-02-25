@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 if (!string.IsNullOrEmpty(mosaicIdTmp))
                 {
                     ncId = request.MosaicId;
-                    request.MosaicId = mosaicIdTmp;                    
+                    request.MosaicId = mosaicIdTmp;
                 }
             }
 
