@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -21,7 +21,9 @@
         "SCCV_MONGO_CONN_STRING": "mongodb://root:password@localhost:1433",
         "SCCV_MONGO_DB_NAME": "social_care_db",
         "SCCV_MONGO_COLLECTION_NAME": "form_data",
-        "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test"
+        "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test",
+        "MOSAIC_API_URL": "http://localhost:5001/api/v1/",
+        "MOSAIC_API_TOKEN": "dummy"
       }
     }
   }
