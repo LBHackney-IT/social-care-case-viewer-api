@@ -144,12 +144,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var collection = _sccvDbContext.getCollection();
             var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
-            // var query = collection.Find(filter).FirstOrDefault();
             var query = collection.AsQueryable().Where(db => filter.Inject());
 
             var result = query.ToList();
-            var response = ResponseFactory.ToResponse(result);
-            return response.FirstOrDefault();
+            if (result.FirstOrDefault() != null) throw new DocumentNotFoundException("Search did not return any results");
+            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+
+            return response;
         }
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {

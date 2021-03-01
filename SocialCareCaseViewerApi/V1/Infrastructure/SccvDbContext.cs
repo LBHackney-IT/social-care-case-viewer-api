@@ -25,22 +25,22 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             X509Store localTrustStore = new X509Store(StoreName.Root);
             //  string caContentString = System.IO.File.ReadAllText(cAfile);
 
-            // X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(cAfile));
+            X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(cAfile));
 
-            // try
-            // {
-            //     localTrustStore.Open(OpenFlags.ReadWrite);
-            //     localTrustStore.Add(caCert);
-            // }
-            // catch (Exception ex)
-            // {
-            //     Console.WriteLine("Root certificate import failed: " + ex.Message);
-            //     throw;
-            // }
-            // finally
-            // {
-            //     localTrustStore.Close();
-            // }
+            try
+            {
+                localTrustStore.Open(OpenFlags.ReadWrite);
+                localTrustStore.Add(caCert);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Root certificate import failed: " + ex.Message);
+                throw;
+            }
+            finally
+            {
+                localTrustStore.Close();
+            }
 
             _mongoClient = new MongoClient(new MongoUrl(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
             //create a new blank database if database does not exist, otherwise get existing database
