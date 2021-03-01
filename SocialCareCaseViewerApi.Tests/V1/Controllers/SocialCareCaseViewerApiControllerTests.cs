@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -9,209 +7,211 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
-    //[TestFixture]
-    //public class SocialCareCaseViewerApiControllerTests
-    //{
-    //    private SocialCareCaseViewerApiController _classUnderTest;
-    //    private Mock<IGetAllUseCase> _mockGetAllUseCase;
-    //    private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
-    //    private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
-    //    private Mock<IGetChildrenAllocationUseCase> _mockGetChildrenAllocationUseCase;
-    //    private Mock<IGetAdultsAllocationsUseCase> _mockGetAdultsAllocationsUseCase;
+    [TestFixture]
+    public class SocialCareCaseViewerApiControllerTests
+    {
+        private SocialCareCaseViewerApiController _classUnderTest;
+        private Mock<IGetAllUseCase> _mockGetAllUseCase;
+        private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
+        private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
+        private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
+        private Mock<IWorkersUseCase> _mockWorkersUseCase;
+        private Mock<ITeamsUseCase> _mockTeamsUseCase;
 
-    //    private Fixture _fixture;
+        private Fixture _fixture;
 
-    //    [SetUp]
-    //    public void SetUp()
-    //    {
-    //        _mockGetAllUseCase = new Mock<IGetAllUseCase>();
-    //        _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
-    //        _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
-    //        _mockGetChildrenAllocationUseCase = new Mock<IGetChildrenAllocationUseCase>();
-    //        _mockGetAdultsAllocationsUseCase = new Mock<IGetAdultsAllocationsUseCase>();
-    //        _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-    //            _mockProcessDataUseCase.Object, _mockGetChildrenAllocationUseCase.Object, _mockGetAdultsAllocationsUseCase.Object);
-    //        _fixture = new Fixture();
-    //    }
+        [SetUp]
+        public void SetUp()
+        {
+            _mockGetAllUseCase = new Mock<IGetAllUseCase>();
+            _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
+            _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
+            _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
+            _mockWorkersUseCase = new Mock<IWorkersUseCase>();
+            _mockTeamsUseCase = new Mock<ITeamsUseCase>();
 
-    //    [Test]
-    //    public void ListContactsReturns200WhenSuccessful()
-    //    {
-    //        var residentInformationList = _fixture.Create<ResidentInformationList>();
-    //        var residentQueryParam = new ResidentQueryParam();
+            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
+            _fixture = new Fixture();
+        }
 
-    //        _mockGetAllUseCase.Setup(x => x.Execute(residentQueryParam, 2, 3)).Returns(residentInformationList);
-    //        var response = _classUnderTest.ListContacts(residentQueryParam, 2, 3) as OkObjectResult;
+        [Test]
+        public void ListContactsReturns200WhenSuccessful()
+        {
+            var residentInformationList = _fixture.Create<ResidentInformationList>();
+            var residentQueryParam = new ResidentQueryParam();
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(200);
-    //        response.Value.Should().BeEquivalentTo(residentInformationList);
-    //    }
+            _mockGetAllUseCase.Setup(x => x.Execute(residentQueryParam, 2, 3)).Returns(residentInformationList);
+            var response = _classUnderTest.ListContacts(residentQueryParam, 2, 3) as OkObjectResult;
 
-    //    [Test]
-    //    public void ListContactsReturns400WhenQueryParametersAreInvalid()
-    //    {
-    //        _mockGetAllUseCase.Setup(x => x.Execute(It.IsAny<ResidentQueryParam>(), 2, 3))
-    //            .Throws(new InvalidQueryParameterException("Invalid Parameters"));
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(residentInformationList);
+        }
 
-    //        var response = _classUnderTest.ListContacts(new ResidentQueryParam(), 2, 3) as BadRequestObjectResult;
+        [Test]
+        public void ListContactsReturns400WhenQueryParametersAreInvalid()
+        {
+            _mockGetAllUseCase.Setup(x => x.Execute(It.IsAny<ResidentQueryParam>(), 2, 3))
+                .Throws(new InvalidQueryParameterException("Invalid Parameters"));
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(400);
-    //        response.Value.Should().Be("Invalid Parameters");
-    //    }
+            var response = _classUnderTest.ListContacts(new ResidentQueryParam(), 2, 3) as BadRequestObjectResult;
 
-    //    [Test]
-    //    public void AddNewResidentReturns201WhenSuccessful()
-    //    {
-    //        var addNewResidentResponse = _fixture.Create<AddNewResidentResponse>();
-    //        var addNewResidentRequest = new AddNewResidentRequest();
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Invalid Parameters");
+        }
 
-    //        _mockAddNewResidentUseCase.Setup(x => x.Execute(addNewResidentRequest)).Returns(addNewResidentResponse);
-    //        var response = _classUnderTest.AddNewResident(addNewResidentRequest) as CreatedAtActionResult;
+        [Test]
+        public void AddNewResidentReturns201WhenSuccessful()
+        {
+            var addNewResidentResponse = _fixture.Create<AddNewResidentResponse>();
+            var addNewResidentRequest = new AddNewResidentRequest();
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(201);
-    //        response.Value.Should().BeEquivalentTo(addNewResidentResponse);
-    //    }
+            _mockAddNewResidentUseCase.Setup(x => x.Execute(addNewResidentRequest)).Returns(addNewResidentResponse);
+            var response = _classUnderTest.AddNewResident(addNewResidentRequest) as CreatedAtActionResult;
 
-    //    // To Do: Add 400 response for invalid or missing parameters
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(addNewResidentResponse);
+        }
 
-    //    [Test]
-    //    public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
-    //    {
-    //        _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-    //            .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
+        [Test]
+        public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
+        {
+            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
+                .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
 
-    //        var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
+            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(500);
-    //        response.Value.Should().Be("Resident could not be inserted");
-    //    }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+            response.Value.Should().Be("Resident could not be inserted");
+        }
 
-    //    [Test]
-    //    public void AddNewResidentReturns500WhenAddressCouldNotBeInserted()
-    //    {
-    //        _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-    //            .Throws(new AddressCouldNotBeInsertedException("Address could not be inserted"));
+        [Test]
+        public void AddNewResidentReturns500WhenAddressCouldNotBeInserted()
+        {
+            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
+                .Throws(new AddressCouldNotBeInsertedException("Address could not be inserted"));
 
-    //        var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
+            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(500);
-    //        response.Value.Should().Be("Address could not be inserted");
-    //    }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+            response.Value.Should().Be("Address could not be inserted");
+        }
 
-    //    [Test]
-    //    public void ListCasesReturns200WhenSuccessful()
-    //    {
-    //        var careCaseDataList = _fixture.Create<CareCaseDataList>();
-    //        var listCasesRequest = new ListCasesRequest();
+        [Test]
+        public void ListCasesReturns200WhenSuccessful()
+        {
+            var careCaseDataList = _fixture.Create<CareCaseDataList>();
+            var listCasesRequest = new ListCasesRequest();
 
-    //        _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
-    //        var response = _classUnderTest.ListCases(listCasesRequest) as OkObjectResult;
+            _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
+            var response = _classUnderTest.ListCases(listCasesRequest) as OkObjectResult;
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(200);
-    //        response.Value.Should().BeEquivalentTo(careCaseDataList);
-    //    }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(careCaseDataList);
+        }
 
-    //    // [Test]
-    //    // public void ListCasesReturns400WhenStartDateIsInvalid()
-    //    // {
-    //    //     var badDateRequest = new ListCasesRequest
-    //    //     {
-    //    //         StartDate = "Bad Date"
-    //    //     };
+        [Test]
+        public void ListCasesReturns404WhenNoCasesAreFound()
+        {
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<ListCasesRequest>()))
+                .Throws(new DocumentNotFoundException("Document Not Found"));
 
-    //    //     var response = _classUnderTest.ListCases(new ListCasesRequest());
+            var response = _classUnderTest.ListCases(new ListCasesRequest()) as ObjectResult;
 
-    //    //     response.Should().NotBeNull();
-    //    // response.StatusCode.Should().Be(400);
-    //    // response.Value.Should().Be("Invalid start date");
-    //    // }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Document Not Found");
+        }
 
-    //    // [Test]
-    //    // public void ListCasesReturns400WhenEndDateIsInvalid()
-    //    // {
-    //    //     var badDateRequest = new ListCasesRequest
-    //    //     {
-    //    //         EndDate = "Bad Date"
-    //    //     };
+        #region Workers
+        [Test]
+        public void GetWorkersReturns200WhenSuccessful()
+        {
+            var request = new ListWorkersRequest() { TeamId = 5 };
 
-    //    //     var response = _classUnderTest.ListCases(new ListCasesRequest()) as BadRequestObjectResult;
+            var workersList = _fixture.Create<ListWorkersResponse>();
 
-    //    //     response.Should().NotBeNull();
-    //    //     response.StatusCode.Should().Be(400);
-    //    //     response.Value.Should().Be("Invalid end date");
-    //    // }
+            _mockWorkersUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListWorkersRequest>())).Returns(workersList);
 
-    //    [Test]
-    //    public void ListCasesReturns404WhenNoCasesAreFound()
-    //    {
-    //        _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<ListCasesRequest>()))
-    //            .Throws(new DocumentNotFoundException("Document Not Found"));
+            var response = _classUnderTest.ListWorkers(request);
 
-    //        var response = _classUnderTest.ListCases(new ListCasesRequest()) as ObjectResult;
+            response.Should().NotBeNull();
+        }
+        #endregion
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(404);
-    //        response.Value.Should().Be("Document Not Found");
-    //    }
+        #region Teams
+        [Test]
+        public void GetTeamsReturns200WhenSuccessful()
+        {
+            var request = new ListTeamsRequest() { ContextFlag = "A" };
 
-    //    [Test]
-    //    public void GetChildrensAllocatedWorkerReturns200WhenSuccessful()
-    //    {
-    //        var childAllocationList = _fixture.Create<CfsAllocationList>();
-    //        var listAllocationsRequest = new ListAllocationsRequest();
+            var teamsList = _fixture.Create<ListTeamsResponse>();
 
-    //        _mockGetChildrenAllocationUseCase.Setup(x => x.Execute(listAllocationsRequest)).Returns(childAllocationList);
-    //        var response = _classUnderTest.GetChildrensAllocatedWorker(listAllocationsRequest) as OkObjectResult;
+            _mockTeamsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListTeamsRequest>())).Returns(teamsList);
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(200);
-    //        response.Value.Should().BeEquivalentTo(childAllocationList);
-    //    }
+            var response = _classUnderTest.ListTeams(request);
 
-    //    //To Do: add 404 response for no allocations found
+            response.Should().NotBeNull();
+        }
+        #endregion
 
-    //    [Test]
-    //    public void GetAdultsAllocatedWorkerReturns200WhenSuccessful()
-    //    {
-    //        var adultAllocationList = _fixture.Create<AscAllocationList>();
-    //        var listAcsAllocationRequest = new ListAscAllocationsRequest();
+        #region Allocations
+        [Test]
+        public void CreateAllocationReturns201WhenSuccessful()
+        {
+            var request = _fixture.Create<CreateAllocationRequest>();
+            var responseObject = new CreateAllocationResponse();
 
-    //        _mockGetAdultsAllocationsUseCase.Setup(x => x.Execute(listAcsAllocationRequest)).Returns(adultAllocationList);
-    //        var response = _classUnderTest.GetAdultsAllocatedWorker(listAcsAllocationRequest) as OkObjectResult;
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
+                .Returns(responseObject);
 
-    //        response.Should().NotBeNull();
-    //        response.StatusCode.Should().Be(200);
-    //        response.Value.Should().BeEquivalentTo(adultAllocationList);
-    //    }
+            var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
 
-    //    //To Do: add 404 response for no allocations found
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(responseObject);
+        }
 
-    //    // [Test]
-    //    // public async Task CreateCaseNoteReturns201WhenSuccessful()
-    //    // {
-    //    //     var taskResponse = _fixture.Create<string>();
-    //    //     var caseNotesDocument = _fixture.Create<CaseNotesDocument>();
+        [Test]
+        public void UpdateAllocationReturns200WhenSuccessful()
+        {
+            var request = new UpdateAllocationRequest() { Id = _fixture.Create<int>() };
 
-    //    //     _mockProcessDataUseCase.Setup(x => x.Execute(caseNotesDocument)).Returns(Task.FromResult(taskResponse));
-    //    //     var response = await _classUnderTest.CreateCaseNote(caseNotesDocument).ConfigureAwait(true) as CreatedAtActionResult;
+            UpdateAllocationResponse result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() }; //TODO: test end to end with valid format
 
-    //    //     response.Should().NotBeNull();
-    //    //     response.StatusCode.Should().Be(201);
-    //    //     response.Value.Should().BeEquivalentTo(taskResponse);
-    //    // }
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
 
-    //    // To Do: add 400 response for invalid or missing parameters
-    //    // To Do: Add 500 response for problem generating token
-    //}
+            var response = _classUnderTest.UpdateAllocation(request);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdateAllocationReturns500WhenUpdateFails()
+        {
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new EntityUpdateException("Unable to update allocation"));
+
+            var response = _classUnderTest.UpdateAllocation(new UpdateAllocationRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+        //TODO: test other exception types
+
+        #endregion
+    }
 }
