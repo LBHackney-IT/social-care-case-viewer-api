@@ -1,8 +1,13 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
@@ -18,18 +23,28 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public CareCaseDataList Execute(ListCasesRequest request)
         {
-            //check whether provided mosaic id has a lookup value, so records with nc references can be matched
+            string ncId = null;
+
+            //grab both mosaic id and nc reference id
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                string mosaicID = _databaseGateway.GetNCReferenceByPersonId(request.MosaicId);
+                string ncIdTmp = _databaseGateway.GetNCReferenceByPersonId(request.MosaicId);
 
-                if (!string.IsNullOrEmpty(mosaicID))
+                if (!string.IsNullOrEmpty(ncIdTmp))
                 {
-                    request.MosaicId = mosaicID;
+                    ncId = ncIdTmp;
+                }
+
+                string mosaicIdTmp = _databaseGateway.GetPersonIdByNCReference(request.MosaicId);
+
+                if (!string.IsNullOrEmpty(mosaicIdTmp))
+                {
+                    ncId = request.MosaicId;
+                    request.MosaicId = mosaicIdTmp;
                 }
             }
 
-            var result = _processDataGateway.GetProcessData(request);
+            var result = _processDataGateway.GetProcessData(request, ncId);
 
             int? nextCursor = request.Cursor + request.Limit;
 
@@ -43,9 +58,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public Task<string> Execute(CaseNotesDocument caseNotesDoc)
+        public Task<string> Execute(CreateCaseNoteRequest request)
         {
-            return _processDataGateway.InsertCaseNoteDocument(caseNotesDoc);
+            CaseNotesDocument doc = request.ToEntity();
+
+            return _processDataGateway.InsertCaseNoteDocument(doc);
         }
     }
 }

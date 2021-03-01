@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -110,6 +112,35 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
+            };
+        }
+
+        public static CaseNotesDocument ToEntity(this CreateCaseNoteRequest request)
+        {
+            GenericCaseNote note = new GenericCaseNote()
+            {
+                Timestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
+                DateOfBirth = request.DateOfBirth.ToString(),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                FormName = request.FormName,
+                FormNameOverall = request.FormNameOverall,
+                WorkerEmail = request.WorkerEmail,
+                MosaicId = request.PersonId.ToString()
+            };
+
+            //serialize core properties
+            JObject coreProps = JObject.Parse(JsonConvert.SerializeObject(note));
+
+            //take the custom properties
+            JObject caseFormData = JObject.Parse(request.CaseFormData);
+
+            //merge both to one object
+            coreProps.Merge(caseFormData);
+
+            return new CaseNotesDocument()
+            {
+                CaseFormData = coreProps.ToString()
             };
         }
     }
