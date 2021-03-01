@@ -36,13 +36,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             };
         }
 
-        //TODO: set in the gateway
-        //[Test]
-        //public void RequestHasTimeStamp()
-        //{
-        //    Assert.AreEqual(DateTime.MinValue, _request.TimeStamp);
-        //}
-
         [Test]
         public void RequestHasFormName()
         {
