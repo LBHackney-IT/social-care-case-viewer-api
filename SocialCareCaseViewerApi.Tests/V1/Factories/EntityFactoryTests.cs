@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using Bogus;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
