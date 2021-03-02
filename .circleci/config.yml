@@ -127,11 +127,11 @@ jobs:
     # steps:
       # - terraform-init-then-apply:
           # environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
+  # terraform-init-and-apply-to-staging:
+    # executor: docker-terraform
+    # steps:
+      # - terraform-init-then-apply:
+          # environment: "staging"
   # terraform-init-and-apply-to-production:
     # executor: docker-terraform
     # steps:
@@ -192,12 +192,12 @@ workflows:
               only:
                 - master
                 - development
-      - terraform-init-and-apply-to-staging:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              only: master
+      # - terraform-init-and-apply-to-staging:
+          # requires:
+            # - assume-role-staging
+          # filters:
+            # branches:
+              # only: master
       - deploy-to-staging:
           requires:
             - assume-role-staging
