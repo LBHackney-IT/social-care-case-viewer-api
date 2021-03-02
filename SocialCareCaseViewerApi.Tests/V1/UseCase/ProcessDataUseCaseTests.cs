@@ -44,17 +44,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         //     response.Cases.Should().BeEquivalentTo(stubbedCaseData);
         // }
 
-        [Test]
-        public async Task ExecuteReturnsStringWhenProvidedCaseNoteDocument()
-        {
-            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
-                .Returns(Task.FromResult("response"));
+        //[Test]
+        //public async Task ExecuteReturnsStringWhenProvidedCaseNoteDocument()
+        //{
+        //    _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+        //        .Returns(Task.FromResult("response"));
 
-            var response = await _classUnderTest.Execute(new CaseNotesDocument()).ConfigureAwait(true);
+        //    var response = await _classUnderTest.Execute(new CaseNotesDocument()).ConfigureAwait(true);
 
-            response.Should().NotBeNull();
-            response.Should().BeOfType<string>();
-        }
+        //    response.Should().NotBeNull();
+        //    response.Should().BeOfType<string>();
+        //}
 
         // [Test]
         // public void ExecuteIfLimitLessThanTheMinimumWillUseTheMinimumLimit()

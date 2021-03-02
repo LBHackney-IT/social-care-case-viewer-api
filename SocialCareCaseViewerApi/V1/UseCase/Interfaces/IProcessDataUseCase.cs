@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SocialCareCaseViewerApi.V1.Boundary;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
+using System.Threading.Tasks;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
@@ -14,6 +9,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         CareCaseDataList Execute(ListCasesRequest request);
 
         CareCaseData Execute(string recordId);
-        Task<string> Execute(CaseNotesDocument caseNotesDoc);
+        Task<string> Execute(CreateCaseNoteRequest request);
     }
 }
