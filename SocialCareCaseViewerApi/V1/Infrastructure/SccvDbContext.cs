@@ -25,28 +25,30 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
             X509Store localTrustStore = new X509Store(StoreName.Root);
             //  string caContentString = System.IO.File.ReadAllText(cAfile);
 
-            X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(cAfile));
+            // X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(cAfile));
 
-            try
-            {
-                localTrustStore.Open(OpenFlags.ReadWrite);
-                localTrustStore.Add(caCert);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Root certificate import failed: " + ex.Message);
-                throw;
-            }
-            finally
-            {
-                localTrustStore.Close();
-            }
+            // try
+            // {
+            //     localTrustStore.Open(OpenFlags.ReadWrite);
+            //     localTrustStore.Add(caCert);
+            // }
+            // catch (Exception ex)
+            // {
+            //     Console.WriteLine("Root certificate import failed: " + ex.Message);
+            //     throw;
+            // }
+            // finally
+            // {
+            //     localTrustStore.Close();
+            // }
 
-            _mongoClient = new MongoClient(new MongoUrl(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
+            // string MONGO_CONN_STRING = Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
+            //                      @"mongodb://localhost:27017/?gssapiServiceName=mongodb";
+            _mongoClient = new MongoClient(new MongoUrl(@"mongodb://localhost:27017/?gssapiServiceName=mongodb"));
             //create a new blank database if database does not exist, otherwise get existing database
-            _mongoDatabase = _mongoClient.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
+            _mongoDatabase = _mongoClient.GetDatabase("social_care_db");
             //create collection to hold the documents if it does not exist, otherwise retrieve existing
-            matProcessCollection = _mongoDatabase.GetCollection<BsonDocument>(Environment.GetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME"));
+            matProcessCollection = _mongoDatabase.GetCollection<BsonDocument>("form_data");
         }
         public IMongoCollection<BsonDocument> getCollection()
         {
