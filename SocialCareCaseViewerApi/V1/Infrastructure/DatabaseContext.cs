@@ -1,4 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -16,5 +20,129 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<Team> Teams { get; set; }
         public DbSet<PersonOtherName> PersonOtherNames { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<WorkerTeam> WorkerTeams { get; set; }
+        public DbSet<Audit> Audits { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WorkerTeam>().HasKey(wt => new { wt.WorkerId, wt.TeamId });
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            var auditEntries = OnBeforeSaving();
+
+            var result = base.SaveChanges(acceptAllChangesOnSuccess);
+
+            OnAfterSaveChanges(auditEntries);
+
+            return result;
+        }
+
+        //TODO: add overrides for async methods
+        private List<AuditEntry> OnBeforeSaving()
+        {
+            ChangeTracker.DetectChanges();
+
+            var auditEntries = new List<AuditEntry>();
+            var dateTimeNow = DateTime.UtcNow; //TODO: check format
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity is IAuditEntity auditEntity)
+                {
+                    //ignore entities we don't want to add audit records for
+                    if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
+                        continue;
+
+                    var auditEntry = new AuditEntry
+                    {
+                        TableName = entry.Metadata.GetTableName(),
+                        DateTime = dateTimeNow
+                    };
+
+                    foreach (var property in entry.Properties)
+                    {
+                        //for PK generated after save
+                        if (property.IsTemporary)
+                        {
+                            auditEntry.TemporaryProperties.Add(property);
+                        }
+
+                        string propertyName = property.Metadata.Name;
+
+                        if (property.Metadata.IsPrimaryKey())
+                        {
+                            auditEntry.KeyValues[propertyName] = property.CurrentValue;
+                            continue;
+                        }
+
+                        var createdBy = auditEntity.CreatedBy;
+                        var updatedBy = auditEntity.LastModifiedBy;
+
+                        auditEntry.EntityState = entry.State.ToString();
+
+                        switch (entry.State)
+                        {
+                            case EntityState.Modified:
+                                auditEntity.LastModifiedAt = dateTimeNow;
+                                auditEntity.LastModifiedBy = updatedBy;
+
+                                if (property.IsModified)
+                                {
+                                    auditEntry.OldValues[propertyName] = property.OriginalValue;
+                                    auditEntry.NewValues[propertyName] = property.CurrentValue;
+                                }
+                                break;
+
+                            case EntityState.Added:
+                                auditEntity.CreatedAt = dateTimeNow;
+                                auditEntity.CreatedBy = createdBy;
+                                auditEntry.NewValues[propertyName] = property.CurrentValue;
+                                break;
+
+                            case EntityState.Deleted:
+                                auditEntry.OldValues[propertyName] = property.OriginalValue;
+                                break;
+                        }
+                    }
+                    auditEntries.Add(auditEntry);
+                }
+            }
+
+            foreach (var auditEntry in auditEntries.Where(_ => !_.HasTemporaryProperties))
+            {
+                Audits.Add(auditEntry.ToAudit());
+            }
+
+            return auditEntries.Where(_ => _.HasTemporaryProperties).ToList();
+        }
+
+        private int OnAfterSaveChanges(List<AuditEntry> auditEntries)
+        {
+            if (auditEntries == null || auditEntries.Count == 0)
+                return 0;
+
+            foreach (var auditEntry in auditEntries)
+            {
+                // Get the final value of the temporary properties
+                foreach (var prop in auditEntry.TemporaryProperties)
+                {
+                    if (prop.Metadata.IsPrimaryKey())
+                    {
+                        auditEntry.KeyValues[prop.Metadata.Name] = prop.CurrentValue;
+                    }
+                    else
+                    {
+                        auditEntry.NewValues[prop.Metadata.Name] = prop.CurrentValue;
+                    }
+                }
+
+                // Add the Audit entry
+                Audits.Add(auditEntry.ToAudit());
+            }
+
+            return SaveChanges();
+        }
     }
 }

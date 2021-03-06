@@ -1,5 +1,6 @@
 using System.Linq;
 using AutoFixture;
+using Bogus;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -12,12 +13,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         private CreateAllocationRequest _createAllocationRequest;
         private Fixture _fixture;
+        private Faker _faker;
 
         [SetUp]
         public void SetUp()
         {
             _createAllocationRequest = new CreateAllocationRequest();
             _fixture = new Fixture();
+            _faker = new Faker();
         }
 
         [Test]
@@ -33,27 +36,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasAllocatedBy()
-        {
-            Assert.AreEqual(null, _createAllocationRequest.AllocatedBy);
-        }
-
-        [Test]
         public void RequestHasCreatedBy()
         {
             Assert.AreEqual(null, _createAllocationRequest.CreatedBy);
+        }
+
+        [Test]
+        public void RequestHasAllocatedTeamId()
+        {
+            Assert.AreEqual(0, _createAllocationRequest.AllocatedTeamId);
+        }
+
+        private CreateAllocationRequest GetValidCreateAllocationRequest()
+        {
+            return new CreateAllocationRequest()
+            {
+                MosaicId = _fixture.Create<int>(),
+                AllocatedWorkerId = _fixture.Create<int>(),
+                AllocatedTeamId = _fixture.Create<int>(),
+                CreatedBy = _faker.Internet.Email(),
+            };
         }
 
         #region Model validation
         [Test]
         public void ValidationFailsIfMosaicIdIsNotBiggerThan0()
         {
-            CreateAllocationRequest request = new CreateAllocationRequest()
-            {
-                AllocatedBy = _fixture.Create<string>(),
-                AllocatedWorkerId = _fixture.Create<int>(),
-                CreatedBy = _fixture.Create<string>()
-            };
+            CreateAllocationRequest request = GetValidCreateAllocationRequest();
+            request.MosaicId = 0;
 
             var errors = ValidationHelper.ValidateModel(request);
 
@@ -64,12 +74,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfAllocatedWorkerIdIsNotBiggerThan0()
         {
-            CreateAllocationRequest request = new CreateAllocationRequest()
-            {
-                AllocatedBy = _fixture.Create<string>(),
-                MosaicId = _fixture.Create<long>(),
-                CreatedBy = _fixture.Create<string>()
-            };
+            CreateAllocationRequest request = GetValidCreateAllocationRequest();
+            request.AllocatedWorkerId = 0;
 
             var errors = ValidationHelper.ValidateModel(request);
 
@@ -78,30 +84,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfAllocatedByIsNotProvided()
+        public void ValidationFailsIfAllocatedTeamIdIsNotBiggerThan0()
         {
-            CreateAllocationRequest request = new CreateAllocationRequest()
-            {
-                MosaicId = _fixture.Create<long>(),
-                AllocatedWorkerId = _fixture.Create<int>(),
-                CreatedBy = _fixture.Create<string>()
-            };
+            CreateAllocationRequest request = GetValidCreateAllocationRequest();
+            request.AllocatedTeamId = 0;
 
             var errors = ValidationHelper.ValidateModel(request);
 
             Assert.AreEqual(errors.Count, 1);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("AllocatedBy field is required")));
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter a value bigger than 0")));
         }
 
         [Test]
         public void ValidationFailsIfCreatedByIsNotProvided()
         {
-            CreateAllocationRequest request = new CreateAllocationRequest()
-            {
-                AllocatedBy = _fixture.Create<string>(),
-                MosaicId = _fixture.Create<long>(),
-                AllocatedWorkerId = _fixture.Create<int>(),
-            };
+            CreateAllocationRequest request = GetValidCreateAllocationRequest();
+            request.CreatedBy = null;
 
             var errors = ValidationHelper.ValidateModel(request);
 

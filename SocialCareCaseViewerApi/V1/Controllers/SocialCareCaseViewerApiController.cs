@@ -184,14 +184,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [HttpPost]
         [Route("cases")]
-        public async Task<IActionResult> CreateCaseNote([FromBody] CaseNotesDocument request)
+        public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request)
         {
             var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
         }
 
         /// <summary>
-        /// Get a list of workers by team id
+        /// Get a list of workers by id or team id
         /// </summary>
         /// <response code="400">One or more request parameters are invalid or missing</response>
         /// <response code="500">Server error</response>
@@ -201,7 +201,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("workers")]
         public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
         {
-            return Ok(_workersUseCase.ExecuteGet(request));
+            try
+            {
+                return Ok(_workersUseCase.ExecuteGet(request));
+            }
+            catch (WorkerNotFoundException ex)
+            {
+                return StatusCode(404, ex.Message);
+            }
+            catch (TeamNotFoundException ex)
+            {
+                return StatusCode(404, ex.Message);
+            }
         }
 
         /// <summary>

@@ -6,12 +6,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("dm_persons", Schema = "dbo")]
-    public class Person
+    public class Person : IAuditEntity
     {
         public List<Address> Addresses { get; set; }
         public List<PersonOtherName> OtherNames { get; set; }
         public List<PhoneNumber> PhoneNumbers { get; set; }
-
+        public List<AllocationSet> Allocations { get; set; }
 
         [Column("person_id")]
         [MaxLength(16)]
@@ -84,5 +84,22 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("sccv_preferred_method_of_contact")]
         [MaxLength(100)]
         public string PreferredMethodOfContact { get; set; }
+
+        [Column("restricted")]
+        [MaxLength(1)]
+        public string Restricted { get; set; }
+
+        //audit props
+        [Column("sccv_created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [Column("sccv_created_by")]
+        public string CreatedBy { get; set; }
+
+        [Column("sccv_last_modified_at")]
+        public DateTime? LastModifiedAt { get; set; }
+
+        [Column("sccv_last_modified_by")]
+        public string LastModifiedBy { get; set; }
     }
 }

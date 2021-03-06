@@ -21,4 +21,15 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public CreateAllocationException(string message) : base(message) { }
     }
+
+
+    public class WorkerNotFoundException : Exception
+    {
+        public WorkerNotFoundException(string message) : base(message) { }
+    }
+
+    public class TeamNotFoundException : Exception
+    {
+        public TeamNotFoundException(string message) : base(message) { }
+    }
 }

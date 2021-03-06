@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("dm_addresses", Schema = "dbo")]
-    public class Address
+    public class Address : IAuditEntity
     {
         [ForeignKey("PersonId")]
         public Person Person { get; set; }
@@ -48,5 +48,18 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("is_display_address")]
         [MaxLength(1)]
         public string IsDisplayAddress { get; set; }
+
+        //audit props
+        [Column("sccv_created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [Column("sccv_created_by")]
+        public string CreatedBy { get; set; }
+
+        [Column("sccv_last_modified_at")]
+        public DateTime? LastModifiedAt { get; set; }
+
+        [Column("sccv_last_modified_by")]
+        public string LastModifiedBy { get; set; }
     }
 }

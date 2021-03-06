@@ -37,5 +37,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Response
         {
             Assert.IsNull(_response.PhoneNumberIds);
         }
+
+        [Test]
+        public void ResponseHasCaseNote()
+        {
+            Assert.IsNull(_response.CaseNoteId);
+        }
+
+        [Test]
+        public void ResponseHasCaseNoteErrorMessage()
+        {
+            Assert.IsNull(_response.CaseNoteErrorMessage);
+        }
     }
 }

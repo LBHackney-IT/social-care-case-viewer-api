@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -46,25 +48,23 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Worker ToDomain(this DbWorker worker, List<dynamic> allocationDetails)
+        public static Worker ToDomain(this DbWorker worker, bool includeTeamData)
         {
-            var allocation = allocationDetails.Where(x => x.WorkerId == worker.Id).FirstOrDefault();
-
             return new Worker
             {
                 Id = worker.Id,
                 Email = worker.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                TeamId = worker.TeamId,
                 Role = worker.Role,
-                AllocationCount = allocation?.AllocationCount == null ? 0 : allocation.AllocationCount
+                AllocationCount = worker?.Allocations == null ? 0 : worker.Allocations.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count(),
+                Teams = includeTeamData ? worker.WorkerTeams.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name }).ToList() : null
             };
         }
 
-        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers, List<dynamic> allocationDetails)
+        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers, bool includeTeamData)
         {
-            return workers.Select(w => w.ToDomain(allocationDetails)).ToList();
+            return workers.Select(w => w.ToDomain(includeTeamData)).ToList();
         }
 
         public static Team ToDomain(this DbTeam team)
@@ -81,34 +81,66 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static AllocationSet ToEntity(this CreateAllocationRequest request, long workerId, DateTime allocationStartDate, string caseStatus)
+        public static AllocationSet ToEntity(this CreateAllocationRequest request, int workerId, DateTime allocationStartDate, string caseStatus)
         {
             return new AllocationSet
             {
-                MosaicId = request.MosaicId,
+                PersonId = request.MosaicId,
                 WorkerId = workerId,
                 AllocationStartDate = allocationStartDate,
-                CaseStatus = caseStatus
+                CaseStatus = caseStatus,
+                CreatedBy = request.CreatedBy
             };
         }
 
-        public static PersonOtherName ToEntity(this OtherName name, long personId)
+        public static PersonOtherName ToEntity(this OtherName name, long personId, string createdBy)
         {
             return new PersonOtherName
             {
                 FirstName = name.FirstName,
                 LastName = name.LastName,
-                PersonId = personId
+                PersonId = personId,
+                CreatedBy = createdBy
             };
         }
 
-        public static dbPhoneNumber ToEntity(this PhoneNumber number, long personId)
+        public static dbPhoneNumber ToEntity(this PhoneNumber number, long personId, string createdBy)
         {
             return new dbPhoneNumber
             {
-                Number = number.Number,
+                Number = number.Number.ToString(),
                 Type = number.Type,
-                PersonId = personId
+                PersonId = personId,
+                CreatedBy = createdBy
+            };
+        }
+
+        public static CaseNotesDocument ToEntity(this CreateCaseNoteRequest request)
+        {
+            GenericCaseNote note = new GenericCaseNote()
+            {
+                Timestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
+                DateOfBirth = request.DateOfBirth.ToString(),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                FormName = request.FormName,
+                FormNameOverall = request.FormNameOverall,
+                WorkerEmail = request.WorkerEmail,
+                MosaicId = request.PersonId.ToString()
+            };
+
+            //serialize core properties
+            JObject coreProps = JObject.Parse(JsonConvert.SerializeObject(note));
+
+            //take the custom properties
+            JObject caseFormData = JObject.Parse(request.CaseFormData);
+
+            //merge both to one object
+            coreProps.Merge(caseFormData);
+
+            return new CaseNotesDocument()
+            {
+                CaseFormData = coreProps.ToString()
             };
         }
     }

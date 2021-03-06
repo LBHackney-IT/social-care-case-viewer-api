@@ -15,6 +15,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
+        public void NameIsAuditEntity()
+        {
+            Assert.IsInstanceOf<IAuditEntity>(_otherName);
+        }
+
+        [Test]
         public void NameHasId()
         {
             Assert.AreEqual(0, _otherName.Id);
@@ -37,5 +43,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         {
             Assert.IsNull(_otherName.LastName);
         }
+
+        #region Audit properties
+
+        [Test]
+        public void NameHasCreatedAt()
+        {
+            Assert.IsNull(_otherName.CreatedAt);
+        }
+
+        [Test]
+        public void NameHasCreatedBy()
+        {
+            Assert.IsNull(_otherName.CreatedBy);
+        }
+
+        [Test]
+        public void NameHasLastUpdatedAt()
+        {
+            Assert.IsNull(_otherName.LastModifiedAt);
+        }
+
+        [Test]
+        public void NameHasLastUpdatedBy()
+        {
+            Assert.IsNull(_otherName.LastModifiedBy);
+        }
+        #endregion
     }
 }

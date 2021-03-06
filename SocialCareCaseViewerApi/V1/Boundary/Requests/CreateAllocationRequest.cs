@@ -13,9 +13,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public int AllocatedWorkerId { get; set; }
 
         [Required]
-        public string AllocatedBy { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than 0")]
+        public int AllocatedTeamId { get; set; }
 
         [Required]
+        [EmailAddress]
         public string CreatedBy { get; set; }
     }
 }

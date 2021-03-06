@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using Bogus;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -29,15 +30,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapWorkerFromInfrastructureToDomain()
+        public void CanMapWorkerFromInfrastructureToDomainWithoutTeamDetails()
         {
             var email = _faker.Internet.Email();
             var firstName = _faker.Name.FirstName();
             var lastName = _faker.Name.LastName();
             var id = 1;
             var role = _faker.Random.Word();
-            int? teamId = null;
-            int allocationCount = 2;
+            int allocationCount = 1;
 
             var dbWorker = new dbWorker()
             {
@@ -46,7 +46,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = lastName,
                 Id = id,
                 Role = role,
-                TeamId = teamId
+                Allocations = new List<AllocationSet>() {
+                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Open" },
+                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Closed" }
+                }
             };
 
             var expectedResponse = new Worker()
@@ -57,19 +60,56 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = allocationCount,
                 Email = email,
                 Role = role,
-                TeamId = teamId
+                Teams = null
             };
 
-            dynamic allocationDetail = new ExpandoObject();
-            allocationDetail.WorkerId = id;
-            allocationDetail.AllocationCount = allocationCount;
+            dbWorker.ToDomain(false).Should().BeEquivalentTo(expectedResponse);
+        }
 
-            List<dynamic> allocationDetails = new List<dynamic>
+        [Test]
+        public void CanMapWorkerFromInfrastructureToDomainWithTeamDetails()
+        {
+            var email = _faker.Internet.Email();
+            var firstName = _faker.Name.FirstName();
+            var lastName = _faker.Name.LastName();
+            var id = 1;
+            var role = _faker.Random.Word();
+            int allocationCount = 1; //open allocations
+
+            var dbWorker = new dbWorker()
             {
-                allocationDetail
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                Id = id,
+                Role = role,
+                Allocations = new List<AllocationSet>() {
+                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Closed" },
+                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Open" }
+                },
+                WorkerTeams = new List<WorkerTeam>()
+                {
+                    new WorkerTeam() { Id = 1 , Team = new dbTeam() { Id = 1, Name = "Team 1", Context = "C" } },
+                    new WorkerTeam() { Id = 2 , Team = new dbTeam() { Id = 2, Name = "Team 2", Context = "C" } },
+                }
             };
 
-            dbWorker.ToDomain(allocationDetails).Should().BeEquivalentTo(expectedResponse);
+            var expectedResponse = new Worker()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Id = id,
+                AllocationCount = allocationCount,
+                Email = email,
+                Role = role,
+                Teams = new List<Team>()
+                {
+                    new Team() { Id = 1, Name = "Team 1"},
+                    new Team() { Id = 2, Name = "Team 2"}
+                }
+            };
+
+            dbWorker.ToDomain(true).Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
@@ -99,7 +139,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
             var personId = _faker.Random.Long();
-            var allocatedBy = _faker.Internet.Email(); //email
+            var createdBy = _faker.Internet.Email();
             var workerId = _faker.Random.Number();
             var dt = DateTime.Now;
             var caseStatus = "Open";
@@ -107,16 +147,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var allocationRequest = new CreateAllocationRequest()
             {
                 MosaicId = personId,
-                AllocatedBy = allocatedBy,
+                CreatedBy = createdBy,
                 AllocatedWorkerId = workerId
             };
 
             var expectedResponse = new AllocationSet()
             {
-                MosaicId = personId,
+                PersonId = personId,
                 WorkerId = workerId,
                 AllocationStartDate = dt,
-                CaseStatus = caseStatus
+                CaseStatus = caseStatus,
+                CreatedBy = createdBy
             };
 
             allocationRequest.ToEntity(workerId, dt, caseStatus).Should().BeEquivalentTo(expectedResponse);
@@ -127,6 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         {
             var firstName = _faker.Name.FirstName();
             var lastName = _faker.Name.LastName();
+            var createdBy = _faker.Internet.Email();
 
             var domainOtherName = new OtherName()
             {
@@ -140,18 +182,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 FirstName = firstName,
                 LastName = lastName,
-                PersonId = personId
+                PersonId = personId,
+                CreatedBy = createdBy
             };
 
-            domainOtherName.ToEntity(personId).Should().BeEquivalentTo(infrastructureOtherName);
+            domainOtherName.ToEntity(personId, createdBy).Should().BeEquivalentTo(infrastructureOtherName);
         }
 
         [Test]
         public void CanMapPhoneNumberFromDomainToInfrastructure()
         {
-            string phoneNumber = _faker.Phone.PhoneNumber();
+            string phoneNumber = "12345678";
             string phoneNumberType = "Mobile";
             long personId = 123;
+            string createdBy = _faker.Internet.Email();
 
             var domainNumber = new PhoneNumber()
             {
@@ -161,12 +205,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var infrastructurePhoneNumber = new dbPhoneNumber()
             {
-                Number = phoneNumber,
+                Number = phoneNumber.ToString(),
                 PersonId = personId,
-                Type = phoneNumberType
+                Type = phoneNumberType,
+                CreatedBy = createdBy
             };
 
-            domainNumber.ToEntity(personId).Should().BeEquivalentTo(infrastructurePhoneNumber);
+            domainNumber.ToEntity(personId, createdBy).Should().BeEquivalentTo(infrastructurePhoneNumber);
         }
     }
 }

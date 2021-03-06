@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _sccvDbContext = sccvDbContext;
         }
-        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
@@ -33,11 +33,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var query = _sccvDbContext.getCollection().AsQueryable();
+                var mosaicIdQuery = _sccvDbContext.getCollection().AsQueryable();
                 var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
-                query = query.Where(db => mosaicIDFilter.Inject());
+                mosaicIdQuery = mosaicIdQuery.Where(db => mosaicIDFilter.Inject());
 
-                result = query.ToList();
+                result = mosaicIdQuery.ToList();
+
+                if (!string.IsNullOrWhiteSpace(ncId))
+                {
+                    //add records that are still using nc ID to the results
+                    var ncIdQuery = _sccvDbContext.getCollection().AsQueryable();
+                    var ncIdFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + ncId + "$", "i"));
+                    ncIdQuery = ncIdQuery.Where(db => ncIdFilter.Inject());
+
+                    result.AddRange(ncIdQuery.ToList());
+                }
             }
             else
             {
