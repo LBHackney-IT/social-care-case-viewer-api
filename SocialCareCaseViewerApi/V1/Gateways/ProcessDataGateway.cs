@@ -176,7 +176,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             {
                                 return GetDateToSortBy(x);
                             }
-                        ):
+                        ) :
                         response.OrderByDescending(x =>
                             {
                                 return GetDateToSortBy(x);
