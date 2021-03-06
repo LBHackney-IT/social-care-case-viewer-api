@@ -9,8 +9,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IProcessDataGateway
     {
-        Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request);
-        IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response);
+        Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId);
         Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc);
+        IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response);
     }
 }
