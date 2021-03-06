@@ -119,13 +119,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             int totalCount = response.Count;
 
-            //sort by date of event by default, then by datestamp
             response = SortData(request.SortBy, request.OrderBy, response)
-                .ThenByDescending(x =>
-                {
-                    _ = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                    return dt;
-                })
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
@@ -166,20 +160,37 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         response.OrderBy(x => x.OfficerEmail) :
                         response.OrderByDescending(x => x.OfficerEmail);
                 default:
+
                     return (orderBy == "asc") ?
                         response.OrderBy(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        }) :
+                            {
+                                return GetDateToSortBy(x);
+                            }
+                        ):
                         response.OrderByDescending(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        });
+                            {
+                                return GetDateToSortBy(x);
+                            }
+                        );
+            }
+
+            static DateTime? GetDateToSortBy(CareCaseData x)
+            {
+                DateTime? dt = null;
+
+                if (string.IsNullOrEmpty(x.DateOfEvent))
+                {
+                    bool success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
+                    if (success) dt = timeStamp;
+                }
+                else
+                {
+                    bool success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEvent);
+                    if (success) dt = dateOfEvent;
+                }
+                return dt;
             }
         }
-
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
