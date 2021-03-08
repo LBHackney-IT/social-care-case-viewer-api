@@ -43,18 +43,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                                     .With(x => x.ExactNameMatch, false)
                                     .Create();
 
-            var stubbedCaseData = _fixture.Build<CareCaseData>()
+            var stubbedCaseData = _fixture.Build<CaseNoteBase>()
                                     .With(x => x.FirstName, stubbedRequest.FirstName)
                                     .With(x => x.LastName, stubbedRequest.LastName)
-                                    .With(x => x.OfficerEmail, stubbedRequest.WorkerEmail)
+                                    .With(x => x.WorkerEmail, stubbedRequest.WorkerEmail)
                                     .With(x => x.FormName, stubbedRequest.FormName)
                                     .Create();
 
+            Console.WriteLine(stubbedCaseData);
             var bsonCareCaseData = BsonDocument.Parse(JsonConvert.SerializeObject(stubbedCaseData));
             collection.InsertOne(bsonCareCaseData);
-
-            // Console.WriteLine(JsonConvert.SerializeObject(collection, Formatting.Indented));
-            // System.Diagnostics.Debug.WriteLine(collection);
 
             var response = _classUnderTest.GetProcessData(stubbedRequest, null);
             var responseList = response.Item1.ToList();
