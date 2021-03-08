@@ -197,7 +197,9 @@ workflows:
             - assume-role-staging
           filters:
             branches:
-              only: master
+              only: 
+                - master
+                - development
       - deploy-to-staging:
           requires:
             - assume-role-staging
