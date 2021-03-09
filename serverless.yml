@@ -15,7 +15,6 @@ provider:
           rateLimit: 100
 
 package:
-# TODO: Rename zipfile in build.sh and build.cmd to match this
   artifact: ./SocialCareCaseViewerApi/bin/release/netcoreapp3.1/social-care-case-viewer-api.zip
 
 functions:
@@ -25,7 +24,6 @@ functions:
     role: lambdaExecutionRole
     timeout: 30
     environment:
-# TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name
       CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
       SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
       SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
@@ -40,6 +38,10 @@ functions:
           path: /{proxy+}
           method: ANY
           private: true
+      - http:
+          path: /swagger/{proxy+}
+          method: GET
+          private: false
   mongoDBImport:
     name: social-care-case-viewer-mongodb-import-${self:provider.stage}
     handler: MongoDBImport::MongoDBImport.Handler::ImportFormData
