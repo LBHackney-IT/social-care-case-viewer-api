@@ -1,9 +1,8 @@
-using System;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
@@ -21,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void RequestHasRecordId()
         {
-            _getCaseByIdRequest.RecordId.Should().Be(null);
+            _getCaseByIdRequest.Id.Should().Be(null);
         }
 
         #region Model validation
@@ -29,30 +28,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ModelValidationFailsIfRecordIdIsNotProvided()
         {
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
-            errors.FirstOrDefault().ToString().Should().Be("The RecordId field is required.");
-            errors.Should().Contain(x => x.ErrorMessage.Contains("The RecordId field is required."));
+            errors.FirstOrDefault().ToString().Should().Be("The Id field is required.");
+            errors.Should().Contain(x => x.ErrorMessage.Contains("The Id field is required."));
         }
 
         [Test]
         public void ModelValidationFailsIfRecordIdIsProvidedButTheStringLengthIsLessThan24()
         {
-            _getCaseByIdRequest.RecordId = "1";
+            _getCaseByIdRequest.Id = "1";
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
-            errors.Should().Contain(x => x.ErrorMessage.Contains("The record_id must be 24 characters"));
+            errors.Should().Contain(x => x.ErrorMessage.Contains("The id must be 24 characters"));
         }
 
         [Test]
         public void ModelValidationFailsIfRecordIdIsProvidedButTheStringLengthIsGreaterThan24()
         {
-            _getCaseByIdRequest.RecordId = "123456789123456789123456789";
+            _getCaseByIdRequest.Id = "123456789123456789123456789";
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
-            errors.Should().Contain(x => x.ErrorMessage.Contains("The record_id must be 24 characters"));
+            errors.Should().Contain(x => x.ErrorMessage.Contains("The id must be 24 characters"));
         }
 
         [Test]
         public void ModelValidationSucceedsIfRecordIdIsProvidedAndTheStringValueIsValid()
         {
-            _getCaseByIdRequest.RecordId = "123456781234567812345678";
+            _getCaseByIdRequest.Id = "123456781234567812345678";
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
             errors.Should().BeEmpty();
         }

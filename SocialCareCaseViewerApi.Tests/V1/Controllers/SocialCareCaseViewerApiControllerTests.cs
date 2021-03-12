@@ -269,5 +269,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         #endregion
+
+        #region case
+        [Test]
+        public void GetCaseByIdReturns200WhenSuccessful()
+        {
+            var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var testRequest = _fixture.Create<GetCaseByIdRequest>();
+
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
+            var response = _classUnderTest.GetCaseByRecordId(testRequest) as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void GetCaseByIdReturnsCareCaseDataWhenSuccessful()
+        {
+            var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var testRequest = _fixture.Create<GetCaseByIdRequest>();
+
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
+            var response = _classUnderTest.GetCaseByRecordId(testRequest) as OkObjectResult;
+
+            response.Value.Should().BeEquivalentTo(stubbedCaseData);
+        }
+
+        [Test]
+        public void GetCaseByIdReturns404WhenNoCaseisFound()
+        {
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()))
+                .Throws(new DocumentNotFoundException("Document Not Found"));
+            var testRequest = _fixture.Create<GetCaseByIdRequest>();
+
+            var response = _classUnderTest.GetCaseByRecordId(testRequest) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Document Not Found");
+        }
+        #endregion
     }
 }

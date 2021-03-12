@@ -136,12 +136,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No cases found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("cases/{recordId}")]
-        public IActionResult GetCaseByRecordId(GetCaseByIdRequest request)
+        [Route("cases/{id}")]
+        public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)
         {
             try
             {
-                return Ok(_processDataUsecase.Execute(request.RecordId));
+                return Ok(_processDataUsecase.Execute(request.Id));
             }
             catch (DocumentNotFoundException e)
             {
@@ -271,7 +271,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        /// <response code="400">Id parameter isinvalid or missing</response>
+        /// <response code="400">Id parameter is invalid or missing</response>
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(CaseNote), StatusCodes.Status200OK)]
         [Produces("application/json")]
