@@ -389,3 +389,11 @@ team_name varchar(300)
 --indexes to improve performance
 create index dm_addresses_person_id_idx on dbo.dm_addresses(person_id);
 create index dm_telephone_numbers_person_id_idx on dbo.dm_telephone_numbers(person_id);
+
+--for restricted CFS cases management (manual updates to get backup restore data in sync)
+create table dbo.sccv_cfs_restricted_flag_import(
+person_id varchar(20),
+restricted varchar(10),
+mosaic_id bigint
+);
+

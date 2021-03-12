@@ -31,8 +31,7 @@ namespace SocialCareCaseViewerApi
 
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
-        //TODO update the below to the name of your API
-        private const string ApiName = "Your API Name";
+        private const string ApiName = "Social Care Case Viewer API";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public static void ConfigureServices(IServiceCollection services)
@@ -108,6 +107,12 @@ namespace SocialCareCaseViewerApi
             ConfigureDbContext(services);
             RegisterGateways(services);
             RegisterUseCases(services);
+
+
+            services.AddHttpClient<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>(client =>
+            {
+                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL"));
+            });
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -125,6 +130,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
             services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
             services.AddScoped<IMosaicAPIGateway, MosaicAPIGateway>();
+            services.AddScoped<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -135,6 +141,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IAllocationsUseCase, AllocationsUseCase>();
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
             services.AddScoped<ITeamsUseCase, TeamsUseCase>();
+            services.AddScoped<ICaseNotesUseCase, CaseNotesUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
