@@ -105,6 +105,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
             _classUnderTest.DateManagerInformed.Should().Be(null);
         }
 
+        #region Audit properties
+
         [Test]
         public void WarningNoteHasCreatedAt()
         {
@@ -127,6 +129,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         public void WarningNoteHadLastModifiedBy()
         {
             _classUnderTest.LastModifiedBy.Should().Be(null);
+        }
+
+        #endregion
+
+        [Test]
+        public void CloneReturnsMemberwiseClone()
+        {
+            var response = _classUnderTest.Clone();
+            response.Should().NotBe(_classUnderTest);
+            response.Should().BeEquivalentTo(_classUnderTest);
         }
     }
 }

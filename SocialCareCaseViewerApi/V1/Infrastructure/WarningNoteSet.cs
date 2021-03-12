@@ -51,6 +51,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("date_manager_informed")]
         public DateTime? DateManagerInformed { get; set; }
 
+        //nav props
+        public Worker Worker { get; set; }
+        public Team Team { get; set; }
+        public Person Person { get; set; }
+
         //audit props
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }
@@ -63,5 +68,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("sccv_last_modified_by")]
         public string LastModifiedBy { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }
