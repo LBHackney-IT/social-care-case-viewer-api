@@ -27,9 +27,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAllocationsUseCase _allocationUseCase;
         private readonly IWorkersUseCase _workersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
+        private readonly ICaseNotesUseCase _caseNotesUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase)
+            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -37,6 +38,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _allocationUseCase = allocationUseCase;
             _workersUseCase = workersUseCase;
             _teamsUseCase = teamsUseCase;
+            _caseNotesUseCase = caseNotesUseCase;
         }
 
         /// <summary>
@@ -227,6 +229,38 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
         {
             return Ok(_teamsUseCase.ExecuteGet(request));
+        }
+
+        /// <summary>
+        /// Get case notes by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <response code="400">Id parameter is invalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListCaseNotesResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("casenotes/person/{id}")]
+        public IActionResult ListCaseNotes([FromQuery] ListCaseNotesRequest request)
+        {
+            return Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id));
+        }
+
+        /// <summary>
+        /// Get case note by id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <response code="400">Id parameter isinvalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(CaseNote), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("casenotes/{id}")]
+        public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
+        {
+            return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
         }
     }
 }

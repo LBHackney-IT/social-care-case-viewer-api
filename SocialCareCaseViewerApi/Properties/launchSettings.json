@@ -23,7 +23,9 @@
         "SCCV_MONGO_COLLECTION_NAME": "form_data",
         "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test",
         "MOSAIC_API_URL": "http://localhost:5001/api/v1/",
-        "MOSAIC_API_TOKEN": "dummy"
+        "MOSAIC_API_TOKEN": "dummy",
+        "SOCIAL_CARE_PLATFORM_API_BASE_URL": "http://sample",
+        "SOCIAL_CARE_PLATFORM_API_TOKEN": "token"
       }
     }
   }
