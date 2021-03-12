@@ -134,7 +134,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns case related to the specified ID</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CareCaseData), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases/{id}")]
         public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)
