@@ -129,6 +129,25 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Find specific case by unique Record ID produced by MongoDB
+        /// </summary>
+        /// <response code="200">Success. Returns case related to the specified ID</response>
+        /// <response code="404">No cases found for the specified ID or officer email</response>
+        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("cases/{id}")]
+        public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)
+        {
+            try
+            {
+                return Ok(_processDataUsecase.Execute(request.Id));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
 
         /// <summary>
         /// Find allocations by Mosaic ID or officer email
@@ -252,7 +271,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        /// <response code="400">Id parameter isinvalid or missing</response>
+        /// <response code="400">Id parameter is invalid or missing</response>
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(CaseNote), StatusCodes.Status200OK)]
         [Produces("application/json")]

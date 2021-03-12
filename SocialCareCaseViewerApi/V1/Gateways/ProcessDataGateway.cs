@@ -220,5 +220,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ConfigureAwait(false);
             return doc["_id"].AsObjectId.ToString();
         }
+
+        public CareCaseData GetCaseById(string recordId)
+        {
+            var collection = _sccvDbContext.getCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
+            var query = collection.AsQueryable().Where(db => filter.Inject());
+
+            var result = query.ToList();
+            if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
+
+            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+
+            return response;
+        }
     }
 }
