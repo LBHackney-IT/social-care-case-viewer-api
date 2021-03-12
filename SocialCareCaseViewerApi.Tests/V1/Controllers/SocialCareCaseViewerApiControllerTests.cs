@@ -2,6 +2,7 @@ using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -10,6 +11,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
@@ -24,6 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
+        private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
 
         private Fixture _fixture;
 
@@ -36,9 +39,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
+            _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
+
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object, _mockCaseNotesUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -211,6 +216,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         //TODO: test other exception types
+
+        #endregion
+
+        #region Case notes
+        [Test]
+        public void GetCaseNotesByPersonIdReturns200WhenSuccessful()
+        {
+            var request = new ListCaseNotesRequest() { Id = "1" };
+
+            var notesList = _fixture.Create<ListCaseNotesResponse>();
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(notesList);
+
+            var response = _classUnderTest.ListCaseNotes(request);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public void GetCaseNotesByNoteIdReturns200WhenSuccessful()
+        {
+            var request = new GetCaseNotesRequest() { Id = "1" };
+
+            var note = _fixture.Create<CaseNote>();
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
+
+            var response = _classUnderTest.GetCaseNoteById(request);
+
+            response.Should().NotBeNull();
+        }
+
+        [Test]
+        public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
+        {
+            string personId = "123";
+            var request = new ListCaseNotesRequest() { Id = personId };
+            var response = new ListCaseNotesResponse() { CaseNotes = new List<CaseNote>() };
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(personId)).Returns(response);
+
+            var actualResponse = _classUnderTest.ListCaseNotes(request);
+            var okResult = (OkObjectResult) actualResponse;
+            var resultContent = (ListCaseNotesResponse) okResult.Value;
+
+            Assert.NotNull(actualResponse);
+            Assert.NotNull(okResult);
+            Assert.IsInstanceOf<ListCaseNotesResponse>(resultContent);
+            Assert.NotNull(resultContent);
+            Assert.AreEqual(JsonConvert.SerializeObject(response), JsonConvert.SerializeObject(resultContent));
+            Assert.AreEqual(200, okResult.StatusCode);
+        }
 
         #endregion
     }
