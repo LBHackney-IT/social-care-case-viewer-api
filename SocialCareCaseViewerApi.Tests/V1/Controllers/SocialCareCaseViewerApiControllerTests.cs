@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
-            
+
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object, _mockCaseNotesUseCase.Object);
@@ -252,7 +252,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
         {
             string personId = "123";
-            var request = new ListCaseNotesRequest() {Id = personId};
+            var request = new ListCaseNotesRequest() { Id = personId };
             var response = new ListCaseNotesResponse() { CaseNotes = new List<CaseNote>() };
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(personId)).Returns(response);
 

@@ -164,7 +164,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 StatusCode = HttpStatusCode.Unauthorized
             }).Verifiable();
 
-            _httpClient= new HttpClient(mockHttpMessageHandler.Object)
+            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
             {
                 BaseAddress = _mockBaseUri
             };

@@ -7,38 +7,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class GetCaseNoteRequestTests
     {
-            private GetCaseNotesRequest _request;
+        private GetCaseNotesRequest _request;
 
-            [SetUp]
-            public void SetUp()
-            {
-                _request = new GetCaseNotesRequest();
-            }
+        [SetUp]
+        public void SetUp()
+        {
+            _request = new GetCaseNotesRequest();
+        }
 
-            [Test]
-            public void RequestHasId()
-            {
-                Assert.IsNull(_request.Id);
-            }
+        [Test]
+        public void RequestHasId()
+        {
+            Assert.IsNull(_request.Id);
+        }
 
-            #region Model validation
-            [Test]
-            public void ValidationFailsIfIdIsNotProvided()
-            {
-                var errors = ValidationHelper.ValidateModel(_request);
+        #region Model validation
+        [Test]
+        public void ValidationFailsIfIdIsNotProvided()
+        {
+            var errors = ValidationHelper.ValidateModel(_request);
 
-                Assert.AreEqual(1, errors.Count);
-            }
+            Assert.AreEqual(1, errors.Count);
+        }
 
-            [Test]
-            public void ValidationSucceeedsWhenValidPersonIdIsProvided()
-            {
-                _request.Id = "Id123";
+        [Test]
+        public void ValidationSucceeedsWhenValidPersonIdIsProvided()
+        {
+            _request.Id = "Id123";
 
-                var errors = ValidationHelper.ValidateModel(_request);
+            var errors = ValidationHelper.ValidateModel(_request);
 
-                Assert.AreEqual(0, errors.Count);
-            }
-            #endregion
+            Assert.AreEqual(0, errors.Count);
+        }
+        #endregion
     }
 }
