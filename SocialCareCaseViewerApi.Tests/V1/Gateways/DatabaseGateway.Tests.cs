@@ -12,11 +12,11 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {

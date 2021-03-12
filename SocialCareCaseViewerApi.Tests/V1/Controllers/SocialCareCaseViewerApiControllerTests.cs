@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {

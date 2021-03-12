@@ -9,11 +9,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     {
         [Column("id")]
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("person_id")]
         [Required]
-        public int PersonId { get; set; }
+        public long PersonId { get; set; }
 
         [Column("start_date")]
         public DateTime? StartDate { get; set; }
