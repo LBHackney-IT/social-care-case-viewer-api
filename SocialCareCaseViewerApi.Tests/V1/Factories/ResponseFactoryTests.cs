@@ -85,7 +85,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", noteType),
-                                new BsonElement("timestamp", createdOn)
+                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("is_historical", true)
                         });
 
             List<CaseNote> notes = new List<CaseNote>() { historicalCaseNote };
@@ -97,6 +98,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             Assert.AreEqual(expectedDocument.GetElement("form_name_overall"), result.First().GetElement("form_name_overall"));
             Assert.AreEqual(expectedDocument.GetElement("form_name"), result.First().GetElement("form_name"));
             Assert.AreEqual(expectedDocument.GetElement("timestamp"), result.First().GetElement("timestamp"));
+            Assert.AreEqual(expectedDocument.GetElement("is_historical"), result.First().GetElement("is_historical"));
         }
     }
 }

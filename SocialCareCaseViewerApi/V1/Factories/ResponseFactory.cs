@@ -68,7 +68,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                                 new BsonElement("worker_email", note.CreatedByEmail),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", note.NoteType),
-                                new BsonElement("timestamp", note.CreatedOn)
+                                new BsonElement("timestamp", note.CreatedOn),
+                                new BsonElement("is_historical", true) //flag for front end
                         }
                         ));
             }
