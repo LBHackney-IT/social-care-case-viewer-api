@@ -32,7 +32,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
-            var databaseQuery = _sccvDbContext.getCollection().AsQueryable().ToList();
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
