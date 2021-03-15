@@ -1,9 +1,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using NUnit.Framework;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests
 {
@@ -29,8 +29,8 @@ namespace SocialCareCaseViewerApi.Tests
         [OneTimeTearDown]
         public void RunAfterAnyTests()
         {
-           //clear collection - remove any documents inserted during thet test
-           collection.DeleteMany(Builders<BsonDocument>.Filter.Empty);
+            //clear collection - remove any documents inserted during thet test
+            collection.DeleteMany(Builders<BsonDocument>.Filter.Empty);
         }
     }
 }

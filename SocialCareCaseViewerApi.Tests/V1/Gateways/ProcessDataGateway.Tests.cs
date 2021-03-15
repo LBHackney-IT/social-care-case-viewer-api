@@ -8,12 +8,12 @@ using MongoDB.Bson.IO;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
