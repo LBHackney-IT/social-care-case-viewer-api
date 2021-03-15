@@ -22,6 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     {
         private ProcessDataGateway _classUnderTest;
         private Mock<ISccvDbContext> _mockSccvDbContext;
+        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
         private Fixture _fixture;
 
         [SetUp]
@@ -29,7 +30,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             _mockSccvDbContext = new Mock<ISccvDbContext>();
             _mockSccvDbContext.Setup(x => x.getCollection()).Returns(collection);
-            _classUnderTest = new ProcessDataGateway(_mockSccvDbContext.Object);
+            _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
+            _classUnderTest = new ProcessDataGateway(_mockSccvDbContext.Object, _mockSocialCarePlatformAPIGateway.Object);
             _fixture = new Fixture();
         }
 
