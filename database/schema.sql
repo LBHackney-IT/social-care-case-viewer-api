@@ -417,3 +417,4 @@ create table dbo.sccv_warning_note(
     SCCV_LAST_MODIFIED_AT timestamp,
     SCCV_LAST_MODIFIED_BY varchar(300)
 );
+
