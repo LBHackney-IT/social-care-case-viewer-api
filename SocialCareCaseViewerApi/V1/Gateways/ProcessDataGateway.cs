@@ -59,6 +59,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //{
                 //    result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
                 //}
+
+                //add historical visits to the case history records when using mosaic id search
+                //TODO: enable once platform API is up and running
+                //var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+
+                //if (visitsResponse.Visits.Count > 0)
+                //{
+                //    result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                //}
             }
             else
             {
