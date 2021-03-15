@@ -1,10 +1,10 @@
+using System;
+using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using System;
-using System.Net.Http;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {

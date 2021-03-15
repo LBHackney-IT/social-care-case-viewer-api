@@ -138,3 +138,8 @@ dotnet_diagnostic.CA1001.severity = none
 
 #Can reassign collections
 dotnet_diagnostic.CA2227.severity = none
+
+# Suppressed[CA1051] (Do not declare visible instance fields)
+# Relates to protected declarations in MongoDBTests
+# Possible solution by making private and declaring using properties
+dotnet_diagnostic.CA1051.severity = none

@@ -30,8 +30,8 @@ namespace SocialCareCaseViewerApi.Tests
             _transaction = DatabaseContext.Database.BeginTransaction();
         }
 
-        [TearDown]
-        public void TearDown()
+        [OneTimeTearDown]
+        public void RunAfterAnyTests()
         {
             _transaction.Rollback();
             _transaction.Dispose();

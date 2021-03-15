@@ -19,7 +19,21 @@ services:
     #volumes:
       #- ./database:/docker-entrypoint-initdb.d
 
-  #social-care-case-viewer-api-test:
+  social-care-case-viewer-api-test:
+    image: social-care-case-viewer-api-test
+    build:
+      context: .
+      dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
+    environment:
+            - MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
+    links:
+        - mongo-db
+  mongo-db:
+      image: mongo:3.6
+      ports:
+        - 1433:27017
+
+   #social-care-case-viewer-api-test:
     #image: social-care-case-viewer-api-test
     #build:
       #context: .
