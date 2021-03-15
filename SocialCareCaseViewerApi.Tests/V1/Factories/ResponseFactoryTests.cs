@@ -75,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CaseNoteId = caseNoteId,
                 CreatedByEmail = email,
                 NoteType = noteType,
-                CreatedOn = createdOn,
+                CreatedOn = createdOn
             };
 
             var expectedDocument = new BsonDocument(
@@ -92,6 +92,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             List<CaseNote> notes = new List<CaseNote>() { historicalCaseNote };
 
             var result = ResponseFactory.HistoricalCaseNotesToDomain(notes);
+
+            Assert.AreEqual(expectedDocument.GetElement("_id"), result.First().GetElement("_id"));
+            Assert.AreEqual(expectedDocument.GetElement("worker_email"), result.First().GetElement("worker_email"));
+            Assert.AreEqual(expectedDocument.GetElement("form_name_overall"), result.First().GetElement("form_name_overall"));
+            Assert.AreEqual(expectedDocument.GetElement("form_name"), result.First().GetElement("form_name"));
+            Assert.AreEqual(expectedDocument.GetElement("timestamp"), result.First().GetElement("timestamp"));
+            Assert.AreEqual(expectedDocument.GetElement("is_historical"), result.First().GetElement("is_historical"));
+        }
+
+        [Test]
+        public void CanMapHistoricalVisitToBsonDocument()
+        {
+            int visitId = 1;
+            string mosaicId = "1";
+            string title = "Title";
+            string content = "Content";
+            string email = "first.last@domain.com";
+            string createdOn = DateTime.Now.ToString();
+
+            Visit visit = new Visit()
+            {
+                MosaicId = mosaicId,
+                Title = title,
+                Content = content,
+                CreatedByEmail = email,
+                CreatedOn = createdOn,
+                Id = visitId
+            };
+
+            var expectedDocument = new BsonDocument(
+                        new List<BsonElement>
+                        {
+                                new BsonElement("_id", visitId),
+                                new BsonElement("worker_email", email),
+                                new BsonElement("form_name_overall", "Historical_Visit"),
+                                new BsonElement("form_name", title),
+                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("is_historical", true)
+                        });
+
+            List<Visit> visits = new List<Visit>() { visit };
+
+            var result = ResponseFactory.HistoricalVisitsToDomain(visits);
 
             Assert.AreEqual(expectedDocument.GetElement("_id"), result.First().GetElement("_id"));
             Assert.AreEqual(expectedDocument.GetElement("worker_email"), result.First().GetElement("worker_email"));

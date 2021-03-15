@@ -27,6 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
+        private Mock<IVisitsUseCase> _mockVisitsUseCase;
 
         private Fixture _fixture;
 
@@ -40,10 +41,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockWorkersUseCase = new Mock<IWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
+            _mockVisitsUseCase = new Mock<IVisitsUseCase>();
 
 
-            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object, _mockCaseNotesUseCase.Object);
+            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object,_mockAddNewResidentUseCase.Object,
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -309,6 +311,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(404);
             response.Value.Should().Be("Document Not Found");
         }
+        #endregion
+
+        #region Visits
+        [Test]
+        public void GetVisitsByPersonIdReturns200WhenSuccessful()
+        {
+            var request = new ListVisitsRequest() { Id = "1" };
+
+            var visistList = _fixture.Create<ListVisitsResponse>();
+
+            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visistList);
+
+            var response = _classUnderTest.ListVisits(request);
+
+            response.Should().NotBeNull();
+        }
+             
         #endregion
     }
 }

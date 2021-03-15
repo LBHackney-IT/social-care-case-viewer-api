@@ -76,5 +76,27 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return historicalCaseNotes;
         }
+
+        public static List<BsonDocument> HistoricalVisitsToDomain(List<Visit> visits)
+        {
+            List<BsonDocument> historicalVisits = new List<BsonDocument>();
+
+            foreach (var visit in visits)
+            {
+                historicalVisits.Add(new BsonDocument(
+                        new List<BsonElement>
+                        {
+                                new BsonElement("_id", visit.Id),
+                                new BsonElement("worker_email", visit.CreatedByEmail),
+                                new BsonElement("form_name_overall", "Historical_Visit"),
+                                new BsonElement("form_name", visit.Title),
+                                new BsonElement("timestamp", visit.CreatedOn),
+                                new BsonElement("is_historical", true) //flag for front end
+                        }
+                        ));
+            }
+
+            return historicalVisits;
+        }
     }
 }

@@ -28,9 +28,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IWorkersUseCase _workersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
+        private readonly IVisitsUseCase _visitsUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase)
+            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -39,6 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _workersUseCase = workersUseCase;
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
+            _visitsUseCase = visitsUseCase;
         }
 
         /// <summary>
@@ -280,6 +282,22 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
             return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+        }
+
+        /// <summary>
+        /// Get visits by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <response code="400">Id parameter is invalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListVisitsResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("visits/person/{id}")]
+        public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
+        {
+            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
         }
     }
 }

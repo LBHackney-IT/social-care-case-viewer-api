@@ -8,5 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         ListCaseNotesResponse GetCaseNotesByPersonId(string id);
 
         CaseNote GetCaseNoteById(string id);
+
+        ListVisitsResponse GetVisitsByPersonId(string id);
     }
 }
