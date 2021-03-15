@@ -20,10 +20,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
+        private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
         {
             _sccvDbContext = sccvDbContext;
+            _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
         {
@@ -48,6 +50,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     result.AddRange(ncIdQuery.ToList());
                 }
+
+                //add historical case notes to the case history records when using mosaic id search
+                //TODO: enable once platform API is up and running
+                //var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
+
+                //if (notesResponse.CaseNotes.Count > 0)
+                //{
+                //    result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                //}
             }
             else
             {
@@ -208,6 +219,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             await _sccvDbContext.getCollection().InsertOneAsync(doc)
                 .ConfigureAwait(false);
             return doc["_id"].AsObjectId.ToString();
+        }
+
+        public CareCaseData GetCaseById(string recordId)
+        {
+            var collection = _sccvDbContext.getCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
+            var query = collection.AsQueryable().Where(db => filter.Inject());
+
+            var result = query.ToList();
+            if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
+
+            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+
+            return response;
         }
     }
 }

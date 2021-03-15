@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -52,6 +53,28 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PersonId = formData.PersonId,
                 CaseFormData = rawData.ToJson()
             };
+        }
+
+        public static List<BsonDocument> HistoricalCaseNotesToDomain(List<CaseNote> caseNotes)
+        {
+            List<BsonDocument> historicalCaseNotes = new List<BsonDocument>();
+
+            foreach (var note in caseNotes)
+            {
+                historicalCaseNotes.Add(new BsonDocument(
+                        new List<BsonElement>
+                        {
+                                new BsonElement("_id", note.CaseNoteId),
+                                new BsonElement("worker_email", note.CreatedByEmail),
+                                new BsonElement("form_name_overall", "Historical_Case_Note"),
+                                new BsonElement("form_name", note.NoteType),
+                                new BsonElement("timestamp", note.CreatedOn),
+                                new BsonElement("is_historical", true) //flag for front end
+                        }
+                        ));
+            }
+
+            return historicalCaseNotes;
         }
     }
 }

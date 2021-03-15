@@ -58,6 +58,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
+        public CareCaseData Execute(string recordId)
+        {
+            return _processDataGateway.GetCaseById(recordId);
+        }
+
         public Task<string> Execute(CreateCaseNoteRequest request)
         {
             CaseNotesDocument doc = request.ToEntity();
