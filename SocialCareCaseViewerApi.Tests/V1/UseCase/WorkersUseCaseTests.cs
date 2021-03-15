@@ -7,8 +7,8 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
-using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
