@@ -254,7 +254,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            Assert.AreEqual(((int)HttpStatusCode.Unauthorized).ToString(), exception.Message);
+            Assert.AreEqual(((int) HttpStatusCode.Unauthorized).ToString(), exception.Message);
         }
 
 
@@ -283,7 +283,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            Assert.AreEqual(((int)HttpStatusCode.BadRequest).ToString(), exception.Message);
+            Assert.AreEqual(((int) HttpStatusCode.BadRequest).ToString(), exception.Message);
         }
 
 

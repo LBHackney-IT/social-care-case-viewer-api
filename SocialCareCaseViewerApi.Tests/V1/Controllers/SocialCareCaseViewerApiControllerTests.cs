@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
 
 
-            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object,_mockAddNewResidentUseCase.Object,
+            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object);
             _fixture = new Fixture();
         }
@@ -327,7 +327,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
         }
-             
+
         #endregion
     }
 }

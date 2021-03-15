@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>("visits/person", id);
         }
 
-        private T GetDataFromSocialCarePlatformAPI<T> (string path, string value)
+        private T GetDataFromSocialCarePlatformAPI<T>(string path, string value)
         {
             try
             {
