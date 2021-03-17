@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.Tests
         public void RunBeforeAnyTests()
         {
             string MONGO_CONN_STRING = Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
-                                 @"mongodb://mongo-db:27017/?gssapiServiceName=mongodb";
+                                 @"mongodb://localhost:1433/";
 
             //connect to local mongo DB
             MongoClient mongoClient = new MongoClient(new MongoUrl(MONGO_CONN_STRING));
