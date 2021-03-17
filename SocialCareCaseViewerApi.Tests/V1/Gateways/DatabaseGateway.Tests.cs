@@ -136,12 +136,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //deallocation
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
         {
-            int workerId = 555666;
-            long mosaicId = 5000555;
             string deAllocatedByEmail = _faker.Internet.Email();
             string workerEmail = _faker.Internet.Email();
             string deallocationReason = "Test reason";
-            int teamId = 1000;
             string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
 
             DateTime allocationStartDate = DateTime.Now.AddDays(-60);
@@ -151,7 +148,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Worker worker = new Worker()
             {
                 Email = workerEmail,
-                Id = workerId,
                 FirstName = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName()
             };
@@ -167,15 +163,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Team team = new Team()
             {
                 Context = "A",
-                Id = teamId,
                 Name = "Test team"
             };
 
             Person person = new Person()
             {
-                Id = mosaicId,
                 FullName = personName
             };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Teams.Add(team);
+
+            DatabaseContext.SaveChanges();
 
             string createdByEmail = _faker.Internet.Email();
 
@@ -189,9 +189,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 LastModifiedAt = null,
                 CreatedBy = createdByEmail,
                 LastModifiedBy = null,
-                PersonId = mosaicId,
-                TeamId = teamId,
-                WorkerId = workerId
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = worker.Id
             };
 
             DatabaseContext.Add(allocation);
@@ -203,11 +203,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DeallocationReason = deallocationReason,
                 Id = allocation.Id
             };
-
-            DatabaseContext.Workers.Add(worker);
-            DatabaseContext.Workers.Add(deAllocatedByWorker);
-            DatabaseContext.Teams.Add(team);
-            DatabaseContext.Persons.Add(person);
+        
+            DatabaseContext.Workers.Add(deAllocatedByWorker);              
 
             DatabaseContext.SaveChanges();
 
@@ -223,8 +220,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNotNull(updatedRecord);
             Assert.IsNotNull(updatedRecord.AllocationEndDate);
             Assert.AreEqual("Closed", updatedRecord.CaseStatus);
-            Assert.AreEqual(workerId, updatedRecord.WorkerId);
-            Assert.AreEqual(teamId, updatedRecord.TeamId);
+            Assert.AreEqual(worker.Id, updatedRecord.WorkerId);
+            Assert.AreEqual(team.Id, updatedRecord.TeamId);
             Assert.IsNotNull(updatedRecord.CaseClosureDate);
 
             //audit properties
