@@ -203,8 +203,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DeallocationReason = deallocationReason,
                 Id = allocation.Id
             };
-        
-            DatabaseContext.Workers.Add(deAllocatedByWorker);              
+
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
 
             DatabaseContext.SaveChanges();
 
