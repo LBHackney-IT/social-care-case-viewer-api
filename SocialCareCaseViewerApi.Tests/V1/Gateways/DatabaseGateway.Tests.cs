@@ -490,6 +490,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
             Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
+
+        [Test]
+        public void CreateWarningNoteShouldInsertIntoTheDatabase()
+        {
+            var request = _fixture.Create<CreateWarningNoteRequest>();
+
+            var response = _classUnderTest.CreateWarningNote(request);
+
+            var query = DatabaseContext.WarningNotes;
+
+            var insertedRecord = query.First(x => x.Id == response.WarningNoteId);
+
+            insertedRecord.Should().NotBeNull();
+        }
     }
 }
 

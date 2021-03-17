@@ -317,7 +317,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ToList();
         }
 
-        //TODO: use db views or queries 
+        //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
         {
             List<dynamic> allocationsPerWorker = new List<dynamic>();
@@ -519,6 +519,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new EntityUpdateException($"Unable to update allocation {request.Id}: {ex.Message}");
             }
 
+            return response;
+        }
+
+        public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
+        {
+            CreateWarningNoteResponse response = new CreateWarningNoteResponse();
             return response;
         }
 
