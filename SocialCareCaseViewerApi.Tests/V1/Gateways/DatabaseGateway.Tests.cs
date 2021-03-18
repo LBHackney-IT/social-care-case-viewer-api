@@ -40,28 +40,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
-            int workerId = 555666;
-            long mosaicId = 5000555;
             string allocatedByEmail = _faker.Internet.Email();
             string workerEmail = _faker.Internet.Email();
             int teamId = 1000;
             string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
 
-            var request = new CreateAllocationRequest()
-            {
-                AllocatedWorkerId = workerId,
-                MosaicId = mosaicId,
-                CreatedBy = allocatedByEmail,
-                AllocatedTeamId = teamId
-            };
-
-            //add test worker and team
             Worker worker = new Worker()
             {
                 Email = workerEmail,
-                Id = workerId,
                 FirstName = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName()
+            };
+
+            Person person = new Person()
+            {
+                FullName = personName
+            };
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var request = new CreateAllocationRequest()
+            {
+                AllocatedWorkerId = worker.Id,
+                MosaicId = person.Id,
+                CreatedBy = allocatedByEmail,
+                AllocatedTeamId = teamId
             };
 
             Worker allocatedByWorker = new Worker()
@@ -79,16 +84,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 Name = "Test team"
             };
 
-            Person person = new Person()
-            {
-                Id = mosaicId,
-                FullName = personName
-            };
-
-            DatabaseContext.Workers.Add(worker);
             DatabaseContext.Workers.Add(allocatedByWorker);
             DatabaseContext.Teams.Add(team);
-            DatabaseContext.Persons.Add(person);
 
             DatabaseContext.SaveChanges();
 
@@ -104,7 +101,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNotNull(insertedRecord);
             insertedRecord.PersonId.Should().NotBe(null);
             Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
-            Assert.AreEqual(insertedRecord.WorkerId, workerId);
+            Assert.AreEqual(insertedRecord.WorkerId, worker.Id);
 
             //audit properties
             Assert.AreEqual(insertedRecord.CreatedBy, allocatedByEmail);
@@ -119,7 +116,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
             Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("TeamId").GetInt64(), teamId);
-            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("WorkerId").GetInt64(), workerId);
+            Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("WorkerId").GetInt64(), worker.Id);
             Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
 
             Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
@@ -253,6 +250,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAPersonShouldCreateCorrectRecordsAndAuditRecordsInTheDatabase()
         {
+            //TODO: clean up before each test
+            DatabaseContext.Audits.RemoveRange(DatabaseContext.Audits);
+            DatabaseContext.Persons.RemoveRange(DatabaseContext.Persons);
+            DatabaseContext.PersonOtherNames.RemoveRange(DatabaseContext.PersonOtherNames);
+            DatabaseContext.Addresses.RemoveRange(DatabaseContext.Addresses);
+            DatabaseContext.PhoneNumbers.RemoveRange(DatabaseContext.PhoneNumbers);
+
             string title = "Mr";
             string firstName = _faker.Name.FirstName();
             string lastName = _faker.Name.LastName();
@@ -405,7 +409,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy != null));
 
             ////person audit record
-            var personRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetInt64() == person.Id);
+            var personRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetInt64() == person.Id && x.EntityState == "Added" && x.TableName == "dm_persons");
             Assert.IsNotNull(personRecord.KeyValues.RootElement.GetProperty("Id").GetInt64());
 
             Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Title").GetString() == person.Title);
@@ -426,7 +430,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
 
             //address record
-            var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Id);
+            var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Id && x.EntityState == "Added");
             Assert.IsNotNull(addressRecord.KeyValues.RootElement.GetProperty("PersonAddressId").GetInt64());
 
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("Uprn").GetInt64() == person.Addresses.First().Uprn);
@@ -442,7 +446,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("DataIsFromDmPersonsBackup").GetString() == person.Addresses.First().DataIsFromDmPersonsBackup);
 
             //other names
-            var otherNamesRecordOne = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstOne);
+            var otherNamesRecordOne = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstOne && x.EntityState == "Added");
             Assert.IsNotNull(otherNamesRecordOne.KeyValues.RootElement.GetProperty("Id").GetInt64());
 
             Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstOne);
@@ -453,7 +457,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
 
-            var otherNamesRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstTwo);
+            var otherNamesRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstTwo && x.EntityState == "Added");
             Assert.IsNotNull(otherNamesRecordTwo.KeyValues.RootElement.GetProperty("Id").GetInt64());
 
             Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstTwo);
@@ -465,7 +469,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
 
             //phone numbers
-            var phoneNumberRecordOne = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberOne.ToString());
+            var phoneNumberRecordOne = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberOne.ToString() && x.EntityState == "Added");
 
             Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeOne);
             Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberOne.ToString());
@@ -476,7 +480,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
             Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
 
-            var phoneNumberRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberTwo.ToString());
+            var phoneNumberRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberTwo.ToString() && x.EntityState == "Added");
 
             Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeTwo);
             Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberTwo.ToString());
