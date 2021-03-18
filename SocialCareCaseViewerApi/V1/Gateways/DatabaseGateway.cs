@@ -525,6 +525,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
         {
             CreateWarningNoteResponse response = new CreateWarningNoteResponse();
+            WarningNoteSet warningNote = new WarningNoteSet()
+            {
+                PersonId = request.PersonId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                IndividualNotified = request.IndividualNotified,
+                NotificationDetails = request.NotificationDetails,
+                ReviewDetails = request.ReviewDetails,
+                NoteType = request.NoteType,
+                Status = request.Status,
+                DateInformed = request.DateInformed,
+                HowInformed = request.HowInformed,
+                WarningNarrative = request.WarningNarrative,
+                ManagersName = request.ManagersName,
+                DateManagerInformed = request.DateManagerInformed
+            };
+
+            _databaseContext.WarningNotes.Add(warningNote);
+            _databaseContext.SaveChanges();
+
             return response;
         }
 

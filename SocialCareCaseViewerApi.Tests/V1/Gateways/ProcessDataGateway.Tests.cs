@@ -35,32 +35,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _fixture = new Fixture();
         }
 
-        [Test]
-        public void GetProcessDataShouldRetrieveACollectionFromTheDatabase()
-        {
-            var stubbedRequest = _fixture.Build<ListCasesRequest>()
-                                    .Without(p => p.MosaicId)
-                                    .Without(p => p.StartDate)
-                                    .Without(p => p.EndDate)
-                                    .With(x => x.ExactNameMatch, false)
-                                    .Create();
+        // [Test]
+        // public void GetProcessDataShouldRetrieveACollectionFromTheDatabase()
+        // {
+        //     var stubbedRequest = _fixture.Build<ListCasesRequest>()
+        //                             .Without(p => p.MosaicId)
+        //                             .Without(p => p.StartDate)
+        //                             .Without(p => p.EndDate)
+        //                             .With(x => x.ExactNameMatch, false)
+        //                             .Create();
 
-            var stubbedCaseData = _fixture.Build<CaseNoteBase>()
-                                    .With(x => x.FirstName, stubbedRequest.FirstName)
-                                    .With(x => x.LastName, stubbedRequest.LastName)
-                                    .With(x => x.WorkerEmail, stubbedRequest.WorkerEmail)
-                                    .With(x => x.FormName, stubbedRequest.FormName)
-                                    .Create();
+        //     var stubbedCaseData = _fixture.Build<CaseNoteBase>()
+        //                             .With(x => x.FirstName, stubbedRequest.FirstName)
+        //                             .With(x => x.LastName, stubbedRequest.LastName)
+        //                             .With(x => x.WorkerEmail, stubbedRequest.WorkerEmail)
+        //                             .With(x => x.FormName, stubbedRequest.FormName)
+        //                             .Create();
 
-            Console.WriteLine(stubbedCaseData);
-            var bsonCareCaseData = BsonDocument.Parse(JsonConvert.SerializeObject(stubbedCaseData));
-            collection.InsertOne(bsonCareCaseData);
+        //     Console.WriteLine(stubbedCaseData);
+        //     var bsonCareCaseData = BsonDocument.Parse(JsonConvert.SerializeObject(stubbedCaseData));
+        //     collection.InsertOne(bsonCareCaseData);
 
-            var response = _classUnderTest.GetProcessData(stubbedRequest, null);
-            var responseList = response.Item1.ToList();
+        //     var response = _classUnderTest.GetProcessData(stubbedRequest, null);
+        //     var responseList = response.Item1.ToList();
 
-            responseList.Should().BeOfType<List<CareCaseData>>();
-            response.Item1.ToList().Should().BeEquivalentTo(stubbedCaseData);
-        }
+        //     responseList.Should().BeOfType<List<CareCaseData>>();
+        //     response.Item1.ToList().Should().BeEquivalentTo(stubbedCaseData);
+        // }
     }
 }
