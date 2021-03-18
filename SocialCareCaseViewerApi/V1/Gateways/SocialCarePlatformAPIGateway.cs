@@ -24,61 +24,52 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseNote GetCaseNoteById(string id)
         {
-            try
-            {
-                string relativePath = $"casenotes/{id}";
-
-                Uri uri = new Uri(relativePath, UriKind.Relative);
-
-                var caseNotesResponseMessage = _httpClient.GetAsync(uri).Result;
-
-                if ((int) caseNotesResponseMessage.StatusCode == StatusCodes.Status401Unauthorized)
-                {
-                    throw new SocialCarePlatformApiException("Unauthorized");
-                }
-
-                try
-                {
-                    string result = caseNotesResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    return JsonConvert.DeserializeObject<CaseNote>(result);
-                }
-                catch (Exception)
-                {
-                    throw new SocialCarePlatformApiException("Unable to deserialize object");
-                }
-            }
-            catch (SocialCarePlatformApiException)
-            {
-                throw;
-            }
+            return GetDataFromSocialCarePlatformAPI<CaseNote>("casenotes", id);
         }
 
         public ListCaseNotesResponse GetCaseNotesByPersonId(string id)
         {
+            return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>("casenotes/person", id);
+        }
+
+        public ListVisitsResponse GetVisitsByPersonId(string id)
+        {
+            return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>("visits/person", id);
+        }
+
+        private T GetDataFromSocialCarePlatformAPI<T>(string path, string value)
+        {
             try
             {
-                string relativePath = $"casenotes/person/{id}";
+                string result;
+
+                T data = default;
+
+                string relativePath = $"{path}/{value}";
 
                 Uri uri = new Uri(relativePath, UriKind.Relative);
 
-                var caseNotesResponseMessage = _httpClient.GetAsync(uri).Result;
+                var responseMessage = _httpClient.GetAsync(uri).Result;
 
-                if ((int) caseNotesResponseMessage.StatusCode == StatusCodes.Status401Unauthorized)
+                if ((int) responseMessage.StatusCode == StatusCodes.Status200OK)
                 {
-                    throw new SocialCarePlatformApiException("Unauthorized");
+                    try
+                    {
+                        result = responseMessage.Content.ReadAsStringAsync().Result;
+
+                        data = JsonConvert.DeserializeObject<T>(result);
+                    }
+                    catch (Exception)
+                    {
+                        throw new SocialCarePlatformApiException($"Unable to deserialize {typeof(T).Name} object");
+                    }
+                }
+                else
+                {
+                    throw new SocialCarePlatformApiException($"{(int) responseMessage.StatusCode}");
                 }
 
-                try
-                {
-                    string result = caseNotesResponseMessage.Content.ReadAsStringAsync().Result;
-
-                    return JsonConvert.DeserializeObject<ListCaseNotesResponse>(result);
-                }
-                catch (Exception)
-                {
-                    throw new SocialCarePlatformApiException("Unable to deserialize object");
-                }
+                return data;
             }
             catch (SocialCarePlatformApiException)
             {

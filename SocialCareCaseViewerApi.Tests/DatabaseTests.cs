@@ -5,32 +5,24 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests
 {
-    [NonParallelizable]
     [TestFixture]
     public class DatabaseTests
     {
-        private DatabaseContext _context;
         private IDbContextTransaction _transaction;
-        private DbContextOptionsBuilder _builder;
-
-        protected DatabaseContext DatabaseContext => _context;
-
-        [OneTimeSetUp]
-        public void RunBeforeAnyTests()
-        {
-            _builder = new DbContextOptionsBuilder();
-            _builder.UseNpgsql(ConnectionString.TestDatabase());
-        }
+        protected DatabaseContext DatabaseContext { get; private set; }
 
         [SetUp]
-        public void SetUp()
+        public void RunBeforeAnyTests()
         {
-            _context = new DatabaseContext(_builder.Options);
-            _context.Database.EnsureCreated();
+            var builder = new DbContextOptionsBuilder();
+            builder.UseNpgsql(ConnectionString.TestDatabase());
+            DatabaseContext = new DatabaseContext(builder.Options);
+
+            DatabaseContext.Database.EnsureCreated();
             _transaction = DatabaseContext.Database.BeginTransaction();
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public void RunAfterAnyTests()
         {
             _transaction.Rollback();
