@@ -27,6 +27,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _sccvDbContext = sccvDbContext;
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
         {
             List<BsonDocument> result;
@@ -52,22 +54,33 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //add historical case notes to the case history records when using mosaic id search
-                //TODO: enable once platform API is up and running
-                //var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
 
-                //if (notesResponse.CaseNotes.Count > 0)
-                //{
-                //    result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
-                //}
+                //fail silently for now until platform API has been finalised
+                //TOOD: please do not use as production code
+                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                try
+                {
+                    var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
+                    if (notesResponse.CaseNotes.Count > 0)
+                    {
+                        result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                    }
+                }
+                catch{}
+
 
                 //add historical visits to the case history records when using mosaic id search
-                //TODO: enable once platform API is up and running
-                //var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                try
+                {
+                    var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
 
-                //if (visitsResponse.Visits.Count > 0)
-                //{
-                //    result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
-                //}
+                    if (visitsResponse.Visits.Count > 0)
+                    {
+                        result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                    }
+                }
+                catch{}
             }
             else
             {
