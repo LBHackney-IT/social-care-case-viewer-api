@@ -29,9 +29,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
+        private readonly IWarningNotesUseCase _warningNotesUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase, ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase)
+            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase,
+            ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
+            IWarningNotesUseCase warningNotesUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -41,6 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
+            _warningNotesUseCase = warningNotesUseCase;
         }
 
         /// <summary>
@@ -298,6 +302,27 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
             return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
+        }
+
+        /// <summary>
+        /// Create warning note.
+        /// <response code="201">Record successfully created</response>
+        /// <reponse code="500">There was a problem creating the record</reponse>
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("warningnotes")]
+        public IActionResult CreateWarningNote([FromQuery] CreateWarningNoteRequest request)
+        {
+            try
+            {
+                var result = _warningNotesUseCase.ExecutePost(request);
+                return CreatedAtAction("CreateAllocation", result, result);
+            }
+            catch (CreateWarningNoteException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

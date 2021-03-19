@@ -1,7 +1,7 @@
+using System;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using NUnit.Framework;
-using System;
 
 namespace SocialCareCaseViewerApi.Tests
 {

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -7,9 +10,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -20,7 +20,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private ProcessDataGateway _classUnderTest;
         private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
         private Mock<ISccvDbContext> _mockSccvDbContext;
-        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
         private Fixture _fixture;
 
         [SetUp]
@@ -45,25 +44,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                                     .With(x => x.Limit, 10)
                                     .Create();
 
-        //     var stubbedCaseData = _fixture.Build<CaseNoteBase>()
-        //                             .With(x => x.FirstName, stubbedRequest.FirstName)
-        //                             .With(x => x.LastName, stubbedRequest.LastName)
-        //                             .With(x => x.WorkerEmail, stubbedRequest.WorkerEmail)
-        //                             .With(x => x.FormName, stubbedRequest.FormName)
-        //                             .Create();
+            //     var stubbedCaseData = _fixture.Build<CaseNoteBase>()
+            //                             .With(x => x.FirstName, stubbedRequest.FirstName)
+            //                             .With(x => x.LastName, stubbedRequest.LastName)
+            //                             .With(x => x.WorkerEmail, stubbedRequest.WorkerEmail)
+            //                             .With(x => x.FormName, stubbedRequest.FormName)
+            //                             .Create();
 
-        //     Console.WriteLine(stubbedCaseData);
-        //     var bsonCareCaseData = BsonDocument.Parse(JsonConvert.SerializeObject(stubbedCaseData));
-        //     collection.InsertOne(bsonCareCaseData);
+            //     Console.WriteLine(stubbedCaseData);
+            //     var bsonCareCaseData = BsonDocument.Parse(JsonConvert.SerializeObject(stubbedCaseData));
+            //     collection.InsertOne(bsonCareCaseData);
 
-        //     var response = _classUnderTest.GetProcessData(stubbedRequest, null);
-        //     var responseList = response.Item1.ToList();
+            //     var response = _classUnderTest.GetProcessData(stubbedRequest, null);
+            //     var responseList = response.Item1.ToList();
 
-            responseList.Should().BeOfType<List<CareCaseData>>();
-            responseList.First().FirstName.Should().BeEquivalentTo(stubbedCaseData.FirstName);
-            responseList.First().LastName.Should().BeEquivalentTo(stubbedCaseData.LastName);
-            responseList.First().OfficerEmail.Should().BeEquivalentTo(stubbedCaseData.WorkerEmail);
-            responseList.First().FormName.Should().BeEquivalentTo(stubbedCaseData.FormName);
+            //     responseList.Should().BeOfType<List<CareCaseData>>();
+            //     responseList.First().FirstName.Should().BeEquivalentTo(stubbedCaseData.FirstName);
+            //     responseList.First().LastName.Should().BeEquivalentTo(stubbedCaseData.LastName);
+            //     responseList.First().OfficerEmail.Should().BeEquivalentTo(stubbedCaseData.WorkerEmail);
+            //     responseList.First().FormName.Should().BeEquivalentTo(stubbedCaseData.FormName);
         }
     }
 }

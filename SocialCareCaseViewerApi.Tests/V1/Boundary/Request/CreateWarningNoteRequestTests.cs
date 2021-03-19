@@ -1,5 +1,6 @@
 using System;
 using AutoFixture;
+using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -12,6 +13,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     {
         private CreateWarningNoteRequest _classUnderTest;
         private Fixture _fixture;
+        private Faker _faker;
 
 
         [SetUp]
@@ -19,6 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             _classUnderTest = new CreateWarningNoteRequest();
             _fixture = new Fixture();
+            _faker = new Faker();
         }
 
         [Test]
@@ -97,6 +100,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void RequestHasDateManagerInformed()
         {
             _classUnderTest.DateManagerInformed.Should().Be(null);
+        }
+
+        [Test]
+        public void RequestHasCreatedBy()
+        {
+            _classUnderTest.CreatedBy.Should().Be(null);
         }
 
         #region Model validation
@@ -269,6 +278,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             error.Count.Should().Be(0);
         }
+
+        [Test]
+        public void ValidationFailsIfCreatedByIsNotProvided()
+        {
+            var request = GetValidCreateWarningNoteRequest();
+            request.CreatedBy = null;
+            var error = ValidationHelper.ValidateModel(request);
+
+            error.Count.Should().Be(1);
+            error.Should().Contain(x => x.ErrorMessage.Contains("The CreatedBy field is required"));
+        }
+
+        [Test]
+
+        public void ValidationFailesIfCreatedByIsNotAValidEmailAddress()
+        {
+            var request = GetValidCreateWarningNoteRequest();
+            request.CreatedBy = "string";
+            var error = ValidationHelper.ValidateModel(request);
+
+            error.Count.Should().Be(1);
+            error.Should().Contain(x => x.ErrorMessage.Contains("The CreatedBy field is not a valid e-mail address"));
+
+        }
         #endregion
 
         private CreateWarningNoteRequest GetValidCreateWarningNoteRequest()
@@ -287,7 +320,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 HowInformed = _fixture.Create<string>(),
                 WarningNarrative = _fixture.Create<string>(),
                 ManagersName = _fixture.Create<string>(),
-                DateManagerInformed = DateTime.Now
+                DateManagerInformed = DateTime.Now,
+                CreatedBy = _faker.Internet.Email()
             };
         }
     }

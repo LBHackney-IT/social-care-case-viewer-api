@@ -524,7 +524,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
         {
-            CreateWarningNoteResponse response = new CreateWarningNoteResponse();
+            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
+
+            if (person == null)
+            {
+                throw new CreateWarningNoteException($"Person with given id ({request.PersonId}) not found");
+            }
+
             WarningNoteSet warningNote = new WarningNoteSet()
             {
                 PersonId = request.PersonId,
@@ -539,11 +545,48 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 HowInformed = request.HowInformed,
                 WarningNarrative = request.WarningNarrative,
                 ManagersName = request.ManagersName,
-                DateManagerInformed = request.DateManagerInformed
+                DateManagerInformed = request.DateManagerInformed,
+                CreatedBy = request.CreatedBy
             };
 
             _databaseContext.WarningNotes.Add(warningNote);
             _databaseContext.SaveChanges();
+
+            CreateWarningNoteResponse response = new CreateWarningNoteResponse()
+            {
+                WarningNoteId = warningNote.Id
+            };
+
+            // try
+            // {
+            DateTime dt = DateTime.Now;
+
+            WarningNoteCaseNote note = new WarningNoteCaseNote()
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MosaicId = person.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
+                Note = $"{dt.ToShortDateString()} | Warning Note | Warning note created against this person",
+                FormNameOverall = "API_WarningNote",
+                FormName = "Warning Note Created",
+                WarningNoteId = warningNote.Id.ToString()
+            };
+
+            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+            // }
+            // catch (Exception ex)
+            // {
+            //     _databaseContext.WarningNotes.Remove(warningNote);
+            //     _databaseContext.SaveChanges();
+
+            //     throw new CreateWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
+            // }
 
             return response;
         }

@@ -40,5 +40,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [StringLength(100, ErrorMessage = "Character limit of 100 exceeded")]
         public string ManagersName { get; set; }
         public DateTime? DateManagerInformed { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string CreatedBy { get; set; }
     }
 }
