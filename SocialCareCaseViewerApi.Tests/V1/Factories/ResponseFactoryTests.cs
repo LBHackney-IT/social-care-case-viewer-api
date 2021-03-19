@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         {
             string caseNoteId = "1";
             string email = "first.last@domain.com";
-            string createdOn = DateTime.Now.ToString();
+            DateTime createdOn = DateTime.Now;
             string noteType = "Historical note";
             string noteTitle = "My title";
 
@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", noteTitle),
-                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
                                 new BsonElement("is_historical", true)
                         });
 
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             string title = "Title";
             string content = "Content";
             string email = "first.last@domain.com";
-            string createdOn = DateTime.Now.ToString();
+            DateTime createdOn = DateTime.Now;
 
             Visit visit = new Visit()
             {
@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Visit"),
                                 new BsonElement("form_name", title),
-                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
                                 new BsonElement("is_historical", true)
                         });
 

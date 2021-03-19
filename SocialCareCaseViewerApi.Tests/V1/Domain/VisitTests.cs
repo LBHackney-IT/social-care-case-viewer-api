@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Domain;
+using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Domain
 {
@@ -35,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         [Test]
         public void VisitHasCreatedOn()
         {
-            Assert.IsNull(_visits.CreatedOn);
+            Assert.AreEqual(DateTime.MinValue, _visits.CreatedOn);
         }
 
         [Test]
