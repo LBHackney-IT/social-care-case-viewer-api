@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", noteTitle),
-                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
                                 new BsonElement("is_historical", true)
                         });
 
@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Visit"),
                                 new BsonElement("form_name", title),
-                                new BsonElement("timestamp", createdOn),
+                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
                                 new BsonElement("is_historical", true)
                         });
 
