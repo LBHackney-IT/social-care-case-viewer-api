@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         {
             string caseNoteId = "1";
             string email = "first.last@domain.com";
-            string createdOn = DateTime.Now.ToString();
+            DateTime createdOn = DateTime.Now;
             string noteType = "Historical note";
             string noteTitle = "My title";
 
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             string title = "Title";
             string content = "Content";
             string email = "first.last@domain.com";
-            string createdOn = DateTime.Now.ToString();
+            DateTime createdOn = DateTime.Now;
 
             Visit visit = new Visit()
             {
