@@ -24,20 +24,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseNote GetCaseNoteById(string id)
         {
-            return GetDataFromSocialCarePlatformAPI<CaseNote>("casenotes", id);
+            string path = $"/case-notes/{id}";
+            return GetDataFromSocialCarePlatformAPI<CaseNote>(path);
         }
 
         public ListCaseNotesResponse GetCaseNotesByPersonId(string id)
         {
-            return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>("casenotes/person", id);
+            string path = $"residents/{id}/case-notes";
+            return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>(path);
         }
 
         public ListVisitsResponse GetVisitsByPersonId(string id)
         {
-            return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>("visits/person", id);
+            string path = $"residents/{id}/visits";
+            return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>(path);
         }
 
-        private T GetDataFromSocialCarePlatformAPI<T>(string path, string value)
+        private T GetDataFromSocialCarePlatformAPI<T>(string path)
         {
             try
             {
@@ -45,7 +48,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 T data = default;
 
-                string relativePath = $"{path}/{value}";
+                string relativePath = $"{path}";
 
                 Uri uri = new Uri(relativePath, UriKind.Relative);
 
