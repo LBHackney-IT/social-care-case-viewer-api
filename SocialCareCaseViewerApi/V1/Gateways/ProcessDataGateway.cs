@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
                     }
                 }
-                catch{}
+                catch { }
 
 
                 //add historical visits to the case history records when using mosaic id search
@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
                     }
                 }
-                catch{}
+                catch { }
             }
             else
             {
