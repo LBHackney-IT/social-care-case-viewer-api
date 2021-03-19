@@ -64,11 +64,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 historicalCaseNotes.Add(new BsonDocument(
                         new List<BsonElement>
                         {
-                                new BsonElement("_id", note.CaseNoteId),
-                                new BsonElement("worker_email", note.CreatedByEmail),
+                                new BsonElement("_id", note.CaseNoteId ?? ""),
+                                new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
-                                new BsonElement("form_name", note.NoteType),
-                                new BsonElement("timestamp", note.CreatedOn),
+                                new BsonElement("form_name", note.CaseNoteTitle ?? ""),
+                                new BsonElement("timestamp", note.CreatedOn ?? ""),
                                 new BsonElement("is_historical", true) //flag for front end
                         }
                         ));
@@ -86,7 +86,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 historicalVisits.Add(new BsonDocument(
                         new List<BsonElement>
                         {
-                                new BsonElement("_id", visit.Id),
+                                new BsonElement("_id", visit.Id ?? ""),
                                 new BsonElement("worker_email", visit.CreatedByEmail),
                                 new BsonElement("form_name_overall", "Historical_Visit"),
                                 new BsonElement("form_name", visit.Title),

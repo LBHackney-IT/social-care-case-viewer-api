@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         [Test]
         public void VisitHasId()
         {
-            Assert.AreEqual(0, _visits.Id);
+            Assert.IsNull(_visits.Id);
         }
 
         [Test]

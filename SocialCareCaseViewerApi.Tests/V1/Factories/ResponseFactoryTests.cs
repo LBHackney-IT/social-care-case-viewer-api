@@ -65,17 +65,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalCaseNoteToBsonDocument()
         {
-            int caseNoteId = 1;
+            string caseNoteId = "1";
             string email = "first.last@domain.com";
             string createdOn = DateTime.Now.ToString();
             string noteType = "Historical note";
+            string noteTitle = "My title";
 
             CaseNote historicalCaseNote = new CaseNote()
             {
                 CaseNoteId = caseNoteId,
                 CreatedByEmail = email,
                 NoteType = noteType,
-                CreatedOn = createdOn
+                CreatedOn = createdOn,
+                CaseNoteTitle = noteTitle
             };
 
             var expectedDocument = new BsonDocument(
@@ -84,7 +86,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                                 new BsonElement("_id", caseNoteId),
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
-                                new BsonElement("form_name", noteType),
+                                new BsonElement("form_name", noteTitle),
                                 new BsonElement("timestamp", createdOn),
                                 new BsonElement("is_historical", true)
                         });
@@ -104,7 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalVisitToBsonDocument()
         {
-            int visitId = 1;
+            string visitId = "1";
             string mosaicId = "1";
             string title = "Title";
             string content = "Content";

@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNotNull(response);
             Assert.AreEqual(1, response.CaseNotes.Count);
             Assert.AreEqual("1", response.CaseNotes.First().MosaicId);
-            Assert.AreEqual(2, response.CaseNotes.First().CaseNoteId);
+            Assert.AreEqual("2", response.CaseNotes.First().CaseNoteId);
             Assert.AreEqual("My Title", response.CaseNotes.First().CaseNoteTitle);
             Assert.AreEqual("Content", response.CaseNotes.First().CaseNoteContent);
             Assert.AreEqual("10/01/2001 11:11:11", response.CaseNotes.First().CreatedOn);
@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Assert.IsNotNull(response);
             Assert.AreEqual("1", response.MosaicId);
-            Assert.AreEqual(2, response.CaseNoteId);
+            Assert.AreEqual("2", response.CaseNoteId);
             Assert.AreEqual("My Title", response.CaseNoteTitle);
             Assert.AreEqual("Content", response.CaseNoteContent);
             Assert.AreEqual("10/01/2001 11:11:11", response.CreatedOn);

@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         [Test]
         public void CaseNoteHasCaseNoteId()
         {
-            Assert.AreEqual(0, _caseNote.CaseNoteId);
+            Assert.IsNull(_caseNote.CaseNoteId);
         }
 
         [Test]
