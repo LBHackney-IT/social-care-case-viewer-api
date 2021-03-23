@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseNote GetCaseNoteById(string id)
         {
-            string path = $"/case-notes/{id}";
+            string path = $"case-notes/{id}";
             return GetDataFromSocialCarePlatformAPI<CaseNote>(path);
         }
 
