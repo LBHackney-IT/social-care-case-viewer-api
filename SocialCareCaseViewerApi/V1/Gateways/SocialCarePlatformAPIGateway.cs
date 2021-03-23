@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
             {
-                _httpClient.DefaultRequestHeaders.Add("Authorization", "X-API-Key " + Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_TOKEN"));
+                _httpClient.DefaultRequestHeaders.Add("X-API-Key", Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_TOKEN"));
             }
         }
 
