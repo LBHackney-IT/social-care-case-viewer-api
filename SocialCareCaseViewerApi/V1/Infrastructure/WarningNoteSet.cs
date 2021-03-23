@@ -52,8 +52,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? DateManagerInformed { get; set; }
 
         //nav props
-        public Worker Worker { get; set; }
-        public Team Team { get; set; }
         public Person Person { get; set; }
 
         //audit props

@@ -37,4 +37,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public SocialCarePlatformApiException(string message) : base(message) { }
     }
+
+    public class CreateWarningNoteException : Exception
+    {
+        public CreateWarningNoteException(string message) : base(message) { }
+    }
 }
