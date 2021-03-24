@@ -285,7 +285,21 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/{id}")]
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
-            return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+            try
+            {
+                return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+            }
+            catch (SocialCarePlatformApiException ex)
+            {
+                if (ex.Message == "404")
+                {
+                    return StatusCode(404);
+                }
+                else
+                {
+                    return StatusCode(500);
+                }
+            }
         }
 
         /// <summary>
