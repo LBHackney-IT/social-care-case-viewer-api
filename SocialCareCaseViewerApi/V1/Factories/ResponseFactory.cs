@@ -65,6 +65,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         new List<BsonElement>
                         {
                                 new BsonElement("_id", note.CaseNoteId ?? ""),
+                                new BsonElement("mosaic_id", note.MosaicId ?? ""),
                                 new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", note.CaseNoteTitle ?? ""),
