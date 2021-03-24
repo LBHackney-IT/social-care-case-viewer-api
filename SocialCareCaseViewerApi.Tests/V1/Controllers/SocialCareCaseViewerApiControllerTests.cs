@@ -253,6 +253,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetCaseNotesByNoteIdReturns404WhenNoMatchingCaseNoteId()
+        {
+            var request = new GetCaseNotesRequest() { Id = "1" };
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
+                .Throws(new SocialCarePlatformApiException("404"));
+
+            var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void GetCaseNotesByNoteIdReturns500WhenSocialCarePlatformApiExceptionIs500()
+        {
+            var request = new GetCaseNotesRequest() { Id = "1" };
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
+                .Throws(new SocialCarePlatformApiException("500"));
+
+            var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+        [Test]
         public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
         {
             string personId = "123";
