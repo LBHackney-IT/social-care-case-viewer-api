@@ -66,6 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapHistoricalCaseNoteToBsonDocument()
         {
             string caseNoteId = "1";
+            string mosaicId = "123";
             string email = "first.last@domain.com";
             DateTime createdOn = DateTime.Now;
             string noteType = "Historical note";
@@ -74,6 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             CaseNote historicalCaseNote = new CaseNote()
             {
                 CaseNoteId = caseNoteId,
+                MosaicId = mosaicId,
                 CreatedByEmail = email,
                 NoteType = noteType,
                 CreatedOn = createdOn,
@@ -84,6 +86,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                         new List<BsonElement>
                         {
                                 new BsonElement("_id", caseNoteId),
+                                new BsonElement("mosaic_id", mosaicId),
                                 new BsonElement("worker_email", email),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", noteTitle),
@@ -96,6 +99,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var result = ResponseFactory.HistoricalCaseNotesToDomain(notes);
 
             Assert.AreEqual(expectedDocument.GetElement("_id"), result.First().GetElement("_id"));
+            Assert.AreEqual(expectedDocument.GetElement("mosaic_id"), result.First().GetElement("mosaic_id"));
             Assert.AreEqual(expectedDocument.GetElement("worker_email"), result.First().GetElement("worker_email"));
             Assert.AreEqual(expectedDocument.GetElement("form_name_overall"), result.First().GetElement("form_name_overall"));
             Assert.AreEqual(expectedDocument.GetElement("form_name"), result.First().GetElement("form_name"));
