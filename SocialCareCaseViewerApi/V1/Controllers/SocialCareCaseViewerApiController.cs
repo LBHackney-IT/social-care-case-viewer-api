@@ -289,21 +289,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/{id}")]
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
-            try
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            if (showHistoricData != null && showHistoricData.Equals("true"))
             {
-                return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
-            }
-            catch (SocialCarePlatformApiException ex)
-            {
-                if (ex.Message == "404")
+                try
                 {
-                    return StatusCode(404);
+                    return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
                 }
-                else
+                catch (SocialCarePlatformApiException ex)
                 {
+                    if (ex.Message == "404")
+                    {
+                        return StatusCode(404);
+                    }
+
                     return StatusCode(500);
                 }
             }
+
+            return StatusCode(500, "Feature is not available");
         }
 
         /// <summary>
