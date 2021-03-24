@@ -7,6 +7,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         ListCaseNotesResponse ExecuteGetByPersonId(string personId);
 
-        CaseNote ExecuteGetById(string id);
+        CaseNoteResponse ExecuteGetById(string id);
     }
 }

@@ -243,7 +243,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new GetCaseNotesRequest() { Id = "1" };
 
-            var note = _fixture.Create<CaseNote>();
+            var note = _fixture.Create<CaseNoteResponse>();
 
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
 

@@ -1,5 +1,5 @@
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -19,9 +19,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(id);
         }
 
-        public CaseNote ExecuteGetById(string id)
+        public CaseNoteResponse ExecuteGetById(string id)
         {
-            return _socialCarePlatformAPIGateway.GetCaseNoteById(id);
+            var caseNote = _socialCarePlatformAPIGateway.GetCaseNoteById(id);
+
+            return ResponseFactory.ToResponse(caseNote);
         }
     }
 }
