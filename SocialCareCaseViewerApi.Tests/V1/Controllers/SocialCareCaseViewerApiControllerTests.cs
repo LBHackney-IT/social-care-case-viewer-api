@@ -409,18 +409,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #endregion
 
         #region Visits
+
         [Test]
-        public void GetVisitsByPersonIdReturns200WhenSuccessful()
+        public void WhenShowHistoricDataFeatureFlagIsTrueListVisitsByPersonIdReturns200WhenSuccessful()
         {
-            var request = new ListVisitsRequest() { Id = "1" };
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
-            var visistList = _fixture.Create<ListVisitsResponse>();
+            var request = new ListVisitsRequest { Id = "1" };
 
-            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visistList);
+            var visitList = _fixture.Create<ListVisitsResponse>();
 
-            var response = _classUnderTest.ListVisits(request);
+            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAStatusCodeOf500()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
+            var request = new ListVisitsRequest { Id = "1" };
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+
+        [Test]
+        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAStatusCodeOf500()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
+            var request = new ListVisitsRequest { Id = "1" };
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
         }
 
         #endregion

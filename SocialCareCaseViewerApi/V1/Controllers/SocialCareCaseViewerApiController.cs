@@ -324,7 +324,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("visits/person/{id}")]
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
-            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            return showHistoricData != null && showHistoricData.Equals("true")
+                ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
+                : StatusCode(500, "Feature is not available");
         }
 
         /// <summary>
