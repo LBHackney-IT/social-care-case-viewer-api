@@ -279,7 +279,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <returns></returns>
         /// <response code="400">Id parameter is invalid or missing</response>
         /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(CaseNote), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CaseNoteResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
         [Route("casenotes/{id}")]
