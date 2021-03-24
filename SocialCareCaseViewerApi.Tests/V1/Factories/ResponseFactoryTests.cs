@@ -145,5 +145,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             Assert.AreEqual(expectedDocument.GetElement("timestamp"), result.First().GetElement("timestamp"));
             Assert.AreEqual(expectedDocument.GetElement("is_historical"), result.First().GetElement("is_historical"));
         }
+
+        [Test]
+        public void CanMapHistoricalCaseNoteToCaseNoteResponse()
+        {
+            var historicalCaseNote = new CaseNote()
+            {
+                MosaicId = "1",
+                CaseNoteId = "123",
+                CaseNoteTitle = "Case Note Title",
+                CaseNoteContent = "Some case note content.",
+                CreatedByName = "John Smith",
+                CreatedByEmail = "john.smith@email.com",
+                NoteType = "Case Summary (ASC)",
+                CreatedOn = new DateTime(2021, 3, 1, 15, 30, 0),
+            };
+
+            var expectedCaseNoteResponse = new CaseNoteResponse()
+            {
+                RecordId = historicalCaseNote.CaseNoteId,
+                PersonId = historicalCaseNote.MosaicId,
+                Title = historicalCaseNote.CaseNoteTitle,
+                Content = historicalCaseNote.CaseNoteContent,
+                DateOfEvent = "2021-03-01T15:30:00",
+                OfficerName = historicalCaseNote.CreatedByName,
+                OfficerEmail = historicalCaseNote.CreatedByEmail,
+                FormName = historicalCaseNote.NoteType
+            };
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            Assert.AreEqual(expectedCaseNoteResponse.RecordId, result.RecordId);
+            Assert.AreEqual(expectedCaseNoteResponse.PersonId, result.PersonId);
+            Assert.AreEqual(expectedCaseNoteResponse.Title, result.Title);
+            Assert.AreEqual(expectedCaseNoteResponse.Content, result.Content);
+            Assert.AreEqual(expectedCaseNoteResponse.DateOfEvent, result.DateOfEvent);
+            Assert.AreEqual(expectedCaseNoteResponse.OfficerName, result.OfficerName);
+            Assert.AreEqual(expectedCaseNoteResponse.OfficerEmail, result.OfficerEmail);
+            Assert.AreEqual(expectedCaseNoteResponse.FormName, result.FormName);
+        }
     }
 }

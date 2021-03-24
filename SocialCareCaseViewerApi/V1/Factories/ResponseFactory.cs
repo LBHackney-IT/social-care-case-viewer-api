@@ -98,5 +98,20 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return historicalVisits;
         }
+
+        public static CaseNoteResponse ToResponse(CaseNote historicalCaseNote)
+        {
+            return new CaseNoteResponse()
+            {
+                RecordId = historicalCaseNote.CaseNoteId,
+                PersonId = historicalCaseNote.MosaicId,
+                Title = historicalCaseNote.CaseNoteTitle,
+                Content = historicalCaseNote.CaseNoteContent,
+                DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
+                OfficerName = historicalCaseNote.CreatedByName,
+                OfficerEmail = historicalCaseNote.CreatedByEmail,
+                FormName = historicalCaseNote.NoteType
+            };
+        }
     }
 }
