@@ -227,7 +227,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #region Case notes
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListCaseNotesByPersonIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListCaseNotesByPersonIdReturnsAResponseWithNoCaseNoteData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
 
@@ -236,11 +236,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullListCaseNotesByPersonIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNullListCaseNotesByPersonIdReturnsAResponseWithNoCaseNoteData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
 
@@ -249,7 +250,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
         [Test]
@@ -267,10 +269,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
         }
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullGetCaseNotesByNoteIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNullGetCaseNotesByNoteIdReturnsAResponseWithNoCaseNoteData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
             var request = new GetCaseNotesRequest { Id = "1" };
@@ -278,12 +281,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueGetCaseNotesByNoteIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueGetCaseNotesByNoteIdReturnsAResponseWithNoCaseNoteData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
             var request = new GetCaseNotesRequest { Id = "1" };
@@ -291,7 +295,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
         [Test]
@@ -309,6 +314,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
         }
 
         [Test]
@@ -425,10 +431,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
         }
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAResponseWithNoVisitData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
             var request = new ListVisitsRequest { Id = "1" };
@@ -436,12 +443,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListVisits(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAStatusCodeOf500()
+        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAResponseWithNoVisitData()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
             var request = new ListVisitsRequest { Id = "1" };
@@ -449,7 +457,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.ListVisits(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(500);
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
         #endregion

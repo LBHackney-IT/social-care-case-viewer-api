@@ -273,7 +273,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return showHistoricData != null && showHistoricData.Equals("true")
                 ? Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(500, "Feature is not available");
+                : StatusCode(200, null);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 }
             }
 
-            return StatusCode(500, "Feature is not available");
+            return StatusCode(200, null);
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return showHistoricData != null && showHistoricData.Equals("true")
                 ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(500, "Feature is not available");
+                : StatusCode(200, null);
         }
 
         /// <summary>
