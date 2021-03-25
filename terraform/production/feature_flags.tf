@@ -4,5 +4,5 @@ resource "aws_secretsmanager_secret" "show_historic_data_feature_flag" {
 
 resource "aws_secretsmanager_secret_version" "show_historic_data_feature_flag" {
   secret_id     = aws_secretsmanager_secret.show_historic_data_feature_flag.id
-  secret_string = "false"
+  secret_string = "true"
 }
