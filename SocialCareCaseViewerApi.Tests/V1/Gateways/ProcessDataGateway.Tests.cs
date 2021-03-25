@@ -64,5 +64,68 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //     responseList.First().OfficerEmail.Should().BeEquivalentTo(stubbedCaseData.WorkerEmail);
             //     responseList.First().FormName.Should().BeEquivalentTo(stubbedCaseData.FormName);
         }
+
+        #region ShowHistoricDataFeatureFlagTests
+
+        [Test]
+        public void WhenFeatureFlagIsTrueProcessDataCanCallSocialCarePlatformGatewayForListOfCaseNotes()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNotTrueProcessDataShouldNotCallSocialCarePlatformGatewayForListOfCaseNotes()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Never());
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNullProcessDataShouldNotCallSocialCarePlatformGatewayForListOfCaseNotes()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Never());
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsTrueProcessDataCanCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNotTrueProcessDataShouldNotCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNullProcessDataShouldNotCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
+        }
+        #endregion
     }
 }

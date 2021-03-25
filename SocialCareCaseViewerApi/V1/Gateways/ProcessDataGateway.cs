@@ -54,33 +54,36 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //add historical case notes to the case history records when using mosaic id search
+                var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
 
-                //fail silently for now until platform API has been finalised
-                //TOOD: please do not use as production code
-                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                try
+                if (showHistoricData != null && showHistoricData.Equals("true"))
                 {
-                    var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
-                    if (notesResponse.CaseNotes.Count > 0)
+                    //fail silently for now until platform API has been finalised
+                    //TOOD: please do not use as production code
+                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                    try
                     {
-                        result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                        var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
+                        if (notesResponse.CaseNotes.Count > 0)
+                        {
+                            result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                        }
                     }
-                }
-                catch { }
+                    catch { }
 
-
-                //add historical visits to the case history records when using mosaic id search
-                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                try
-                {
-                    var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
-
-                    if (visitsResponse.Visits.Count > 0)
+                    //add historical visits to the case history records when using mosaic id search
+                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                    try
                     {
-                        result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                        var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+
+                        if (visitsResponse.Visits.Count > 0)
+                        {
+                            result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                        }
                     }
+                    catch { }
                 }
-                catch { }
             }
             else
             {

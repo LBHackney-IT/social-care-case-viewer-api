@@ -269,7 +269,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/person/{id}")]
         public IActionResult ListCaseNotes([FromQuery] ListCaseNotesRequest request)
         {
-            return Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id));
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            return showHistoricData != null && showHistoricData.Equals("true")
+                ? Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id))
+                : StatusCode(200, null);
         }
 
         /// <summary>
@@ -285,21 +289,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/{id}")]
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
-            try
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            if (showHistoricData != null && showHistoricData.Equals("true"))
             {
-                return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
-            }
-            catch (SocialCarePlatformApiException ex)
-            {
-                if (ex.Message == "404")
+                try
                 {
-                    return StatusCode(404);
+                    return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
                 }
-                else
+                catch (SocialCarePlatformApiException ex)
                 {
+                    if (ex.Message == "404")
+                    {
+                        return StatusCode(404);
+                    }
+
                     return StatusCode(500);
                 }
             }
+
+            return StatusCode(200, null);
         }
 
         /// <summary>
@@ -315,7 +324,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("visits/person/{id}")]
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
-            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            return showHistoricData != null && showHistoricData.Equals("true")
+                ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
+                : StatusCode(200, null);
         }
 
         /// <summary>
