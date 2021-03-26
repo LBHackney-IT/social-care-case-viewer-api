@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private ProcessDataUseCase _classUnderTest;
-        //private Fixture _fixture = new Fixture();
+        private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -129,5 +129,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
         //    _classUnderTest.Execute(stubbedRequest).NextCursor.Should().Be("");
         //}
+
+        [Test]
+        public void ExecuteReturnsCareCaseDataWhenProvidedRecordId()
+        {
+            var stubbedCaseData = _fixture.Create<CareCaseData>();
+
+            _mockProcessDataGateway.Setup(x => x.GetCaseById(It.IsAny<string>()))
+                .Returns(stubbedCaseData);
+
+            var response = _classUnderTest.Execute("test record id");
+
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(stubbedCaseData);
+        }
     }
 }

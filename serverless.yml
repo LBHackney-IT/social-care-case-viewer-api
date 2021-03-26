@@ -33,6 +33,9 @@ functions:
       HOME: /tmp
       MOSAIC_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-token~true}
       MOSAIC_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-url}
+      SOCIAL_CARE_PLATFORM_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-url}
+      SOCIAL_CARE_PLATFORM_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-token~true}
+      SOCIAL_CARE_SHOW_HISTORIC_DATA: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_show_historic_data~true}
     events:
       - http:
           path: /{proxy+}
@@ -130,7 +133,7 @@ resources:
                   Action:
                     - "s3:GetObject"
                   Resource: 'arn:aws:s3:::${self:custom.mongoDBImportBucket.${self:provider.stage}}/*'
-                  
+
 custom:
   vpc:
     development:

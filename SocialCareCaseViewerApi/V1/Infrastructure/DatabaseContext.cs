@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -22,6 +22,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
         public DbSet<Audit> Audits { get; set; }
+        public DbSet<WarningNoteSet> WarningNotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

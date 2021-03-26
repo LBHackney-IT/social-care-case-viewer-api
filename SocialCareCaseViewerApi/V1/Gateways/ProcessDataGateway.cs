@@ -20,11 +20,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private ISccvDbContext _sccvDbContext;
+        private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
         {
             _sccvDbContext = sccvDbContext;
+            _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
         {
             List<BsonDocument> result;
@@ -47,6 +51,38 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     ncIdQuery = ncIdQuery.Where(db => ncIdFilter.Inject());
 
                     result.AddRange(ncIdQuery.ToList());
+                }
+
+                //add historical case notes to the case history records when using mosaic id search
+                var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+                if (showHistoricData != null && showHistoricData.Equals("true"))
+                {
+                    //fail silently for now until platform API has been finalised
+                    //TOOD: please do not use as production code
+                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                    try
+                    {
+                        var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
+                        if (notesResponse.CaseNotes.Count > 0)
+                        {
+                            result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                        }
+                    }
+                    catch { }
+
+                    //add historical visits to the case history records when using mosaic id search
+                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                    try
+                    {
+                        var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+
+                        if (visitsResponse.Visits.Count > 0)
+                        {
+                            result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                        }
+                    }
+                    catch { }
                 }
             }
             else
@@ -208,6 +244,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             await _sccvDbContext.getCollection().InsertOneAsync(doc)
                 .ConfigureAwait(false);
             return doc["_id"].AsObjectId.ToString();
+        }
+
+        public CareCaseData GetCaseById(string recordId)
+        {
+            var collection = _sccvDbContext.getCollection();
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
+            var query = collection.AsQueryable().Where(db => filter.Inject());
+
+            var result = query.ToList();
+            if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
+
+            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+
+            return response;
         }
     }
 }

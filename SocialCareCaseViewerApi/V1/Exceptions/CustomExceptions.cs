@@ -32,4 +32,14 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public TeamNotFoundException(string message) : base(message) { }
     }
+
+    public class SocialCarePlatformApiException : Exception
+    {
+        public SocialCarePlatformApiException(string message) : base(message) { }
+    }
+
+    public class CreateWarningNoteException : Exception
+    {
+        public CreateWarningNoteException(string message) : base(message) { }
+    }
 }
