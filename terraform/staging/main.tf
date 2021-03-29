@@ -53,7 +53,7 @@ module "postgres_db_staging" {
   db_port  = 5602
   subnet_ids = data.aws_subnet_ids.staging.ids
   db_engine = "postgres"
-  db_engine_version = "11." //DMS does not work well with v12, use 11. to ignore minor version upgrades
+  db_engine_version = "11.10" //DMS does not work well with v12, use 11. to ignore minor version upgrades
   db_instance_class = "db.t3.medium"
   db_allocated_storage = 20
   maintenance_window ="sun:10:00-sun:10:30"
@@ -64,5 +64,3 @@ module "postgres_db_staging" {
   publicly_accessible = false
   project_name = "social care viewer"
 }
-
-
