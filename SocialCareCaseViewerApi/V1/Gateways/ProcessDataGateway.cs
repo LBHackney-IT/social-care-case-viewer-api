@@ -54,23 +54,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //add historical case notes to the case history records when using mosaic id search
+                //fail silently for now until platform API has been finalised
+                //TODO: fix code so that it is more production suitable (code is currently working in production)
+                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                try
+                {
+                    var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
+                    if (notesResponse.CaseNotes.Count > 0)
+                    {
+                        result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                //add feature flag for toggling displaying historic visit data
                 var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
 
                 if (showHistoricData != null && showHistoricData.Equals("true"))
                 {
-                    //fail silently for now until platform API has been finalised
-                    //TOOD: please do not use as production code
-                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                    try
-                    {
-                        var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
-                        if (notesResponse.CaseNotes.Count > 0)
-                        {
-                            result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
-                        }
-                    }
-                    catch { }
-
                     //add historical visits to the case history records when using mosaic id search
                     //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
                     try
@@ -82,7 +86,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
             else
