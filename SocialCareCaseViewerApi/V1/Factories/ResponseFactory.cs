@@ -114,5 +114,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormName = historicalCaseNote.NoteType
             };
         }
+
+        public static WorkerResponse ToResponse(this Domain.Worker worker)
+        {
+            return new WorkerResponse
+            {
+                Id = worker.Id,
+                Email = worker.Email,
+                FirstName = worker.FirstName,
+                LastName = worker.LastName,
+                Role = worker.Role,
+                AllocationCount = worker.AllocationCount,
+                Teams = worker.Teams
+            };
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
-        private Mock<IWorkersUseCase> _mockWorkersUseCase;
+        private Mock<IGetWorkersUseCase> _mockWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
-            _mockWorkersUseCase = new Mock<IWorkersUseCase>();
+            _mockWorkersUseCase = new Mock<IGetWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
@@ -149,11 +149,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetWorkersReturns200WhenSuccessful()
         {
-            var request = new ListWorkersRequest() { TeamId = 5 };
+            var request = new GetWorkersRequest() { TeamId = 5 };
 
-            var workersList = _fixture.Create<ListWorkersResponse>();
+            var workersList = _fixture.Create<List<WorkerResponse>>();
 
-            _mockWorkersUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListWorkersRequest>())).Returns(workersList);
+            _mockWorkersUseCase.Setup(x => x.Execute(It.IsAny<GetWorkersRequest>())).Returns(workersList);
 
             var response = _classUnderTest.ListWorkers(request);
 
