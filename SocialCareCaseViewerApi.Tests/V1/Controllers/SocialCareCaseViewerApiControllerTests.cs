@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -289,9 +288,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
         {
-            string personId = "123";
-            var request = new ListCaseNotesRequest() { Id = personId };
-            var response = new ListCaseNotesResponse() { CaseNotes = new List<CaseNote>() };
+            const string personId = "123";
+            var request = new ListCaseNotesRequest { Id = personId };
+            var response = new ListCaseNotesResponse { CaseNotes = new List<CaseNote>() };
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(personId)).Returns(response);
 
             var actualResponse = _classUnderTest.ListCaseNotes(request);

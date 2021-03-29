@@ -291,12 +291,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (SocialCarePlatformApiException ex)
             {
-                if (ex.Message == "404")
-                {
-                    return StatusCode(404);
-                }
-
-                return StatusCode(500);
+                return StatusCode(ex.Message == "404" ? 404 : 500);
             }
         }
 
