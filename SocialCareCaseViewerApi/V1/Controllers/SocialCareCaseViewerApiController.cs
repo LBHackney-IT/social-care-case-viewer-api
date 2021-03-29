@@ -269,11 +269,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/person/{id}")]
         public IActionResult ListCaseNotes([FromQuery] ListCaseNotesRequest request)
         {
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            return showHistoricData != null && showHistoricData.Equals("true")
-                ? Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(200, null);
+            return Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id));
         }
 
         /// <summary>

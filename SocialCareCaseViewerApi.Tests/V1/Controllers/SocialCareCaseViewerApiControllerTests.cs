@@ -227,38 +227,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #region Case notes
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListCaseNotesByPersonIdReturnsAResponseWithNoCaseNoteData()
+        public void ListCaseNotesByPersonIdReturns200WhenSuccessful()
         {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
-
-            var request = new ListCaseNotesRequest { Id = "1" };
-
-            var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
-        }
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullListCaseNotesByPersonIdReturnsAResponseWithNoCaseNoteData()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
-
-            var request = new ListCaseNotesRequest { Id = "1" };
-
-            var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
-        }
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsTrueListCaseNotesByPersonIdReturns200WhenSuccessful()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
-
             var request = new ListCaseNotesRequest { Id = "1" };
 
             var notesList = _fixture.Create<ListCaseNotesResponse>();
@@ -278,6 +248,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
             var request = new GetCaseNotesRequest { Id = "1" };
 
+            var note = _fixture.Create<CaseNoteResponse>();
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
+
             var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
             response.Should().NotBeNull();
@@ -291,6 +265,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
             var request = new GetCaseNotesRequest { Id = "1" };
+
+            var note = _fixture.Create<CaseNoteResponse>();
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
 
             var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
