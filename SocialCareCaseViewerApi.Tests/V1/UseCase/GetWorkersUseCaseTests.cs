@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetWorkerByWorkerIdReturnsListWorkersWhenWorkerWithIdExists()
         {
             var fakeWorker = CreateFakeWorker();
-            var request = new GetWorkersRequest {WorkerId = fakeWorker.Id};
+            var request = new GetWorkersRequest { WorkerId = fakeWorker.Id };
 
             _mockDataBaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
             var result = _getWorkersUseCase.Execute(request);
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetWorkerByWorkerIdReturnsEmptyListWhenWorkerWithIdDoesNotExist()
         {
             const int nonExistentWorkerId = 2;
-            var request = new GetWorkersRequest {WorkerId = nonExistentWorkerId};
+            var request = new GetWorkersRequest { WorkerId = nonExistentWorkerId };
 
             var result = _getWorkersUseCase.Execute(request);
 
@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetWorkerByWorkerEmailReturnsListWorkers()
         {
             var fakeWorker = CreateFakeWorker();
-            var request = new GetWorkersRequest {Email = fakeWorker.Email};
+            var request = new GetWorkersRequest { Email = fakeWorker.Email };
             _mockDataBaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorker.Email)).Returns(fakeWorker);
 
             var result = _getWorkersUseCase.Execute(request);
@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetWorkerByWorkerEmailReturnsEmptyListWhenWorkerWithEmailDoesNotExist()
         {
             const string nonExistentWorkerEmail = "notAWorkersEmail@example.com";
-            var request = new GetWorkersRequest {Email = nonExistentWorkerEmail};
+            var request = new GetWorkersRequest { Email = nonExistentWorkerEmail };
 
             var result = _getWorkersUseCase.Execute(request);
 
@@ -89,18 +89,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const int fakeWorkerTeamId = 12345;
             const int fakeTeamId = 5678;
             var fakeWorker = CreateFakeWorker();
-            var fakeTeam = new Team {WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
+            var fakeTeam = new Team
+            {
+                WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
             {
                 Id = fakeWorkerTeamId,
                 WorkerId = fakeWorker.Id,
                 TeamId = fakeTeamId,
                 Worker = fakeWorker
-            }}};
+            }}
+            };
             var request = new GetWorkersRequest
             {
                 TeamId = fakeTeamId
             };
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team>{fakeTeam});
+            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
             var worker = result.First();
@@ -120,18 +123,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const int fakeTeamId = 5678;
             const int nonExistentTeamId = 98765;
             var fakeWorker = CreateFakeWorker();
-            var fakeTeam = new Team {WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
+            var fakeTeam = new Team
+            {
+                WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
             {
                 Id = fakeWorkerTeamId,
                 WorkerId = fakeWorker.Id,
                 TeamId = fakeTeamId,
                 Worker = fakeWorker
-            }}};
+            }}
+            };
             var request = new GetWorkersRequest
             {
                 TeamId = fakeTeamId
             };
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(nonExistentTeamId)).Returns(new List<Team>{fakeTeam});
+            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(nonExistentTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
 
@@ -144,13 +150,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const int fakeWorkerTeamId = 12345;
             const int fakeTeamId = 5678;
             var fakeWorker = CreateFakeWorker();
-            var fakeTeam = new Team {WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
+            var fakeTeam = new Team
+            {
+                WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
             {
                 Id = fakeWorkerTeamId,
                 WorkerId = fakeWorker.Id,
                 TeamId = fakeTeamId,
                 Worker = fakeWorker
-            }}};
+            }}
+            };
             var request = new GetWorkersRequest
             {
                 WorkerId = fakeWorker.Id,
@@ -159,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             };
             _mockDataBaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
             _mockDataBaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorker.Email)).Returns(fakeWorker);
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team>{fakeTeam});
+            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
             result.Count.Should().Be(1);
@@ -194,17 +203,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             };
             const int fakeWorkerTeamId = 12345;
             const int fakeTeamId = 5678;
-            var fakeTeam = new Team {WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
+            var fakeTeam = new Team
+            {
+                WorkerTeams = new List<WorkerTeam> {new WorkerTeam()
             {
                 Id = fakeWorkerTeamId,
                 WorkerId = fakeWorkerTeam.Id,
                 TeamId = fakeTeamId,
                 Worker = fakeWorkerTeam
-            }}};
+            }}
+            };
 
             _mockDataBaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorkerId.Id)).Returns(fakeWorkerId);
             _mockDataBaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorkerEmail.Email)).Returns(fakeWorkerEmail);
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team>{fakeTeam});
+            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var request = new GetWorkersRequest
             {
