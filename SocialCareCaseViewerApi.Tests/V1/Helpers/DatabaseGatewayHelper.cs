@@ -33,8 +33,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new WorkerTeam {Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId};
         }
-
-
-        // assign a member to a team automatically
     }
 }

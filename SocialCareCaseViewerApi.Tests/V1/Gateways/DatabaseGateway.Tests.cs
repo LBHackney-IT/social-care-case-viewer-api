@@ -82,8 +82,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeNull();
         }
 
-        // test can retrieve via team id
-        // test can get null if team id does not exist or no workers with that team id
         [Test]
         public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
         {
@@ -118,14 +116,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             workerOneResponse.Should().BeEquivalentTo(workerOne);
             workerTwoResponse.Should().BeEquivalentTo(workerTwo);
         }
-
-        // create two workers
-        // create the team
-        // add workers to the team
-        // save all
-
-        // if team id does not exist
-        // if no workers exist in the team
 
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
