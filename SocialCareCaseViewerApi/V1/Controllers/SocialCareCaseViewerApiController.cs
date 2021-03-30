@@ -227,13 +227,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Produces("application/json")]
         [HttpGet]
         [Route("workers")]
-        public IActionResult ListWorkers([FromQuery] GetWorkersRequest request)
+        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
             var workers = _getWorkersUseCase.Execute(request);
 
             if (workers.Count == 0)
             {
-                return NotFound("Worker not found");
+                return NotFound();
             }
             return Ok(workers);
         }

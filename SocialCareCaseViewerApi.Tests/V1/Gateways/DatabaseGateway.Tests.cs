@@ -267,7 +267,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string otherNameFirstTwo = _faker.Name.FirstName();
             string otherNameLastTwo = _faker.Name.LastName();
 
-            string gender = "M";
+            const string gender = "M";
 
             OtherName otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
             OtherName otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
