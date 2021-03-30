@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string firstName = "test-first-name",
             string lastName = "test-last-name")
         {
-            return new Worker {Id = id, Email = email, FirstName = firstName, LastName = lastName};
+            return new Worker { Id = id, Email = email, FirstName = firstName, LastName = lastName };
         }
 
         public static Team CreateTeamDatabaseEntity(
@@ -21,7 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string name = "test-name"
         )
         {
-            return new Team {Context = content, Id = id, Name = name, WorkerTeams = workerTeams};
+            return new Team { Context = content, Id = id, Name = name, WorkerTeams = workerTeams };
         }
 
         public static WorkerTeam CreateWorkerTeamDatabaseEntity(
@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int teamId = 1
             )
         {
-            return new WorkerTeam {Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId};
+            return new WorkerTeam { Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId };
         }
     }
 }

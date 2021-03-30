@@ -89,7 +89,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetTeamsByTeamId(team.Id);
 
-            response.Should().BeEquivalentTo(new List<Team>{team});
+            response.Should().BeEquivalentTo(new List<Team> { team });
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: workerOne.Id, worker: workerOne));
             var workerTeamTwo =
                 SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id, worker: workerTwo));
-            var workerTeams = new List<WorkerTeam> {workerTeamOne, workerTeamTwo};
+            var workerTeams = new List<WorkerTeam> { workerTeamOne, workerTeamTwo };
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
 
             var responseTeams = _classUnderTest.GetTeamsByTeamId(team.Id);
