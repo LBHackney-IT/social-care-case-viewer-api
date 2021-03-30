@@ -77,7 +77,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 return null;
             }
 
-            var dbTeams = _databaseGateway.GetWorkersByTeamId(teamId);
+            var dbTeams = _databaseGateway.GetTeamsByTeamId(teamId);
             var dbWorkerTeams = dbTeams?.Select(team => team.WorkerTeams);
 
 

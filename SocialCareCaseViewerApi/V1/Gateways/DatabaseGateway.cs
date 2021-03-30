@@ -312,7 +312,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(worker => worker.Email == email);
         }
 
-        public List<Team> GetWorkersByTeamId(int teamId)
+        public List<Team> GetTeamsByTeamId(int teamId)
         {
             return _databaseContext.Teams
                 .Where(x => x.Id == teamId)

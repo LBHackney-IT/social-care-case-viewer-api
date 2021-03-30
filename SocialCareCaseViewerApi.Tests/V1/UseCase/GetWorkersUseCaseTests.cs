@@ -103,7 +103,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             {
                 TeamId = fakeTeamId
             };
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDataBaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
             var worker = result.First();
@@ -137,7 +137,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             {
                 TeamId = fakeTeamId
             };
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(nonExistentTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDataBaseGateway.Setup(x => x.GetTeamsByTeamId(nonExistentTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
 
@@ -168,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             };
             _mockDataBaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
             _mockDataBaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorker.Email)).Returns(fakeWorker);
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDataBaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var result = _getWorkersUseCase.Execute(request);
             result.Count.Should().Be(1);
@@ -216,7 +216,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorkerId.Id)).Returns(fakeWorkerId);
             _mockDataBaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorkerEmail.Email)).Returns(fakeWorkerEmail);
-            _mockDataBaseGateway.Setup(x => x.GetWorkersByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDataBaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
 
             var request = new GetWorkersRequest
             {

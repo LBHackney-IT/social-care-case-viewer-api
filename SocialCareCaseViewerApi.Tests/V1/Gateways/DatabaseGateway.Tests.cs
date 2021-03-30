@@ -7,6 +7,7 @@ using Bogus;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -37,6 +38,94 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _faker = new Faker();
             _fixture = new Fixture();
         }
+
+        [Test]
+        public void GetWorkerByWorkerIdReturnsWorker()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+
+            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
+
+            response.Should().BeEquivalentTo(worker);
+        }
+
+        [Test]
+        public void GetWorkerByWorkerIdReturnsNullWhenIdNotPresent()
+        {
+            const int workerId = 123;
+            const int nonExistentWorkerId = 321;
+
+            SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: workerId));
+            var response = _classUnderTest.GetWorkerByWorkerId(nonExistentWorkerId);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetWorkerByWorkerEmailReturnsWorker()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var response = _classUnderTest.GetWorkerByEmail(worker.Email);
+
+            response.Should().BeEquivalentTo(worker);
+        }
+
+        [Test]
+        public void GetWorkerByWorkerEmailReturnsNullWhenEmailNotPresent()
+        {
+            const string workerEmail = "realEmail@example.com";
+            const string nonExistentWorkerEmail = "nonExistentEmail@example.com";
+
+            SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: workerEmail));
+            var response = _classUnderTest.GetWorkerByEmail(nonExistentWorkerEmail);
+
+            response.Should().BeNull();
+        }
+
+        // test can retrieve via team id
+        // test can get null if team id does not exist or no workers with that team id
+        [Test]
+        public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
+        {
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+
+            var response = _classUnderTest.GetTeamsByTeamId(team.Id);
+
+            response.Should().BeEquivalentTo(new List<Team>{team});
+        }
+
+        [Test]
+        public void GetTeamByTeamIdAndGetAssociatedWorkers()
+        {
+            var workerOne = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, email: "worker-one-test-email@example.com"));
+            var workerTwo = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2, email: "worker-two-test-email@example.com"));
+            var workerTeamOne =
+                SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: workerOne.Id, worker: workerOne));
+            var workerTeamTwo =
+                SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id, worker: workerTwo));
+            var workerTeams = new List<WorkerTeam> {workerTeamOne, workerTeamTwo};
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
+
+            var responseTeams = _classUnderTest.GetTeamsByTeamId(team.Id);
+            var responseTeam = responseTeams.Find(rTeam => rTeam.Id == team.Id);
+
+            responseTeam?.WorkerTeams.Count.Should().Be(2);
+
+            var responseWorkerTeams = responseTeam?.WorkerTeams.ToList();
+            var workerOneResponse = responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerOne.Id)?.Worker;
+            var workerTwoResponse = responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerTwo.Id)?.Worker;
+
+            workerOneResponse.Should().BeEquivalentTo(workerOne);
+            workerTwoResponse.Should().BeEquivalentTo(workerTwo);
+        }
+
+        // create two workers
+        // create the team
+        // add workers to the team
+        // save all
+
+        // if team id does not exist
+        // if no workers exist in the team
 
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
@@ -572,6 +661,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mockProcessDataGateway.Verify();
             response.CaseNoteId.Should().NotBeNull();
             response.CaseNoteId.Should().Be("CaseNoteId");
+        }
+
+        private Worker SaveWorkerToDatabase(Worker worker)
+        {
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+            return worker;
+        }
+
+        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
+        {
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+            return workerTeam;
+        }
+
+        private Team SaveTeamToDatabase(Team team)
+        {
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+            return team;
         }
 
         // [Test]
