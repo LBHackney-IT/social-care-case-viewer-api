@@ -13,9 +13,11 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
@@ -493,6 +495,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
 
+        #region Warning Notes
         [Test]
         public void CreateWarningNoteShouldInsertIntoTheDatabase()
         {
@@ -598,6 +601,62 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     act.Should().Throw<CreateWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
+
+        [Test]
+        public void GetWarningNotesReturnsAListOfWarningNoteSetObjects()
+        {
+            var response =_classUnderTest.GetWarningNotes(new ListWarningNotesRequest());
+
+            response.Should().BeOfType<List<WarningNoteSet>>();
+        }
+
+        [Test]
+        public void GetWarningNotesReturnsTheExpectedWarningNoteSet()
+        {
+            WarningNoteSet warningNote = new WarningNoteSet()
+            {
+                PersonId = 12345
+            };
+            WarningNoteSet wrongWarningNote = new WarningNoteSet()
+            {
+                PersonId = 67890
+            };
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNotes.Add(wrongWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var request = _fixture.Build<ListWarningNotesRequest>()
+                            .With(x => x.PersonId, warningNote.PersonId)
+                            .Create();
+
+            var response = _classUnderTest.GetWarningNotes(request);
+
+            response.Should().ContainSingle();
+            response.Should().ContainEquivalentOf(warningNote);
+            response.Should().NotContain(wrongWarningNote);
+        }
+
+        [Test]
+        public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
+        {
+            WarningNoteSet warningNote = new WarningNoteSet()
+            {
+                PersonId = 12345
+            };
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            var request = new ListWarningNotesRequest()
+                        {
+                            PersonId = 67890
+                        };
+
+            var response = _classUnderTest.GetWarningNotes(request);
+
+            response.Should().NotContain(warningNote);
+            response.Should().BeNullOrEmpty();
+        }
+        #endregion
     }
 }
 

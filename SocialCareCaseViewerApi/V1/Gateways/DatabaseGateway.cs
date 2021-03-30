@@ -522,6 +522,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
+        #region Warning Notes
         public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
         {
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
@@ -590,6 +591,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return response;
         }
+
+        public List<WarningNoteSet> GetWarningNotes (ListWarningNotesRequest request)
+        {
+            return _databaseContext.WarningNotes
+                .Where(x => x.PersonId == request.PersonId)
+                .ToList();
+        }
+
+        #endregion
 
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
