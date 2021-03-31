@@ -29,12 +29,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
-        private readonly IWarningNotesUseCase _warningNotesUseCase;
+        private readonly IWarningNoteUseCase _warningNoteUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNotesUseCase warningNotesUseCase)
+            IWarningNoteUseCase warningNotesUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUsecase = processDataUsecase;
@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
-            _warningNotesUseCase = warningNotesUseCase;
+            _warningNoteUseCase = warningNotesUseCase;
         }
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                var result = _warningNotesUseCase.ExecutePost(request);
+                var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
             catch (CreateWarningNoteException ex)

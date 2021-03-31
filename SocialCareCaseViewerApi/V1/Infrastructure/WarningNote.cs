@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_warning_note", Schema = "dbo")]
-    public class WarningNoteSet : IAuditEntity
+    public class WarningNote : IAuditEntity
     {
         [Column("id")]
         [Key]

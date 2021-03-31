@@ -6,18 +6,18 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
     [TestFixture]
-    public class ListWarningNotesRequestTests
+    public class GetWarningNoteRequestTests
     {
-        private ListWarningNotesRequest _classUnderTest;
+        private GetWarningNoteRequest _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new ListWarningNotesRequest();
+            _classUnderTest = new GetWarningNoteRequest();
         }
 
         [Test]
-        public void ListWarningNotesRequestShouldHavePersonId()
+        public void GetWarningNoteRequestShouldHavePersonId()
         {
             _classUnderTest.PersonId.Should().Be(0);
         }

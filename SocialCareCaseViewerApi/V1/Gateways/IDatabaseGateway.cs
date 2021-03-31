@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -22,6 +22,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         List<Team> GetTeams(string context);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request);
-        List<WarningNoteSet> GetWarningNotes (ListWarningNotesRequest request);
+        List<WarningNote> GetWarningNotes(GetWarningNoteRequest request);
     }
 }

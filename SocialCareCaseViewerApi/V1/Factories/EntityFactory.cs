@@ -10,15 +10,18 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
     {
+        #region ToDomain
         public static ResidentInformation ToDomain(this Person databaseEntity)
         {
             return new ResidentInformation
@@ -34,6 +37,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             };
         }
+
         public static List<ResidentInformation> ToDomain(this IEnumerable<Person> people)
         {
             return people.Select(p => p.ToDomain()).ToList();
@@ -81,6 +85,28 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
+        public static WarningNote ToDomain(this dbWarningNote dbWarningNote)
+        {
+            return new WarningNote
+            {
+                Id = dbWarningNote.Id,
+                PersonId = dbWarningNote.PersonId,
+                StartDate = dbWarningNote.StartDate,
+                EndDate = dbWarningNote.EndDate,
+                IndividualNotified = dbWarningNote.IndividualNotified,
+                NotificationDetails = dbWarningNote.NotificationDetails,
+                ReviewDetails = dbWarningNote.ReviewDetails,
+                NoteType = dbWarningNote.NoteType,
+                Status = dbWarningNote.Status,
+                DateInformed = dbWarningNote.DateInformed,
+                HowInformed = dbWarningNote.HowInformed,
+                WarningNarrative = dbWarningNote.WarningNarrative,
+                ManagersName = dbWarningNote.ManagersName,
+                DateManagerInformed = dbWarningNote.DateManagerInformed
+            };
+        }
+        #endregion
+        #region ToEntity
         public static AllocationSet ToEntity(this CreateAllocationRequest request, int workerId, DateTime allocationStartDate, string caseStatus)
         {
             return new AllocationSet
@@ -92,7 +118,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = request.CreatedBy
             };
         }
-
         public static PersonOtherName ToEntity(this OtherName name, long personId, string createdBy)
         {
             return new PersonOtherName
@@ -143,5 +168,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormData = coreProps.ToString()
             };
         }
+        #endregion
     }
 }

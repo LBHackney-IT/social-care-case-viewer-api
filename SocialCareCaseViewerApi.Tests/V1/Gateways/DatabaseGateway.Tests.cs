@@ -19,6 +19,7 @@ using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -603,21 +604,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         // }
 
         [Test]
-        public void GetWarningNotesReturnsAListOfWarningNoteSetObjects()
+        public void GetWarningNotesReturnsAListOfWarningNoteObjects()
         {
-            var response =_classUnderTest.GetWarningNotes(new ListWarningNotesRequest());
+            var response = _classUnderTest.GetWarningNotes(new GetWarningNoteRequest());
 
-            response.Should().BeOfType<List<WarningNoteSet>>();
+            response.Should().BeOfType<List<WarningNote>>();
         }
 
         [Test]
-        public void GetWarningNotesReturnsTheExpectedWarningNoteSet()
+        public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
-            WarningNoteSet warningNote = new WarningNoteSet()
+            WarningNote warningNote = new WarningNote()
             {
                 PersonId = 12345
             };
-            WarningNoteSet wrongWarningNote = new WarningNoteSet()
+            WarningNote wrongWarningNote = new WarningNote()
             {
                 PersonId = 67890
             };
@@ -625,7 +626,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.WarningNotes.Add(wrongWarningNote);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<ListWarningNotesRequest>()
+            var request = _fixture.Build<GetWarningNoteRequest>()
                             .With(x => x.PersonId, warningNote.PersonId)
                             .Create();
 
@@ -639,17 +640,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
         {
-            WarningNoteSet warningNote = new WarningNoteSet()
+            WarningNote warningNote = new WarningNote()
             {
                 PersonId = 12345
             };
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.SaveChanges();
 
-            var request = new ListWarningNotesRequest()
-                        {
-                            PersonId = 67890
-                        };
+            var request = new GetWarningNoteRequest()
+            {
+                PersonId = 67890
+            };
 
             var response = _classUnderTest.GetWarningNotes(request);
 

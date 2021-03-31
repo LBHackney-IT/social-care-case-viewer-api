@@ -11,9 +11,11 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using dbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
@@ -29,6 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             _faker = new Faker();
         }
 
+        #region ToDomain
         [Test]
         public void CanMapWorkerFromInfrastructureToDomainWithoutTeamDetails()
         {
@@ -136,6 +139,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void CanMapWarningNoteFromDatabaseEntityToDomainObject()
+        {
+            long number = _faker.Random.Number();
+            DateTime dt = DateTime.Now;
+            string text = _faker.Random.String();
+
+            var dbWarningNote = new dbWarningNote()
+            {
+                Id = number,
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                IndividualNotified = true,
+                NotificationDetails = text,
+                ReviewDetails = text,
+                NoteType = text,
+                Status = text,
+                DateInformed = dt,
+                HowInformed = text,
+                WarningNarrative = text,
+                ManagersName = text,
+                DateManagerInformed = dt
+            };
+
+            var expectedResponse = new WarningNote()
+            {
+                Id = number,
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                IndividualNotified = true,
+                NotificationDetails = text,
+                ReviewDetails = text,
+                NoteType = text,
+                Status = text,
+                DateInformed = dt,
+                HowInformed = text,
+                WarningNarrative = text,
+                ManagersName = text,
+                DateManagerInformed = dt
+            };
+
+            var response = dbWarningNote.ToDomain();
+
+            response.Should().BeOfType<WarningNote>();
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        #endregion
+        #region ToEntity
+        [Test]
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
             var personId = _faker.Random.Long();
@@ -213,5 +267,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             domainNumber.ToEntity(personId, createdBy).Should().BeEquivalentTo(infrastructurePhoneNumber);
         }
+        #endregion
     }
 }

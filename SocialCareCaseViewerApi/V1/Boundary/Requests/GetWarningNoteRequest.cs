@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class ListWarningNotesRequest
+    public class GetWarningNoteRequest
     {
-        [ListWarningNotesRequestValidator]
+        [GetWarningNoteRequestValidator]
         [FromQuery(Name = "person_id")]
         public long PersonId { get; set; }
     }
 
-    public class ListWarningNotesRequestValidator : ValidationAttribute
+    public class GetWarningNoteRequestValidator : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var request = (ListWarningNotesRequest) validationContext.ObjectInstance;
+            var request = (GetWarningNoteRequest) validationContext.ObjectInstance;
             var personId = request.PersonId;
 
             if (personId == 0)

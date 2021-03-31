@@ -3,7 +3,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IWarningNotesUseCase
+    public interface IWarningNoteUseCase
     {
         CreateWarningNoteResponse ExecutePost(CreateWarningNoteRequest request);
     }
