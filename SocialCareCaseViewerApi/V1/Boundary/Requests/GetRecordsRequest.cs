@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class ListCasesRequest
+    public class GetRecordsRequest
     {
         [FromQuery(Name = "record_id")]
         public string RecordId { get; set; }

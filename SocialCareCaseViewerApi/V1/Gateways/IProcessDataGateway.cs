@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IProcessDataGateway
     {
-        Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId);
+        Tuple<IEnumerable<CareCaseData>, int> GetProcessData(GetRecordsRequest request, string ncId);
 
         CareCaseData GetCaseById(string recordId);
 

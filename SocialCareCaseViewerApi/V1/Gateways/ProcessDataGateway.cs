@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
-        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(GetRecordsRequest request, string ncId)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;

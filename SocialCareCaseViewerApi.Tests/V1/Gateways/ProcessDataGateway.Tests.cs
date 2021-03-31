@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetProcessDataShouldRetrieveACollectionFromTheDatabase()
         {
-            var stubbedRequest = _fixture.Build<ListCasesRequest>()
+            var stubbedRequest = _fixture.Build<GetRecordsRequest>()
                                     .Without(p => p.MosaicId)
                                     .Without(p => p.StartDate)
                                     .Without(p => p.EndDate)
@@ -59,12 +59,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //     responseList.First().FormName.Should().BeEquivalentTo(stubbedCaseData.FormName);
         }
 
-        #region ShowHistoricDataAsPartOfRecordsHistory
-
         [Test]
         public void ProcessDataCanCallSocialCarePlatformGatewayForAListOfHistoricCaseNotes()
         {
-            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+            _classUnderTest.GetProcessData(_fixture.Create<GetRecordsRequest>(), It.IsAny<string>());
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Once);
         }
@@ -74,7 +72,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
-            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+            _classUnderTest.GetProcessData(_fixture.Create<GetRecordsRequest>(), It.IsAny<string>());
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Once);
         }
@@ -84,7 +82,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
 
-            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+            _classUnderTest.GetProcessData(_fixture.Create<GetRecordsRequest>(), It.IsAny<string>());
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
         }
@@ -94,10 +92,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
 
-            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+            _classUnderTest.GetProcessData(_fixture.Create<GetRecordsRequest>(), It.IsAny<string>());
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
         }
-        #endregion
     }
 }
