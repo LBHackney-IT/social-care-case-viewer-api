@@ -131,7 +131,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteReturnsCareCaseDataWhenProvidedRecordId()
         {
-            var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var stubbedCaseData = _fixture.Create<ResidentRecord>();
 
             _mockProcessDataGateway.Setup(x => x.GetCaseById(It.IsAny<string>()))
                 .Returns(stubbedCaseData);

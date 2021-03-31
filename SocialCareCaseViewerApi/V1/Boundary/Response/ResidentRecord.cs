@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     [BsonIgnoreExtraElements]
-    public class CareCaseData
+    public class ResidentRecord
     {
         [JsonProperty("_id")]
         public string RecordId { get; set; }

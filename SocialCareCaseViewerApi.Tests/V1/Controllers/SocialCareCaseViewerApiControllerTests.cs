@@ -125,7 +125,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCasesReturns200WhenSuccessful()
         {
-            var careCaseDataList = _fixture.Create<CareCaseDataList>();
+            var careCaseDataList = _fixture.Create<ResidentRecords>();
             var listCasesRequest = new GetRecordsRequest();
 
             _mockGetRecordsUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
@@ -329,7 +329,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetCaseByIdReturns200WhenSuccessful()
         {
-            var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var stubbedCaseData = _fixture.Create<ResidentRecord>();
             var testRequest = _fixture.Create<GetCaseByIdRequest>();
 
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
@@ -342,7 +342,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetCaseByIdReturnsCareCaseDataWhenSuccessful()
         {
-            var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var stubbedCaseData = _fixture.Create<ResidentRecord>();
             var testRequest = _fixture.Create<GetCaseByIdRequest>();
 
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);

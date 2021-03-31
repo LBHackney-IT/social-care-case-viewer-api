@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
-        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(GetRecordsRequest request, string ncId)
+        public Tuple<IEnumerable<ResidentRecord>, int> GetProcessData(GetRecordsRequest request, string ncId)
         {
             List<BsonDocument> result;
             FilterDefinition<BsonDocument> firstNameFilter;
@@ -177,10 +177,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Take(request.Limit)
                 .ToList();
 
-            return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
+            return new Tuple<IEnumerable<ResidentRecord>, int>(response, totalCount);
         }
 
-        public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
+        public IOrderedEnumerable<ResidentRecord> SortData(string sortBy, string orderBy, List<ResidentRecord> response)
         {
             switch (sortBy)
             {
@@ -227,7 +227,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         );
             }
 
-            static DateTime? GetDateToSortBy(CareCaseData x)
+            static DateTime? GetDateToSortBy(ResidentRecord x)
             {
                 DateTime? dt = null;
 
@@ -253,7 +253,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return doc["_id"].AsObjectId.ToString();
         }
 
-        public CareCaseData GetCaseById(string recordId)
+        public ResidentRecord GetCaseById(string recordId)
         {
             var collection = _sccvDbContext.getCollection();
             var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));

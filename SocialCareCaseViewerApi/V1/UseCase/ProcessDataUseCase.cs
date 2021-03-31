@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _processDataGateway = processDataGateway;
         }
 
-        public CareCaseData Execute(string recordId)
+        public ResidentRecord Execute(string recordId)
         {
             return _processDataGateway.GetCaseById(recordId);
         }

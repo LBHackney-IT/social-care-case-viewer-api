@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
         /// <response code="400">Invalid Query Parameter.</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentRecords), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents")]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
@@ -108,7 +108,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
         /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentRecords), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("records")]
         public IActionResult GetRecords([FromQuery] GetRecordsRequest request)
@@ -143,7 +143,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns case related to the specified ID</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CareCaseData), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentRecord), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases/{id}")]
         public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)

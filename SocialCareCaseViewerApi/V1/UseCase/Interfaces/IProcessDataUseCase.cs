@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public interface IProcessDataUseCase
     {
-        CareCaseData Execute(string recordId);
+        ResidentRecord Execute(string recordId);
         Task<string> Execute(CreateCaseNoteRequest request);
     }
 }

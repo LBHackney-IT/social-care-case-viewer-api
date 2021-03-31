@@ -26,20 +26,20 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<CareCaseData> ToResponse(List<BsonDocument> submittedFormsData)
+        public static List<ResidentRecord> ToResponse(List<BsonDocument> submittedFormsData)
         {
             return submittedFormsData.Select(x => x.ToResponse()).ToList();
         }
 
-        private static CareCaseData ToResponse(this BsonDocument formData)
+        private static ResidentRecord ToResponse(this BsonDocument formData)
         {
             var caseData = BsonSerializer.Deserialize<FormData>(formData);
             return caseData.ToResponse(formData);
         }
-        private static CareCaseData ToResponse(this FormData formData, BsonDocument rawData)
+        private static ResidentRecord ToResponse(this FormData formData, BsonDocument rawData)
         {
             var dummyFormData = formData;
-            return new CareCaseData
+            return new ResidentRecord
             {
                 RecordId = formData.RecordId,
                 FirstName = formData.FirstName,

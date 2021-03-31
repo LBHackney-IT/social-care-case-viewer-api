@@ -5,6 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IGetRecordsUseCase
     {
-        CareCaseDataList Execute(GetRecordsRequest request);
+        ResidentRecords Execute(GetRecordsRequest request);
     }
 }

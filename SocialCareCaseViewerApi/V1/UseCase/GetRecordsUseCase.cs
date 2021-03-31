@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public CareCaseDataList Execute(GetRecordsRequest request)
+        public ResidentRecords Execute(GetRecordsRequest request)
         {
             string ncId = null;
 
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //support page size 1
             if (nextCursor == result.Item2 || result.Item1.Count() < request.Limit) nextCursor = null;
 
-            return new CareCaseDataList
+            return new ResidentRecords
             {
                 Cases = result.Item1.ToList(),
                 NextCursor = nextCursor
