@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
-        private Mock<IWorkersUseCase> _mockWorkersUseCase;
+        private Mock<IGetWorkersUseCase> _mockGetWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
@@ -39,14 +39,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
-            _mockWorkersUseCase = new Mock<IWorkersUseCase>();
+            _mockGetWorkersUseCase = new Mock<IGetWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNotesUseCase = new Mock<IWarningNotesUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object,
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
             _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNotesUseCase.Object);
             _fixture = new Fixture();
         }
@@ -145,21 +145,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().Be("Document Not Found");
         }
 
-        #region Workers
         [Test]
-        public void GetWorkersReturns200WhenSuccessful()
+        public void GetWorkersReturns200WhenMatchingWorker()
         {
-            var request = new ListWorkersRequest() { TeamId = 5 };
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            var workersList = _fixture.Create<List<WorkerResponse>>();
+            _mockGetWorkersUseCase.Setup(x => x.Execute(request)).Returns(workersList);
 
-            var workersList = _fixture.Create<ListWorkersResponse>();
-
-            _mockWorkersUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListWorkersRequest>())).Returns(workersList);
-
-            var response = _classUnderTest.ListWorkers(request);
+            var response = _classUnderTest.GetWorkers(request) as OkObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+
+            var responseValue = response.Value as List<WorkerResponse>;
+
+            responseValue.Should().BeOfType<List<WorkerResponse>>();
+            responseValue.Count.Should().Be(workersList.Count);
         }
-        #endregion
+
+        [Test]
+        public void GetWorkersReturns404WhenNoWorkersFound()
+        {
+            var workers = new List<WorkerResponse>();
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            _mockGetWorkersUseCase.Setup(x => x.Execute(request)).Returns(workers);
+
+            var response = _classUnderTest.GetWorkers(request) as NotFoundResult;
+
+            response.StatusCode.Should().Be(404);
+        }
 
         #region Teams
         [Test]

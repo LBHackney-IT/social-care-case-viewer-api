@@ -3,31 +3,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class ListWorkersRequest
+    public class GetWorkersRequest
     {
-        [ListWorkersRequestValidator]
+        [GetWorkersRequestValidator]
         [FromQuery(Name = "team_id")]
         public int TeamId { get; set; }
 
         [FromQuery(Name = "id")]
         public int WorkerId { get; set; }
+
+        [FromQuery(Name = "email")]
+        public string Email { get; set; }
     }
 
-    public class ListWorkersRequestValidator : ValidationAttribute
+    public class GetWorkersRequestValidator : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var request = (ListWorkersRequest) validationContext.ObjectInstance;
+            var request = (GetWorkersRequest) validationContext.ObjectInstance;
             var workerId = request.WorkerId;
             var teamId = request.TeamId;
+            var email = request.Email;
 
-            if (workerId == 0 && teamId == 0)
+            if (workerId == 0 && teamId == 0 && string.IsNullOrEmpty(email))
             {
-                return new ValidationResult($"Please provide either worker id or team id");
-            }
-            else if (workerId != 0 && teamId != 0)
-            {
-                return new ValidationResult($"Please provide only worker id or team id, but not both");
+                return new ValidationResult($"Please provide either worker id, worker email or team id.");
             }
 
             return ValidationResult.Success;

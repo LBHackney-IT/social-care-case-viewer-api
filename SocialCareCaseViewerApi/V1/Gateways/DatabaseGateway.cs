@@ -296,7 +296,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public Worker GetWorker(int workerId)
+        public Worker GetWorkerByWorkerId(int workerId)
         {
             return _databaseContext.Workers
                 .Where(x => x.Id == workerId)
@@ -306,9 +306,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault();
         }
 
-        public List<Team> GetWorkersByTeamId(int teamId)
+        public Worker GetWorkerByEmail(string email)
         {
+            return _databaseContext.Workers
+                .FirstOrDefault(worker => worker.Email == email);
+        }
 
+        public List<Team> GetTeamsByTeamId(int teamId)
+        {
             return _databaseContext.Teams
                 .Where(x => x.Id == teamId)
                 .Include(x => x.WorkerTeams)
