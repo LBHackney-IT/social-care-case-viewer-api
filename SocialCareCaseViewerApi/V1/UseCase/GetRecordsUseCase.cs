@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return new ResidentRecords
             {
-                Cases = result.Item1.ToList(),
+                Records = result.Item1.ToList(),
                 NextCursor = nextCursor
             };
         }
