@@ -31,11 +31,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNotesUseCase _warningNotesUseCase;
+        private readonly IGetRecordsUseCase _getRecordsUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNotesUseCase warningNotesUseCase)
+            IWarningNotesUseCase warningNotesUseCase, IGetRecordsUseCase getRecordsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -46,6 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNotesUseCase = warningNotesUseCase;
+            _getRecordsUseCase = getRecordsUseCase;
         }
 
         /// <summary>
@@ -101,15 +103,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find cases by Mosaic ID or officer email
+        /// Find records by Mosaic ID or officer email
         /// </summary>
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
         /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("cases")]
-        public IActionResult ListCases([FromQuery] ListCasesRequest request)
+        [Route("records")]
+        public IActionResult GetRecords([FromQuery] GetRecordsRequest request)
         {
             try
             {
@@ -128,7 +130,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                     return StatusCode(400, dateValidationError);
                 }
 
-                return Ok(_processDataUseCase.Execute(request));
+                return Ok(_getRecordsUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNotesUseCase> _mockWarningNotesUseCase;
+        private Mock<IGetRecordsUseCase> _mockGetRecordsUseCase;
 
         private Fixture _fixture;
 
@@ -44,10 +46,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNotesUseCase = new Mock<IWarningNotesUseCase>();
+            _mockGetRecordsUseCase = new Mock<IGetRecordsUseCase>();
+
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNotesUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNotesUseCase.Object, _mockGetRecordsUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -122,10 +126,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void ListCasesReturns200WhenSuccessful()
         {
             var careCaseDataList = _fixture.Create<CareCaseDataList>();
-            var listCasesRequest = new ListCasesRequest();
+            var listCasesRequest = new GetRecordsRequest();
 
-            _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
-            var response = _classUnderTest.ListCases(listCasesRequest) as OkObjectResult;
+            _mockGetRecordsUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
+            var response = _classUnderTest.GetRecords(listCasesRequest) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
@@ -135,10 +139,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCasesReturns404WhenNoCasesAreFound()
         {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<ListCasesRequest>()))
+            _mockGetRecordsUseCase.Setup(x => x.Execute(It.IsAny<GetRecordsRequest>()))
                 .Throws(new DocumentNotFoundException("Document Not Found"));
 
-            var response = _classUnderTest.ListCases(new ListCasesRequest()) as ObjectResult;
+            var response = _classUnderTest.GetRecords(new GetRecordsRequest()) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(404);
