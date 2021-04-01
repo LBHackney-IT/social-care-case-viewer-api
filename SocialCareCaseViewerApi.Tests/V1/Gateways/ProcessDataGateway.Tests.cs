@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
-using FluentAssertions;
-using MongoDB.Bson;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -64,5 +58,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //     responseList.First().OfficerEmail.Should().BeEquivalentTo(stubbedCaseData.WorkerEmail);
             //     responseList.First().FormName.Should().BeEquivalentTo(stubbedCaseData.FormName);
         }
+
+        #region ShowHistoricDataAsPartOfRecordsHistory
+
+        [Test]
+        public void ProcessDataCanCallSocialCarePlatformGatewayForAListOfHistoricCaseNotes()
+        {
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsTrueProcessDataCanCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNotTrueProcessDataShouldNotCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
+        }
+
+        [Test]
+        public void WhenFeatureFlagIsNullProcessDataShouldNotCallSocialCarePlatformGatewayForListOfVisits()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
+
+            _classUnderTest.GetProcessData(_fixture.Create<ListCasesRequest>(), It.IsAny<string>());
+
+            _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
+        }
+        #endregion
     }
 }

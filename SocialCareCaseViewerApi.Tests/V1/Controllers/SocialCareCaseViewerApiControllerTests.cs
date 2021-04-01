@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
-        private Mock<IWorkersUseCase> _mockWorkersUseCase;
+        private Mock<IGetWorkersUseCase> _mockGetWorkersUseCase;
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
@@ -39,15 +39,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
-            _mockWorkersUseCase = new Mock<IWorkersUseCase>();
+            _mockGetWorkersUseCase = new Mock<IGetWorkersUseCase>();
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNotesUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -145,21 +145,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().Be("Document Not Found");
         }
 
-        #region Workers
         [Test]
-        public void GetWorkersReturns200WhenSuccessful()
+        public void GetWorkersReturns200WhenMatchingWorker()
         {
-            var request = new ListWorkersRequest() { TeamId = 5 };
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            var workersList = _fixture.Create<List<WorkerResponse>>();
+            _mockGetWorkersUseCase.Setup(x => x.Execute(request)).Returns(workersList);
 
-            var workersList = _fixture.Create<ListWorkersResponse>();
-
-            _mockWorkersUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListWorkersRequest>())).Returns(workersList);
-
-            var response = _classUnderTest.ListWorkers(request);
+            var response = _classUnderTest.GetWorkers(request) as OkObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+
+            var responseValue = response.Value as List<WorkerResponse>;
+
+            responseValue.Should().BeOfType<List<WorkerResponse>>();
+            responseValue.Count.Should().Be(workersList.Count);
         }
-        #endregion
+
+        [Test]
+        public void GetWorkersReturns404WhenNoWorkersFound()
+        {
+            var workers = new List<WorkerResponse>();
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            _mockGetWorkersUseCase.Setup(x => x.Execute(request)).Returns(workers);
+
+            var response = _classUnderTest.GetWorkers(request) as NotFoundResult;
+
+            response.StatusCode.Should().Be(404);
+        }
 
         #region Teams
         [Test]
@@ -224,40 +238,73 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #endregion
 
         #region Case notes
+
         [Test]
-        public void GetCaseNotesByPersonIdReturns200WhenSuccessful()
+        public void ListCaseNotesByPersonIdReturns200WhenSuccessful()
         {
-            var request = new ListCaseNotesRequest() { Id = "1" };
+            var request = new ListCaseNotesRequest { Id = "1" };
 
             var notesList = _fixture.Create<ListCaseNotesResponse>();
 
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(notesList);
 
-            var response = _classUnderTest.ListCaseNotes(request);
+            var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
         }
 
         [Test]
-        public void GetCaseNotesByNoteIdReturns200WhenSuccessful()
+        public void GettingASingleCaseNoteByNoteIdReturns200WhenSuccessful()
         {
-            var request = new GetCaseNotesRequest() { Id = "1" };
+            var request = new GetCaseNotesRequest { Id = "1" };
 
-            var note = _fixture.Create<CaseNote>();
+            var note = _fixture.Create<CaseNoteResponse>();
 
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
 
-            var response = _classUnderTest.GetCaseNoteById(request);
+            var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
+        }
+
+        [Test]
+        public void GetCaseNotesByNoteIdReturns404WhenNoMatchingCaseNoteId()
+        {
+            var request = new GetCaseNotesRequest { Id = "1" };
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
+                .Throws(new SocialCarePlatformApiException("404"));
+
+            var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void GetCaseNotesByNoteIdReturns500WhenSocialCarePlatformApiExceptionIs500()
+        {
+            var request = new GetCaseNotesRequest { Id = "1" };
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
+                .Throws(new SocialCarePlatformApiException("500"));
+
+            var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
         }
 
         [Test]
         public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
         {
-            string personId = "123";
-            var request = new ListCaseNotesRequest() { Id = personId };
-            var response = new ListCaseNotesResponse() { CaseNotes = new List<CaseNote>() };
+            const string personId = "123";
+            var request = new ListCaseNotesRequest { Id = personId };
+            var response = new ListCaseNotesResponse { CaseNotes = new List<CaseNote>() };
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(personId)).Returns(response);
 
             var actualResponse = _classUnderTest.ListCaseNotes(request);
@@ -316,18 +363,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #endregion
 
         #region Visits
+
         [Test]
-        public void GetVisitsByPersonIdReturns200WhenSuccessful()
+        public void WhenShowHistoricDataFeatureFlagIsTrueListVisitsByPersonIdReturns200WhenSuccessful()
         {
-            var request = new ListVisitsRequest() { Id = "1" };
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
-            var visistList = _fixture.Create<ListVisitsResponse>();
+            var request = new ListVisitsRequest { Id = "1" };
 
-            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visistList);
+            var visitList = _fixture.Create<ListVisitsResponse>();
 
-            var response = _classUnderTest.ListVisits(request);
+            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
 
             response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().NotBeNull();
+        }
+
+        [Test]
+        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAResponseWithNoVisitData()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
+            var request = new ListVisitsRequest { Id = "1" };
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
+        }
+
+
+        [Test]
+        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAResponseWithNoVisitData()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
+            var request = new ListVisitsRequest { Id = "1" };
+
+            var response = _classUnderTest.ListVisits(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeNull();
         }
 
         #endregion

@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _caseNotesUseCase.ExecuteGetById(request.Id);
 
-            Assert.IsInstanceOf<CaseNote>(response);
+            Assert.IsInstanceOf<CaseNoteResponse>(response);
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNoteById(It.IsAny<string>()));
         }
@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _caseNotesUseCase.ExecuteGetById(request.Id);
 
-            Assert.IsInstanceOf<CaseNote>(response);
+            Assert.IsInstanceOf<CaseNoteResponse>(response);
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNoteById(request.Id));
         }

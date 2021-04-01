@@ -54,9 +54,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //add historical case notes to the case history records when using mosaic id search
-
                 //fail silently for now until platform API has been finalised
-                //TOOD: please do not use as production code
+                //TODO: fix code so that it is more production suitable (code is currently working in production)
                 //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
                 try
                 {
@@ -66,21 +65,32 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
                     }
                 }
-                catch { }
-
-
-                //add historical visits to the case history records when using mosaic id search
-                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                try
+                catch
                 {
-                    var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+                    // ignored
+                }
 
-                    if (visitsResponse.Visits.Count > 0)
+                //add feature flag for toggling displaying historic visit data
+                var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+                if (showHistoricData != null && showHistoricData.Equals("true"))
+                {
+                    //add historical visits to the case history records when using mosaic id search
+                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
+                    try
                     {
-                        result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                        var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
+
+                        if (visitsResponse.Visits.Count > 0)
+                        {
+                            result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
+                        }
+                    }
+                    catch
+                    {
+                        // ignored
                     }
                 }
-                catch { }
             }
             else
             {

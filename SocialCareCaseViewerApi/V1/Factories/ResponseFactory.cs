@@ -65,6 +65,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         new List<BsonElement>
                         {
                                 new BsonElement("_id", note.CaseNoteId ?? ""),
+                                new BsonElement("mosaic_id", note.MosaicId ?? ""),
                                 new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                                 new BsonElement("form_name_overall", "Historical_Case_Note"),
                                 new BsonElement("form_name", note.CaseNoteTitle ?? ""),
@@ -97,6 +98,35 @@ namespace SocialCareCaseViewerApi.V1.Factories
             }
 
             return historicalVisits;
+        }
+
+        public static CaseNoteResponse ToResponse(CaseNote historicalCaseNote)
+        {
+            return new CaseNoteResponse()
+            {
+                RecordId = historicalCaseNote.CaseNoteId,
+                PersonId = historicalCaseNote.MosaicId,
+                Title = historicalCaseNote.CaseNoteTitle,
+                Content = historicalCaseNote.CaseNoteContent,
+                DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
+                OfficerName = historicalCaseNote.CreatedByName,
+                OfficerEmail = historicalCaseNote.CreatedByEmail,
+                FormName = historicalCaseNote.NoteType
+            };
+        }
+
+        public static WorkerResponse ToResponse(this Domain.Worker worker)
+        {
+            return new WorkerResponse
+            {
+                Id = worker.Id,
+                Email = worker.Email,
+                FirstName = worker.FirstName,
+                LastName = worker.LastName,
+                Role = worker.Role,
+                AllocationCount = worker.AllocationCount,
+                Teams = worker.Teams
+            };
         }
     }
 }

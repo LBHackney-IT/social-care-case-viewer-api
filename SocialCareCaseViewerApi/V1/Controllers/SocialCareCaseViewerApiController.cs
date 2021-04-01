@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -23,24 +24,24 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     {
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
-        private readonly IProcessDataUseCase _processDataUsecase;
+        private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
-        private readonly IWorkersUseCase _workersUseCase;
+        private readonly IGetWorkersUseCase _getWorkersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase,
+            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
             IWarningNoteUseCase warningNotesUseCase)
         {
             _getAllUseCase = getAllUseCase;
-            _processDataUsecase = processDataUsecase;
+            _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
-            _workersUseCase = workersUseCase;
+            _getWorkersUseCase = getWorkersUseCase;
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
@@ -127,7 +128,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                     return StatusCode(400, dateValidationError);
                 }
 
-                return Ok(_processDataUsecase.Execute(request));
+                return Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
@@ -147,7 +148,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_processDataUsecase.Execute(request.Id));
+                return Ok(_processDataUseCase.Execute(request.Id));
             }
             catch (DocumentNotFoundException e)
             {
@@ -213,33 +214,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("cases")]
         public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request)
         {
-            var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
+            var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
         }
 
         /// <summary>
-        /// Get a list of workers by id or team id
+        /// Get a list of workers by worker id, worker email or team id
         /// </summary>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="404">No workers found for inserted worker id, worker email or team id</response>
         /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(ListWorkersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<WorkerResponse>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
         [Route("workers")]
-        public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
+        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
-            try
+            var workers = _getWorkersUseCase.Execute(request);
+
+            if (workers.Count == 0)
             {
-                return Ok(_workersUseCase.ExecuteGet(request));
+                return NotFound();
             }
-            catch (WorkerNotFoundException ex)
-            {
-                return StatusCode(404, ex.Message);
-            }
-            catch (TeamNotFoundException ex)
-            {
-                return StatusCode(404, ex.Message);
-            }
+            return Ok(workers);
         }
 
         /// <summary>
@@ -279,13 +275,20 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <returns></returns>
         /// <response code="400">Id parameter is invalid or missing</response>
         /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(CaseNote), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CaseNoteResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
         [Route("casenotes/{id}")]
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
-            return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+            try
+            {
+                return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+            }
+            catch (SocialCarePlatformApiException ex)
+            {
+                return StatusCode(ex.Message == "404" ? 404 : 500);
+            }
         }
 
         /// <summary>
@@ -301,7 +304,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("visits/person/{id}")]
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
-            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
+            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
+
+            return showHistoricData != null && showHistoricData.Equals("true")
+                ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
+                : StatusCode(200, null);
         }
 
         /// <summary>
