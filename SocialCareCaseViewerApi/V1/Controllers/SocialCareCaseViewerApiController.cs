@@ -324,5 +324,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Get warning notes by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Success. Returns warning notes related to the specified ID</response>
+        /// <response code="404">No warning notes found for the specified ID</response>
+        [ProducesResponseType(typeof(GetWarningNoteResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("warningnotes/{id}")]
+        public IActionResult GetWarningNote([FromQuery] GetWarningNoteRequest request)
+        {
+            try
+            {
+                return Ok(_warningNoteUseCase.ExecuteGet(request));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }

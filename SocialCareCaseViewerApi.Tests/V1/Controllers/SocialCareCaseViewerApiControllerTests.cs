@@ -362,6 +362,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("Warning Note could not be inserted");
         }
+
+        [Test]
+        public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
+        {
+            var stubbedWarningNoteResponse = _fixture.Create<GetWarningNoteResponse>();
+
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
+                .Returns(stubbedWarningNoteResponse);
+
+            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(stubbedWarningNoteResponse);
+        }
+
+        [Test]
+        public void GetWarningNoteReturns404IfDocumentNotDound()
+        {
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
+                .Throws(new DocumentNotFoundException("Document Not Found"));
+
+            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Document Not Found");
+        }
         #endregion
     }
 }

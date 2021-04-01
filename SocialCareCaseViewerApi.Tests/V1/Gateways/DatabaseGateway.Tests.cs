@@ -602,15 +602,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     act.Should().Throw<CreateWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
-
-        [Test]
-        public void GetWarningNotesReturnsAListOfWarningNoteObjects()
-        {
-            var response = _classUnderTest.GetWarningNotes(new GetWarningNoteRequest());
-
-            response.Should().BeOfType<List<WarningNote>>();
-        }
-
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
@@ -632,6 +623,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetWarningNotes(request);
 
+            response.Should().BeOfType<List<WarningNote>>();
             response.Should().ContainSingle();
             response.Should().ContainEquivalentOf(warningNote);
             response.Should().NotContain(wrongWarningNote);
@@ -652,10 +644,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 PersonId = 67890
             };
 
-            var response = _classUnderTest.GetWarningNotes(request);
+            Action act = () => _classUnderTest.GetWarningNotes(request);
 
-            response.Should().NotContain(warningNote);
-            response.Should().BeNullOrEmpty();
+            act.Should().Throw<DocumentNotFoundException>()
+                .WithMessage($"No warning notes found relating to person id {request.PersonId}");
         }
         #endregion
     }
