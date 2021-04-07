@@ -39,7 +39,7 @@ commands:
           paths:
             - .aws
   assume-role-and-persist-workspace-mosaic-production:
-    description: "Assumes deployment role and persists credentials across jobs"
+    description: "Assumes deployment role and persists credentials across jobs for Mosaic-Production"
     parameters:
       aws-account:
         type: string
