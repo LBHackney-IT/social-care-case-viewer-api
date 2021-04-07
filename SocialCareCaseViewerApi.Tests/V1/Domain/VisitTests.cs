@@ -1,6 +1,6 @@
+using System;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Domain;
-using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Domain
 {

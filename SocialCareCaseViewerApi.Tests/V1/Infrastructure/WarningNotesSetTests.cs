@@ -48,19 +48,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void WarningNoteHasIndividualNotified()
         {
-            _classUnderTest.IndividualNotified.Should().Be(false);
+            _classUnderTest.DisclosedWithIndividual.Should().Be(false);
         }
 
         [Test]
         public void WarningNoteHasNotificationDetails()
         {
-            _classUnderTest.NotificationDetails.Should().Be(null);
+            _classUnderTest.DisclosedDetails.Should().Be(null);
         }
 
         [Test]
         public void WarningNoteHasReviewDetails()
         {
-            _classUnderTest.ReviewDetails.Should().Be(null);
+            _classUnderTest.Notes.Should().Be(null);
         }
 
         [Test]
@@ -78,13 +78,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void WarningNoteHasDateInformed()
         {
-            _classUnderTest.DateInformed.Should().Be(null);
+            _classUnderTest.DisclosedDate.Should().Be(null);
         }
 
         [Test]
         public void WarningNoteHasHowInformed()
         {
-            _classUnderTest.HowInformed.Should().Be(null);
+            _classUnderTest.DisclosedHow.Should().Be(null);
         }
 
         [Test]
@@ -96,13 +96,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         [Test]
         public void WarningNoteHasManagersName()
         {
-            _classUnderTest.ManagersName.Should().Be(null);
+            _classUnderTest.ManagerName.Should().Be(null);
         }
 
         [Test]
         public void WarningNoteHasDateManagerInformed()
         {
-            _classUnderTest.DateManagerInformed.Should().Be(null);
+            _classUnderTest.DiscussedWithManagerDate.Should().Be(null);
         }
 
         #region Audit properties

@@ -5,6 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IWarningNotesUseCase
     {
-        CreateWarningNoteResponse ExecutePost(CreateWarningNoteRequest request);
+        PostWarningNoteResponse ExecutePost(PostWarningNoteRequest request);
     }
 }

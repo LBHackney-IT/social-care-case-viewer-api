@@ -573,7 +573,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreateWarningNoteShouldInsertIntoTheDatabase()
+        public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
             Person person = new Person()
             {
@@ -582,11 +582,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<CreateWarningNoteRequest>()
+            var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, person.Id)
                             .Create();
 
-            var response = _classUnderTest.CreateWarningNote(request);
+            var response = _classUnderTest.PostWarningNote(request);
 
             var query = DatabaseContext.WarningNotes;
 
@@ -596,16 +596,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.PersonId.Should().Be(request.PersonId);
             insertedRecord.StartDate.Should().Be(request.StartDate);
             insertedRecord.EndDate.Should().Be(request.EndDate);
-            insertedRecord.IndividualNotified.Should().Be(request.IndividualNotified);
-            insertedRecord.NotificationDetails.Should().Be(request.NotificationDetails);
-            insertedRecord.ReviewDetails.Should().Be(request.ReviewDetails);
+            insertedRecord.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
+            insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
+            insertedRecord.Notes.Should().Be(request.Notes);
             insertedRecord.NoteType.Should().Be(request.NoteType);
             insertedRecord.Status.Should().Be(request.Status);
-            insertedRecord.DateInformed.Should().Be(request.DateInformed);
-            insertedRecord.HowInformed.Should().Be(request.HowInformed);
+            insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
+            insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
             insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
-            insertedRecord.ManagersName.Should().Be(request.ManagersName);
-            insertedRecord.DateManagerInformed.Should().Be(request.DateManagerInformed);
+            insertedRecord.ManagerName.Should().Be(request.ManagerName);
+            insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
 
             //audit properties
             insertedRecord.CreatedAt.Should().NotBeNull();
@@ -616,18 +616,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreateWarningNoteShouldThrowAnErrorIfThePersonIdIsNotInThePersonTable()
+        public void PostWarningNoteShouldThrowAnErrorIfThePersonIdIsNotInThePersonTable()
         {
-            var request = _fixture.Create<CreateWarningNoteRequest>();
+            var request = _fixture.Create<PostWarningNoteRequest>();
 
-            Action act = () => _classUnderTest.CreateWarningNote(request);
+            Action act = () => _classUnderTest.PostWarningNote(request);
 
-            act.Should().Throw<CreateWarningNoteException>()
+            act.Should().Throw<PostWarningNoteException>()
                         .WithMessage($"Person with given id ({request.PersonId}) not found");
         }
 
         [Test]
-        public void CreateWarningNoteShouldCallInsertCaseNoteMethod()
+        public void PostWarningNoteShouldCallInsertCaseNoteMethod()
         {
             Person person = new Person()
             {
@@ -636,7 +636,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<CreateWarningNoteRequest>()
+            var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, person.Id)
                             .Create();
 
@@ -646,7 +646,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                         .ReturnsAsync("CaseNoteId")
                         .Verifiable();
 
-            var response = _classUnderTest.CreateWarningNote(request);
+            var response = _classUnderTest.PostWarningNote(request);
 
             _mockProcessDataGateway.Verify();
             response.CaseNoteId.Should().NotBeNull();
@@ -675,7 +675,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         // [Test]
-        // public void CreateWarningNoteThrowAnExceptionIfTheCaseNoteIsNotInserted()
+        // public void PostWarningNoteThrowAnExceptionIfTheCaseNoteIsNotInserted()
         // {
         //     Person person = new Person()
         //     {
@@ -684,7 +684,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     DatabaseContext.Persons.Add(person);
         //     DatabaseContext.SaveChanges();
 
-        //     var request = _fixture.Build<CreateWarningNoteRequest>()
+        //     var request = _fixture.Build<PostWarningNoteRequest>()
         //                     .With(x => x.PersonId, person.Id)
         //                     .Create();
 
@@ -693,9 +693,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //                 It.IsAny<CaseNotesDocument>()))
         //                 .Throws(new Exception("error message"));
 
-        //     Action act = () => _classUnderTest.CreateWarningNote(request);
+        //     Action act = () => _classUnderTest.PostWarningNote(request);
 
-        //     act.Should().Throw<CreateWarningNoteException>()
+        //     act.Should().Throw<PostWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
     }
