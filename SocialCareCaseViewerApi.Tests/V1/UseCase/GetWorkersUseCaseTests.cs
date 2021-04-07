@@ -234,7 +234,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             string email = "fakeemail@example.com",
             string firstName = "TestFirstName",
             string lastName = "TestLastName",
-            string role = "TestRole"
+            string role = "TestRole",
+            ICollection<WorkerTeam> workerTeams = null,
+            ICollection<AllocationSet> allocations = null
             )
         {
             return new Worker()
@@ -243,7 +245,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 Email = email,
                 FirstName = firstName,
                 LastName = lastName,
-                Role = role
+                Role = role,
+                WorkerTeams = workerTeams,
+                Allocations = allocations
             };
         }
     }
