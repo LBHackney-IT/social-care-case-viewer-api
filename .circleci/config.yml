@@ -38,6 +38,21 @@ commands:
           root: *workspace_root
           paths:
             - .aws
+  assume-role-and-persist-workspace-mosaic-production:
+    description: "Assumes deployment role and persists credentials across jobs for Mosaic-Production"
+    parameters:
+      aws-account:
+        type: string
+    steps:
+      - checkout
+      - aws_assume_role/assume_role:
+          account: <<parameters.aws-account>>
+          profile_name: default
+          role: "circleci-assume-role"
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
@@ -73,7 +88,7 @@ commands:
             apt-get update && apt-get install -y nodejs
       - run:
           name: Install serverless CLI
-          command: npm i -g serverless            
+          command: npm i -g serverless
       - run:
           name: Build lambda
           command: |
@@ -122,6 +137,11 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
+  assume-role-mosaic-production:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace-mosaic-production:
+          aws-account: $AWS_ACCOUNT_PRODUCTION
   # terraform-init-and-apply-to-development:
     # executor: docker-terraform
     # steps:
@@ -152,6 +172,11 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "production"
+  deploy-to-mosaic-production:
+    executor: docker-dotnet
+    steps:
+      - deploy-lambda:
+          stage: "mosaic-prod"
 
 workflows:
   check-and-deploy-development:
@@ -184,7 +209,7 @@ workflows:
       - build-and-test:
           filters:
             branches:
-              only:    
+              only:
                 - master
                 - development
       - assume-role-staging:
@@ -201,7 +226,7 @@ workflows:
             - assume-role-staging
           filters:
             branches:
-              only: 
+              only:
                 - master
                 - development
       - deploy-to-staging:
@@ -229,6 +254,34 @@ workflows:
       - deploy-to-production:
           requires:
             - assume-role-production
+          filters:
+            branches:
+              only: master
+  check-and-deploy-mosaic-production:
+      jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only:
+                - master
+                - development
+      - permit-mosaic-production-release:
+          type: approval
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: master
+      - assume-role-mosaic-production:
+          context: api-assume-role-social-care-production-context
+          requires:
+            - permit-mosaic-production-release
+          filters:
+            branches:
+              only: master
+      - deploy-to-mosaic-production:
+          requires:
+            - assume-role-mosaic-production
           filters:
             branches:
               only: master
