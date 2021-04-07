@@ -58,9 +58,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         }
 
         [Test]
-        public void WarningNoteHasReviewDetails()
+        public void WarningNoteHasNotes()
         {
             _classUnderTest.Notes.Should().Be(null);
+        }
+
+        [Test]
+        public void WarningNoteHasNextReviewDate()
+        {
+            _classUnderTest.NextReviewDate.Should().Be(null);
         }
 
         [Test]

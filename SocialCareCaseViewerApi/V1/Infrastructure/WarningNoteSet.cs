@@ -37,6 +37,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public string Notes { get; set; }
 
+        [Column("next_review_date")]
+        public DateTime? NextReviewDate { get; set; }
+
         [Column("note_type")]
         public string NoteType { get; set; }
 

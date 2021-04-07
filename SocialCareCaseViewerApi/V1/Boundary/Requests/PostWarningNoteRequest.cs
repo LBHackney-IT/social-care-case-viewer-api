@@ -27,6 +27,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [StringLength(1000, ErrorMessage = "Character limit of 1000 exceeded")]
         public string Notes { get; set; }
 
+        public DateTime? NextReviewDate { get; set; }
+
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
         public string NoteType { get; set; }
 
