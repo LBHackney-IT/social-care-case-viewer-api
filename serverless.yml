@@ -161,4 +161,4 @@ custom:
   mongoDBImportBucket:
     staging: qlik-bucket-csv-to-postgres-staging
     production: mosaic-social-care-csv-prod
-    mosaic-prod: social-care-case-viewer-api-qlik-bucket
+    mosaic-prod: social-care-case-viewer-api-qlik-bucket-prod
