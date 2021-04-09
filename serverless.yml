@@ -24,12 +24,12 @@ functions:
     role: lambdaExecutionRole
     timeout: 30
     environment:
-      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
-      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password~true}
+      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string~true}
       SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
       SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
-      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
+      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key~true}
       HOME: /tmp
       MOSAIC_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-token~true}
       MOSAIC_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-url}
