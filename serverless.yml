@@ -154,7 +154,8 @@ custom:
         - subnet-0b7b8fea07efabf34
     mosaic-prod:
       securityGroupIds:
-        - sg-048f37056608033d3
+        - sg-0d8739383f0960389
+        - sg-0d92164e9f5d53800
       subnetIds:
         - subnet-0665104ee973a21be
         - subnet-005b74d8082f68a84
