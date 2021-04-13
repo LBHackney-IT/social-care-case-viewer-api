@@ -30,12 +30,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
-        private readonly IWarningNotesUseCase _warningNotesUseCase;
+        private readonly IWarningNoteUseCase _warningNoteUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNotesUseCase warningNotesUseCase)
+            IWarningNoteUseCase warningNotesUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
-            _warningNotesUseCase = warningNotesUseCase;
+            _warningNoteUseCase = warningNotesUseCase;
         }
 
         /// <summary>
@@ -323,12 +323,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                var result = _warningNotesUseCase.ExecutePost(request);
+                var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
             catch (CreateWarningNoteException ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get warning notes by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Success. Returns warning notes related to the specified ID</response>
+        /// <response code="404">No warning notes found for the specified ID</response>
+        [ProducesResponseType(typeof(List<WarningNote>), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("warningnotes/{id}")]
+        public IActionResult GetWarningNote([FromQuery] GetWarningNoteRequest request)
+        {
+            try
+            {
+                return Ok(_warningNoteUseCase.ExecuteGet(request));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
             }
         }
     }

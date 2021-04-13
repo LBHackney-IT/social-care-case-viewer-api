@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
-        private Mock<IWarningNotesUseCase> _mockWarningNotesUseCase;
+        private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
 
         private Fixture _fixture;
 
@@ -43,11 +43,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
-            _mockWarningNotesUseCase = new Mock<IWarningNotesUseCase>();
+            _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNotesUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -418,7 +418,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var createWarningNoteResponse = _fixture.Create<CreateWarningNoteResponse>();
             var createWarningNoteRequest = new CreateWarningNoteRequest();
 
-            _mockWarningNotesUseCase
+            _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePost(createWarningNoteRequest))
                 .Returns(createWarningNoteResponse);
             var response = _classUnderTest.CreateWarningNote(createWarningNoteRequest) as CreatedAtActionResult;
@@ -431,7 +431,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
         {
-            _mockWarningNotesUseCase
+            _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePost(It.IsAny<CreateWarningNoteRequest>()))
                 .Throws(new CreateWarningNoteException("Warning Note could not be inserted"));
 
@@ -440,6 +440,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("Warning Note could not be inserted");
+        }
+
+        [Test]
+        public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
+        {
+            var stubbedWarningNoteResponse = _fixture.Create<List<WarningNote>>();
+
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
+                .Returns(stubbedWarningNoteResponse);
+
+            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(stubbedWarningNoteResponse);
+        }
+
+        [Test]
+        public void GetWarningNoteReturns404IfDocumentNotDound()
+        {
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
+                .Throws(new DocumentNotFoundException("Document Not Found"));
+
+            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("Document Not Found");
         }
         #endregion
     }

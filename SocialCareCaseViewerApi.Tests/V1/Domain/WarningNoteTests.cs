@@ -1,24 +1,18 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.Domain;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
+namespace SocialCareCaseViewerApi.Tests.V1.Domain
 {
     [TestFixture]
-    public class WarningNoteSetTests
+    public class WarningNoteTests
     {
-        private WarningNoteSet _classUnderTest;
+        private WarningNote _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new WarningNoteSet();
-        }
-
-        [Test]
-        public void WarningNoteIsAuditEntity()
-        {
-            _classUnderTest.Should().BeAssignableTo<IAuditEntity>();
+            _classUnderTest = new WarningNote();
         }
 
         [Test]
@@ -103,42 +97,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
         public void WarningNoteHasDateManagerInformed()
         {
             _classUnderTest.DateManagerInformed.Should().Be(null);
-        }
-
-        #region Audit properties
-
-        [Test]
-        public void WarningNoteHasCreatedAt()
-        {
-            _classUnderTest.CreatedAt.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasCreatedBy()
-        {
-            _classUnderTest.CreatedBy.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasLastModifiedAt()
-        {
-            _classUnderTest.LastModifiedAt.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHadLastModifiedBy()
-        {
-            _classUnderTest.LastModifiedBy.Should().Be(null);
-        }
-
-        #endregion
-
-        [Test]
-        public void CloneReturnsMemberwiseClone()
-        {
-            var response = _classUnderTest.Clone();
-            response.Should().NotBe(_classUnderTest);
-            response.Should().BeEquivalentTo(_classUnderTest);
         }
     }
 }

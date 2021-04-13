@@ -14,10 +14,13 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -572,6 +575,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             //Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
 
+        #region Warning Notes
         [Test]
         public void CreateWarningNoteShouldInsertIntoTheDatabase()
         {
@@ -698,6 +702,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     act.Should().Throw<CreateWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
+        [Test]
+        public void GetWarningNotesReturnsTheExpectedWarningNote()
+        {
+            WarningNote warningNote = new WarningNote()
+            {
+                PersonId = 12345
+            };
+            WarningNote wrongWarningNote = new WarningNote()
+            {
+                PersonId = 67890
+            };
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNotes.Add(wrongWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var request = _fixture.Build<GetWarningNoteRequest>()
+                            .With(x => x.PersonId, warningNote.PersonId)
+                            .Create();
+
+            var response = _classUnderTest.GetWarningNotes(request);
+
+            response.Should().ContainSingle();
+            response.Should().ContainEquivalentOf(warningNote);
+            response.Should().NotContain(wrongWarningNote);
+        }
+
+        [Test]
+        public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
+        {
+            WarningNote warningNote = new WarningNote()
+            {
+                PersonId = 12345
+            };
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            var request = new GetWarningNoteRequest()
+            {
+                PersonId = 67890
+            };
+
+            Action act = () => _classUnderTest.GetWarningNotes(request);
+
+            act.Should().Throw<DocumentNotFoundException>()
+                .WithMessage($"No warning notes found relating to person id {request.PersonId}");
+        }
+        #endregion
     }
 }
 

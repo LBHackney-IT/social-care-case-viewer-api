@@ -16,6 +16,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -531,6 +532,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
+        #region Warning Notes
         public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
         {
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
@@ -540,7 +542,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CreateWarningNoteException($"Person with given id ({request.PersonId}) not found");
             }
 
-            WarningNoteSet warningNote = new WarningNoteSet()
+            //TODO: Extract request to domain process to EntityFactory
+            WarningNote warningNote = new WarningNote()
             {
                 PersonId = request.PersonId,
                 StartDate = request.StartDate,
@@ -599,6 +602,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return response;
         }
+
+        public IEnumerable<WarningNote> GetWarningNotes(GetWarningNoteRequest request)
+        {
+            var warningNotes = _databaseContext.WarningNotes
+                .Where(x => x.PersonId == request.PersonId);
+
+            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {request.PersonId}");
+
+            return warningNotes;
+        }
+
+        #endregion
 
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
