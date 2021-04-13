@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var visit1 = TestHelper.CreateVisitEntity();
             var visit2 = TestHelper.CreateVisitEntity();
-            var visits = new ListVisitsResponse {Visits = new List<Visit> {visit1, visit2}};
+            var visits = new ListVisitsResponse { Visits = new List<Visit> { visit1, visit2 } };
             var visitsJson = JsonSerializer.Serialize(visits);
             var mockHttpMessageHandler = CreateMockHttpHandler(visitsJson);
             _httpClient = CreateHttpClient(mockHttpMessageHandler);
