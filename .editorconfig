@@ -143,3 +143,4 @@ dotnet_diagnostic.CA2227.severity = none
 # Relates to protected declarations in MongoDBTests
 # Possible solution by making private and declaring using properties
 dotnet_diagnostic.CA1051.severity = none
+

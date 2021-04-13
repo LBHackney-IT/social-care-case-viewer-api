@@ -5,14 +5,14 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 namespace SocialCareCaseViewerApi.Tests.V1.Infrastructure
 {
     [TestFixture]
-    public class WarningNoteSetTests
+    public class WarningNoteTests
     {
-        private WarningNoteSet _classUnderTest;
+        private WarningNote _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new WarningNoteSet();
+            _classUnderTest = new WarningNote();
         }
 
         [Test]

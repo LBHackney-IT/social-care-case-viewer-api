@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 return null;
             }
             var dbWorker = _databaseGateway.GetWorkerByWorkerId(workerId);
-            return dbWorker?.ToDomain(false);
+            return dbWorker?.ToDomain(true);
         }
 
         private Worker? GetByWorkerEmail(string email)
@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             var dbWorker = _databaseGateway.GetWorkerByEmail(email);
-            return dbWorker?.ToDomain(false);
+            return dbWorker?.ToDomain(true);
         }
 
         private List<Worker>? GetByWorkerTeamId(int teamId)
@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 {
                     foreach (var workerTeam in workerTeams)
                     {
-                        domainWorkers.Add(workerTeam.Worker.ToDomain(false));
+                        domainWorkers.Add(workerTeam.Worker.ToDomain(true));
                     }
                 }
             }

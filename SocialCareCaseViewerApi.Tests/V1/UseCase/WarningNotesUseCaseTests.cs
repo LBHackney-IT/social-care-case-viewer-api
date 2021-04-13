@@ -13,14 +13,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class WarningNotesUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private WarningNotesUseCase _classUnderTest;
+        private WarningNoteUseCase _classUnderTest;
         private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _classUnderTest = new WarningNotesUseCase(_mockDatabaseGateway.Object);
+            _classUnderTest = new WarningNoteUseCase(_mockDatabaseGateway.Object);
             _fixture = new Fixture();
         }
 
