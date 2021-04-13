@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
         #region Get Warning Note
         [Test]
-        public void ExecuteGetReturnsACreateWarningNoteResponse()
+        public void ExecuteGetReturnsAGetWarningNoteResponse()
         {
             _mockDatabaseGateway.Setup(
                 x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
 
             response.Should().NotBeNull();
-            response.Should().BeOfType<GetWarningNoteResponse>();
+            response.Should().BeOfType<List<WarningNote>>();
         }
 
         [Test]
@@ -119,13 +119,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
                 .Returns(stubbedList);
 
-            var expectedResponse = new GetWarningNoteResponse
-            {
-                WarningNotes = new List<WarningNote>
+            var expectedResponse = new List<WarningNote>
                 {
                     stubbedWarningNote.ToDomain()
-                }
-            };
+                };
 
             var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
 

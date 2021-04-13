@@ -445,7 +445,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
         {
-            var stubbedWarningNoteResponse = _fixture.Create<GetWarningNoteResponse>();
+            var stubbedWarningNoteResponse = _fixture.Create<List<WarningNote>>();
 
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))

@@ -723,7 +723,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetWarningNotes(request);
 
-            response.Should().BeOfType<List<WarningNote>>();
             response.Should().ContainSingle();
             response.Should().ContainEquivalentOf(warningNote);
             response.Should().NotContain(wrongWarningNote);
