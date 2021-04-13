@@ -93,16 +93,17 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PersonId = dbWarningNote.PersonId,
                 StartDate = dbWarningNote.StartDate,
                 EndDate = dbWarningNote.EndDate,
-                IndividualNotified = dbWarningNote.IndividualNotified,
-                NotificationDetails = dbWarningNote.NotificationDetails,
-                ReviewDetails = dbWarningNote.ReviewDetails,
+                DisclosedWithIndividual = dbWarningNote.DisclosedWithIndividual,
+                DisclosedDetails = dbWarningNote.DisclosedDetails,
+                Notes = dbWarningNote.Notes,
+                NextReviewDate = dbWarningNote.NextReviewDate,
                 NoteType = dbWarningNote.NoteType,
                 Status = dbWarningNote.Status,
-                DateInformed = dbWarningNote.DateInformed,
-                HowInformed = dbWarningNote.HowInformed,
+                DisclosedDate = dbWarningNote.DisclosedDate,
+                DisclosedHow = dbWarningNote.DisclosedHow,
                 WarningNarrative = dbWarningNote.WarningNarrative,
-                ManagersName = dbWarningNote.ManagersName,
-                DateManagerInformed = dbWarningNote.DateManagerInformed
+                ManagerName = dbWarningNote.ManagerName,
+                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate
             };
         }
         #endregion
