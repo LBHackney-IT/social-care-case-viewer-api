@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
@@ -29,6 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
+        private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
 
         private Fixture _fixture;
 
@@ -44,10 +46,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
+            _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -409,6 +412,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().BeNull();
         }
 
+
+        [Test]
+        public void GetVisitByVisitIdReturns200StatusAndVisitWhenSuccessful()
+        {
+            var visit = TestHelper.CreateVisitEntity();
+            _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(long.Parse(visit.Id))).Returns(visit);
+
+            var response = _classUnderTest.GetVisitByVisitId(long.Parse(visit.Id)) as OkObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(visit);
+        }
+
+        [Test]
+        public void GetVisitByVisitIdReturns404StatusAndNullWhenUnsuccessful()
+        {
+            var response = _classUnderTest.GetVisitByVisitId(1L) as OkObjectResult;
+
+            response.Should().BeNull();
+            response?.StatusCode.Should().Be(200);
+        }
         #endregion
 
         #region WarningNotes

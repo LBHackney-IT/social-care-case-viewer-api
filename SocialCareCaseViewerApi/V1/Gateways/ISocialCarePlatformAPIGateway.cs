@@ -10,5 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         CaseNote GetCaseNoteById(string id);
 
         ListVisitsResponse GetVisitsByPersonId(string id);
+
+        Visit GetVisitByVisitId(long id);
     }
 }
