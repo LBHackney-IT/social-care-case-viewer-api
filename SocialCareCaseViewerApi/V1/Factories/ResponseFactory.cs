@@ -80,24 +80,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static List<BsonDocument> HistoricalVisitsToDomain(List<Visit> visits)
         {
-            List<BsonDocument> historicalVisits = new List<BsonDocument>();
-
-            foreach (var visit in visits)
-            {
-                historicalVisits.Add(new BsonDocument(
-                        new List<BsonElement>
-                        {
-                                new BsonElement("_id", visit.Id ?? ""),
-                                new BsonElement("worker_email", visit.CreatedByEmail),
-                                new BsonElement("form_name_overall", "Historical_Visit"),
-                                new BsonElement("form_name", visit.Title),
-                                new BsonElement("timestamp", visit.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
-                                new BsonElement("is_historical", true) //flag for front end
-                        }
-                        ));
-            }
-
-            return historicalVisits;
+            return visits.Select(visit => new BsonDocument(new List<BsonElement>
+                {
+                    new BsonElement("_id", visit.VisitId),
+                    new BsonElement("worker_email", visit.CreatedByEmail),
+                    new BsonElement("form_name_overall", "Historical_Visit"),
+                    new BsonElement("form_name", "Historical Visit"),
+                    new BsonElement("timestamp", visit.ActualDateTime ?? visit.PlannedDateTime),
+                    new BsonElement("is_historical", true)
+                }))
+                .ToList();
         }
 
         public static CaseNoteResponse ToResponse(CaseNote historicalCaseNote)

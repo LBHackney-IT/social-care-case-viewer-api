@@ -32,9 +32,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetVisitByVisitIdReturnsVisitWhenVisitWithIdExists()
         {
             var visit = TestHelper.CreateVisitEntity();
-            _mockSocialCarePlatformApiGateway.Setup(x => x.GetVisitByVisitId(long.Parse(visit.Id))).Returns(visit);
+            _mockSocialCarePlatformApiGateway.Setup(x => x.GetVisitByVisitId(visit.VisitId)).Returns(visit);
 
-            var response = _classUnderTest.Execute(long.Parse(visit.Id));
+            var response = _classUnderTest.Execute(visit.VisitId);
 
             response.Should().BeEquivalentTo(visit);
         }

@@ -50,13 +50,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             try
             {
-                string result;
-
                 T data = default;
 
-                string relativePath = $"{path}";
-
-                Uri uri = new Uri(relativePath, UriKind.Relative);
+                var uri = new Uri(path, UriKind.Relative);
 
                 var responseMessage = _httpClient.GetAsync(uri).Result;
 
@@ -64,7 +60,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     try
                     {
-                        result = responseMessage.Content.ReadAsStringAsync().Result;
+                        var result = responseMessage.Content.ReadAsStringAsync().Result;
 
                         data = JsonConvert.DeserializeObject<T>(result);
                     }
