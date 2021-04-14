@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -116,7 +115,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            exception.Message.Should().Be(((int)HttpStatusCode.Unauthorized).ToString());
+            exception.Message.Should().Be(((int) HttpStatusCode.Unauthorized).ToString());
         }
 
         [Test]
@@ -127,7 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            exception.Message.Should().Be(((int)HttpStatusCode.BadRequest).ToString());
+            exception.Message.Should().Be(((int) HttpStatusCode.BadRequest).ToString());
         }
 
 
@@ -142,7 +141,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            exception.Message.Should().Be(((int)code).ToString());
+            exception.Message.Should().Be(((int) code).ToString());
         }
 
         private HttpClient CreateHttpClient(HttpStatusCode httpStatusCode = HttpStatusCode.OK)
@@ -168,7 +167,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             return _httpClient;
         }
 
-        private HttpClient CreateHttpClient<T >(T content)
+        private HttpClient CreateHttpClient<T>(T content)
         {
             var jsonContent = JsonSerializer.Serialize(content);
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -191,15 +190,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             };
 
             return _httpClient;
-        }
-
-        private HttpClient CreateHttpClient(IMock<HttpMessageHandler> mockHttpMessageHandler)
-        {
-
-            return new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
         }
     }
 }
