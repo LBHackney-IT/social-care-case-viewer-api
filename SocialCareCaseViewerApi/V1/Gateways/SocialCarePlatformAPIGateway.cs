@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -44,6 +46,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var path = $"visits/{id}";
             return GetDataFromSocialCarePlatformAPI<Visit>(path);
+        }
+
+        public List<ResidentHistoricRecord> GetHistoricCaseNotesAndVisitsByPersonId(long id)
+        {
+            var path = $"residents/{id}/records";
+            return GetDataFromSocialCarePlatformAPI<List<ResidentHistoricRecord>>(path);
         }
 
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
