@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -22,120 +21,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     public class SocialCarePlatformAPIGatewayTests
     {
         private SocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
-        private readonly Uri _mockBaseUri = new Uri("http://mockBase");
+        private readonly Uri _mockBaseUri = new Uri("https://mockBase");
         private HttpClient _httpClient;
 
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsListCaseNotesResponse()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"
-                {
-                    ""caseNotes"": [
-                            {
-                                ""mosaicId"": ""1"",
-                                ""caseNoteId"": ""2"",
-                                ""caseNoteTitle"": ""My Title"",
-                                ""caseNoteContent"": ""Content"",
-                                ""createdOn"": ""2019-04-23T11:28:43"",
-                                ""createdByEmail"": ""first.last@domain.com"",
-                                ""createdByName"": ""last.first@domain.com"",
-                                ""noteType"": ""My type""
-                            }
-	                    ]
-                }")
-
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            var caseNote1 = TestHelper.CreateCaseNote();
+            var caseNote2 = TestHelper.CreateCaseNote();
+            var caseNotes = new ListCaseNotesResponse { CaseNotes = new List<CaseNote> { caseNote1, caseNote2 } };
+            var httpClient = CreateHttpClient(caseNotes);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1");
 
-            Assert.IsNotNull(response);
-            Assert.AreEqual(1, response.CaseNotes.Count);
-            Assert.AreEqual("1", response.CaseNotes.First().MosaicId);
-            Assert.AreEqual("2", response.CaseNotes.First().CaseNoteId);
-            Assert.AreEqual("My Title", response.CaseNotes.First().CaseNoteTitle);
-            Assert.AreEqual("Content", response.CaseNotes.First().CaseNoteContent);
-            //Assert.AreEqual("23/04/2019 11:28:43", response.CaseNotes.First().CreatedOn.ToString()); //TODO enable after date parsing fixes
-            Assert.AreEqual("first.last@domain.com", response.CaseNotes.First().CreatedByEmail);
-            Assert.AreEqual("last.first@domain.com", response.CaseNotes.First().CreatedByName);
-            Assert.AreEqual("My type", response.CaseNotes.First().NoteType);
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(caseNotes);
         }
 
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsCaseNoteResponse()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"
-                {
-                    ""mosaicId"": ""1"",
-                    ""caseNoteId"": ""2"",
-                    ""caseNoteTitle"": ""My Title"",
-                    ""caseNoteContent"": ""Content"",
-                    ""createdOn"": ""2019-04-23T11:28:43"",
-                    ""createdByEmail"": ""first.last@domain.com"",
-                    ""createdByName"": ""last.first@domain.com"",
-                    ""noteType"": ""My type""
-                }")
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            var caseNote = TestHelper.CreateCaseNote();
+            var httpClient = CreateHttpClient(caseNote);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetCaseNoteById("1");
 
-            Assert.IsNotNull(response);
-            Assert.AreEqual("1", response.MosaicId);
-            Assert.AreEqual("2", response.CaseNoteId);
-            Assert.AreEqual("My Title", response.CaseNoteTitle);
-            Assert.AreEqual("Content", response.CaseNoteContent);
-            //Assert.AreEqual("23/04/2019 11:28:43", response.CreatedOn.ToString()); //TODO enable after date parsing fixes
-            Assert.AreEqual("first.last@domain.com", response.CreatedByEmail);
-            Assert.AreEqual("last.first@domain.com", response.CreatedByName);
-            Assert.AreEqual("My type", response.NoteType);
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(caseNote);
         }
 
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsListVisitsResponse()
         {
-            var visit1 = TestHelper.CreateVisitEntity();
-            var visit2 = TestHelper.CreateVisitEntity();
+            var visit1 = TestHelper.CreateVisit();
+            var visit2 = TestHelper.CreateVisit();
             var visits = new ListVisitsResponse { Visits = new List<Visit> { visit1, visit2 } };
-            var visitsJson = JsonSerializer.Serialize(visits);
-            var mockHttpMessageHandler = CreateMockHttpHandler(visitsJson);
-            _httpClient = CreateHttpClient(mockHttpMessageHandler);
+            var httpClient = CreateHttpClient(visits);
 
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1");
 
@@ -147,12 +72,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsVisitResponse()
         {
-            var visit = TestHelper.CreateVisitEntity();
-            var visitJson = JsonSerializer.Serialize(visit);
-            var mockHttpMessageHandler = CreateMockHttpHandler(visitJson);
-            _httpClient = CreateHttpClient(mockHttpMessageHandler);
+            var visit = TestHelper.CreateVisit();
+            var httpClient = CreateHttpClient(visit);
 
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetVisitByVisitId(visit.VisitId);
 
@@ -163,116 +86,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseButDeserialisationFailsThenGatewayThrowsSocialCarePlatformApiExceptionWithCorrectMessage()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"(^(^^*(^*__INVALID_JSON__(^*^(^*((*")
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            const string invalidJson = "(^(^^*(^*__INVALID_JSON__(^*^(^*((*";
+            var httpClient = CreateHttpClient(invalidJson);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            Assert.AreEqual("Unable to deserialize ListCaseNotesResponse object", exception.Message);
+            exception.Message.Should().Be("Unable to deserialize ListCaseNotesResponse object");
         }
 
         [Test]
         public void GivenHttpClientReturnsValidResponseButDeserialisationOfVisitsFailsThenGatewayThrowsSocialCarePlatformApiExceptionWithCorrectMessage()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"(^(^^*(^*__INVALID_JSON__(^*^(^*((*")
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            const string invalidJson = "(^(^^*(^*__INVALID_JSON__(^*^(^*((*";
+            var httpClient = CreateHttpClient(invalidJson);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetVisitsByPersonId("1"); });
 
-            Assert.AreEqual("Unable to deserialize ListVisitsResponse object", exception.Message);
+            exception.Message.Should().Be("Unable to deserialize ListVisitsResponse object");
         }
 
         [Test]
         public void GivenHttpClientReturnsUnauthorisedResponseThenGatewayThrowsSocialCarePlatformApiException()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.Unauthorized
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            var httpClient = CreateHttpClient(HttpStatusCode.Unauthorized);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            Assert.AreEqual(((int) HttpStatusCode.Unauthorized).ToString(), exception.Message);
+            exception.Message.Should().Be(((int) HttpStatusCode.Unauthorized).ToString());
         }
-
 
         [Test]
         public void GivenHttpClientReturnsBadRequestResponseThenGatewayThrowsSocialCarePlatformApiException()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.BadRequest
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+            var httpClient = CreateHttpClient(HttpStatusCode.BadRequest);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
-            Assert.AreEqual(((int) HttpStatusCode.BadRequest).ToString(), exception.Message);
+            exception.Message.Should().Be(((int) HttpStatusCode.BadRequest).ToString());
         }
 
 
@@ -282,6 +136,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [TestCase(HttpStatusCode.NotFound)]
         public void GivenHttpClientReturnsNon200ResponseThenGatewayThrowsSocialCarePlatformApiExceptionWithStatusCode(HttpStatusCode code)
         {
+            var httpClient = CreateHttpClient(code);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
+
+            exception.Message.Should().Be(((int) code).ToString());
+        }
+
+        private HttpClient CreateHttpClient(HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+        {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
             mockHttpMessageHandler.Protected()
@@ -290,25 +154,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>()
                 )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = code
-            }).Verifiable();
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = httpStatusCode
+                }).Verifiable();
 
             _httpClient = new HttpClient(mockHttpMessageHandler.Object)
             {
                 BaseAddress = _mockBaseUri
             };
 
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
-
-            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
-
-            Assert.AreEqual(((int) code).ToString(), exception.Message);
+            return _httpClient;
         }
 
-        private Mock<HttpMessageHandler> CreateMockHttpHandler(string jsonContent)
+        private HttpClient CreateHttpClient<T>(T content)
         {
+            var jsonContent = JsonSerializer.Serialize(content);
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
 
             mockHttpMessageHandler.Protected()
@@ -321,7 +182,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 {
                     StatusCode = HttpStatusCode.OK,
                     Content = new StringContent(jsonContent)
-
                 }).Verifiable();
 
             _httpClient = new HttpClient(mockHttpMessageHandler.Object)
@@ -329,16 +189,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 BaseAddress = _mockBaseUri
             };
 
-            return mockHttpMessageHandler;
-        }
-
-        private HttpClient CreateHttpClient(Mock<HttpMessageHandler> mockHttpMessageHandler)
-        {
-
-            return new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
+            return _httpClient;
         }
     }
 }
