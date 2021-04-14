@@ -36,8 +36,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId).ToList();
-                if (historicRecords.Count > 0)
+                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId)?.ToList();
+                if (historicRecords?.Count > 0)
                 {
                     result.AddRange(historicRecords);
                 }
@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
                 result = query.ToList();
             }
-            //if document does not exist in the DB, then thrown a corresponsing error.
+            //if document does not exist in the DB, then thrown a corresponding error.
             if (result == null)
             {
                 throw new DocumentNotFoundException("document not found");
@@ -205,18 +205,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         response.OrderBy(x => x.OfficerEmail) :
                         response.OrderByDescending(x => x.OfficerEmail);
                 default:
-
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x =>
-                            {
-                                return GetDateToSortBy(x);
-                            }
-                        ) :
-                        response.OrderByDescending(x =>
-                            {
-                                return GetDateToSortBy(x);
-                            }
-                        );
+                    return (orderBy == "asc") ? response.OrderBy(GetDateToSortBy) : response.OrderByDescending(GetDateToSortBy);
             }
 
             static DateTime? GetDateToSortBy(CareCaseData x)
