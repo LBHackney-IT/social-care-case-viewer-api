@@ -1,7 +1,8 @@
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    public class ResidentHistoricRecord {
+    public class ResidentHistoricRecord
+    {
 
         public long RecordId { get; set; }
 
@@ -30,9 +31,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public bool IsHistoric { get; set; } = true;
     }
 
-public enum RecordType
-{
-    CaseNote,
-    Visit
-}
+    public enum RecordType
+    {
+        CaseNote,
+        Visit
+    }
 }

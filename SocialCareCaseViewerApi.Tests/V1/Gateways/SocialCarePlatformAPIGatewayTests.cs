@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var residentHistoricRecord = TestHelper.CreateResidentHistoricRecord();
             var residentHistoricRecordCaseNote = TestHelper.CreateResidentHistoricRecordCaseNote(residentHistoricRecord.PersonId);
             var residentHistoricRecordVisit = TestHelper.CreateResidentHistoricRecordVisit(residentHistoricRecord.PersonId);
-            var residentHistoricRecordList = new List<ResidentHistoricRecord> {residentHistoricRecord, residentHistoricRecordCaseNote, residentHistoricRecordVisit};
+            var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord, residentHistoricRecordCaseNote, residentHistoricRecordVisit };
             var httpClient = CreateHttpClient(residentHistoricRecordList);
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
