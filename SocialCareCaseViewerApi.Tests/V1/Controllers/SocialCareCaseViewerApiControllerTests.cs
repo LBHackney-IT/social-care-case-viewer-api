@@ -434,10 +434,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetVisitByVisitIdReturns404StatusAndNullWhenUnsuccessful()
         {
-            var response = _classUnderTest.GetVisitByVisitId(1L) as OkObjectResult;
+            var response = _classUnderTest.GetVisitByVisitId(1L) as NotFoundResult;
 
-            response.Should().BeNull();
-            response?.StatusCode.Should().Be(200);
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(404);
         }
         #endregion
 
