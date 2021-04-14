@@ -139,7 +139,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var historicRecords = _socialCarePlatformAPIGateway.GetHistoricCaseNotesAndVisitsByPersonId(long.Parse(personId));
-            casesAndVisits.AddRange(ConvertHistoricRecordsToDomain(historicRecords));
+            if (historicRecords.Count > 0)
+            {
+                casesAndVisits.AddRange(ConvertHistoricRecordsToDomain(historicRecords));
+            }
 
             return casesAndVisits;
         }
