@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var request = _fixture.Create<ListCasesRequest>();
             request.MosaicId = "1";
 
-            _classUnderTest.GetProcessData(request, It.IsAny<string>());
+            _classUnderTest.GetProcessData(request, "2");
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<string>()), Times.Once);
         }
@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var request = _fixture.Create<ListCasesRequest>();
             request.MosaicId = "1";
 
-            _classUnderTest.GetProcessData(request, It.IsAny<string>());
+            _classUnderTest.GetProcessData(request, "2");
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Once);
         }
@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var request = _fixture.Create<ListCasesRequest>();
             request.MosaicId = "1";
 
-            _classUnderTest.GetProcessData(request, It.IsAny<string>());
+            _classUnderTest.GetProcessData(request, "2");
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
         }
@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var request = _fixture.Create<ListCasesRequest>();
             request.MosaicId = "1";
 
-            _classUnderTest.GetProcessData(request, It.IsAny<string>());
+            _classUnderTest.GetProcessData(request, "2");
 
             _mockSocialCarePlatformAPIGateway.Verify(x => x.GetVisitsByPersonId(It.IsAny<string>()), Times.Never());
         }
