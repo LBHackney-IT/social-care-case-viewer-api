@@ -613,6 +613,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return warningNotes;
         }
 
+        public void PatchWarningNote(PatchWarningNoteRequest request)
+        {
+            // amend the existing warning note
+            WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId).FirstOrDefault();
+            if (request.EndedDate != null) warningNote.EndDate = request.EndedDate;
+            warningNote.LastReviewDate = request.ReviewDate;
+            warningNote.NextReviewDate = request.NextReviewDate;
+            if (request.Status != null) warningNote.Status = request.Status;
+            warningNote.LastModifiedAt = request.ReviewDate;
+            warningNote.LastModifiedBy = request.ReviewedBy;
+            _databaseContext.SaveChanges();
+        }
+
+        private static void PostWarningNoteReview(PatchWarningNoteRequest request)
+        {
+            // add a new review
+
+        }
+
         #endregion
 
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)

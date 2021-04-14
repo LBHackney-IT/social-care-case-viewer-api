@@ -748,6 +748,113 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             act.Should().Throw<DocumentNotFoundException>()
                 .WithMessage($"No warning notes found relating to person id {request.PersonId}");
         }
+
+        [Test]
+        public void PatchWarningNoteUpdatesAnExistingRecordInTheDatabase()
+        {
+            WarningNote stubbedWarningNote = _fixture.Build<WarningNote>()
+                                                .Without(x => x.Id)
+                                                .Without(x => x.Person).Create();
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
+
+            //grab the given id to "simulate" existing record
+            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
+
+            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
+                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                                                .Create();
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.EndDate.Should().Be(request.EndedDate);
+            updatedRecord.LastReviewDate.Should().Be(request.ReviewDate);
+            updatedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
+            updatedRecord.Status.Should().Be(request.Status);
+            updatedRecord.Status.Should().NotBe(stubbedWarningNoteOriginal.Status);
+            updatedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+            updatedRecord.LastModifiedBy.Should().NotBe(stubbedWarningNoteOriginal.LastModifiedBy);
+
+            updatedRecord.Id.Should().Be(stubbedWarningNoteOriginal.Id);
+            updatedRecord.PersonId.Should().Be(stubbedWarningNoteOriginal.PersonId);
+            updatedRecord.StartDate.Should().Be(stubbedWarningNoteOriginal.StartDate);
+            updatedRecord.IndividualNotified.Should().Be(stubbedWarningNoteOriginal.IndividualNotified);
+            updatedRecord.NotificationDetails.Should().Be(stubbedWarningNoteOriginal.NotificationDetails);
+            updatedRecord.ReviewDetails.Should().Be(stubbedWarningNoteOriginal.ReviewDetails);
+            updatedRecord.NoteType.Should().Be(stubbedWarningNoteOriginal.NoteType);
+            updatedRecord.DateInformed.Should().Be(stubbedWarningNoteOriginal.DateInformed);
+            updatedRecord.HowInformed.Should().Be(stubbedWarningNoteOriginal.HowInformed);
+            updatedRecord.WarningNarrative.Should().Be(stubbedWarningNoteOriginal.WarningNarrative);
+            updatedRecord.ManagersName.Should().Be(stubbedWarningNoteOriginal.ManagersName);
+            updatedRecord.DateManagerInformed.Should().Be(stubbedWarningNoteOriginal.DateManagerInformed);
+            updatedRecord.CreatedBy.Should().Be(stubbedWarningNoteOriginal.CreatedBy);
+        }
+
+        [Test]
+        public void PatchWarningNoteDoesNotChangeTheEndDateIfRequestPropertyIsNull()
+        {
+            WarningNote stubbedWarningNote = _fixture.Build<WarningNote>()
+                                                .Without(x => x.Id)
+                                                .Without(x => x.Person).Create();
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
+
+            //grab the given id to "simulate" existing record
+            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
+
+            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
+                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                                                .Create();
+
+            request.EndedDate = null;
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.EndDate.Should().NotBeNull();
+            updatedRecord.EndDate.Should().Be(stubbedWarningNoteOriginal.EndDate);
+        }
+
+        [Test]
+        public void PatchWarningNoteDoesNotChangeTheStatusIfRequestPropertyIsNull()
+        {
+            WarningNote stubbedWarningNote = _fixture.Build<WarningNote>()
+                                                .Without(x => x.Id)
+                                                .Without(x => x.Person).Create();
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
+
+            //grab the given id to "simulate" existing record
+            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
+
+            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
+                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                                                .Create();
+
+            request.Status = null;
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.Status.Should().NotBeNull();
+            updatedRecord.Status.Should().Be(stubbedWarningNoteOriginal.Status);
+        }
         #endregion
     }
 }
