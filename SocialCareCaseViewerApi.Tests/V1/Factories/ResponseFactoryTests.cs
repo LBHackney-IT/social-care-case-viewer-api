@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalVisitToBsonDocument()
         {
-            var visit = TestHelper.CreateVisitEntity();
+            var visit = TestHelper.CreateVisit();
 
             var expectedDocument = new BsonDocument(
                         new List<BsonElement>

@@ -5,7 +5,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class TestHelper
     {
-        public static Visit CreateVisitEntity()
+        public static Visit CreateVisit()
         {
             return new Faker<Visit>()
                 .RuleFor(v => v.VisitId, f => f.UniqueIndex)
@@ -23,6 +23,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.CpVisitOnTime, f => f.Random.Bool())
                 .RuleFor(v => v.CreatedByEmail, f => f.Person.Email)
                 .RuleFor(v => v.CreatedByName, f => f.Person.FullName);
+        }
+
+        public static CaseNote CreateCaseNote()
+        {
+            return new Faker<CaseNote>()
+                .RuleFor(c => c.CaseNoteId, f => f.UniqueIndex.ToString())
+                .RuleFor(c => c.MosaicId, f => f.UniqueIndex.ToString())
+                .RuleFor(c => c.CreatedOn, f => f.Date.Past(1))
+                .RuleFor(c => c.NoteType, f => f.Random.String2(50))
+                .RuleFor(c => c.CaseNoteContent, f => f.Random.String2(50))
+                .RuleFor(c => c.CaseNoteTitle, f => f.Random.String2(50))
+                .RuleFor(c => c.CreatedByEmail, f => f.Person.Email)
+                .RuleFor(c => c.CreatedByName, f => f.Person.FirstName);
         }
     }
 }

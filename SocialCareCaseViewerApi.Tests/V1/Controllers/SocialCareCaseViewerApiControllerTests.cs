@@ -416,7 +416,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetVisitByVisitIdReturns200StatusAndVisitWhenSuccessful()
         {
-            var visit = TestHelper.CreateVisitEntity();
+            var visit = TestHelper.CreateVisit();
             _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(visit.VisitId)).Returns(visit);
 
             var response = _classUnderTest.GetVisitByVisitId(visit.VisitId) as OkObjectResult;
