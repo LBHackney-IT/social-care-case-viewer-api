@@ -172,6 +172,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GivenHttpClientReturnsValidResponseThenGatewayReturnsVisitResponse()
+        {
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+            .ReturnsAsync(new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(@"
+                {
+                    ""mosaicId"": ""1"",
+                    ""title"": ""Visit title"",
+                    ""content"": ""Visit content""
+                 }")
+
+            }).Verifiable();
+
+            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = _mockBaseUri
+            };
+
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
+
+            var response = _socialCarePlatformAPIGateway.GetVisitByVisitId(1);
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual("1", response.MosaicId);
+            Assert.AreEqual("Visit title", response.Title);
+            Assert.AreEqual("Visit content", response.Content);
+        }
+
+        [Test]
         public void GivenHttpClientReturnsValidResponseButDeserialisationFailsThenGatewayThrowsSocialCarePlatformApiExceptionWithCorrectMessage()
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);

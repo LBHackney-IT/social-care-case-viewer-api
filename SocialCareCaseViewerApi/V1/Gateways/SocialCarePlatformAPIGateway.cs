@@ -40,6 +40,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>(path);
         }
 
+        public Visit GetVisitByVisitId(long id)
+        {
+            var path = $"visits/{id}";
+            return GetDataFromSocialCarePlatformAPI<Visit>(path);
+        }
+
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
         {
             try

@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -31,11 +32,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
+        private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -46,6 +48,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
+            _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
         }
 
         /// <summary>
@@ -289,6 +292,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(ex.Message == "404" ? 404 : 500);
             }
+        }
+
+        /// <summary>
+        /// Get visit by visit id
+        /// </summary>
+        /// <response code="200">Success. Returns a matching visit</response>
+        /// <response code="404">No visit found for visit id</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(Visit), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("visits/{visitId:long}")]
+        public IActionResult GetVisitByVisitId(long visitId)
+        {
+            var response = _getVisitByVisitIdUseCase.Execute(visitId);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
         }
 
         /// <summary>

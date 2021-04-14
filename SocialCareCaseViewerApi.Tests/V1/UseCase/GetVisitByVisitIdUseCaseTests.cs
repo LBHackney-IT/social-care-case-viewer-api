@@ -1,0 +1,42 @@
+using AutoFixture;
+using FluentAssertions;
+using Moq;
+using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.UseCase;
+
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase
+{
+    public class GetVisitByVisitIdUseCaseTests
+    {
+        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformApiGateway;
+        private GetVisitByVisitIdUseCase _classUnderTest;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockSocialCarePlatformApiGateway = new Mock<ISocialCarePlatformAPIGateway>();
+            _classUnderTest = new GetVisitByVisitIdUseCase(_mockSocialCarePlatformApiGateway.Object);
+        }
+
+        [Test]
+        public void GetVisitByVisitIdReturnsNullWhenNoVisitWithIdExists()
+        {
+            var response = _classUnderTest.Execute(0L);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetVisitByVisitIdReturnsVisitWhenVisitWithIdExists()
+        {
+            var visit = TestHelper.CreateVisitEntity();
+            _mockSocialCarePlatformApiGateway.Setup(x => x.GetVisitByVisitId(long.Parse(visit.Id))).Returns(visit);
+
+            var response = _classUnderTest.Execute(long.Parse(visit.Id));
+
+            response.Should().BeEquivalentTo(visit);
+        }
+    }
+}
