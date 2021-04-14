@@ -36,7 +36,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                result.AddRange(GetHistoricRecordsByPersonId(request.MosaicId, ncId));
+                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId).ToList();
+                if (historicRecords.Count > 0)
+                {
+                    result.AddRange(historicRecords);
+                }
             }
             else
             {
