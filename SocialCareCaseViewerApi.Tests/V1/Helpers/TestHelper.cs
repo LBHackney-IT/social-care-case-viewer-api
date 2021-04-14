@@ -74,10 +74,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.CaseFormUrl, f => f.Internet.Url())
                 .RuleFor(r => r.CaseFormTimeStamp, f => f.Date.Past().ToString("s"))
                 .RuleFor(r => r.DateOfEvent, f => f.Date.Past().ToString("s"))
-                .RuleFor(r => r.CaseNoteTitle, f => f.Random.String2(50))
+                .RuleFor(r => r.CaseNoteTitle, "Historical Visit")
                 .RuleFor(r => r.RecordType, f => f.PickRandom<RecordType>())
                 .RuleFor(r => r.IsHistoric, true)
-                .RuleFor(r => r.RecordId, f => f.UniqueIndex)
                 .RuleFor(r => r.RecordId, f => f.UniqueIndex)
                 .RuleFor(r => r.CaseNote, caseNote);
         }
