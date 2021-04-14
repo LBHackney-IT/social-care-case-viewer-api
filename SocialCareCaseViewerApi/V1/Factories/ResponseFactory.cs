@@ -86,7 +86,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static CaseNoteResponse ToResponse(CaseNote historicalCaseNote)
         {
-            return new CaseNoteResponse()
+            return new CaseNoteResponse
             {
                 RecordId = historicalCaseNote.CaseNoteId,
                 PersonId = historicalCaseNote.MosaicId,
