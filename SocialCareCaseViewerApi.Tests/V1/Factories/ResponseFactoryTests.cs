@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -110,35 +111,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalVisitToBsonDocument()
         {
-            string visitId = "1";
-            string mosaicId = "1";
-            string title = "Title";
-            string content = "Content";
-            string email = "first.last@domain.com";
-            DateTime createdOn = DateTime.Now;
-
-            Visit visit = new Visit()
-            {
-                MosaicId = mosaicId,
-                Title = title,
-                Content = content,
-                CreatedByEmail = email,
-                CreatedOn = createdOn,
-                Id = visitId
-            };
+            var visit = TestHelper.CreateVisitEntity();
 
             var expectedDocument = new BsonDocument(
                         new List<BsonElement>
                         {
-                                new BsonElement("_id", visitId),
-                                new BsonElement("worker_email", email),
+                                new BsonElement("_id", visit.VisitId),
+                                new BsonElement("worker_email", visit.CreatedByEmail),
                                 new BsonElement("form_name_overall", "Historical_Visit"),
-                                new BsonElement("form_name", title),
-                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
+                                new BsonElement("form_name", "Historical Visit"),
+                                new BsonElement("timestamp", visit.ActualDateTime ?? visit.PlannedDateTime),
                                 new BsonElement("is_historical", true)
                         });
 
-            List<Visit> visits = new List<Visit>() { visit };
+            var visits = new List<Visit>() { visit };
 
             var result = ResponseFactory.HistoricalVisitsToDomain(visits);
 

@@ -417,9 +417,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetVisitByVisitIdReturns200StatusAndVisitWhenSuccessful()
         {
             var visit = TestHelper.CreateVisitEntity();
-            _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(long.Parse(visit.Id))).Returns(visit);
+            _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(visit.VisitId)).Returns(visit);
 
-            var response = _classUnderTest.GetVisitByVisitId(long.Parse(visit.Id)) as OkObjectResult;
+            var response = _classUnderTest.GetVisitByVisitId(visit.VisitId) as OkObjectResult;
 
             if (response == null)
             {
@@ -434,10 +434,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetVisitByVisitIdReturns404StatusAndNullWhenUnsuccessful()
         {
-            var response = _classUnderTest.GetVisitByVisitId(1L) as OkObjectResult;
+            var response = _classUnderTest.GetVisitByVisitId(1L) as NotFoundResult;
 
-            response.Should().BeNull();
-            response?.StatusCode.Should().Be(200);
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(404);
         }
         #endregion
 

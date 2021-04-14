@@ -1,12 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 
@@ -122,91 +128,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsListVisitsResponse()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"
-                {
-                    ""visits"": [
-                            {
-                                ""mosaicId"": ""1"",
-                                ""title"": ""Visit title"",
-                                ""content"": ""Visit content""
-                            },
- {
-                                ""mosaicId"": ""2"",
-                                ""title"": ""Visit title 2"",
-                                ""content"": ""Visit content 2""
-                            }
-	                    ]
-                }")
-
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
+            var visit1 = TestHelper.CreateVisitEntity();
+            var visit2 = TestHelper.CreateVisitEntity();
+            var visits = new ListVisitsResponse { Visits = new List<Visit> { visit1, visit2 } };
+            var visitsJson = JsonSerializer.Serialize(visits);
+            var mockHttpMessageHandler = CreateMockHttpHandler(visitsJson);
+            _httpClient = CreateHttpClient(mockHttpMessageHandler);
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1");
 
-            Assert.IsNotNull(response);
-            Assert.AreEqual(2, response.Visits.Count);
-            Assert.AreEqual("1", response.Visits.First().MosaicId);
-            Assert.AreEqual("Visit title", response.Visits.First().Title);
-            Assert.AreEqual("Visit content", response.Visits.First().Content);
-
-            Assert.AreEqual("2", response.Visits.Skip(1).First().MosaicId);
-            Assert.AreEqual("Visit title 2", response.Visits.Skip(1).First().Title);
-            Assert.AreEqual("Visit content 2", response.Visits.Skip(1).First().Content);
+            response.Should().NotBeNull();
+            response.Visits.Count.Should().Be(visits.Visits.Count);
+            response.Should().BeEquivalentTo(visits);
         }
 
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsVisitResponse()
         {
-            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            mockHttpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-            .ReturnsAsync(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(@"
-                {
-                    ""mosaicId"": ""1"",
-                    ""title"": ""Visit title"",
-                    ""content"": ""Visit content""
-                 }")
-
-            }).Verifiable();
-
-            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
-            {
-                BaseAddress = _mockBaseUri
-            };
+            var visit = TestHelper.CreateVisitEntity();
+            var visitJson = JsonSerializer.Serialize(visit);
+            var mockHttpMessageHandler = CreateMockHttpHandler(visitJson);
+            _httpClient = CreateHttpClient(mockHttpMessageHandler);
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(_httpClient);
 
-            var response = _socialCarePlatformAPIGateway.GetVisitByVisitId(1);
+            var response = _socialCarePlatformAPIGateway.GetVisitByVisitId(visit.VisitId);
 
-            Assert.IsNotNull(response);
-            Assert.AreEqual("1", response.MosaicId);
-            Assert.AreEqual("Visit title", response.Title);
-            Assert.AreEqual("Visit content", response.Content);
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(visit);
         }
 
         [Test]
@@ -354,6 +305,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1"); });
 
             Assert.AreEqual(((int) code).ToString(), exception.Message);
+        }
+
+        private Mock<HttpMessageHandler> CreateMockHttpHandler(string jsonContent)
+        {
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(jsonContent)
+
+                }).Verifiable();
+
+            _httpClient = new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = _mockBaseUri
+            };
+
+            return mockHttpMessageHandler;
+        }
+
+        private HttpClient CreateHttpClient(Mock<HttpMessageHandler> mockHttpMessageHandler)
+        {
+
+            return new HttpClient(mockHttpMessageHandler.Object)
+            {
+                BaseAddress = _mockBaseUri
+            };
         }
     }
 }

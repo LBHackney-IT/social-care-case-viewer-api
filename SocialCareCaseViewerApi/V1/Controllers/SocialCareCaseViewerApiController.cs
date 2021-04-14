@@ -5,7 +5,6 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IIS.Core;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -126,12 +125,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 {
                     dateValidationError += " Invalid end date";
                 }
-                if (!string.IsNullOrEmpty(dateValidationError))
-                {
-                    return StatusCode(400, dateValidationError);
-                }
-
-                return Ok(_processDataUseCase.Execute(request));
+                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
