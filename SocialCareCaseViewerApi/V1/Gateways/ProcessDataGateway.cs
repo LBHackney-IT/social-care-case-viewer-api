@@ -154,18 +154,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private static IEnumerable<BsonDocument> ConvertHistoricRecordsToDomain(List<ResidentHistoricRecord> residentHistoricRecords)
         {
             var convertedHistoricResponse = new List<BsonDocument>();
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
 
             foreach (var residentHistoricRecord in residentHistoricRecords)
             {
-                // feature flag is for historic visits
-                if (showHistoricData is "true" && residentHistoricRecord.RecordType == RecordType.Visit)
+                if (residentHistoricRecord.RecordType == RecordType.Visit)
                 {
-                    convertedHistoricResponse.Add(ResponseFactory.HistoricalVisitsToDomain(residentHistoricRecord as ResidentHistoricRecordVisit));
+                    var historicVisit = residentHistoricRecord as ResidentHistoricRecordVisit;
+                    if (historicVisit?.Visit != null)
+                    {
+                        convertedHistoricResponse.Add(ResponseFactory.HistoricalVisitsToDomain(historicVisit));
+                    }
                 }
                 if (residentHistoricRecord.RecordType == RecordType.CaseNote)
                 {
-                    convertedHistoricResponse.Add(ResponseFactory.HistoricalCaseNotesToDomain(residentHistoricRecord as ResidentHistoricRecordCaseNote));
+                    var historicCaseNote = residentHistoricRecord as ResidentHistoricRecordCaseNote;
+                    if (historicCaseNote?.CaseNote != null)
+                    {
+                        convertedHistoricResponse.Add(ResponseFactory.HistoricalCaseNotesToDomain(historicCaseNote));
+                    }
                 }
             }
 

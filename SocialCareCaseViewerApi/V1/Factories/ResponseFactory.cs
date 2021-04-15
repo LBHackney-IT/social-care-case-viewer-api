@@ -61,12 +61,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new BsonDocument(
                 new List<BsonElement>
                 {
-                    new BsonElement("_id", note.CaseNote.CaseNoteId ?? ""),
-                    new BsonElement("mosaic_id", note.CaseNote.MosaicId ?? ""),
-                    new BsonElement("worker_email", note.CaseNote.CreatedByEmail ?? ""),
+                    new BsonElement("_id", note.CaseNote.CaseNoteId),
+                    new BsonElement("mosaic_id", note.CaseNote.MosaicId),
+                    new BsonElement("worker_email", note.CaseNote.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
                     new BsonElement("form_name", note.CaseNoteTitle ?? ""),
-                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
+                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
                 }
             );
