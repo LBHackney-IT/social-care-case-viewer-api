@@ -82,24 +82,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             result.Should().BeEquivalentTo(expectedDocument);
         }
 
-        [Test]
-        public void CanMapHistoricalVisitToBsonDocument()
-        {
-            var visit = TestHelper.CreateResidentHistoricRecordVisit();
-            var expectedDocument = new BsonDocument(
-            new List<BsonElement> {
-                    new BsonElement("_id", visit.Visit.VisitId),
-                    new BsonElement("worker_email", visit.Visit.CreatedByEmail),
-                    new BsonElement("form_name_overall", "Historical_Visit"),
-                    new BsonElement("form_name", $"Historical Visit - {visit.Visit.VisitType}"),
-                    new BsonElement("timestamp", DateTime.Parse(visit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")),
-                    new BsonElement("is_historical", true)
-            });
-
-            var result = ResponseFactory.HistoricalVisitsToDomain(visit);
-
-            result.Should().BeEquivalentTo(expectedDocument);
-        }
+        // [Test]
+        // public void CanMapHistoricalVisitToBsonDocument()
+        // {
+        //     var visit = TestHelper.CreateResidentHistoricRecordVisit();
+        //     var expectedDocument = new BsonDocument(
+        //     new List<BsonElement> {
+        //             new BsonElement("_id", visit.Visit.VisitId),
+        //             new BsonElement("worker_email", visit.Visit.CreatedByEmail),
+        //             new BsonElement("form_name_overall", "Historical_Visit"),
+        //             new BsonElement("form_name", $"Historical Visit - {visit.Visit.VisitType}"),
+        //             new BsonElement("timestamp", DateTime.Parse(visit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")),
+        //             new BsonElement("is_historical", true)
+        //     });
+        //
+        //     var result = ResponseFactory.HistoricalVisitsToDomain(visit);
+        //
+        //     result.Should().BeEquivalentTo(expectedDocument);
+        // }
 
         [Test]
         public void CanMapHistoricalCaseNoteToCaseNoteResponse()
