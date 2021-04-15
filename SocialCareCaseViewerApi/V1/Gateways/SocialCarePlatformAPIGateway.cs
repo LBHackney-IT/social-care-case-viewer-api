@@ -26,20 +26,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseNote GetCaseNoteById(string id)
         {
-            string path = $"case-notes/{id}";
+            var path = $"case-notes/{id}";
             return GetDataFromSocialCarePlatformAPI<CaseNote>(path);
         }
 
         public ListCaseNotesResponse GetCaseNotesByPersonId(string id)
         {
-            string path = $"residents/{id}/case-notes";
+            var path = $"residents/{id}/case-notes";
             return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>(path);
         }
 
-        public ListVisitsResponse GetVisitsByPersonId(string id)
+        public IEnumerable<Visit> GetVisitsByPersonId(string id)
         {
-            string path = $"residents/{id}/visits";
-            return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>(path);
+            var path = $"residents/{id}/visits";
+            return GetDataFromSocialCarePlatformAPI<List<Visit>>(path);
         }
 
         public Visit GetVisitByVisitId(long id)
