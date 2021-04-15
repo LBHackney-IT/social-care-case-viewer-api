@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var visit1 = TestHelper.CreateVisit();
             var visit2 = TestHelper.CreateVisit();
-            var visits = new ListVisitsResponse { Visits = new List<Visit> { visit1, visit2 } };
+            var visits = new List<Visit> { visit1, visit2 };
             var httpClient = CreateHttpClient(visits);
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1");
 
             response.Should().NotBeNull();
-            response.Visits.Count.Should().Be(visits.Visits.Count);
+            response.Count.Should().Be(visits.Count);
             response.Should().BeEquivalentTo(visits);
         }
 
@@ -105,16 +105,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetVisitsByPersonId("1"); });
 
-            exception.Message.Should().Be("Unable to deserialize ListVisitsResponse object");
+            exception.Message.Should().Be("Unable to deserialize List`1 object");
         }
 
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsResidentHistoricRecords()
         {
             var residentHistoricRecord = TestHelper.CreateResidentHistoricRecord();
-            var residentHistoricRecordCaseNote = TestHelper.CreateResidentHistoricRecordCaseNote(residentHistoricRecord.PersonId);
-            var residentHistoricRecordVisit = TestHelper.CreateResidentHistoricRecordVisit(residentHistoricRecord.PersonId);
-            var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord, residentHistoricRecordCaseNote, residentHistoricRecordVisit };
+            var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord };
             var httpClient = CreateHttpClient(residentHistoricRecordList);
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
