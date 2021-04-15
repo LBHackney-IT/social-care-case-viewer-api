@@ -79,7 +79,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 new BsonElement("_id", historicVisit.Visit.VisitId),
                 new BsonElement("worker_email", historicVisit.Visit.CreatedByEmail),
                 new BsonElement("form_name_overall", "Historical_Visit"),
-                new BsonElement("form_name", "Historical Visit"),
+                new BsonElement("form_name", $"Historical Visit - {historicVisit.Visit.VisitType}"),
                 new BsonElement("timestamp", DateTime.Parse(historicVisit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
                 new BsonElement("is_historical", true)
             });
