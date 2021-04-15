@@ -14,6 +14,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -105,6 +106,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetVisitsByPersonId("1"); });
 
             exception.Message.Should().Be("Unable to deserialize ListVisitsResponse object");
+        }
+
+        [Test]
+        public void GivenHttpClientReturnsValidResponseThenGatewayReturnsResidentHistoricRecords()
+        {
+            var residentHistoricRecord = TestHelper.CreateResidentHistoricRecord();
+            var residentHistoricRecordCaseNote = TestHelper.CreateResidentHistoricRecordCaseNote(residentHistoricRecord.PersonId);
+            var residentHistoricRecordVisit = TestHelper.CreateResidentHistoricRecordVisit(residentHistoricRecord.PersonId);
+            var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord, residentHistoricRecordCaseNote, residentHistoricRecordVisit };
+            var httpClient = CreateHttpClient(residentHistoricRecordList);
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var response = _socialCarePlatformAPIGateway.GetHistoricCaseNotesAndVisitsByPersonId(residentHistoricRecord.PersonId);
+
+            response.Should().BeEquivalentTo(residentHistoricRecordList);
         }
 
         [Test]

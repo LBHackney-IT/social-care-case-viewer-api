@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
@@ -55,46 +56,38 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<BsonDocument> HistoricalCaseNotesToDomain(List<CaseNote> caseNotes)
+        public static BsonDocument HistoricalCaseNotesToDomain(ResidentHistoricRecordCaseNote note)
         {
-            List<BsonDocument> historicalCaseNotes = new List<BsonDocument>();
-
-            foreach (var note in caseNotes)
-            {
-                historicalCaseNotes.Add(new BsonDocument(
-                        new List<BsonElement>
-                        {
-                                new BsonElement("_id", note.CaseNoteId ?? ""),
-                                new BsonElement("mosaic_id", note.MosaicId ?? ""),
-                                new BsonElement("worker_email", note.CreatedByEmail ?? ""),
-                                new BsonElement("form_name_overall", "Historical_Case_Note"),
-                                new BsonElement("form_name", note.CaseNoteTitle ?? ""),
-                                new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
-                                new BsonElement("is_historical", true) //flag for front end
-                        }
-                        ));
-            }
-
-            return historicalCaseNotes;
+            return new BsonDocument(
+                new List<BsonElement>
+                {
+                    new BsonElement("_id", note.CaseNote.CaseNoteId ?? ""),
+                    new BsonElement("mosaic_id", note.CaseNote.MosaicId ?? ""),
+                    new BsonElement("worker_email", note.CaseNote.CreatedByEmail ?? ""),
+                    new BsonElement("form_name_overall", "Historical_Case_Note"),
+                    new BsonElement("form_name", note.CaseNoteTitle ?? ""),
+                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
+                    new BsonElement("is_historical", true) //flag for front end
+                }
+            );
         }
 
-        public static List<BsonDocument> HistoricalVisitsToDomain(List<Visit> visits)
+        public static BsonDocument HistoricalVisitsToDomain(ResidentHistoricRecordVisit historicVisit)
         {
-            return visits.Select(visit => new BsonDocument(new List<BsonElement>
-                {
-                    new BsonElement("_id", visit.VisitId),
-                    new BsonElement("worker_email", visit.CreatedByEmail),
-                    new BsonElement("form_name_overall", "Historical_Visit"),
-                    new BsonElement("form_name", "Historical Visit"),
-                    new BsonElement("timestamp", visit.ActualDateTime ?? visit.PlannedDateTime),
-                    new BsonElement("is_historical", true)
-                }))
-                .ToList();
+            return new BsonDocument(new List<BsonElement>
+            {
+                new BsonElement("_id", historicVisit.Visit.VisitId),
+                new BsonElement("worker_email", historicVisit.Visit.CreatedByEmail),
+                new BsonElement("form_name_overall", "Historical_Visit"),
+                new BsonElement("form_name", $"Historical Visit - {historicVisit.Visit.VisitType}"),
+                new BsonElement("timestamp", DateTime.Parse(historicVisit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
+                new BsonElement("is_historical", true)
+            });
         }
 
         public static CaseNoteResponse ToResponse(CaseNote historicalCaseNote)
         {
-            return new CaseNoteResponse()
+            return new CaseNoteResponse
             {
                 RecordId = historicalCaseNote.CaseNoteId,
                 PersonId = historicalCaseNote.MosaicId,

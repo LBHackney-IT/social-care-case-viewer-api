@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
@@ -20,8 +19,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapResidentAndAddressFromDomainToResponse()
         {
             var testDateOfBirth = DateTime.Now;
-            string caseNoteId = "1234ghjut";
-            string caseNoteErrorMessage = "Error";
+            const string caseNoteId = "1234ghjut";
+            const string caseNoteErrorMessage = "Error";
 
             Person person = new Person
             {
@@ -66,74 +65,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalCaseNoteToBsonDocument()
         {
-            string caseNoteId = "1";
-            string mosaicId = "123";
-            string email = "first.last@domain.com";
-            DateTime createdOn = DateTime.Now;
-            string noteType = "Historical note";
-            string noteTitle = "My title";
-
-            CaseNote historicalCaseNote = new CaseNote()
-            {
-                CaseNoteId = caseNoteId,
-                MosaicId = mosaicId,
-                CreatedByEmail = email,
-                NoteType = noteType,
-                CreatedOn = createdOn,
-                CaseNoteTitle = noteTitle
-            };
-
+            var historicalCaseNote = TestHelper.CreateResidentHistoricRecordCaseNote();
             var expectedDocument = new BsonDocument(
-                        new List<BsonElement>
-                        {
-                                new BsonElement("_id", caseNoteId),
-                                new BsonElement("mosaic_id", mosaicId),
-                                new BsonElement("worker_email", email),
-                                new BsonElement("form_name_overall", "Historical_Case_Note"),
-                                new BsonElement("form_name", noteTitle),
-                                new BsonElement("timestamp", createdOn.ToString("dd/MM/yyyy H:mm:ss")),
-                                new BsonElement("is_historical", true)
-                        });
+            new List<BsonElement> {
+                    new BsonElement("_id", historicalCaseNote.CaseNote.CaseNoteId),
+                    new BsonElement("mosaic_id", historicalCaseNote.CaseNote.MosaicId),
+                    new BsonElement("worker_email", historicalCaseNote.CaseNote.CreatedByEmail),
+                    new BsonElement("form_name_overall", "Historical_Case_Note"),
+                    new BsonElement("form_name", historicalCaseNote.CaseNoteTitle),
+                    new BsonElement("timestamp", historicalCaseNote.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")),
+                    new BsonElement("is_historical", true)
+            });
 
-            List<CaseNote> notes = new List<CaseNote>() { historicalCaseNote };
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
-            var result = ResponseFactory.HistoricalCaseNotesToDomain(notes);
-
-            Assert.AreEqual(expectedDocument.GetElement("_id"), result.First().GetElement("_id"));
-            Assert.AreEqual(expectedDocument.GetElement("mosaic_id"), result.First().GetElement("mosaic_id"));
-            Assert.AreEqual(expectedDocument.GetElement("worker_email"), result.First().GetElement("worker_email"));
-            Assert.AreEqual(expectedDocument.GetElement("form_name_overall"), result.First().GetElement("form_name_overall"));
-            Assert.AreEqual(expectedDocument.GetElement("form_name"), result.First().GetElement("form_name"));
-            Assert.AreEqual(expectedDocument.GetElement("timestamp"), result.First().GetElement("timestamp"));
-            Assert.AreEqual(expectedDocument.GetElement("is_historical"), result.First().GetElement("is_historical"));
+            result.Should().BeEquivalentTo(expectedDocument);
         }
 
         [Test]
         public void CanMapHistoricalVisitToBsonDocument()
         {
-            var visit = TestHelper.CreateVisit();
-
+            var visit = TestHelper.CreateResidentHistoricRecordVisit();
             var expectedDocument = new BsonDocument(
-                        new List<BsonElement>
-                        {
-                                new BsonElement("_id", visit.VisitId),
-                                new BsonElement("worker_email", visit.CreatedByEmail),
-                                new BsonElement("form_name_overall", "Historical_Visit"),
-                                new BsonElement("form_name", "Historical Visit"),
-                                new BsonElement("timestamp", visit.ActualDateTime ?? visit.PlannedDateTime),
-                                new BsonElement("is_historical", true)
-                        });
+            new List<BsonElement> {
+                    new BsonElement("_id", visit.Visit.VisitId),
+                    new BsonElement("worker_email", visit.Visit.CreatedByEmail),
+                    new BsonElement("form_name_overall", "Historical_Visit"),
+                    new BsonElement("form_name", $"Historical Visit - {visit.Visit.VisitType}"),
+                    new BsonElement("timestamp", DateTime.Parse(visit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")),
+                    new BsonElement("is_historical", true)
+            });
 
-            var visits = new List<Visit>() { visit };
+            var result = ResponseFactory.HistoricalVisitsToDomain(visit);
 
-            var result = ResponseFactory.HistoricalVisitsToDomain(visits);
-
-            Assert.AreEqual(expectedDocument.GetElement("_id"), result.First().GetElement("_id"));
-            Assert.AreEqual(expectedDocument.GetElement("worker_email"), result.First().GetElement("worker_email"));
-            Assert.AreEqual(expectedDocument.GetElement("form_name_overall"), result.First().GetElement("form_name_overall"));
-            Assert.AreEqual(expectedDocument.GetElement("form_name"), result.First().GetElement("form_name"));
-            Assert.AreEqual(expectedDocument.GetElement("timestamp"), result.First().GetElement("timestamp"));
-            Assert.AreEqual(expectedDocument.GetElement("is_historical"), result.First().GetElement("is_historical"));
+            result.Should().BeEquivalentTo(expectedDocument);
         }
 
         [Test]
