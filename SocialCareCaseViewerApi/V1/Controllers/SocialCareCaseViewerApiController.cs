@@ -108,6 +108,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
         /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
@@ -117,14 +118,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 string dateValidationError = null;
 
-                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
                 {
                     dateValidationError += "Invalid start date";
                 }
-                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+
+                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
                 {
                     dateValidationError += " Invalid end date";
                 }
+
                 return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
