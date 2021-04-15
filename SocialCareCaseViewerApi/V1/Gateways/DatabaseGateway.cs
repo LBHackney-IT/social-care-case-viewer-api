@@ -351,47 +351,38 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
-            CreateAllocationResponse response = new CreateAllocationResponse();
+            var response = new CreateAllocationResponse();
 
-            //make sure we have all related entities
-            //worker
-            Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
-
+            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
             if (string.IsNullOrEmpty(worker?.Email))
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
 
-            //team
-            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
-
+            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
             {
                 throw new CreateAllocationException("Team details cannot be found");
             }
 
-            //person
-            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
-
+            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
             if (person == null)
             {
                 throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
             }
 
-            //createdBy
-            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
-
+            var allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
             if (allocatedBy == null)
             {
                 throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
             }
 
-            AllocationSet allocation = new AllocationSet()
+            var allocation = new AllocationSet
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = DateTime.Now,
+                AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
@@ -402,9 +393,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //Add note
             try
             {
-                DateTime dt = DateTime.Now;
+                var dt = DateTime.Now;
 
-                AllocationCaseNote note = new AllocationCaseNote()
+                var note = new AllocationCaseNote
                 {
                     FirstName = person.FirstName,
                     LastName = person.LastName,
@@ -418,7 +409,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CreatedBy = request.CreatedBy
                 };
 
-                CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+                var caseNotesDocument = new CaseNotesDocument()
                 {
                     CaseFormData = JsonConvert.SerializeObject(note)
                 };

@@ -183,8 +183,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return StatusCode(400, validationResults.ToString());
             }
 
-            var result = _allocationUseCase.ExecutePost(request);
-            return CreatedAtAction("CreateAllocation", result, result);
+            try
+            {
+                var result = _allocationUseCase.ExecutePost(request);
+                return CreatedAtAction("CreateAllocation", result, result);
+            }
+            catch (CreateAllocationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UpdateAllocationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
