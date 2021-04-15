@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
@@ -65,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     new BsonElement("worker_email", note.CaseNote.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
                     new BsonElement("form_name", note.CaseNoteTitle ?? ""),
-                    new BsonElement("timestamp", note.DateOfEvent),
+                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
                 }
             );
@@ -79,7 +80,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 new BsonElement("worker_email", historicVisit.Visit.CreatedByEmail),
                 new BsonElement("form_name_overall", "Historical_Visit"),
                 new BsonElement("form_name", "Historical Visit"),
-                new BsonElement("timestamp", historicVisit.DateOfEvent),
+                new BsonElement("timestamp", DateTime.Parse(historicVisit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
                 new BsonElement("is_historical", true)
             });
         }
