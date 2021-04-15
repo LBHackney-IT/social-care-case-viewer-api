@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _mockSocialCarePlatformAPIGateway
                 .Setup(x => x.GetHistoricCaseNotesAndVisitsByPersonId(55))
-                .Returns(new List<ResidentHistoricRecord>{TestHelper.CreateResidentHistoricRecordCaseNote(), TestHelper.CreateResidentHistoricRecordVisit()});
+                .Returns(new List<ResidentHistoricRecord> { TestHelper.CreateResidentHistoricRecordCaseNote(), TestHelper.CreateResidentHistoricRecordVisit() });
 
             _classUnderTest.GetProcessData(request, "52");
         }
