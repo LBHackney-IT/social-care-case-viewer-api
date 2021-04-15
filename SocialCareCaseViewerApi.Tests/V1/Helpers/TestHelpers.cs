@@ -1,7 +1,9 @@
 using Bogus;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class TestHelpers
@@ -97,6 +99,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.RecordType, f => f.PickRandom<RecordType>())
                 .RuleFor(r => r.IsHistoric, true)
                 .RuleFor(r => r.Visit, visit);
+        }
+
+        public static CreateAllocationRequest CreateAllocationRequest(
+            long? mosaicId = null,
+            long? teamId = null,
+            long? workerId = null,
+            string? createdBy = null
+            )
+        {
+            return new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => mosaicId ?? f.Random.Number(1, 100))
+                .RuleFor(c => c.AllocatedTeamId, f => teamId ?? f.Random.Number(1, 100))
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? f.Random.Number(1, 100))
+                .RuleFor(c => c.CreatedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(c => c.AllocationStartDate, f => f.Date.Soon());
         }
     }
 }

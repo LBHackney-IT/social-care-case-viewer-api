@@ -170,7 +170,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// create new allocations for workers
         /// </summary>
         /// <response code="201">Allocation successfully inserted</response>
-        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
@@ -180,7 +180,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             if (!validationResults.IsValid)
             {
-                return StatusCode(400, validationResults.ToString());
+                return BadRequest(validationResults.ToString());
             }
 
             try
