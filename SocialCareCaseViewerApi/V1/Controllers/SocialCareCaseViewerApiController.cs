@@ -131,12 +131,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                     dateValidationError += " Invalid end date";
                 }
 
-                if (!string.IsNullOrEmpty(dateValidationError))
-                {
-                    return StatusCode(400, dateValidationError);
-                }
-
-                return Ok(_processDataUseCase.Execute(request));
+                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
