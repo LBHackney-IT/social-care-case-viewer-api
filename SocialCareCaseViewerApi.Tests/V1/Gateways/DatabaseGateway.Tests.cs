@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -14,7 +13,6 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -123,89 +121,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
-            string allocatedByEmail = _faker.Internet.Email();
-            string workerEmail = _faker.Internet.Email();
-            string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
-
-            Worker worker = new Worker()
-            {
-                Email = workerEmail,
-                FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName()
-            };
-
-            Worker allocatedByWorker = new Worker()
-            {
-                Email = allocatedByEmail,
-                FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName()
-            };
-
-            Person person = new Person()
-            {
-                FullName = personName
-            };
-
-            Team team = new Team()
-            {
-                Context = "A",
-                Name = "Test team"
-            };
-
+            var (request, worker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
-            DatabaseContext.Workers.Add(allocatedByWorker);
             DatabaseContext.SaveChanges();
-
-            var request = new CreateAllocationRequest()
-            {
-                AllocatedWorkerId = worker.Id,
-                MosaicId = person.Id,
-                CreatedBy = allocatedByEmail,
-                AllocatedTeamId = team.Id
-            };
-
-            DatabaseContext.SaveChanges();
-
-            //TODO: add process data gw tests
-            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
             var response = _classUnderTest.CreateAllocation(request);
-
             var query = DatabaseContext.Allocations;
-
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
-            Assert.IsNotNull(insertedRecord);
-            insertedRecord.PersonId.Should().NotBe(null);
             Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
             Assert.AreEqual(insertedRecord.WorkerId, worker.Id);
-
-            //audit properties
-            Assert.AreEqual(insertedRecord.CreatedBy, allocatedByEmail);
+            Assert.AreEqual(insertedRecord.CreatedBy, worker.Email);
             Assert.IsNotNull(insertedRecord.CreatedAt);
-            Assert.AreNotEqual(DateTime.MinValue, insertedRecord.CreatedAt);
             Assert.IsNull(insertedRecord.LastModifiedAt);
             Assert.IsNull(insertedRecord.LastModifiedBy);
-
-            //TODO: setup aduit tests separately
-            //var auditRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetString() == insertedRecord.Id.ToString() && x.TableName == "sccv_allocations_combined" && x.EntityState == "Added");
-            //Assert.AreEqual(auditRecord.KeyValues.RootElement.GetProperty("Id").GetInt64(), response.AllocationId);
-
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("TeamId").GetInt64(), team.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("WorkerId").GetInt64(), worker.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
-
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("AllocationEndDate").GetString() == null);
-            //Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("AllocationStartDate").GetDateTime());
-
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == allocatedByEmail);
-            //Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
 
         // [Test]

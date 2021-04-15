@@ -198,7 +198,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns201WhenSuccessful()
         {
-            var request = TestHelpers.CreateAllocationRequest();
+            var request = TestHelpers.CreateAllocationRequest().Item1;
             var responseObject = new CreateAllocationResponse();
 
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
@@ -219,7 +219,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns404WhenCreatingAllocationFails()
         {
-            var request = TestHelpers.CreateAllocationRequest();
+            var request = TestHelpers.CreateAllocationRequest().Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new CreateAllocationException("Worker details cannot be found"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
@@ -236,7 +236,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns500WhenCaseNoteFails()
         {
-            var request = TestHelpers.CreateAllocationRequest();
+            var request = TestHelpers.CreateAllocationRequest().Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
@@ -253,7 +253,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns400WhenInvalidMosaicId()
         {
-            var request = TestHelpers.CreateAllocationRequest(mosaicId: 0);
+            var request = TestHelpers.CreateAllocationRequest(mosaicId: 0).Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
@@ -270,7 +270,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns400WhenInvalidAllocatedWorkerId()
         {
-            var request = TestHelpers.CreateAllocationRequest(workerId: 0);
+            var request = TestHelpers.CreateAllocationRequest(workerId: 0).Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
@@ -287,7 +287,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns400WhenInvalidAllocatedTeamId()
         {
-            var request = TestHelpers.CreateAllocationRequest(teamId: 0);
+            var request = TestHelpers.CreateAllocationRequest(teamId: 0).Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
@@ -304,7 +304,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns400WhenInvalidCreatedBy()
         {
-            var request = TestHelpers.CreateAllocationRequest(createdBy: "");
+            var request = TestHelpers.CreateAllocationRequest(createdBy: "").Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;

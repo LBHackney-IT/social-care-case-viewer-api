@@ -1,7 +1,12 @@
+using System;
 using Bogus;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
+using Person = Bogus.Person;
+using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -101,19 +106,52 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.Visit, visit);
         }
 
-        public static CreateAllocationRequest CreateAllocationRequest(
-            long? mosaicId = null,
-            long? teamId = null,
-            long? workerId = null,
+        public static (CreateAllocationRequest, Worker, InfrastructurePerson, Team) CreateAllocationRequest(
+            int? mosaicId = null,
+            int? teamId = null,
+            int? workerId = null,
             string? createdBy = null
             )
         {
-            return new Faker<CreateAllocationRequest>()
-                .RuleFor(c => c.MosaicId, f => mosaicId ?? f.Random.Number(1, 100))
-                .RuleFor(c => c.AllocatedTeamId, f => teamId ?? f.Random.Number(1, 100))
-                .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? f.Random.Number(1, 100))
-                .RuleFor(c => c.CreatedBy, f => createdBy ?? f.Person.Email)
-                .RuleFor(c => c.AllocationStartDate, f => f.Date.Soon());
+            var worker = CreateWorker();
+            var person = CreatePerson();
+            var team = CreateTeam();
+
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => mosaicId ?? person.Id)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
+                .RuleFor(c => c.CreatedBy, f => createdBy ?? worker.Email)
+                .RuleFor(c => c.AllocationStartDate, DateTime.Now);
+
+            return (createAllocationRequest, worker, person, team);
+        }
+
+        public static Worker CreateWorker(int? workerId = null)
+        {
+            return new Faker<Worker>()
+                .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)
+                .RuleFor(w => w.Email, f => f.Person.Email)
+                .RuleFor(w => w.FirstName, f => f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => f.Person.LastName);
+        }
+
+        private static InfrastructurePerson CreatePerson(int? personId = null)
+        {
+            return new Faker<InfrastructurePerson>()
+                .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => f.Person.FirstName)
+                .RuleFor(p => p.FullName, f => f.Person.FullName)
+                .RuleFor(p => p.EmailAddress, f => f.Person.Email);
+        }
+
+        private static Team CreateTeam(int? teamId = null)
+        {
+            return new Faker<Team>()
+                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
+                .RuleFor(t => t.Context, f => f.Random.String2(1))
+                .RuleFor(t => t.Name, f => f.Random.String2(1, 200));
         }
     }
 }
