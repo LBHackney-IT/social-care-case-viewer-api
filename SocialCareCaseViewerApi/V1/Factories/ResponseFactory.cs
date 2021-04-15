@@ -75,7 +75,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new BsonDocument(new List<BsonElement>
             {
-                new BsonElement("_id", 1),
+                new BsonElement("_id", "1"),
                 new BsonElement("worker_email", "hard-code-email"),
                 new BsonElement("form_name_overall", "Historical_Visit"),
                 new BsonElement("form_name", $"Historical Visit"),
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new BsonDocument(new List<BsonElement>
             {
-                new BsonElement("_id", 1),
+                new BsonElement("_id", "1"),
                 new BsonElement("worker_email", "hard-code-email"),
                 new BsonElement("form_name_overall", "Historical_Visit"),
                 new BsonElement("form_name", $"Historical Visit"),
