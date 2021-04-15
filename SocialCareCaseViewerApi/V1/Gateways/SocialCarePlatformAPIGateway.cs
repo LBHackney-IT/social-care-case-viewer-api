@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>(path);
         }
 
-        public List<Visit> GetVisitsByPersonId(string id)
+        public IEnumerable<Visit> GetVisitsByPersonId(string id)
         {
             var path = $"residents/{id}/visits";
             return GetDataFromSocialCarePlatformAPI<List<Visit>>(path);

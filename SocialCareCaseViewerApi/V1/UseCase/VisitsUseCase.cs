@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -17,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public List<Visit> ExecuteGetByPersonId(string id)
         {
-            return _socialCarePlatformAPIGateway.GetVisitsByPersonId(id);
+            return _socialCarePlatformAPIGateway.GetVisitsByPersonId(id).ToList();
         }
     }
 }

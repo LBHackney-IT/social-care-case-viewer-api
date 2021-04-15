@@ -56,31 +56,34 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static BsonDocument HistoricalCaseNotesToDomain(ResidentHistoricRecordCaseNote note)
+        public static BsonDocument HistoricalCaseNotesToDomain(CaseNote note)
         {
             return new BsonDocument(
                 new List<BsonElement>
                 {
-                    new BsonElement("_id", note.CaseNote.CaseNoteId),
-                    new BsonElement("mosaic_id", note.CaseNote.MosaicId),
-                    new BsonElement("worker_email", note.CaseNote.CreatedByEmail),
+                    new BsonElement("_id", note.CaseNoteId),
+                    new BsonElement("mosaic_id", note.MosaicId),
+                    new BsonElement("worker_email", note.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
                     new BsonElement("form_name", note.CaseNoteTitle ?? ""),
-                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
+                    new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
                 }
             );
         }
 
-        public static BsonDocument HistoricalVisitsToDomain(ResidentHistoricRecordVisit historicVisit)
+        public static BsonDocument HistoricalVisitsToDomain(Visit visit)
         {
+            var formTimeStamp = visit.ActualDateTime?.ToString("dd/MM/yyyy H:mm:ss") ??
+                                visit.PlannedDateTime?.ToString("dd/MM/yyyy H:mm:ss"); //format used in imported data from mongo so have to match for now
+
             return new BsonDocument(new List<BsonElement>
             {
-                new BsonElement("_id", historicVisit.Visit.VisitId.ToString()),
-                new BsonElement("worker_email", historicVisit.Visit.CreatedByEmail),
+                new BsonElement("_id", visit.VisitId.ToString()),
+                new BsonElement("worker_email", visit.CreatedByEmail),
                 new BsonElement("form_name_overall", "Historical_Visit"),
-                new BsonElement("form_name", $"Historical Visit - {historicVisit.Visit.VisitType}"),
-                new BsonElement("timestamp", DateTime.Parse(historicVisit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
+                new BsonElement("form_name", $"Historical Visit - {visit.VisitType}"),
+                new BsonElement("timestamp", formTimeStamp),
                 new BsonElement("is_historical", true)
             });
         }

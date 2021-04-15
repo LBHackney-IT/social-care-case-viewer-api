@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -63,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
-            var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1");
+            var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1").ToList();
 
             response.Should().NotBeNull();
             response.Count.Should().Be(visits.Count);
