@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new BsonDocument(new List<BsonElement>
             {
-                new BsonElement("_id", historicVisit.Visit.VisitId),
+                new BsonElement("_id", historicVisit.Visit.VisitId.ToString()),
                 new BsonElement("worker_email", historicVisit.Visit.CreatedByEmail),
                 new BsonElement("form_name_overall", "Historical_Visit"),
                 new BsonElement("form_name", $"Historical Visit - {historicVisit.Visit.VisitType}"),
