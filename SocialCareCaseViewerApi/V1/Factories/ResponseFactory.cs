@@ -58,18 +58,30 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static BsonDocument HistoricalCaseNotesToDomain(ResidentHistoricRecordCaseNote note)
         {
-            return new BsonDocument(
-                new List<BsonElement>
-                {
-                    new BsonElement("_id", note.CaseNote.CaseNoteId ?? ""),
-                    new BsonElement("mosaic_id", note.CaseNote.MosaicId ?? ""),
-                    new BsonElement("worker_email", note.CaseNote.CreatedByEmail ?? ""),
-                    new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", note.CaseNoteTitle ?? ""),
-                    new BsonElement("timestamp", note.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
-                    new BsonElement("is_historical", true) //flag for front end
-                }
-            );
+
+            System.Console.WriteLine(note);
+            // return new BsonDocument(
+            //     new List<BsonElement>
+            //     {
+            //         new BsonElement("_id", note?.CaseNote?.CaseNoteId ?? ""),
+            //         new BsonElement("mosaic_id", note?.CaseNote?.MosaicId ?? ""),
+            //         new BsonElement("worker_email", note?.CaseNote?.CreatedByEmail ?? ""),
+            //         new BsonElement("form_name_overall", "Historical_Case_Note"),
+            //         new BsonElement("form_name", note?.CaseNoteTitle ?? ""),
+            //         new BsonElement("timestamp", note?.CaseNote?.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data from mongo so have to match for now
+            //         new BsonElement("is_historical", true) //flag for front end
+            //     }
+            // );
+
+            return new BsonDocument(new List<BsonElement>
+            {
+                new BsonElement("_id", 1),
+                new BsonElement("worker_email", "hard-code-email"),
+                new BsonElement("form_name_overall", "Historical_Visit"),
+                new BsonElement("form_name", $"Historical Visit"),
+                new BsonElement("timestamp", "hardcode-date"), //format used in imported data from mongo so have to match for now
+                new BsonElement("is_historical", true)
+            });
         }
 
         public static BsonDocument HistoricalVisitsToDomain(ResidentHistoricRecordVisit historicVisit)
