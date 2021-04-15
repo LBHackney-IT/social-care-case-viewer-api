@@ -28,8 +28,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsListCaseNotesResponse()
         {
-            var caseNote1 = TestHelper.CreateCaseNote();
-            var caseNote2 = TestHelper.CreateCaseNote();
+            var caseNote1 = TestHelpers.CreateCaseNote();
+            var caseNote2 = TestHelpers.CreateCaseNote();
             var caseNotes = new ListCaseNotesResponse { CaseNotes = new List<CaseNote> { caseNote1, caseNote2 } };
             var httpClient = CreateHttpClient(caseNotes);
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsCaseNoteResponse()
         {
-            var caseNote = TestHelper.CreateCaseNote();
+            var caseNote = TestHelpers.CreateCaseNote();
             var httpClient = CreateHttpClient(caseNote);
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
@@ -56,8 +56,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsListVisitsResponse()
         {
-            var visit1 = TestHelper.CreateVisit();
-            var visit2 = TestHelper.CreateVisit();
+            var visit1 = TestHelpers.CreateVisit();
+            var visit2 = TestHelpers.CreateVisit();
             var visits = new ListVisitsResponse { Visits = new List<Visit> { visit1, visit2 } };
             var httpClient = CreateHttpClient(visits);
 
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsVisitResponse()
         {
-            var visit = TestHelper.CreateVisit();
+            var visit = TestHelpers.CreateVisit();
             var httpClient = CreateHttpClient(visit);
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
@@ -111,9 +111,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsResidentHistoricRecords()
         {
-            var residentHistoricRecord = TestHelper.CreateResidentHistoricRecord();
-            var residentHistoricRecordCaseNote = TestHelper.CreateResidentHistoricRecordCaseNote(residentHistoricRecord.PersonId);
-            var residentHistoricRecordVisit = TestHelper.CreateResidentHistoricRecordVisit(residentHistoricRecord.PersonId);
+            var residentHistoricRecord = TestHelpers.CreateResidentHistoricRecord();
+            var residentHistoricRecordCaseNote = TestHelpers.CreateResidentHistoricRecordCaseNote(residentHistoricRecord.PersonId);
+            var residentHistoricRecordVisit = TestHelpers.CreateResidentHistoricRecordVisit(residentHistoricRecord.PersonId);
             var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord, residentHistoricRecordCaseNote, residentHistoricRecordVisit };
             var httpClient = CreateHttpClient(residentHistoricRecordList);
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
