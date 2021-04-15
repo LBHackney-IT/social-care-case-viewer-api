@@ -4,7 +4,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
-    public static class TestHelper
+    public static class TestHelpers
     {
         public static Visit CreateVisit()
         {
