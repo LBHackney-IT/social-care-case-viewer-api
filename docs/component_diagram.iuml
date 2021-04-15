@@ -8,10 +8,10 @@ LAYOUT_AS_SKETCH()
 
 title Component diagram for Social Care Case Viewer Service API
 
-Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
-Container(mosaic_platform_api, "Mosaic Resident Information Platform API", "Lambda, C#", "Provides person search")
-Container(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
 System_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
+Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
+Container_Ext(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
+Container_Ext(mosaic_platform_api, "Mosaic Resident Information Platform API", "Lambda, C#", "Provides person search")
 
 Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(api_gateway, "API Gateway", "API Gateway", "Routing and auth via API keys")
@@ -27,10 +27,9 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(historic_data, "Historic Data", "GET", "Returns historic case notes and visits")
 
     ContainerDb(postgres, "PostgreSQL", "RDS PostgreSQL", "Stores persons, workers and allocations")
-    ContainerDb(mongodb, "MongoDB", "DocumentDB", "Stores form data")
+    ContainerDb(mongodb, "MongoDB", "AWS DocumentDB", "Stores form data")
 
     Rel(api_gateway, api_lambda, "Uses", "HTTPS")
-
     Rel(qlik, s3_bucket, "Uses", "HTTPS")
 
     Rel(s3_bucket, mongodb_import_lambda, "Uses", "HTTPS")
@@ -42,7 +41,7 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
 
     Rel(api_lambda, persons, "Uses", "JSON/HTTPS")
     Rel(persons, mosaic_platform_api, "Uses", "Entity Framework/SSL")
-    Rel(mosaic_platform_api, postgres, "Uses", "Entity Framework/SSL")
+    Rel_U(mosaic_platform_api, postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, workers, "Uses", "JSON/HTTPS")
     Rel(workers, postgres, "Uses", "Entity Framework/SSL")
