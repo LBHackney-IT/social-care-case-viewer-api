@@ -136,10 +136,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return NotFound(e.Message);
             }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
         }
 
         /// <summary>
