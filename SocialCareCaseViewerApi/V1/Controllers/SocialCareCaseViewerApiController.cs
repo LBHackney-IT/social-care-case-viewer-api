@@ -175,6 +175,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
         {
+            var validator = new CreateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return StatusCode(400, validationResults.ToString());
+            }
+
             var result = _allocationUseCase.ExecutePost(request);
             return CreatedAtAction("CreateAllocation", result, result);
         }
