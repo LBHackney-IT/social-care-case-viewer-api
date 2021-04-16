@@ -1,19 +1,25 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using FluentValidation;
+using Newtonsoft.Json;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class CreateAllocationRequest
     {
+        [JsonPropertyName("mosaicId")]
         public long MosaicId { get; set; }
 
+        [JsonPropertyName("allocatedTeamId")]
         public long AllocatedWorkerId { get; set; }
 
+        [JsonPropertyName("allocatedWorkerId")]
         public long AllocatedTeamId { get; set; }
 
+        [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; }
 
+        [JsonPropertyName("allocationStartDate")]
         public DateTime AllocationStartDate { get; set; }
     }
 
