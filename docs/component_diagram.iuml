@@ -6,7 +6,7 @@
 ' Colours don't work for some reason
 ' !include https://raw.githubusercontent.com/LBHackney-IT/cv-19-res-support-v3/development/docs/diagrams/c4_shared.puml
 
-LAYOUT_AS_SKETCH()
+'LAYOUT_AS_SKETCH()
 
 title Component diagram for Social Care Case Viewer Service API
 
