@@ -2,13 +2,15 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 ' uncomment the following line and comment the first to use locally
 ' !include C4_Component.puml
+
+' Colours don't work for some reason
 ' !include https://raw.githubusercontent.com/LBHackney-IT/cv-19-res-support-v3/development/docs/diagrams/c4_shared.puml
 
 LAYOUT_AS_SKETCH()
 
 title Component diagram for Social Care Case Viewer Service API
 
-System_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
+Container_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
 Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
 Container_Ext(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
 Container_Ext(mosaic_platform_api, "Mosaic Resident Information Platform API", "Lambda, C#", "Provides person search")
