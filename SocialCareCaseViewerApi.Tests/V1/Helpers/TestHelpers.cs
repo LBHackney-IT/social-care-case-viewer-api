@@ -1,10 +1,10 @@
 using System;
 using Bogus;
+using Bogus.DataSets;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
-using Person = Bogus.Person;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
@@ -126,6 +126,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
 
             return (createAllocationRequest, worker, createdByWorker, person, team);
+        }
+
+        public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team) CreateUpdateAllocationRequest(
+            int? id = null,
+            string? deallocationReason = null,
+            string? createdBy = null,
+            DateTime? deallocationDate = null
+            )
+        {
+            var worker = CreateWorker();
+            var updatedByWorker = CreateWorker();
+            var person = CreatePerson();
+            var team = CreateTeam();
+
+            var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(u => u.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.DeallocationReason, f => deallocationReason ?? f.Random.String2(200))
+                .RuleFor(u => u.CreatedBy, createdBy ?? updatedByWorker.Email)
+                .RuleFor(u => u.DeallocationDate, f => deallocationDate ?? f.Date.Recent());
+
+            return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
         private static Worker CreateWorker(int? workerId = null)

@@ -119,6 +119,7 @@ namespace SocialCareCaseViewerApi
             });
 
             services.AddTransient<IValidator<CreateAllocationRequest>, CreateAllocationRequestValidator>();
+            services.AddTransient<IValidator<UpdateAllocationRequest>, UpdateAllocationRequestValidator>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
