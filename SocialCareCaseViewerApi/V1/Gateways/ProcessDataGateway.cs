@@ -19,8 +19,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class ProcessDataGateway : IProcessDataGateway
     {
-        private ISccvDbContext _sccvDbContext;
-        private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
+        private readonly ISccvDbContext _sccvDbContext;
+        private readonly ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
 
         public ProcessDataGateway(ISccvDbContext sccvDbContext, ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
         {
@@ -28,68 +28,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
         {
-            List<BsonDocument> result;
+            var result = new List<BsonDocument>();
             FilterDefinition<BsonDocument> firstNameFilter;
             FilterDefinition<BsonDocument> lastNameFilter;
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var mosaicIdQuery = _sccvDbContext.getCollection().AsQueryable();
-                var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + request.MosaicId + "$", "i"));
-                mosaicIdQuery = mosaicIdQuery.Where(db => mosaicIDFilter.Inject());
-
-                result = mosaicIdQuery.ToList();
-
-                if (!string.IsNullOrWhiteSpace(ncId))
+                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId)?.ToList();
+                if (historicRecords?.Count > 0)
                 {
-                    //add records that are still using nc ID to the results
-                    var ncIdQuery = _sccvDbContext.getCollection().AsQueryable();
-                    var ncIdFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + ncId + "$", "i"));
-                    ncIdQuery = ncIdQuery.Where(db => ncIdFilter.Inject());
-
-                    result.AddRange(ncIdQuery.ToList());
-                }
-
-                //add historical case notes to the case history records when using mosaic id search
-                //fail silently for now until platform API has been finalised
-                //TODO: fix code so that it is more production suitable (code is currently working in production)
-                //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                try
-                {
-                    var notesResponse = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId(request.MosaicId);
-                    if (notesResponse.CaseNotes.Count > 0)
-                    {
-                        result.AddRange(ResponseFactory.HistoricalCaseNotesToDomain(notesResponse.CaseNotes));
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
-
-                //add feature flag for toggling displaying historic visit data
-                var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-                if (showHistoricData != null && showHistoricData.Equals("true"))
-                {
-                    //add historical visits to the case history records when using mosaic id search
-                    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Remove when production ready")]
-                    try
-                    {
-                        var visitsResponse = _socialCarePlatformAPIGateway.GetVisitsByPersonId(request.MosaicId);
-
-                        if (visitsResponse.Visits.Count > 0)
-                        {
-                            result.AddRange(ResponseFactory.HistoricalVisitsToDomain(visitsResponse.Visits));
-                        }
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    result.AddRange(historicRecords);
                 }
             }
             else
@@ -121,7 +71,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (caseNoteTypeFilter != null) query = query.Where(db => caseNoteTypeFilter.Inject());
                 result = query.ToList();
             }
-            //if document does not exist in the DB, then thrown a corresponsing error.
+            //if document does not exist in the DB, then thrown a corresponding error.
             if (result == null)
             {
                 throw new DocumentNotFoundException("document not found");
@@ -141,10 +91,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             {
                                 return date.Date >= startDate.Date;
                             }
-                            else
-                            {
-                                return false;
-                            }
+                            return false;
                         })
                         .ToList();
                 }
@@ -161,16 +108,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             {
                                 return date.Date <= endDate.Date;
                             }
-                            else
-                            {
-                                return false;
-                            }
+                            return false;
                         })
                         .ToList();
                 }
             }
 
-            int totalCount = response.Count;
+            var totalCount = response.Count;
 
             response = SortData(request.SortBy, request.OrderBy, response)
                 .Skip(request.Cursor)
@@ -178,6 +122,48 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ToList();
 
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
+        }
+
+        private IEnumerable<BsonDocument> GetHistoricRecordsByPersonId(string personId, string ncId)
+        {
+            var mosaicIdQuery = _sccvDbContext.getCollection().AsQueryable();
+            var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + personId + "$", "i"));
+            mosaicIdQuery = mosaicIdQuery.Where(db => mosaicIDFilter.Inject());
+
+            var casesAndVisits = mosaicIdQuery.ToList();
+
+            if (!string.IsNullOrWhiteSpace(ncId))
+            {
+                //add records that are still using nc ID to the results
+                var ncIdQuery = _sccvDbContext.getCollection().AsQueryable();
+                var ncIdFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + ncId + "$", "i"));
+                ncIdQuery = ncIdQuery.Where(db => ncIdFilter.Inject());
+
+                casesAndVisits.AddRange(ncIdQuery.ToList());
+            }
+
+            var historicVisits = _socialCarePlatformAPIGateway
+                .GetVisitsByPersonId(personId)
+                .Select(ResponseFactory.HistoricalVisitsToDomain)
+                .ToList();
+
+            var historicCases = _socialCarePlatformAPIGateway
+                .GetCaseNotesByPersonId(personId)
+                .CaseNotes
+                .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                .ToList();
+
+            if (historicVisits.Count > 0)
+            {
+                casesAndVisits.AddRange(historicVisits);
+            }
+
+            if (historicCases.Count > 0)
+            {
+                casesAndVisits.AddRange(historicCases);
+            }
+
+            return casesAndVisits;
         }
 
         public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
@@ -213,18 +199,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         response.OrderBy(x => x.OfficerEmail) :
                         response.OrderByDescending(x => x.OfficerEmail);
                 default:
-
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x =>
-                            {
-                                return GetDateToSortBy(x);
-                            }
-                        ) :
-                        response.OrderByDescending(x =>
-                            {
-                                return GetDateToSortBy(x);
-                            }
-                        );
+                    return (orderBy == "asc") ? response.OrderBy(GetDateToSortBy) : response.OrderByDescending(GetDateToSortBy);
             }
 
             static DateTime? GetDateToSortBy(CareCaseData x)

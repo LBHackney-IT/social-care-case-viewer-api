@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
@@ -29,6 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
+        private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
 
         private Fixture _fixture;
 
@@ -44,10 +46,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
+            _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -195,7 +198,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns201WhenSuccessful()
         {
-            var request = _fixture.Create<CreateAllocationRequest>();
+            var request = TestHelpers.CreateAllocationRequest().Item1;
             var responseObject = new CreateAllocationResponse();
 
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
@@ -203,9 +206,111 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
 
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
             response.Value.Should().BeEquivalentTo(responseObject);
+        }
+
+        [Test]
+        public void CreateAllocationReturns404WhenCreatingAllocationFails()
+        {
+            var request = TestHelpers.CreateAllocationRequest().Item1;
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new CreateAllocationException("Worker details cannot be found"));
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void CreateAllocationReturns500WhenCaseNoteFails()
+        {
+            var request = TestHelpers.CreateAllocationRequest().Item1;
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidMosaicId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(mosaicId: 0).Item1;
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidAllocatedWorkerId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(workerId: 0).Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidAllocatedTeamId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(teamId: 0).Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidCreatedBy()
+        {
+            var request = TestHelpers.CreateAllocationRequest(createdBy: "").Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
         }
 
         [Test]
@@ -370,8 +475,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
             var request = new ListVisitsRequest { Id = "1" };
-
-            var visitList = _fixture.Create<ListVisitsResponse>();
+            var visit = TestHelpers.CreateVisit();
+            var visitList = new List<Visit>();
 
             _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
 
@@ -409,33 +514,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().BeNull();
         }
 
+
+        [Test]
+        public void GetVisitByVisitIdReturns200StatusAndVisitWhenSuccessful()
+        {
+            var visit = TestHelpers.CreateVisit();
+            _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(visit.VisitId)).Returns(visit);
+
+            var response = _classUnderTest.GetVisitByVisitId(visit.VisitId) as OkObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(visit);
+        }
+
+        [Test]
+        public void GetVisitByVisitIdReturns404StatusAndNullWhenUnsuccessful()
+        {
+            var response = _classUnderTest.GetVisitByVisitId(1L) as NotFoundResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(404);
+        }
         #endregion
 
         #region WarningNotes
         [Test]
-        public void CreateWarningNoteReturns201WhenSuccessful()
+        public void PostWarningNoteReturns201WhenSuccessful()
         {
-            var createWarningNoteResponse = _fixture.Create<CreateWarningNoteResponse>();
-            var createWarningNoteRequest = new CreateWarningNoteRequest();
+            var PostWarningNoteResponse = _fixture.Create<PostWarningNoteResponse>();
+            var PostWarningNoteRequest = new PostWarningNoteRequest();
 
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecutePost(createWarningNoteRequest))
-                .Returns(createWarningNoteResponse);
-            var response = _classUnderTest.CreateWarningNote(createWarningNoteRequest) as CreatedAtActionResult;
+                .Setup(x => x.ExecutePost(PostWarningNoteRequest))
+                .Returns(PostWarningNoteResponse);
+            var response = _classUnderTest.PostWarningNote(PostWarningNoteRequest) as CreatedAtActionResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(createWarningNoteResponse);
+            response.Value.Should().BeEquivalentTo(PostWarningNoteResponse);
         }
 
         [Test]
-        public void CreateWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
+        public void PostWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
         {
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecutePost(It.IsAny<CreateWarningNoteRequest>()))
-                .Throws(new CreateWarningNoteException("Warning Note could not be inserted"));
+                .Setup(x => x.ExecutePost(It.IsAny<PostWarningNoteRequest>()))
+                .Throws(new PostWarningNoteException("Warning Note could not be inserted"));
 
-            var response = _classUnderTest.CreateWarningNote(new CreateWarningNoteRequest()) as ObjectResult;
+            var response = _classUnderTest.PostWarningNote(new PostWarningNoteRequest()) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(500);

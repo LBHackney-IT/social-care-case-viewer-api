@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -29,7 +32,7 @@ namespace SocialCareCaseViewerApi
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         private const string ApiName = "Social Care Case Viewer API";
 
@@ -38,7 +41,8 @@ namespace SocialCareCaseViewerApi
         {
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation();
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -113,6 +117,8 @@ namespace SocialCareCaseViewerApi
             {
                 client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL"));
             });
+
+            services.AddTransient<IValidator<CreateAllocationRequest>, CreateAllocationRequestValidator>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -144,6 +150,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseNotesUseCase, CaseNotesUseCase>();
             services.AddScoped<IVisitsUseCase, VisitsUseCase>();
             services.AddScoped<IWarningNoteUseCase, WarningNoteUseCase>();
+            services.AddScoped<IGetVisitByVisitIdUseCase, GetVisitByVisitIdUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

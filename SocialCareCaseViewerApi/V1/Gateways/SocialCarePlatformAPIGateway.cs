@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -24,33 +26,41 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseNote GetCaseNoteById(string id)
         {
-            string path = $"case-notes/{id}";
+            var path = $"case-notes/{id}";
             return GetDataFromSocialCarePlatformAPI<CaseNote>(path);
         }
 
         public ListCaseNotesResponse GetCaseNotesByPersonId(string id)
         {
-            string path = $"residents/{id}/case-notes";
+            var path = $"residents/{id}/case-notes";
             return GetDataFromSocialCarePlatformAPI<ListCaseNotesResponse>(path);
         }
 
-        public ListVisitsResponse GetVisitsByPersonId(string id)
+        public IEnumerable<Visit> GetVisitsByPersonId(string id)
         {
-            string path = $"residents/{id}/visits";
-            return GetDataFromSocialCarePlatformAPI<ListVisitsResponse>(path);
+            var path = $"residents/{id}/visits";
+            return GetDataFromSocialCarePlatformAPI<List<Visit>>(path);
+        }
+
+        public Visit GetVisitByVisitId(long id)
+        {
+            var path = $"visits/{id}";
+            return GetDataFromSocialCarePlatformAPI<Visit>(path);
+        }
+
+        public List<ResidentHistoricRecord> GetHistoricCaseNotesAndVisitsByPersonId(long id)
+        {
+            var path = $"residents/{id}/records";
+            return GetDataFromSocialCarePlatformAPI<List<ResidentHistoricRecord>>(path);
         }
 
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
         {
             try
             {
-                string result;
-
                 T data = default;
 
-                string relativePath = $"{path}";
-
-                Uri uri = new Uri(relativePath, UriKind.Relative);
+                var uri = new Uri(path, UriKind.Relative);
 
                 var responseMessage = _httpClient.GetAsync(uri).Result;
 
@@ -58,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     try
                     {
-                        result = responseMessage.Content.ReadAsStringAsync().Result;
+                        var result = responseMessage.Content.ReadAsStringAsync().Result;
 
                         data = JsonConvert.DeserializeObject<T>(result);
                     }

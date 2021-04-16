@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -14,7 +13,6 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -123,89 +121,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
-            string allocatedByEmail = _faker.Internet.Email();
-            string workerEmail = _faker.Internet.Email();
-            string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
-
-            Worker worker = new Worker()
-            {
-                Email = workerEmail,
-                FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName()
-            };
-
-            Worker allocatedByWorker = new Worker()
-            {
-                Email = allocatedByEmail,
-                FirstName = _faker.Name.FirstName(),
-                LastName = _faker.Name.LastName()
-            };
-
-            Person person = new Person()
-            {
-                FullName = personName
-            };
-
-            Team team = new Team()
-            {
-                Context = "A",
-                Name = "Test team"
-            };
-
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
-            DatabaseContext.Workers.Add(allocatedByWorker);
+            DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
-
-            var request = new CreateAllocationRequest()
-            {
-                AllocatedWorkerId = worker.Id,
-                MosaicId = person.Id,
-                CreatedBy = allocatedByEmail,
-                AllocatedTeamId = team.Id
-            };
-
-            DatabaseContext.SaveChanges();
-
-            //TODO: add process data gw tests
-            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
             var response = _classUnderTest.CreateAllocation(request);
-
             var query = DatabaseContext.Allocations;
-
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
-            Assert.IsNotNull(insertedRecord);
-            insertedRecord.PersonId.Should().NotBe(null);
             Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
             Assert.AreEqual(insertedRecord.WorkerId, worker.Id);
-
-            //audit properties
-            Assert.AreEqual(insertedRecord.CreatedBy, allocatedByEmail);
+            Assert.AreEqual(insertedRecord.CreatedBy, createdByWorker.Email);
             Assert.IsNotNull(insertedRecord.CreatedAt);
-            Assert.AreNotEqual(DateTime.MinValue, insertedRecord.CreatedAt);
             Assert.IsNull(insertedRecord.LastModifiedAt);
             Assert.IsNull(insertedRecord.LastModifiedBy);
-
-            //TODO: setup aduit tests separately
-            //var auditRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetString() == insertedRecord.Id.ToString() && x.TableName == "sccv_allocations_combined" && x.EntityState == "Added");
-            //Assert.AreEqual(auditRecord.KeyValues.RootElement.GetProperty("Id").GetInt64(), response.AllocationId);
-
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("TeamId").GetInt64(), team.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("WorkerId").GetInt64(), worker.Id);
-            //Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
-
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("AllocationEndDate").GetString() == null);
-            //Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("AllocationStartDate").GetDateTime());
-
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == allocatedByEmail);
-            //Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
         }
 
         // [Test]
@@ -577,7 +509,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
         #region Warning Notes
         [Test]
-        public void CreateWarningNoteShouldInsertIntoTheDatabase()
+        public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
             Person person = new Person()
             {
@@ -586,11 +518,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<CreateWarningNoteRequest>()
+            var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, person.Id)
                             .Create();
 
-            var response = _classUnderTest.CreateWarningNote(request);
+            var response = _classUnderTest.PostWarningNote(request);
 
             var query = DatabaseContext.WarningNotes;
 
@@ -600,16 +532,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.PersonId.Should().Be(request.PersonId);
             insertedRecord.StartDate.Should().Be(request.StartDate);
             insertedRecord.EndDate.Should().Be(request.EndDate);
-            insertedRecord.IndividualNotified.Should().Be(request.IndividualNotified);
-            insertedRecord.NotificationDetails.Should().Be(request.NotificationDetails);
-            insertedRecord.ReviewDetails.Should().Be(request.ReviewDetails);
+            insertedRecord.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
+            insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
+            insertedRecord.Notes.Should().Be(request.Notes);
             insertedRecord.NoteType.Should().Be(request.NoteType);
             insertedRecord.Status.Should().Be(request.Status);
-            insertedRecord.DateInformed.Should().Be(request.DateInformed);
-            insertedRecord.HowInformed.Should().Be(request.HowInformed);
+            insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
+            insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
             insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
-            insertedRecord.ManagersName.Should().Be(request.ManagersName);
-            insertedRecord.DateManagerInformed.Should().Be(request.DateManagerInformed);
+            insertedRecord.ManagerName.Should().Be(request.ManagerName);
+            insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
 
             //audit properties
             insertedRecord.CreatedAt.Should().NotBeNull();
@@ -620,18 +552,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreateWarningNoteShouldThrowAnErrorIfThePersonIdIsNotInThePersonTable()
+        public void PostWarningNoteShouldThrowAnErrorIfThePersonIdIsNotInThePersonTable()
         {
-            var request = _fixture.Create<CreateWarningNoteRequest>();
+            var request = _fixture.Create<PostWarningNoteRequest>();
 
-            Action act = () => _classUnderTest.CreateWarningNote(request);
+            Action act = () => _classUnderTest.PostWarningNote(request);
 
-            act.Should().Throw<CreateWarningNoteException>()
+            act.Should().Throw<PostWarningNoteException>()
                         .WithMessage($"Person with given id ({request.PersonId}) not found");
         }
 
         [Test]
-        public void CreateWarningNoteShouldCallInsertCaseNoteMethod()
+        public void PostWarningNoteShouldCallInsertCaseNoteMethod()
         {
             Person person = new Person()
             {
@@ -640,7 +572,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<CreateWarningNoteRequest>()
+            var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, person.Id)
                             .Create();
 
@@ -650,7 +582,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                         .ReturnsAsync("CaseNoteId")
                         .Verifiable();
 
-            var response = _classUnderTest.CreateWarningNote(request);
+            var response = _classUnderTest.PostWarningNote(request);
 
             _mockProcessDataGateway.Verify();
             response.CaseNoteId.Should().NotBeNull();
@@ -679,7 +611,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         // [Test]
-        // public void CreateWarningNoteThrowAnExceptionIfTheCaseNoteIsNotInserted()
+        // public void PostWarningNoteThrowAnExceptionIfTheCaseNoteIsNotInserted()
         // {
         //     Person person = new Person()
         //     {
@@ -688,7 +620,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     DatabaseContext.Persons.Add(person);
         //     DatabaseContext.SaveChanges();
 
-        //     var request = _fixture.Build<CreateWarningNoteRequest>()
+        //     var request = _fixture.Build<PostWarningNoteRequest>()
         //                     .With(x => x.PersonId, person.Id)
         //                     .Create();
 
@@ -697,9 +629,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //                 It.IsAny<CaseNotesDocument>()))
         //                 .Throws(new Exception("error message"));
 
-        //     Action act = () => _classUnderTest.CreateWarningNote(request);
+        //     Action act = () => _classUnderTest.PostWarningNote(request);
 
-        //     act.Should().Throw<CreateWarningNoteException>()
+        //     act.Should().Throw<PostWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
         [Test]

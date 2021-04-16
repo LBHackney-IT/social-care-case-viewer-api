@@ -5,14 +5,14 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Response
 {
     [TestFixture]
-    public class CreateWarningNoteResponseTests
+    public class PostWarningNoteResponseTests
     {
-        private CreateWarningNoteResponse _classUnderTest;
+        private PostWarningNoteResponse _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new CreateWarningNoteResponse();
+            _classUnderTest = new PostWarningNoteResponse();
         }
 
         [Test]
