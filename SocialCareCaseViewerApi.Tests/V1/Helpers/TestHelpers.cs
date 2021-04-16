@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (createAllocationRequest, worker, createdByWorker, person, team);
         }
 
-        public static (UpdateAllocationRequest, Worker) CreateUpdateAllocationRequest(
+        public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team) CreateUpdateAllocationRequest(
             int? id = null,
             string? deallocationReason = null,
             string? createdBy = null,
@@ -136,14 +136,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             )
         {
             var worker = CreateWorker();
+            var updatedByWorker = CreateWorker();
+            var person = CreatePerson();
+            var team = CreateTeam();
 
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
                 .RuleFor(u => u.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.DeallocationReason, f => deallocationReason ?? f.Random.String2(200))
-                .RuleFor(u => u.CreatedBy, createdBy ?? worker.Email)
+                .RuleFor(u => u.CreatedBy, createdBy ?? updatedByWorker.Email)
                 .RuleFor(u => u.DeallocationDate, f => deallocationDate ?? f.Date.Recent());
 
-            return (updateAllocationRequest, worker);
+            return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
         private static Worker CreateWorker(int? workerId = null)

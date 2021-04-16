@@ -632,8 +632,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdateAllocationException("Person not found");
             }
 
-            var createdBy = _databaseContext.Workers.FirstOrDefault(x =>
-                string.Equals(x.Email.ToUpper(), request.CreatedBy.ToUpper(), StringComparison.Ordinal));
+            var createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
             if (createdBy == null)
             {
                 throw new UpdateAllocationException("CreatedBy not found");

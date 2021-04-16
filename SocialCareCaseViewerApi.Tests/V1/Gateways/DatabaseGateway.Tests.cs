@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -140,126 +141,51 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsNull(insertedRecord.LastModifiedBy);
         }
 
-        // [Test]
-        // //deallocation
-        // public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
-        // {
-        //     int workerId = 555666;
-        //     long mosaicId = 5000555;
-        //     string deAllocatedByEmail = _faker.Internet.Email();
-        //     string workerEmail = _faker.Internet.Email();
-        //     string deallocationReason = "Test reason";
-        //     int teamId = 1000;
-        //     string personName = $"{_faker.Name.FirstName()} {_faker.Name.LastName()}";
+        [Test]
+        public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-60);
+            var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
 
-        //     DateTime allocationStartDate = DateTime.Now.AddDays(-60);
+            var allocation = new Allocation
+            {
+                Id = request.Id,
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = worker.Id
+            };
 
-        //     //add test data
-        //     //TODO: add helper for setting up test data
-        //     Worker worker = new Worker()
-        //     {
-        //         Email = workerEmail,
-        //         Id = workerId,
-        //         FirstName = _faker.Name.FirstName(),
-        //         LastName = _faker.Name.LastName()
-        //     };
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
 
-        //     Worker deAllocatedByWorker = new Worker()
-        //     {
-        //         Email = deAllocatedByEmail,
-        //         Id = _faker.Random.Number(),
-        //         FirstName = _faker.Name.FirstName(),
-        //         LastName = _faker.Name.LastName()
-        //     };
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
-        //     Team team = new Team()
-        //     {
-        //         Context = "A",
-        //         Id = teamId,
-        //         Name = "Test team"
-        //     };
+            _classUnderTest.UpdateAllocation(request);
 
-        //     Person person = new Person()
-        //     {
-        //         Id = mosaicId,
-        //         FullName = personName
-        //     };
+            var query = DatabaseContext.Allocations;
+            var updatedRecord = query.First(x => x.Id == allocation.Id);
 
-        //     string createdByEmail = _faker.Internet.Email();
-
-        //     Allocation allocation = new Allocation()
-        //     {
-        //         AllocationEndDate = null,
-        //         AllocationStartDate = allocationStartDate,
-        //         CreatedAt = allocationStartDate,
-        //         CaseStatus = "Open",
-        //         CaseClosureDate = null,
-        //         LastModifiedAt = null,
-        //         CreatedBy = createdByEmail,
-        //         LastModifiedBy = null,
-        //         PersonId = mosaicId,
-        //         TeamId = teamId,
-        //         WorkerId = workerId
-        //     };
-
-        //     DatabaseContext.Add(allocation);
-        //     DatabaseContext.SaveChanges();
-
-        //     var request = new UpdateAllocationRequest()
-        //     {
-        //         CreatedBy = deAllocatedByEmail,
-        //         DeallocationReason = deallocationReason,
-        //         Id = allocation.Id
-        //     };
-
-        //     DatabaseContext.Workers.Add(worker);
-        //     DatabaseContext.Workers.Add(deAllocatedByWorker);
-        //     DatabaseContext.Teams.Add(team);
-        //     DatabaseContext.Persons.Add(person);
-
-        //     DatabaseContext.SaveChanges();
-
-        //     //TODO: add process data gw tests
-        //     _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
-
-        //     var response = _classUnderTest.UpdateAllocation(request);
-
-        //     var query = DatabaseContext.Allocations;
-
-        //     var updatedRecord = query.First(x => x.Id == allocation.Id);
-
-        //     Assert.IsNotNull(updatedRecord);
-        //     Assert.IsNotNull(updatedRecord.AllocationEndDate);
-        //     Assert.AreEqual("Closed", updatedRecord.CaseStatus);
-        //     Assert.AreEqual(workerId, updatedRecord.WorkerId);
-        //     Assert.AreEqual(teamId, updatedRecord.TeamId);
-        //     Assert.IsNotNull(updatedRecord.CaseClosureDate);
-
-        //     //audit properties
-        //     Assert.AreEqual(updatedRecord.CreatedBy, createdByEmail);
-        //     Assert.IsNotNull(updatedRecord.CreatedAt);
-        //     Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
-        //     Assert.IsNotNull(updatedRecord.LastModifiedAt);
-        //     Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByEmail);
-
-        //     //audit record
-        //     var auditRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetString() == updatedRecord.Id.ToString() && x.EntityState == "Modified");
-
-        //     //key value
-        //     Assert.AreEqual(auditRecord.KeyValues.RootElement.GetProperty("Id").GetInt64(), allocation.Id);
-
-        //     //old values
-        //     Assert.AreEqual(auditRecord.OldValues.RootElement.GetProperty("CaseStatus").GetString(), "Open");
-        //     Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
-        //     Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("CaseClosureDate").GetString() == null);
-        //     Assert.IsTrue(auditRecord.OldValues.RootElement.GetProperty("AllocationEndDate").GetString() == null);
-
-        //     //new values
-        //     Assert.AreEqual(auditRecord.NewValues.RootElement.GetProperty("CaseStatus").GetString(), "Closed");
-        //     Assert.IsTrue(auditRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == deAllocatedByEmail);
-        //     Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("CaseClosureDate").GetDateTime());
-        //     Assert.IsNotNull(auditRecord.NewValues.RootElement.GetProperty("AllocationEndDate").GetDateTime());
-        // }
+            Assert.AreEqual("Closed", updatedRecord.CaseStatus);
+            Assert.AreEqual(worker.Id, updatedRecord.WorkerId);
+            Assert.AreEqual(team.Id, updatedRecord.TeamId);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
+            Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
+            Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
+            Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByWorker.Email);
+        }
 
         [Test]
         public void CreatingAPersonShouldCreateCorrectRecordsAndAuditRecordsInTheDatabase()

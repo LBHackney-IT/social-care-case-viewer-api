@@ -438,38 +438,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().BeEquivalentTo(result);
         }
 
-        // [Test]
-        // public void CreateAllocationReturns400WhenInvalidAllocatedWorkerId()
-        // {
-        //     var request = TestHelpers.CreateAllocationRequest(workerId: 0).Item1;
-        //
-        //     var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
-        //
-        //     if (response == null)
-        //     {
-        //         throw new NullReferenceException();
-        //     }
-        //
-        //     response.Should().NotBeNull();
-        //     response.StatusCode.Should().Be(400);
-        // }
-        //
-        // [Test]
-        // public void CreateAllocationReturns400WhenInvalidAllocatedTeamId()
-        // {
-        //     var request = TestHelpers.CreateAllocationRequest(teamId: 0).Item1;
-        //
-        //     var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
-        //
-        //     if (response == null)
-        //     {
-        //         throw new NullReferenceException();
-        //     }
-        //
-        //     response.Should().NotBeNull();
-        //     response.StatusCode.Should().Be(400);
-        // }
-
         #endregion
 
         #region Case notes
