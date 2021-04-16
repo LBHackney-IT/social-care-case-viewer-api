@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapHistoricalCaseNoteToBsonDocument()
+        public void CanMapCaseNoteToBsonDocument()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             var expectedDocument = new BsonDocument(
@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapHistoricalVisitToBsonDocument()
+        public void CanMapVisitToBsonDocument()
         {
             var visit = TestHelpers.CreateVisit();
             var expectedDocument = new BsonDocument(
