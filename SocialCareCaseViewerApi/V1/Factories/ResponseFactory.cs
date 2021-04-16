@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new BsonDocument(new List<BsonElement>
             {
                 new BsonElement("_id", visit.VisitId.ToString()),
-                new BsonElement("mosaic_id", visit.PersonId),
+                new BsonElement("mosaic_id", visit.PersonId.ToString()),
                 new BsonElement("worker_email", visit.CreatedByEmail),
                 new BsonElement("form_name_overall", "Historical_Visit"),
                 new BsonElement("form_name", $"Historical Visit - {visit.VisitType}"),
