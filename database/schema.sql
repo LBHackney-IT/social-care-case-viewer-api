@@ -336,7 +336,6 @@ CREATE TABLE dbo.sccv_warning_note (
   WARNING_NARRATIVE varchar(1000),
   MANAGERS_NAME varchar(100),
   DATE_MANAGER_INFORMED timestamp,
-  NEXT_REVIEW_DATE timestamp,
   SCCV_CREATED_AT timestamp,
   SCCV_CREATED_BY varchar(300),
   SCCV_LAST_MODIFIED_AT timestamp,

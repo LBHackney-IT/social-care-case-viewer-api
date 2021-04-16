@@ -521,7 +521,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 DisclosedDetails = request.DisclosedDetails,
                 Notes = request.Notes,
                 NoteType = request.NoteType,
-                Status = request.Status,
+                Status = "open",
                 DisclosedDate = request.DisclosedDate,
                 DisclosedHow = request.DisclosedHow,
                 WarningNarrative = request.WarningNarrative,
@@ -584,21 +584,57 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
         {
-            // amend the existing warning note
             WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId).FirstOrDefault();
-            if (request.EndedDate != null) warningNote.EndDate = request.EndedDate;
+
+            if (warningNote == null)
+            {
+                throw new PatchWarningNoteException($"Warning Note with given id ({request.WarningNoteId}) not found");
+            }
+
+            if (warningNote.Status == "closed")
+            {
+                throw new PatchWarningNoteException($"Warning Note with given id ({request.WarningNoteId}) has already been closed");
+            }
+
+            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == warningNote.PersonId);
+            if (person == null)
+            {
+                throw new PatchWarningNoteException("Person not found");
+            }
+
+            Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Email == request.ReviewedBy);
+            if (worker == null)
+            {
+                throw new PatchWarningNoteException($"Worker ({request.ReviewedBy}) not found");
+            }
+
             warningNote.LastReviewDate = request.ReviewDate;
             warningNote.NextReviewDate = request.NextReviewDate;
-            if (request.Status != null) warningNote.Status = request.Status;
-            warningNote.LastModifiedAt = request.ReviewDate;
+            if (request.Status?.ToLower() == "closed")
+            {
+                warningNote.Status = "closed";
+                warningNote.EndDate = request.EndedDate;
+                warningNote.NextReviewDate = null;
+            }
             warningNote.LastModifiedBy = request.ReviewedBy;
+
+            var review = PostWarningNoteReview(request);
+            _databaseContext.WarningNoteReview.Add(review);
             _databaseContext.SaveChanges();
         }
 
-        private static void PostWarningNoteReview(PatchWarningNoteRequest request)
+        private static WarningNoteReview PostWarningNoteReview(PatchWarningNoteRequest request)
         {
-            // add a new review
-
+            return new WarningNoteReview
+            {
+                WarningNoteId = request.WarningNoteId,
+                ReviewDate = request.ReviewDate,
+                Notes = request.ReviewNotes,
+                ManagerName = request.ManagerName,
+                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
+                CreatedBy = request.ReviewedBy,
+                LastModifiedBy = request.ReviewedBy
+            };
         }
 
         #endregion

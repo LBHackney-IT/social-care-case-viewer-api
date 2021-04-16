@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long WarningNoteId { get; set; }
 
         [Column("review_date")]
-        public DateTime ReviewDate { get; set; }
+        public DateTime? ReviewDate { get; set; }
 
         [Column("individual_notified")]
         public bool DisclosedWithIndividual { get; set; }
@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string ManagerName { get; set; }
 
         [Column("date_manager_informed")]
-        public DateTime DiscussedWithManagerDate { get; set; }
+        public DateTime? DiscussedWithManagerDate { get; set; }
 
         // nav props
         public WarningNote WarningNote { get; set; }
@@ -44,5 +44,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? LastModifiedAt { get; set; }
 
         [Column("sccv_last_modified_by")]
-        public string LastModifiedBy { get; set; }    }
+        public string LastModifiedBy { get; set; }
+    }
 }

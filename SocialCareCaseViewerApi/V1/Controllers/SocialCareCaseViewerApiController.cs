@@ -395,5 +395,20 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return NotFound(e.Message);
             }
         }
+
+        /// <summary>
+        /// Amend Warning Notes in response to a review and add a Warning Note Review to the database
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="204">Amended successfully</response>
+        /// <response code="500">There was a problem updating the record</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        [Route("warningnotes")]
+        public IActionResult PatchWarningNote([FromBody] PatchWarningNoteRequest request)
+        {
+            _warningNoteUseCase.ExecutePatch(request);
+            return NoContent();
+        }
     }
 }

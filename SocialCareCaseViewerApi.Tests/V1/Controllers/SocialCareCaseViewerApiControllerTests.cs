@@ -603,6 +603,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(404);
             response.Value.Should().Be("Document Not Found");
         }
+
+        [Test]
+        public void PatchWarningNoteCallsTheUseCaseAndReturns204WhenSuccessful()
+        {
+            var request = new PatchWarningNoteRequest();
+            var response = _classUnderTest.PatchWarningNote(request) as NoContentResult;
+
+            _mockWarningNoteUseCase.Verify(x => x.ExecutePatch(request), Times.Once);
+            response.StatusCode.Should().Be(204);
+        }
         #endregion
     }
 }

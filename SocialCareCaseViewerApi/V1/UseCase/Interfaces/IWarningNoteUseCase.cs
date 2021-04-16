@@ -9,5 +9,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         PostWarningNoteResponse ExecutePost(PostWarningNoteRequest request);
         List<WarningNote> ExecuteGet(GetWarningNoteRequest request);
+
+        void ExecutePatch(PatchWarningNoteRequest request);
     }
 }
