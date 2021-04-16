@@ -1,24 +1,34 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using System;
+using FluentValidation;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-
     public class UpdateAllocationRequest
     {
-        [FromBody]
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than 0")]
         public int Id { get; set; }
 
-        [FromBody]
-        [Required(ErrorMessage = "Please provide deallocation reason")]
         public string DeallocationReason { get; set; }
 
-        [FromBody]
-        [Required]
-        [EmailAddress]
         public string CreatedBy { get; set; }
+
+        public DateTime DeallocationDate { get; set; }
+    }
+
+    public class UpdateAllocationRequestValidator : AbstractValidator<UpdateAllocationRequest>
+    {
+        public UpdateAllocationRequestValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotNull().WithMessage("Id Required")
+                .InclusiveBetween(1, int.MaxValue).WithMessage("Id must be grater than 1");
+            RuleFor(x => x.DeallocationReason)
+                .NotNull().WithMessage("Deallocation reason required");
+            RuleFor(x => x.CreatedBy)
+                .NotNull().WithMessage("Email required")
+                .EmailAddress().WithMessage("Provide a valid email");
+            RuleFor(x => x.DeallocationDate)
+                .NotNull().WithMessage("Deallocation date required")
+                .LessThan(DateTime.Now).WithMessage("Deallocation date must be in the past");
+        }
     }
 }
