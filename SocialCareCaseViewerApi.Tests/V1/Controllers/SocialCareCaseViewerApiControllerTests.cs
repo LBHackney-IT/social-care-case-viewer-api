@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -316,29 +317,158 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdateAllocationReturns200WhenSuccessful()
         {
-            var request = new UpdateAllocationRequest() { Id = _fixture.Create<int>() };
-
-            UpdateAllocationResponse result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() }; //TODO: test end to end with valid format
+            var request = TestHelpers.CreateUpdateAllocationRequest().Item1;
+            var result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
 
             _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
 
-            var response = _classUnderTest.UpdateAllocation(request);
+            var response = _classUnderTest.UpdateAllocation(request) as OkObjectResult;
 
-            response.Should().NotBeNull();
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(result);
         }
 
         [Test]
         public void UpdateAllocationReturns500WhenUpdateFails()
         {
+            var request = TestHelpers.CreateUpdateAllocationRequest().Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new EntityUpdateException("Unable to update allocation"));
 
-            var response = _classUnderTest.UpdateAllocation(new UpdateAllocationRequest()) as ObjectResult;
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
             response.StatusCode.Should().Be(500);
         }
 
-        //TODO: test other exception types
+        [Test]
+        public void UpdateAllocationReturns500OnUpdateAllocationException()
+        {
+            var request = TestHelpers.CreateUpdateAllocationRequest().Item1;
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new UpdateAllocationException("Unable to update allocation"));
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(500);
+        }
+
+        [Test]
+        public void UpdateAllocationReturns400WhenInvalidMosaicId()
+        {
+            var request = TestHelpers.CreateUpdateAllocationRequest(id: 0).Item1;
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateAllocationReturns400WhenEmptyDeallocationReason()
+        {
+            var request = TestHelpers.CreateUpdateAllocationRequest(deallocationReason: "").Item1;
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateAllocationReturns400WhenCreatedByNotValidEmail()
+        {
+            var request = TestHelpers.CreateUpdateAllocationRequest(createdBy: "invalidEmail").Item1;
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateAllocationReturns400WhenDeallocationDateInTheFuture()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_DEALLOCATION_DATE", "true");
+            var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateAllocationReturns200WhenDeallocationDateInTheFutureAndFeatureFlagNotPresent()
+        {
+            var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
+            var result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
+            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
+
+            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(result);
+        }
+
+        // [Test]
+        // public void CreateAllocationReturns400WhenInvalidAllocatedWorkerId()
+        // {
+        //     var request = TestHelpers.CreateAllocationRequest(workerId: 0).Item1;
+        //
+        //     var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+        //
+        //     if (response == null)
+        //     {
+        //         throw new NullReferenceException();
+        //     }
+        //
+        //     response.Should().NotBeNull();
+        //     response.StatusCode.Should().Be(400);
+        // }
+        //
+        // [Test]
+        // public void CreateAllocationReturns400WhenInvalidAllocatedTeamId()
+        // {
+        //     var request = TestHelpers.CreateAllocationRequest(teamId: 0).Item1;
+        //
+        //     var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+        //
+        //     if (response == null)
+        //     {
+        //         throw new NullReferenceException();
+        //     }
+        //
+        //     response.Should().NotBeNull();
+        //     response.StatusCode.Should().Be(400);
+        // }
 
         #endregion
 
