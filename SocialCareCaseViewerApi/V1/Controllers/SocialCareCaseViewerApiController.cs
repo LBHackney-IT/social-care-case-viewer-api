@@ -319,7 +319,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [Route("warningnotes")]
-        public IActionResult PostWarningNote([FromQuery] PostWarningNoteRequest request)
+        public IActionResult PostWarningNote([FromBody] PostWarningNoteRequest request)
         {
             try
             {
