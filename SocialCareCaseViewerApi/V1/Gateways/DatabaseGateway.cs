@@ -358,7 +358,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = request.AllocationStartDate,
+                AllocationStartDate = request.AllocationStartDate ?? DateTime.Now,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
