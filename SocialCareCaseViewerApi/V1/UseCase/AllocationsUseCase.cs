@@ -7,7 +7,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class AllocationsUseCase : IAllocationsUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
         public AllocationsUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
