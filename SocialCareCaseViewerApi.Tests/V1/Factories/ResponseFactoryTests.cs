@@ -90,6 +90,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var expectedDocument = new BsonDocument(
             new List<BsonElement> {
                     new BsonElement("_id", visit.VisitId.ToString()),
+                    new BsonElement("mosaic_id", visit.PersonId),
                     new BsonElement("worker_email", visit.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Visit"),
                     new BsonElement("form_name", $"Historical Visit - {visit.VisitType}"),
