@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string CreatedBy { get; set; }
 
-        public DateTime DeallocationDate { get; set; }
+        public DateTime? DeallocationDate { get; set; }
     }
 
     public class UpdateAllocationRequestValidator : AbstractValidator<UpdateAllocationRequest>
