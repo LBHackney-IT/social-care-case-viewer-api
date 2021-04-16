@@ -2,11 +2,12 @@
 
 The Social Care Service API provides the backend service for the [Social Care Front end](https://github.com/LBHackney-IT/lbh-social-care)
 
-It is a part of the Social Care system (see [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/tree/main) for more details).
+It is a part of the Social Care system (see [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/) for more details).
 
 - [Social Care Case Viewer API](#social-care-case-viewer-api)
   - [Documentation](#documentation)
     - [Swagger API](#swagger-api)
+    - [C4 Component Diagram](#c4-component-diagram)
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Dockerised dependencies](#dockerised-dependencies)
@@ -19,6 +20,12 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
   - [License](#license)
 
 ## Documentation
+
+Higher level Architecture diagrams can be found in the  [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/) repository.
+
+### C4 Component Diagram
+
+![C4 Component Diagram](docs/component_diagram.svg)
 
 ### Swagger API
 
@@ -75,7 +82,7 @@ $ docker-compose up
 
 - **Tuomo Karki**, Lead Developer at Hackney (tuomo.karki@hackney.gov.uk)
 - **Ben Reynolds-Carr**, Junior Developer at Hackney (ben.reynolds-carr@hackney.gov.uk)
-- **Jerome Wanliss**, Intern Software Engineer at Hackney (jerome.wanliss@hackney.gov.uk) 
+- **Jerome Wanliss**, Intern Software Engineer at Hackney (jerome.wanliss@hackney.gov.uk)
 - **John Farrell**, Senior Software Engineer at Made Tech (john.farrell@hackney.gov.uk)
 - **Renny Fadoju**, Software Engineer at Made Tech (renny.fadoju@hackney.gov.uk)
 - **Neil Kidd**, Lead Software Engineer at Made Tech (neil.kidd@hackney.gov.uk)
