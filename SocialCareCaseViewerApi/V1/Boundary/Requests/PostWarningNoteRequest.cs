@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class CreateWarningNoteRequest
+    public class PostWarningNoteRequest
     {
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than 0")]
@@ -12,16 +12,22 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Required]
         public DateTime? StartDate { get; set; }
 
+        [Required]
+        public DateTime? ReviewDate { get; set; }
+
         public DateTime? EndDate { get; set; }
 
         [Required]
-        public Boolean IndividualNotified { get; set; }
+        public Boolean DisclosedWithIndividual { get; set; }
 
         [StringLength(1000, ErrorMessage = "Character limit of 1000 exceeded")]
-        public string NotificationDetails { get; set; }
+        public string DisclosedDetails { get; set; }
 
+        [Required]
         [StringLength(1000, ErrorMessage = "Character limit of 1000 exceeded")]
-        public string ReviewDetails { get; set; }
+        public string Notes { get; set; }
+
+        public DateTime? NextReviewDate { get; set; }
 
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
         public string NoteType { get; set; }
@@ -29,17 +35,17 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
         public string Status { get; set; }
 
-        public DateTime? DateInformed { get; set; }
+        public DateTime? DisclosedDate { get; set; }
 
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
-        public string HowInformed { get; set; }
+        public string DisclosedHow { get; set; }
 
         [StringLength(1000, ErrorMessage = "Character limit of 1000 exceeded")]
         public string WarningNarrative { get; set; }
 
         [StringLength(100, ErrorMessage = "Character limit of 100 exceeded")]
-        public string ManagersName { get; set; }
-        public DateTime? DateManagerInformed { get; set; }
+        public string ManagerName { get; set; }
+        public DateTime? DiscussedWithManagerDate { get; set; }
 
         [Required]
         [EmailAddress]

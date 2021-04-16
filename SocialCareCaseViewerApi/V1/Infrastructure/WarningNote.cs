@@ -16,19 +16,29 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long PersonId { get; set; }
 
         [Column("start_date")]
+        [Required]
         public DateTime? StartDate { get; set; }
+
+        [Column("review_date")]
+        [Required]
+        public DateTime? ReviewDate { get; set; }
 
         [Column("end_date")]
         public DateTime? EndDate { get; set; }
 
         [Column("individual_notified")]
-        public Boolean IndividualNotified { get; set; }
+        [Required]
+        public Boolean DisclosedWithIndividual { get; set; }
 
         [Column("notification_details")]
-        public string NotificationDetails { get; set; }
+        public string DisclosedDetails { get; set; }
 
         [Column("review_details")]
-        public string ReviewDetails { get; set; }
+        [Required]
+        public string Notes { get; set; }
+
+        [Column("next_review_date")]
+        public DateTime? NextReviewDate { get; set; }
 
         [Column("note_type")]
         public string NoteType { get; set; }
@@ -37,19 +47,19 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Status { get; set; }
 
         [Column("date_informed")]
-        public DateTime? DateInformed { get; set; }
+        public DateTime? DisclosedDate { get; set; }
 
         [Column("how_informed")]
-        public string HowInformed { get; set; }
+        public string DisclosedHow { get; set; }
 
         [Column("warning_narrative")]
         public string WarningNarrative { get; set; }
 
         [Column("managers_name")]
-        public string ManagersName { get; set; }
+        public string ManagerName { get; set; }
 
         [Column("date_manager_informed")]
-        public DateTime? DateManagerInformed { get; set; }
+        public DateTime? DiscussedWithManagerDate { get; set; }
 
         //nav props
         public Person Person { get; set; }

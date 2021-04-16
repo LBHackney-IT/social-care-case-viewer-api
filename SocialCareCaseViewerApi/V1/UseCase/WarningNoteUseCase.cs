@@ -17,9 +17,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public CreateWarningNoteResponse ExecutePost(CreateWarningNoteRequest request)
+        public PostWarningNoteResponse ExecutePost(PostWarningNoteRequest request)
         {
-            return _databaseGateway.CreateWarningNote(request);
+            return _databaseGateway.PostWarningNote(request);
         }
 
         public List<WarningNote> ExecuteGet(GetWarningNoteRequest request)

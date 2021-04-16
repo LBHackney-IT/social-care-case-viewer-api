@@ -443,29 +443,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
         #region WarningNotes
         [Test]
-        public void CreateWarningNoteReturns201WhenSuccessful()
+        public void PostWarningNoteReturns201WhenSuccessful()
         {
-            var createWarningNoteResponse = _fixture.Create<CreateWarningNoteResponse>();
-            var createWarningNoteRequest = new CreateWarningNoteRequest();
+            var PostWarningNoteResponse = _fixture.Create<PostWarningNoteResponse>();
+            var PostWarningNoteRequest = new PostWarningNoteRequest();
 
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecutePost(createWarningNoteRequest))
-                .Returns(createWarningNoteResponse);
-            var response = _classUnderTest.CreateWarningNote(createWarningNoteRequest) as CreatedAtActionResult;
+                .Setup(x => x.ExecutePost(PostWarningNoteRequest))
+                .Returns(PostWarningNoteResponse);
+            var response = _classUnderTest.PostWarningNote(PostWarningNoteRequest) as CreatedAtActionResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(createWarningNoteResponse);
+            response.Value.Should().BeEquivalentTo(PostWarningNoteResponse);
         }
 
         [Test]
-        public void CreateWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
+        public void PostWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
         {
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecutePost(It.IsAny<CreateWarningNoteRequest>()))
-                .Throws(new CreateWarningNoteException("Warning Note could not be inserted"));
+                .Setup(x => x.ExecutePost(It.IsAny<PostWarningNoteRequest>()))
+                .Throws(new PostWarningNoteException("Warning Note could not be inserted"));
 
-            var response = _classUnderTest.CreateWarningNote(new CreateWarningNoteRequest()) as ObjectResult;
+            var response = _classUnderTest.PostWarningNote(new PostWarningNoteRequest()) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(500);

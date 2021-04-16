@@ -341,16 +341,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <reponse code="500">There was a problem creating the record</reponse>
         /// </summary>
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch]
+        [HttpPost]
         [Route("warningnotes")]
-        public IActionResult CreateWarningNote([FromQuery] CreateWarningNoteRequest request)
+        public IActionResult PostWarningNote([FromBody] PostWarningNoteRequest request)
         {
             try
             {
                 var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
-            catch (CreateWarningNoteException ex)
+            catch (PostWarningNoteException ex)
             {
                 return StatusCode(500, ex.Message);
             }

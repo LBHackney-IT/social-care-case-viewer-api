@@ -533,13 +533,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         #region Warning Notes
-        public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
+        public PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request)
         {
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
 
             if (person == null)
             {
-                throw new CreateWarningNoteException($"Person with given id ({request.PersonId}) not found");
+                throw new PostWarningNoteException($"Person with given id ({request.PersonId}) not found");
             }
 
             //TODO: Extract request to domain process to EntityFactory
@@ -548,23 +548,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = request.PersonId,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
-                IndividualNotified = request.IndividualNotified,
-                NotificationDetails = request.NotificationDetails,
-                ReviewDetails = request.ReviewDetails,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
+                DisclosedDetails = request.DisclosedDetails,
+                Notes = request.Notes,
                 NoteType = request.NoteType,
                 Status = request.Status,
-                DateInformed = request.DateInformed,
-                HowInformed = request.HowInformed,
+                DisclosedDate = request.DisclosedDate,
+                DisclosedHow = request.DisclosedHow,
                 WarningNarrative = request.WarningNarrative,
-                ManagersName = request.ManagersName,
-                DateManagerInformed = request.DateManagerInformed,
+                ManagerName = request.ManagerName,
+                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
                 CreatedBy = request.CreatedBy
             };
 
             _databaseContext.WarningNotes.Add(warningNote);
             _databaseContext.SaveChanges();
 
-            CreateWarningNoteResponse response = new CreateWarningNoteResponse()
+            PostWarningNoteResponse response = new PostWarningNoteResponse()
             {
                 WarningNoteId = warningNote.Id
             };
@@ -597,7 +597,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //     _databaseContext.WarningNotes.Remove(warningNote);
             //     _databaseContext.SaveChanges();
 
-            //     throw new CreateWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
+            //     throw new PostWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
             // }
 
             return response;
