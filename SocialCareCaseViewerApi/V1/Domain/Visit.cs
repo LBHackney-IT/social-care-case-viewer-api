@@ -1,3 +1,5 @@
+using System;
+
 #nullable enable
 
 namespace SocialCareCaseViewerApi.V1.Domain
@@ -10,9 +12,9 @@ namespace SocialCareCaseViewerApi.V1.Domain
 
         public string VisitType { get; set; } = null!;
 
-        public string? PlannedDateTime { get; set; }
+        public DateTime? PlannedDateTime { get; set; }
 
-        public string? ActualDateTime { get; set; }
+        public DateTime? ActualDateTime { get; set; }
 
         public string? CreatedByName { get; set; }
 

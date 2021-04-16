@@ -65,15 +65,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalCaseNoteToBsonDocument()
         {
-            var historicalCaseNote = TestHelpers.CreateResidentHistoricRecordCaseNote();
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
             var expectedDocument = new BsonDocument(
             new List<BsonElement> {
-                    new BsonElement("_id", historicalCaseNote.CaseNote.CaseNoteId),
-                    new BsonElement("mosaic_id", historicalCaseNote.CaseNote.MosaicId),
-                    new BsonElement("worker_email", historicalCaseNote.CaseNote.CreatedByEmail),
+                    new BsonElement("_id", historicalCaseNote.CaseNoteId),
+                    new BsonElement("mosaic_id", historicalCaseNote.MosaicId),
+                    new BsonElement("worker_email", historicalCaseNote.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
                     new BsonElement("form_name", historicalCaseNote.CaseNoteTitle),
-                    new BsonElement("timestamp", historicalCaseNote.CaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")),
+                    new BsonElement("timestamp", historicalCaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")),
                     new BsonElement("is_historical", true)
             });
 
@@ -85,14 +85,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalVisitToBsonDocument()
         {
-            var visit = TestHelpers.CreateResidentHistoricRecordVisit();
+            var visit = TestHelpers.CreateVisit();
             var expectedDocument = new BsonDocument(
             new List<BsonElement> {
-                    new BsonElement("_id", visit.Visit.VisitId),
-                    new BsonElement("worker_email", visit.Visit.CreatedByEmail),
+                    new BsonElement("_id", visit.VisitId.ToString()),
+                    new BsonElement("worker_email", visit.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Visit"),
-                    new BsonElement("form_name", $"Historical Visit - {visit.Visit.VisitType}"),
-                    new BsonElement("timestamp", DateTime.Parse(visit.DateOfEvent ?? "").ToString("dd/MM/yyyy H:mm:ss")),
+                    new BsonElement("form_name", $"Historical Visit - {visit.VisitType}"),
+                    new BsonElement("timestamp", visit.ActualDateTime?.ToString("dd/MM/yyyy H:mm:ss") ??
+                                                 visit.PlannedDateTime?.ToString("dd/MM/yyyy H:mm:ss")),
                     new BsonElement("is_historical", true)
             });
 

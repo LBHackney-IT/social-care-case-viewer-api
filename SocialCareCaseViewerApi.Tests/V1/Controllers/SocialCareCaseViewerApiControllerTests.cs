@@ -480,8 +480,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
             var request = new ListVisitsRequest { Id = "1" };
-
-            var visitList = _fixture.Create<ListVisitsResponse>();
+            var visit = TestHelpers.CreateVisit();
+            var visitList = new List<Visit>();
 
             _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
 

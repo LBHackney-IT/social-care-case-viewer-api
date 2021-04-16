@@ -142,34 +142,28 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 casesAndVisits.AddRange(ncIdQuery.ToList());
             }
 
-            var historicRecords = _socialCarePlatformAPIGateway.GetHistoricCaseNotesAndVisitsByPersonId(long.Parse(personId));
-            if (historicRecords.Count > 0)
+            var historicVisits = _socialCarePlatformAPIGateway
+                .GetVisitsByPersonId(personId)
+                .Select(ResponseFactory.HistoricalVisitsToDomain)
+                .ToList();
+
+            var historicCases = _socialCarePlatformAPIGateway
+                .GetCaseNotesByPersonId(personId)
+                .CaseNotes
+                .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                .ToList();
+
+            if (historicVisits.Count > 0)
             {
-                casesAndVisits.AddRange(ConvertHistoricRecordsToDomain(historicRecords));
+                casesAndVisits.AddRange(historicVisits);
+            }
+
+            if (historicCases.Count > 0)
+            {
+                casesAndVisits.AddRange(historicCases);
             }
 
             return casesAndVisits;
-        }
-
-        private static IEnumerable<BsonDocument> ConvertHistoricRecordsToDomain(List<ResidentHistoricRecord> residentHistoricRecords)
-        {
-            var convertedHistoricResponse = new List<BsonDocument>();
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            foreach (var residentHistoricRecord in residentHistoricRecords)
-            {
-                // feature flag is for historic visits
-                if (showHistoricData is "true" && residentHistoricRecord.RecordType == RecordType.Visit)
-                {
-                    convertedHistoricResponse.Add(ResponseFactory.HistoricalVisitsToDomain(residentHistoricRecord as ResidentHistoricRecordVisit));
-                }
-                if (residentHistoricRecord.RecordType == RecordType.CaseNote)
-                {
-                    convertedHistoricResponse.Add(ResponseFactory.HistoricalCaseNotesToDomain(residentHistoricRecord as ResidentHistoricRecordCaseNote));
-                }
-            }
-
-            return convertedHistoricResponse;
         }
 
         public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)

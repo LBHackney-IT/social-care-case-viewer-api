@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 
@@ -24,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListVisitsRequest() { Id = "1" };
 
-            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetVisitsByPersonId(It.IsAny<string>())).Returns(new ListVisitsResponse());
+            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetVisitsByPersonId(It.IsAny<string>())).Returns(new List<Visit>());
 
             _visitsUseCase.ExecuteGetByPersonId(request.Id);
 
@@ -36,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListCaseNotesRequest() { Id = "1" };
 
-            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetVisitsByPersonId(request.Id)).Returns(new ListVisitsResponse());
+            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetVisitsByPersonId(request.Id)).Returns(new List<Visit>());
 
             _visitsUseCase.ExecuteGetByPersonId(request.Id);
 
