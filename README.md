@@ -6,6 +6,7 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
 
 - [Social Care Case Viewer API](#social-care-case-viewer-api)
   - [Documentation](#documentation)
+    - [C4 Component Diagram](#c4-component-diagram)
     - [Swagger API](#swagger-api)
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -19,6 +20,12 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
   - [License](#license)
 
 ## Documentation
+
+Higher level Architecture diagrams can be found in the  [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/) repository.
+
+### C4 Component Diagram
+
+![C4 Component Diagram](docs/component-diagram.svg)
 
 ### Swagger API
 
