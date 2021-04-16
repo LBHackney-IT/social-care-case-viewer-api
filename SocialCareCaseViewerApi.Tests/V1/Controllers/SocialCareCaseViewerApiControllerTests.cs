@@ -198,7 +198,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void CreateAllocationReturns201WhenSuccessful()
         {
-            var request = _fixture.Create<CreateAllocationRequest>();
+            var request = TestHelpers.CreateAllocationRequest().Item1;
             var responseObject = new CreateAllocationResponse();
 
             _mockAllocationsUseCase.Setup(x => x.ExecutePost(request))
@@ -206,9 +206,111 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
 
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
             response.Value.Should().BeEquivalentTo(responseObject);
+        }
+
+        [Test]
+        public void CreateAllocationReturns404WhenCreatingAllocationFails()
+        {
+            var request = TestHelpers.CreateAllocationRequest().Item1;
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new CreateAllocationException("Worker details cannot be found"));
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void CreateAllocationReturns500WhenCaseNoteFails()
+        {
+            var request = TestHelpers.CreateAllocationRequest().Item1;
+            _mockAllocationsUseCase.Setup(x => x.ExecutePost(request)).Throws(new UpdateAllocationException("Unable to create a case note. Allocation not created"));
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(500);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidMosaicId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(mosaicId: 0).Item1;
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidAllocatedWorkerId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(workerId: 0).Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidAllocatedTeamId()
+        {
+            var request = TestHelpers.CreateAllocationRequest(teamId: 0).Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void CreateAllocationReturns400WhenInvalidCreatedBy()
+        {
+            var request = TestHelpers.CreateAllocationRequest(createdBy: "").Item1;
+
+            var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
         }
 
         [Test]
@@ -373,7 +475,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
 
             var request = new ListVisitsRequest { Id = "1" };
-            var visit = TestHelper.CreateVisit();
+            var visit = TestHelpers.CreateVisit();
             var visitList = new List<Visit>();
 
             _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
@@ -416,7 +518,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetVisitByVisitIdReturns200StatusAndVisitWhenSuccessful()
         {
-            var visit = TestHelper.CreateVisit();
+            var visit = TestHelpers.CreateVisit();
             _mockGetVisitByVisitIdUseCase.Setup(x => x.Execute(visit.VisitId)).Returns(visit);
 
             var response = _classUnderTest.GetVisitByVisitId(visit.VisitId) as OkObjectResult;

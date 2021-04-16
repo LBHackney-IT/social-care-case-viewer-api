@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetVisitByVisitIdReturnsVisitWhenVisitWithIdExists()
         {
-            var visit = TestHelper.CreateVisit();
+            var visit = TestHelpers.CreateVisit();
             _mockSocialCarePlatformApiGateway.Setup(x => x.GetVisitByVisitId(visit.VisitId)).Returns(visit);
 
             var response = _classUnderTest.Execute(visit.VisitId);

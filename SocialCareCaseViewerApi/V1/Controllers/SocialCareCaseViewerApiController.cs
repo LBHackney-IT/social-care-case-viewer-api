@@ -175,13 +175,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// create new allocations for workers
         /// </summary>
         /// <response code="201">Allocation successfully inserted</response>
-        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
         {
-            var result = _allocationUseCase.ExecutePost(request);
-            return CreatedAtAction("CreateAllocation", result, result);
+            var validator = new CreateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                var result = _allocationUseCase.ExecutePost(request);
+                return CreatedAtAction("CreateAllocation", result, result);
+            }
+            catch (CreateAllocationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UpdateAllocationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>

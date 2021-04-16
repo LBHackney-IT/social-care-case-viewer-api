@@ -351,47 +351,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
-            CreateAllocationResponse response = new CreateAllocationResponse();
+            var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            //make sure we have all related entities
-            //worker
-            Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
-
-            if (string.IsNullOrEmpty(worker?.Email))
-            {
-                throw new CreateAllocationException("Worker details cannot be found");
-            }
-
-            //team
-            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
-
-            if (team == null)
-            {
-                throw new CreateAllocationException("Team details cannot be found");
-            }
-
-            //person
-            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
-
-            if (person == null)
-            {
-                throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
-            }
-
-            //createdBy
-            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
-
-            if (allocatedBy == null)
-            {
-                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
-            }
-
-            AllocationSet allocation = new AllocationSet()
+            var allocation = new AllocationSet
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = DateTime.Now,
+                AllocationStartDate = request.AllocationStartDate ?? DateTime.Now,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
@@ -399,12 +366,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.Allocations.Add(allocation);
             _databaseContext.SaveChanges();
 
+
+            var response = new CreateAllocationResponse();
             //Add note
             try
             {
-                DateTime dt = DateTime.Now;
+                var dt = DateTime.Now;
 
-                AllocationCaseNote note = new AllocationCaseNote()
+                var note = new AllocationCaseNote
                 {
                     FirstName = person.FirstName,
                     LastName = person.LastName,
@@ -418,7 +387,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CreatedBy = request.CreatedBy
                 };
 
-                CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+                var caseNotesDocument = new CaseNotesDocument()
                 {
                     CaseFormData = JsonConvert.SerializeObject(note)
                 };
@@ -639,6 +608,35 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             string last = string.IsNullOrWhiteSpace(lastName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());
 
             return (first + " " + last).TrimStart().TrimEnd();
+        }
+
+        private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        {
+            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
+            if (string.IsNullOrEmpty(worker?.Email))
+            {
+                throw new CreateAllocationException("Worker details cannot be found");
+            }
+
+            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
+            if (team == null)
+            {
+                throw new CreateAllocationException("Team details cannot be found");
+            }
+
+            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
+            if (person == null)
+            {
+                throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
+            }
+
+            var allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
+            if (allocatedBy == null)
+            {
+                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
+            }
+
+            return (worker, team, person, allocatedBy);
         }
     }
 }
