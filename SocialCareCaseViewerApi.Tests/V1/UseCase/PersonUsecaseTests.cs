@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request.Id)).Returns((dbPerson) null);
 
-            var result =_residentUsecase.ExecuteGet(request);
+            var result = _residentUsecase.ExecuteGet(request);
 
             result.Should().BeNull();
         }

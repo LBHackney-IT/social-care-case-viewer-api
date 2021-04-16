@@ -624,7 +624,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
                 .FirstOrDefault(x => x.Id == id);
-        } 
+        }
 
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {

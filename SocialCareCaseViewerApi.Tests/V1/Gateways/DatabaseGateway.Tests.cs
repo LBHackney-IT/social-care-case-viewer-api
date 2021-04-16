@@ -759,11 +759,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id));
             SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
-            
+
             var response = _classUnderTest.GetPersonDetailsById(person.Id);
 
             response.Should().BeEquivalentTo(person);
-        }        
+        }
 
         private Person SavePersonToDatabase(Person person)
         {

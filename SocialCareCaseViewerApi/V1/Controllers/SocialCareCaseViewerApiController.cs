@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var response = _personUseCase.ExecuteGet(request);
 
-            if(response == null)
+            if (response == null)
             {
                 return NotFound();
             }

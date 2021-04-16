@@ -147,7 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var result = _classUnderTest.GetPerson(request) as NotFoundResult;
 
             result.StatusCode.Should().Be(404);
-         }
+        }
 
         [Test]
         public void ListCasesReturns200WhenSuccessful()

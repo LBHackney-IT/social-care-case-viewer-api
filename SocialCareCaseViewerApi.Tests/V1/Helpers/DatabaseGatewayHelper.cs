@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<dbPerson>()
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
-                .RuleFor(p => p.AgeContext, f => f.Random.String2(1)) 
+                .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past())
                 .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
                 .RuleFor(p => p.Ethnicity, f => f.Random.Word())
@@ -55,8 +55,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.FirstName, firstName)
                 .RuleFor(p => p.LastName, f => lastName)
                 .RuleFor(p => p.FullName, $"{firstName} {lastName}") //TODO: how to combine two props?
-                .RuleFor(p => p.Title, f => f.Random.String2(2)) 
-                .RuleFor(p => p.Gender, f => f.Random.String2(1)) 
+                .RuleFor(p => p.Title, f => f.Random.String2(2))
+                .RuleFor(p => p.Gender, f => f.Random.String2(1))
                 .RuleFor(p => p.LastModifiedAt, f => f.Date.Past())
                 .RuleFor(p => p.LastModifiedBy, f => f.Internet.Email())
                 .RuleFor(p => p.Nationality, f => f.Random.Word())
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
-                .RuleFor(p => p.Restricted, f => f.Random.String2(1)); 
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1));
         }
 
         public static Address CreateAddressDatabaseEntity(
