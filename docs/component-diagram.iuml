@@ -1,0 +1,62 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Component.puml
+
+' Colours don't work for some reason
+' !include https://raw.githubusercontent.com/LBHackney-IT/cv-19-res-support-v3/development/docs/diagrams/c4_shared.puml
+
+'LAYOUT_AS_SKETCH()
+
+title Component diagram for Social Care Case Viewer Service API
+
+Container_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
+Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
+Container_Ext(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
+Container_Ext(mosaic_platform_api, "Mosaic Resident Information Platform API", "Lambda, C#", "Provides person search")
+
+Container_Boundary(api, "Social Care Case Viewer Service API") {
+    Component(api_gateway, "API Gateway", "API Gateway", "Routing and auth via API keys")
+    Component(api_lambda, "Service API Lambda", "Lambda", "Provides ")
+    Component(mongodb_import_lambda, "MongoDB Import Lambda", "Lambda", "Imports form data")
+    Component(postgres_import_lambda, "PostgreSQL Import Lambda", "Lambda", "Imports allocations")
+    Component(s3_bucket, "S3 Bucket", "S3 Bucket", "Stores form data and allocations")
+
+    Component(persons, "Persons", "GET, POST", "Returns and creates persons")
+    Component(workers, "Workers", "GET", "Returns worker details")
+    Component(allocations, "Allocations", "GET, POST", "Returns and creates cases")
+    Component(cases, "Cases", "GET, POST", "Returns and creates allocations of workers")
+    Component(historic_data, "Historic Data", "GET", "Returns historic case notes and visits")
+
+    ContainerDb(postgres, "PostgreSQL", "RDS PostgreSQL", "Stores persons, workers and allocations")
+    ContainerDb(mongodb, "MongoDB", "AWS DocumentDB", "Stores form data")
+
+    Rel(api_gateway, api_lambda, "Uses", "HTTPS")
+    Rel(qlik, s3_bucket, "Uses", "HTTPS")
+
+    Rel(s3_bucket, mongodb_import_lambda, "Uses", "HTTPS")
+    Rel(s3_bucket, postgres_import_lambda, "Uses", "HTTPS")
+    Rel(mongodb_import_lambda, mongodb, "Uses", "JSON/HTTPS")
+    Rel(postgres_import_lambda, postgres, "Uses", "JSON/HTTPS")
+
+    Rel(social_care_front_end, api_gateway, "Uses", "JSON/HTTPS")
+
+    Rel(api_lambda, persons, "Uses", "JSON/HTTPS")
+    Rel(persons, mosaic_platform_api, "Uses", "Entity Framework/SSL")
+    Rel_U(mosaic_platform_api, postgres, "Uses", "Entity Framework/SSL")
+
+    Rel(api_lambda, workers, "Uses", "JSON/HTTPS")
+    Rel(workers, postgres, "Uses", "Entity Framework/SSL")
+
+    Rel(api_lambda, allocations, "Uses", "JSON/HTTPS")
+    Rel(allocations, postgres, "Uses", "Entity Framework/SSL")
+
+    Rel(api_lambda, cases, "Uses", "JSON/HTTPS")
+    Rel(cases, postgres, "Uses", "Entity Framework/SSL")
+
+    Rel(api_lambda, historic_data, "Uses", "JSON/HTTPS")
+    Rel(historic_data, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
+}
+
+SHOW_DYNAMIC_LEGEND()
+@enduml
