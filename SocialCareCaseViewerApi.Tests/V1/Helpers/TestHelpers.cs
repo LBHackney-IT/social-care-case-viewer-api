@@ -106,7 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.Visit, visit);
         }
 
-        public static (CreateAllocationRequest, Worker, InfrastructurePerson, Team) CreateAllocationRequest(
+        public static (CreateAllocationRequest, Worker, Worker, InfrastructurePerson, Team) CreateAllocationRequest(
             int? mosaicId = null,
             int? teamId = null,
             int? workerId = null,
@@ -114,6 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             )
         {
             var worker = CreateWorker();
+            var createdByWorker = CreateWorker();
             var person = CreatePerson();
             var team = CreateTeam();
 
@@ -121,13 +122,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.MosaicId, f => mosaicId ?? person.Id)
                 .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
-                .RuleFor(c => c.CreatedBy, f => createdBy ?? worker.Email)
+                .RuleFor(c => c.CreatedBy, f => createdBy ?? createdByWorker.Email)
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
 
-            return (createAllocationRequest, worker, person, team);
+            return (createAllocationRequest, worker, createdByWorker, person, team);
         }
 
-        public static Worker CreateWorker(int? workerId = null)
+        private static Worker CreateWorker(int? workerId = null)
         {
             return new Faker<Worker>()
                 .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)

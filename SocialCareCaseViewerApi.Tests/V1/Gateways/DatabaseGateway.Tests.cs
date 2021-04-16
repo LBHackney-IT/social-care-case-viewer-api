@@ -121,10 +121,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
-            var (request, worker, person, team) = TestHelpers.CreateAllocationRequest();
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.CreateAllocation(request);
@@ -133,7 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
             Assert.AreEqual(insertedRecord.WorkerId, worker.Id);
-            Assert.AreEqual(insertedRecord.CreatedBy, worker.Email);
+            Assert.AreEqual(insertedRecord.CreatedBy, createdByWorker.Email);
             Assert.IsNotNull(insertedRecord.CreatedAt);
             Assert.IsNull(insertedRecord.LastModifiedAt);
             Assert.IsNull(insertedRecord.LastModifiedBy);
