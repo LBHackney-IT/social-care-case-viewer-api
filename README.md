@@ -23,6 +23,8 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
 
 Higher level Architecture diagrams can be found in the  [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/) repository.
 
+The process and tooling for diagram creation is found [here](https://github.com/LBHackney-IT/social-care-architecture/process.md).
+
 ### C4 Component Diagram
 
 ![C4 Component Diagram](docs/component-diagram.svg)
