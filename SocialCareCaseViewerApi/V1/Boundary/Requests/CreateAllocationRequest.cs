@@ -1,7 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Newtonsoft.Json;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -20,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; }
 
         [JsonPropertyName("allocationStartDate")]
-        public DateTime AllocationStartDate { get; set; }
+        public DateTime? AllocationStartDate { get; set; }
     }
 
     public class CreateAllocationRequestValidator : AbstractValidator<CreateAllocationRequest>
@@ -39,8 +38,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.CreatedBy)
                 .NotNull().WithMessage("Email Required")
                 .EmailAddress().WithMessage("Enter a valid email address");
-            RuleFor(x => x.AllocationStartDate)
-                .NotNull().WithMessage("Allocation start date required");
         }
     }
 }
