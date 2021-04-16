@@ -208,7 +208,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             if (response == null)
             {
-                 throw new NullReferenceException();
+                throw new NullReferenceException();
             }
 
             response.Should().NotBeNull();
