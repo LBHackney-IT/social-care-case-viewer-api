@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using domainPhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -126,6 +127,36 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Role = worker.Role,
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
+            };
+        }
+
+        public static GetPersonResponse ToResponse(Person person)
+        {
+            //get the current display address
+            dbAddress displayAddress = person?.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+
+            return new GetPersonResponse()
+            {
+                SexualOrientation = person.SexualOrientation,
+                DateOfBirth = person.DateOfBirth,
+                DateOfDeath = person.DateOfDeath,
+                ContextFlag = person.AgeContext,
+                CreatedBy = person.CreatedBy,
+                EmailAddress = person.EmailAddress,
+                Ethinicity = person.Ethnicity,
+                FirstLanguage = person.FirstLanguage,
+                FirstName = person.FirstName,
+                Gender = person.Gender,
+                LastName = person.LastName,
+                NhsNumber = person.NhsNumber,
+                PersonId = person.Id,
+                PreferredMethodOfContact = person.PreferredMethodOfContact,
+                Religion = person.Religion,
+                Restricted = person.Restricted,
+                Title = person.Title,
+                Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
+                OtherNames = person.OtherNames?.Select(x => x.ToDomain())?.ToList(),
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain())?.ToList()
             };
         }
     }

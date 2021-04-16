@@ -17,6 +17,8 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -187,6 +189,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             response.Should().BeEquivalentTo(expectedResponse);
         }
 
+        [Test]
+        public void CanMapPhoneNumberFromDatabaseEntityToDomainObject()
+        {
+            dbPhoneNumber phoneNumber = DatabaseGatewayHelper.CreatePhoneNumberEntity(_faker.Random.Long());
+
+            var expectedResponse = new PhoneNumber()
+            {
+                Number = phoneNumber.Number,
+                Type = phoneNumber.Type
+            };
+
+            phoneNumber.ToDomain().Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapPersonOtherNameFromDatabaseObjectToDomainObject()
+        {
+            PersonOtherName otherName = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(_faker.Random.Long());
+
+            var expectedResponse = new OtherName()
+            {
+                FirstName = otherName.FirstName,
+                LastName = otherName.LastName
+            };
+
+            otherName.ToDomain().Should().BeEquivalentTo(expectedResponse);
+        }
+
         #endregion
         #region ToEntity
         [Test]
@@ -266,6 +296,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             domainNumber.ToEntity(personId, createdBy).Should().BeEquivalentTo(infrastructurePhoneNumber);
+        }
+
+        [Test]
+        public void CanMapDbAddressToAddressDomain()
+        {
+            dbAddress address = DatabaseGatewayHelper.CreateAddressDatabaseEntity();
+
+            AddressDomain expectedAddressDomain = new AddressDomain()
+            {
+                Address = address.AddressLines,
+                Postcode = address.PostCode,
+                Uprn = address.Uprn
+            };
+
+            EntityFactory.DbAddressToAddressDomain(address).Should().BeEquivalentTo(expectedAddressDomain);
+
         }
         #endregion
     }

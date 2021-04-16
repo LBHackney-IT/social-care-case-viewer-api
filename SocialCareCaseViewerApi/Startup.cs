@@ -144,6 +144,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseNotesUseCase, CaseNotesUseCase>();
             services.AddScoped<IVisitsUseCase, VisitsUseCase>();
             services.AddScoped<IWarningNoteUseCase, WarningNoteUseCase>();
+            services.AddScoped<IPersonUseCase, PersonUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

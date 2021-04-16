@@ -749,6 +749,48 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .WithMessage($"No warning notes found relating to person id {request.PersonId}");
         }
         #endregion
+
+        [Test]
+        public void GetPersonDetailsByIdReturnsPerson()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            //add all necessary related entities using person id
+            SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id));
+            SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+            
+            var response = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            response.Should().BeEquivalentTo(person);
+        }        
+
+        private Person SavePersonToDatabase(Person person)
+        {
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+            return person;
+        }
+
+        private Address SaveAddressToDatabase(Address address)
+        {
+            DatabaseContext.Addresses.Add(address);
+            DatabaseContext.SaveChanges();
+            return address;
+        }
+
+        private PhoneNumberInfrastructure SavePhoneNumberToDataBase(PhoneNumberInfrastructure phoneNumber)
+        {
+            DatabaseContext.PhoneNumbers.Add(phoneNumber);
+            DatabaseContext.SaveChanges();
+            return phoneNumber;
+        }
+
+        private PersonOtherName SavePersonOtherNameToDatabase(PersonOtherName name)
+        {
+            DatabaseContext.PersonOtherNames.Add(name);
+            DatabaseContext.SaveChanges();
+            return name;
+        }
     }
 }
-

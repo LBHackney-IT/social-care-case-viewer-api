@@ -31,11 +31,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
+        private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IPersonUseCase personUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -46,6 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
+            _personUseCase = personUseCase;
         }
 
         /// <summary>
@@ -99,6 +101,29 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Get resident by id
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem getting the record</response>
+        ///
+        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("person/{id}")]
+        public IActionResult GetPerson([FromQuery] GetPersonRequest request)
+        {
+            var response = _personUseCase.ExecuteGet(request);
+
+            if(response == null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(200, response);
+        }
+
 
         /// <summary>
         /// Find cases by Mosaic ID or officer email

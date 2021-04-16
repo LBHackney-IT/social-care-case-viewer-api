@@ -615,6 +615,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         #endregion
 
+        public Person GetPersonDetailsById(long id)
+        {
+            //load related entities to minimise SQL calls
+            return _databaseContext
+                .Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.OtherNames)
+                .FirstOrDefault(x => x.Id == id);
+        } 
+
         private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end

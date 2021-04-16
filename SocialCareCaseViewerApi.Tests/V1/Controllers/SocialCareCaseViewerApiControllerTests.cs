@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
+        private Mock<IPersonUseCase> _mockPersonUseCase;
 
         private Fixture _fixture;
 
@@ -44,10 +45,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
+            _mockPersonUseCase = new Mock<IPersonUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockPersonUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -117,6 +119,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("Address could not be inserted");
         }
+
+        [Test]
+        public void GetPersonByIdReturns200WhenSuccessfull()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+            GetPersonResponse getPersonResponse = _fixture.Create<GetPersonResponse>();
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
+
+            var response = _classUnderTest.GetPerson(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(getPersonResponse);
+        }
+
+        [Test]
+        public void GetPersonByIdReturns404WhenPersonNotFound()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+            GetPersonResponse response = null;
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(response);
+
+            var result = _classUnderTest.GetPerson(request) as NotFoundResult;
+
+            result.StatusCode.Should().Be(404);
+         }
 
         [Test]
         public void ListCasesReturns200WhenSuccessful()
