@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
