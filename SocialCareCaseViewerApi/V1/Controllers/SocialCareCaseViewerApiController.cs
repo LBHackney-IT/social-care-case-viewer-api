@@ -230,6 +230,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+            catch (UpdateAllocationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
