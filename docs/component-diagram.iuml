@@ -52,7 +52,8 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Rel(allocations, postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, cases, "Uses", "JSON/HTTPS")
-    Rel(cases, postgres, "Uses", "Entity Framework/SSL")
+    Rel(cases, mongodb, "Uses", "Entity Framework/SSL")
+    Rel(cases, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
 
     Rel(api_lambda, historic_data, "Uses", "JSON/HTTPS")
     Rel(historic_data, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
