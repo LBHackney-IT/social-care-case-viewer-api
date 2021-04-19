@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     new BsonElement("mosaic_id", historicalCaseNote.MosaicId),
                     new BsonElement("worker_email", historicalCaseNote.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", historicalCaseNote.CaseNoteTitle),
+                    new BsonElement("form_name", historicalCaseNote.NoteType),
                     new BsonElement("timestamp", historicalCaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")),
                     new BsonElement("is_historical", true)
             });
