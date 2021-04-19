@@ -57,10 +57,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static BsonDocument HistoricalCaseNotesToDomain(CaseNote note)
         {
-            string pattern = @"\([^()]*\)$"; // Match brackets at the end e.g. (ASC)
-            var formName = note.NoteType ?? "Case note";
-            var formattedFormName = Regex.Replace(formName, pattern, "").TrimEnd();
-
             return new BsonDocument(
                 new List<BsonElement>
                 {
@@ -68,7 +64,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     new BsonElement("mosaic_id", note.MosaicId),
                     new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", formattedFormName),
+                    new BsonElement("form_name", FormatFormNameForHistoricCaseNote(note.NoteType)),
                     new BsonElement("title", note.CaseNoteTitle),
                     new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
@@ -104,7 +100,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
                 OfficerName = historicalCaseNote.CreatedByName,
                 OfficerEmail = historicalCaseNote.CreatedByEmail,
-                FormName = historicalCaseNote.NoteType
+                FormName = FormatFormNameForHistoricCaseNote(historicalCaseNote.NoteType)
             };
         }
 
@@ -120,6 +116,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
             };
+        }
+
+        private static string FormatFormNameForHistoricCaseNote(string noteType)
+        {
+            string pattern = @"\([^()]*\)$"; // Match brackets at the end e.g. (ASC)
+            var formName = noteType ?? "Case note";
+            var formattedFormName = Regex.Replace(formName, pattern, "").TrimEnd();
+
+            return formattedFormName;
         }
     }
 }

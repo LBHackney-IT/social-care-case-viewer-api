@@ -170,5 +170,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             result.Should().BeEquivalentTo(expectedCaseNoteResponse);
         }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsCaseNoteAsAStringForFormNameWhenNoteTypeIsNull()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = null;
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Case note");
+        }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsNoteTypeWithoutBracketsAndWhitespaceForFormName()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = "Manager's Decisions (YH)";
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Manager's Decisions");
+        }
     }
 }
