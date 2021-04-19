@@ -290,6 +290,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.MosaicId;
         }
 
+        public Person GetPersonByMosaicId(int mosaicId)
+        {
+            return _databaseContext.Persons.Where(x => x.Id == mosaicId).FirstOrDefault();
+        }
+
         public string GetNCReferenceByPersonId(string personId)
         {
             PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.MosaicId == personId).FirstOrDefault();
@@ -588,19 +593,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var worker = GetWorkerByWorkerId((int) request.AllocatedWorkerId);
 
-            var team = GetTeamsByTeamId((int) request.AllocatedTeamId).First();
+            var team = GetTeamsByTeamId((int) request.AllocatedTeamId).FirstOrDefault();
             if (team == null)
             {
                 throw new CreateAllocationException("Team details cannot be found");
             }
 
-            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
+            var person = _databaseContext.Persons.Where(x => x.Id == request.MosaicId).FirstOrDefault();
             if (person == null)
             {
                 throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
             }
 
-            var allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
+            var allocatedBy = _databaseContext.Workers.Where(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper())).FirstOrDefault();
             if (allocatedBy == null)
             {
                 throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
