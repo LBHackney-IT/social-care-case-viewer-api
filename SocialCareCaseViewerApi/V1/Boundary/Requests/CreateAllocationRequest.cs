@@ -9,10 +9,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("mosaicId")]
         public long MosaicId { get; set; }
 
-        [JsonPropertyName("allocatedTeamId")]
+        [JsonPropertyName("allocatedWorkerId")]
         public int AllocatedWorkerId { get; set; }
 
-        [JsonPropertyName("allocatedWorkerId")]
+        [JsonPropertyName("allocatedTeamId")]
         public int AllocatedTeamId { get; set; }
 
         [JsonPropertyName("createdBy")]
