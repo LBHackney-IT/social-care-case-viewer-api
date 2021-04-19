@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var response = _personUseCase.ExecutePatch(request);
 
-            if(response?.Message == "PersonNotFound")
+            if (response?.Message == "PersonNotFound")
             {
                 return NotFound();
             }
