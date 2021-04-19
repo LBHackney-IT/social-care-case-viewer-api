@@ -586,11 +586,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker?.Email))
-            {
-                throw new CreateAllocationException("Worker details cannot be found");
-            }
+            var worker = GetWorkerByWorkerId((int)request.AllocatedWorkerId);
 
             var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
@@ -620,7 +616,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdateAllocationException("Allocation already closed");
             }
 
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == allocation.WorkerId);
+            var worker = GetWorkerByWorkerId(allocation.WorkerId ?? 0);
+
             if (worker == null)
             {
                 throw new UpdateAllocationException("Worker not found");
