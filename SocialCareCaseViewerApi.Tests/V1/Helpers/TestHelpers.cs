@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using Bogus;
 using Bogus.DataSets;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
@@ -158,14 +162,91 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.LastName, f => f.Person.LastName);
         }
 
-        private static InfrastructurePerson CreatePerson(int? personId = null)
+        public static InfrastructurePerson CreatePerson(int? personId = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.Title, f => f.Name.Prefix())
                 .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                 .RuleFor(p => p.LastName, f => f.Person.FirstName)
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
-                .RuleFor(p => p.EmailAddress, f => f.Person.Email);
+                .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
+                .RuleFor(p => p.Ethnicity, f => f.Address.Country())
+                .RuleFor(p => p.FirstLanguage, f => f.Random.String2(10, 100))
+                .RuleFor(p => p.Religion, f => f.Random.String2(10, 80))
+                .RuleFor(p => p.EmailAddress, f => f.Person.Email)
+                .RuleFor(p => p.Gender, f => f.Random.String2(1, "MF"))
+                .RuleFor(p => p.Nationality, f => f.Address.Country())
+                .RuleFor(p => p.NhsNumber, f => f.Random.Number(int.MaxValue))
+                .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
+                .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
+                .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
+                .RuleFor(p => p.SexualOrientation, f => f.Random.String2(100))
+                .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(100))
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1));
+        }
+
+        public static Address CreateAddress(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<Address>()
+                .RuleFor(a => a.Person, person)
+                .RuleFor(a => a.PersonAddressId, f => f.Random.Number(int.MaxValue))
+                .RuleFor(a => a.AddressId, f => f.Random.Number(999999999))
+                .RuleFor(a => a.PersonId, personId ?? person.Id)
+                .RuleFor(a => a.EndDate, f => f.Date.Recent())
+                .RuleFor(a => a.AddressLines, f => f.Address.FullAddress())
+                .RuleFor(a => a.PostCode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Uprn, f => f.Random.Number(int.MaxValue))
+                .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1, "YN"))
+                .RuleFor(a => a.IsDisplayAddress, f => f.Random.String2(1, "YN"));
+        }
+
+        public static PhoneNumber CreatePhoneNumber(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<PhoneNumber>()
+                .RuleFor(p => p.Person, person)
+                .RuleFor(p => p.Id, f => f.UniqueIndex)
+                .RuleFor(p => p.PersonId, personId ?? person.Id)
+                .RuleFor(p => p.Number, f => f.Random.Number(int.MaxValue).ToString())
+                .RuleFor(p => p.Type, f => f.Random.String2(1, 80));
+        }
+
+        public static PersonOtherName CreatePersonOtherName(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<PersonOtherName>()
+                .RuleFor(p => p.Person, person)
+                .RuleFor(p => p.Id, f => f.UniqueIndex)
+                .RuleFor(p => p.PersonId, personId ?? person.Id)
+                .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => f.Person.LastName);
+        }
+
+        public static AddNewResidentResponse CreateAddNewResidentResponse(
+            long? personId = null,
+            long? addressId = null,
+            string? caseNoteId = null,
+            List<int>? otherNameIds = null,
+            List<int>? phoneNumberIds = null
+            )
+        {
+            var person = CreatePerson();
+            var address = CreateAddress();
+            var caseNote = CreateCaseNote();
+
+            return new Faker<AddNewResidentResponse>()
+                .RuleFor(a => a.PersonId, personId ?? person.Id)
+                .RuleFor(a => a.AddressId, addressId ?? address.AddressId)
+                .RuleFor(a => a.OtherNameIds, otherNameIds ?? new Faker<List<int>>())
+                .RuleFor(a => a.PhoneNumberIds, phoneNumberIds ?? new Faker<List<int>>())
+                .RuleFor(a => a.CaseNoteId, caseNoteId ?? caseNote.CaseNoteId)
+                .RuleFor(a => a.CaseNoteErrorMessage, f => f.Random.String2(100));
         }
 
         private static Team CreateTeam(int? teamId = null)

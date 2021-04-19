@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
@@ -18,48 +15,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapResidentAndAddressFromDomainToResponse()
         {
-            var testDateOfBirth = DateTime.Now;
-            const string caseNoteId = "1234ghjut";
-            const string caseNoteErrorMessage = "Error";
+            var caseNote = TestHelpers.CreateCaseNote();
 
-            Person person = new Person
+            var person = TestHelpers.CreatePerson();
+            var address = TestHelpers.CreateAddress(person.Id);
+
+            var phoneNumber1 = TestHelpers.CreatePhoneNumber(person.Id);
+            var phoneNumber2 = TestHelpers.CreatePhoneNumber(person.Id);
+
+            var otherName1 = TestHelpers.CreatePersonOtherName(person.Id);
+            var otherName2 = TestHelpers.CreatePersonOtherName(person.Id);
+
+            var names = new List<PersonOtherName>
             {
-                Id = 123,
-                Title = "Mx",
-                FirstName = "Ciascom",
-                LastName = "Tesselate",
-                Gender = "x",
-                Nationality = "British",
-                NhsNumber = 456,
-                DateOfBirth = testDateOfBirth,
-                AgeContext = "b"
+                otherName1,
+                otherName2
             };
 
-            Address newAddress = new Address() { AddressId = 345 };
-
-            List<PersonOtherName> names = new List<PersonOtherName>
+            var phoneNumbers = new List<PhoneNumber>()
             {
-                new PersonOtherName() { Id = 1 },
-                new PersonOtherName() { Id = 2 }
+                phoneNumber1,
+                phoneNumber2
             };
 
-            List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
-            {
-                new PhoneNumber() { Id = 1 },
-                new PhoneNumber() { Id = 2 },
-            };
+            var residentResponse = TestHelpers.CreateAddNewResidentResponse(person.Id);
 
             var expectedResponse = new AddNewResidentResponse
             {
-                PersonId = 123,
-                AddressId = newAddress.AddressId,
-                OtherNameIds = new List<int>() { 1, 2 },
-                PhoneNumberIds = new List<int> { 1, 2 },
-                CaseNoteId = caseNoteId,
-                CaseNoteErrorMessage = caseNoteErrorMessage
+                PersonId = person.Id,
+                AddressId = address.AddressId,
+                OtherNameIds = new List<int>() { otherName1.Id, otherName2.Id },
+                PhoneNumberIds = new List<int> { phoneNumber1.Id, phoneNumber2.Id },
+                CaseNoteId = caseNote.CaseNoteId,
+                CaseNoteErrorMessage = residentResponse.CaseNoteErrorMessage
             };
 
-            person.ToResponse(newAddress, names, phoneNumbers, caseNoteId, caseNoteErrorMessage).Should().BeEquivalentTo(expectedResponse);
+            person.ToResponse(address, names, phoneNumbers, caseNote.CaseNoteId, residentResponse.CaseNoteErrorMessage).Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
@@ -106,25 +97,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapHistoricalCaseNoteToCaseNoteResponse()
         {
-            var historicalCaseNote = new CaseNote()
-            {
-                MosaicId = "1",
-                CaseNoteId = "123",
-                CaseNoteTitle = "Case Note Title",
-                CaseNoteContent = "Some case note content.",
-                CreatedByName = "John Smith",
-                CreatedByEmail = "john.smith@email.com",
-                NoteType = "Case Summary (ASC)",
-                CreatedOn = new DateTime(2021, 3, 1, 15, 30, 0),
-            };
-
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
             var expectedCaseNoteResponse = new CaseNoteResponse()
             {
                 RecordId = historicalCaseNote.CaseNoteId,
                 PersonId = historicalCaseNote.MosaicId,
                 Title = historicalCaseNote.CaseNoteTitle,
                 Content = historicalCaseNote.CaseNoteContent,
-                DateOfEvent = "2021-03-01T15:30:00",
+                DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
                 OfficerName = historicalCaseNote.CreatedByName,
                 OfficerEmail = historicalCaseNote.CreatedByEmail,
                 FormName = historicalCaseNote.NoteType
@@ -132,14 +112,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
-            Assert.AreEqual(expectedCaseNoteResponse.RecordId, result.RecordId);
-            Assert.AreEqual(expectedCaseNoteResponse.PersonId, result.PersonId);
-            Assert.AreEqual(expectedCaseNoteResponse.Title, result.Title);
-            Assert.AreEqual(expectedCaseNoteResponse.Content, result.Content);
-            Assert.AreEqual(expectedCaseNoteResponse.DateOfEvent, result.DateOfEvent);
-            Assert.AreEqual(expectedCaseNoteResponse.OfficerName, result.OfficerName);
-            Assert.AreEqual(expectedCaseNoteResponse.OfficerEmail, result.OfficerEmail);
-            Assert.AreEqual(expectedCaseNoteResponse.FormName, result.FormName);
+            result.Should().BeEquivalentTo(expectedCaseNoteResponse);
         }
     }
 }
