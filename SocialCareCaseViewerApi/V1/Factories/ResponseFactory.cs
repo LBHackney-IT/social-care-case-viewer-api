@@ -1,9 +1,8 @@
-using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -58,6 +57,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static BsonDocument HistoricalCaseNotesToDomain(CaseNote note)
         {
+            string pattern = @"\([^()]*\)$"; // Match brackets at the end e.g. (ASC)
+            var formName = note.NoteType ?? "Case note";
+            var formattedFormName = Regex.Replace(formName, pattern, "").TrimEnd();
+
             return new BsonDocument(
                 new List<BsonElement>
                 {
@@ -65,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     new BsonElement("mosaic_id", note.MosaicId),
                     new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", note.NoteType ?? "Case note"),
+                    new BsonElement("form_name", formattedFormName),
                     new BsonElement("title", note.CaseNoteTitle),
                     new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end

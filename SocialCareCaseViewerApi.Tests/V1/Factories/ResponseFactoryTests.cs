@@ -95,6 +95,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void WhenNoteTypeHasASCInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = "Case Summary (ASC)";
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case Summary");
+        }
+
+        [Test]
+        public void WhenNoteTypeHasYOTInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = "Home Visit (YOT)";
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Home Visit");
+        }
+
+        [Test]
+        public void WhenNoteTypeHasYHInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = "Manager's Decisions (YH)";
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Manager's Decisions");
+        }
+
+        [Test]
         public void CanMapVisitToBsonDocument()
         {
             var visit = TestHelpers.CreateVisit();
