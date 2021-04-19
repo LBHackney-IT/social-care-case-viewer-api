@@ -363,7 +363,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = request.AllocationStartDate ?? DateTime.Now,
+                AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
@@ -591,7 +591,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            // var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == (int) request.AllocatedWorkerId);
             var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
             if (string.IsNullOrEmpty(worker.Email))
             {

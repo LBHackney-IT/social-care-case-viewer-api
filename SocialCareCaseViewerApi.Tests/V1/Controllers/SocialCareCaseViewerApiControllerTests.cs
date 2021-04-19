@@ -407,7 +407,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdateAllocationReturns400WhenDeallocationDateInTheFuture()
         {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_DEALLOCATION_DATE", "true");
             var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
 
             var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
