@@ -9,9 +9,9 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
     [TestFixture]
-    public class CreateWarningNoteRequestTests
+    public class PostWarningNoteRequestTests
     {
-        private CreateWarningNoteRequest _classUnderTest;
+        private PostWarningNoteRequest _classUnderTest;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new CreateWarningNoteRequest();
+            _classUnderTest = new PostWarningNoteRequest();
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -37,27 +37,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void RequestHasReviewDate()
+        {
+            _classUnderTest.ReviewDate.Should().Be(null);
+        }
+
+        [Test]
         public void RequestHasEndDate()
         {
             _classUnderTest.EndDate.Should().Be(null);
         }
 
         [Test]
-        public void RequestHasIndividualNotified()
+        public void RequestHasDisclosedWithIndividual()
         {
-            _classUnderTest.IndividualNotified.Should().Be(false);
+            _classUnderTest.DisclosedWithIndividual.Should().Be(false);
         }
 
         [Test]
-        public void RequestHasNotificationDetails()
+        public void RequestHasDisclosedDetails()
         {
-            _classUnderTest.NotificationDetails.Should().Be(null);
+            _classUnderTest.DisclosedDetails.Should().Be(null);
         }
 
         [Test]
-        public void RequestHasReviewDetails()
+        public void RequestHasNotes()
         {
-            _classUnderTest.ReviewDetails.Should().Be(null);
+            _classUnderTest.Notes.Should().Be(null);
         }
 
         [Test]
@@ -73,15 +79,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasDateInformed()
+        public void RequestHasDisclosedDate()
         {
-            _classUnderTest.DateInformed.Should().Be(null);
+            _classUnderTest.DisclosedDate.Should().Be(null);
         }
 
         [Test]
-        public void RequestHasHowInformed()
+        public void RequestHasDisclosedHow()
         {
-            _classUnderTest.HowInformed.Should().Be(null);
+            _classUnderTest.DisclosedHow.Should().Be(null);
         }
 
         [Test]
@@ -91,15 +97,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasManagersName()
+        public void RequestHasManagerName()
         {
-            _classUnderTest.ManagersName.Should().Be(null);
+            _classUnderTest.ManagerName.Should().Be(null);
         }
 
         [Test]
-        public void RequestHasDateManagerInformed()
+        public void RequestHasDiscussedWithManagerDate()
         {
-            _classUnderTest.DateManagerInformed.Should().Be(null);
+            _classUnderTest.DiscussedWithManagerDate.Should().Be(null);
         }
 
         [Test]
@@ -112,7 +118,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfPersonIdIsNotBiggerThan0()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.PersonId = 0;
             var error = ValidationHelper.ValidateModel(request);
 
@@ -123,7 +129,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfStartDateIsNotProvided()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.StartDate = null;
 
             var error = ValidationHelper.ValidateModel(request);
@@ -133,10 +139,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfNotificationDetailsIsLongerThan1000Characters()
+        public void ValidationFailsIfDisclosedDetailsIsLongerThan1000Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.NotificationDetails = new string('a', 1001);
+            var request = GetValidPostWarningNoteRequest();
+            request.DisclosedDetails = new string('a', 1001);
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(1);
@@ -144,20 +150,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationPassesIfNotificationDetailsIsNull()
+        public void ValidationPassesIfDisclosedDetailsIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.NotificationDetails = null;
+            var request = GetValidPostWarningNoteRequest();
+            request.DisclosedDetails = null;
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(0);
         }
 
         [Test]
-        public void ValidationFailsIfReviewDetailsIsLongerThan1000Characters()
+        public void ValidationFailsIfNotesIsLongerThan1000Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.ReviewDetails = new string('a', 1001);
+            var request = GetValidPostWarningNoteRequest();
+            request.Notes = new string('a', 1001);
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(1);
@@ -165,19 +171,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationPassesIfReviewDetailsIsNull()
+        public void ValidationFailsIfNotesIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.ReviewDetails = null;
+            var request = GetValidPostWarningNoteRequest();
+            request.Notes = null;
             var error = ValidationHelper.ValidateModel(request);
 
-            error.Count.Should().Be(0);
+            error.Count.Should().Be(1);
+            error.Should().Contain(x => x.ErrorMessage.Contains("The Notes field is required"));
+
         }
 
         [Test]
         public void ValidationFailsIfNoteTypesIsLongerThan50Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.NoteType = new string('a', 51);
             var error = ValidationHelper.ValidateModel(request);
 
@@ -188,7 +196,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationPassesIfNoteTypeIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.NoteType = null;
             var error = ValidationHelper.ValidateModel(request);
 
@@ -198,7 +206,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfStatusIsLongerThan50Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.Status = new string('a', 51);
             var error = ValidationHelper.ValidateModel(request);
 
@@ -209,7 +217,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationPassesIfStatusIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.Status = null;
             var error = ValidationHelper.ValidateModel(request);
 
@@ -217,10 +225,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfHowInformedIsLongerThan50Characters()
+        public void ValidationFailsIfDisclosedHowIsLongerThan50Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.HowInformed = new string('a', 51);
+            var request = GetValidPostWarningNoteRequest();
+            request.DisclosedHow = new string('a', 51);
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(1);
@@ -228,10 +236,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationPassesIfHowInformedIsNull()
+        public void ValidationPassesIfDisclosedHowsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.HowInformed = null;
+            var request = GetValidPostWarningNoteRequest();
+            request.DisclosedHow = null;
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(0);
@@ -240,7 +248,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfWarningNarrativeIsLongerThan1000Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.WarningNarrative = new string('a', 1001);
             var error = ValidationHelper.ValidateModel(request);
 
@@ -251,7 +259,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationPassesIfWarningNarrativeIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.WarningNarrative = null;
             var error = ValidationHelper.ValidateModel(request);
 
@@ -259,10 +267,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfManagersNameIsLongerThan100Characters()
+        public void ValidationFailsIfManagerNameIsLongerThan100Characters()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.ManagersName = new string('a', 101);
+            var request = GetValidPostWarningNoteRequest();
+            request.ManagerName = new string('a', 101);
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(1);
@@ -270,10 +278,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationPassesIfManagersNameIsNull()
+        public void ValidationPassesIfManagerNameIsNull()
         {
-            var request = GetValidCreateWarningNoteRequest();
-            request.ManagersName = null;
+            var request = GetValidPostWarningNoteRequest();
+            request.ManagerName = null;
             var error = ValidationHelper.ValidateModel(request);
 
             error.Count.Should().Be(0);
@@ -282,7 +290,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfCreatedByIsNotProvided()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.CreatedBy = null;
             var error = ValidationHelper.ValidateModel(request);
 
@@ -294,7 +302,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         public void ValidationFailesIfCreatedByIsNotAValidEmailAddress()
         {
-            var request = GetValidCreateWarningNoteRequest();
+            var request = GetValidPostWarningNoteRequest();
             request.CreatedBy = "string";
             var error = ValidationHelper.ValidateModel(request);
 
@@ -304,23 +312,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
         #endregion
 
-        private CreateWarningNoteRequest GetValidCreateWarningNoteRequest()
+        private PostWarningNoteRequest GetValidPostWarningNoteRequest()
         {
-            return new CreateWarningNoteRequest()
+            return new PostWarningNoteRequest()
             {
                 PersonId = _fixture.Create<long>(),
                 StartDate = DateTime.Now,
+                ReviewDate = DateTime.Now,
                 EndDate = DateTime.Now,
-                IndividualNotified = false,
-                NotificationDetails = _fixture.Create<string>(),
-                ReviewDetails = _fixture.Create<string>(),
+                DisclosedWithIndividual = false,
+                DisclosedDetails = _fixture.Create<string>(),
+                Notes = _fixture.Create<string>(),
                 NoteType = _fixture.Create<string>(),
                 Status = _fixture.Create<string>(),
-                DateInformed = DateTime.Now,
-                HowInformed = _fixture.Create<string>(),
+                DisclosedDate = DateTime.Now,
+                DisclosedHow = _fixture.Create<string>(),
                 WarningNarrative = _fixture.Create<string>(),
-                ManagersName = _fixture.Create<string>(),
-                DateManagerInformed = DateTime.Now,
+                ManagerName = _fixture.Create<string>(),
+                DiscussedWithManagerDate = DateTime.Now,
                 CreatedBy = _faker.Internet.Email()
             };
         }

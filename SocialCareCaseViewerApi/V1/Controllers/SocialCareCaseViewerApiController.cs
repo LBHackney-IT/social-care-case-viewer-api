@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -23,28 +24,30 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     {
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
-        private readonly IProcessDataUseCase _processDataUsecase;
+        private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
-        private readonly IWorkersUseCase _workersUseCase;
+        private readonly IGetWorkersUseCase _getWorkersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
-        private readonly IWarningNotesUseCase _warningNotesUseCase;
+        private readonly IWarningNoteUseCase _warningNoteUseCase;
+        private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUsecase, IAllocationsUseCase allocationUseCase, IWorkersUseCase workersUseCase,
+            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNotesUseCase warningNotesUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
         {
             _getAllUseCase = getAllUseCase;
-            _processDataUsecase = processDataUsecase;
+            _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
-            _workersUseCase = workersUseCase;
+            _getWorkersUseCase = getWorkersUseCase;
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
-            _warningNotesUseCase = warningNotesUseCase;
+            _warningNoteUseCase = warningNotesUseCase;
+            _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
         }
 
         /// <summary>
@@ -105,6 +108,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
         /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
@@ -114,20 +118,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 string dateValidationError = null;
 
-                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
                 {
                     dateValidationError += "Invalid start date";
                 }
-                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+
+                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
                 {
                     dateValidationError += " Invalid end date";
                 }
-                if (!string.IsNullOrEmpty(dateValidationError))
-                {
-                    return StatusCode(400, dateValidationError);
-                }
 
-                return Ok(_processDataUsecase.Execute(request));
+                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
@@ -147,7 +150,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_processDataUsecase.Execute(request.Id));
+                return Ok(_processDataUseCase.Execute(request.Id));
             }
             catch (DocumentNotFoundException e)
             {
@@ -172,13 +175,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// create new allocations for workers
         /// </summary>
         /// <response code="201">Allocation successfully inserted</response>
-        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
         {
-            var result = _allocationUseCase.ExecutePost(request);
-            return CreatedAtAction("CreateAllocation", result, result);
+            var validator = new CreateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                var result = _allocationUseCase.ExecutePost(request);
+                return CreatedAtAction("CreateAllocation", result, result);
+            }
+            catch (CreateAllocationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UpdateAllocationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
@@ -192,11 +214,23 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult UpdateAllocation([FromBody] UpdateAllocationRequest request)
         {
+            var validator = new UpdateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             try
             {
                 return Ok(_allocationUseCase.ExecuteUpdate(request));
             }
             catch (EntityUpdateException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (UpdateAllocationException ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -213,33 +247,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("cases")]
         public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request)
         {
-            var id = await _processDataUsecase.Execute(request).ConfigureAwait(false);
+            var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
         }
 
         /// <summary>
-        /// Get a list of workers by id or team id
+        /// Get a list of workers by worker id, worker email or team id
         /// </summary>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="404">No workers found for inserted worker id, worker email or team id</response>
         /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(ListWorkersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<WorkerResponse>), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
         [Route("workers")]
-        public IActionResult ListWorkers([FromQuery] ListWorkersRequest request)
+        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
-            try
+            var workers = _getWorkersUseCase.Execute(request);
+
+            if (workers.Count == 0)
             {
-                return Ok(_workersUseCase.ExecuteGet(request));
+                return NotFound();
             }
-            catch (WorkerNotFoundException ex)
-            {
-                return StatusCode(404, ex.Message);
-            }
-            catch (TeamNotFoundException ex)
-            {
-                return StatusCode(404, ex.Message);
-            }
+            return Ok(workers);
         }
 
         /// <summary>
@@ -269,11 +298,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/person/{id}")]
         public IActionResult ListCaseNotes([FromQuery] ListCaseNotesRequest request)
         {
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            return showHistoricData != null && showHistoricData.Equals("true")
-                ? Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(200, null);
+            return Ok(_caseNotesUseCase.ExecuteGetByPersonId(request.Id));
         }
 
         /// <summary>
@@ -289,26 +314,36 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("casenotes/{id}")]
         public IActionResult GetCaseNoteById([FromQuery] GetCaseNotesRequest request)
         {
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            if (showHistoricData != null && showHistoricData.Equals("true"))
+            try
             {
-                try
-                {
-                    return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
-                }
-                catch (SocialCarePlatformApiException ex)
-                {
-                    if (ex.Message == "404")
-                    {
-                        return StatusCode(404);
-                    }
+                return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
+            }
+            catch (SocialCarePlatformApiException ex)
+            {
+                return StatusCode(ex.Message == "404" ? 404 : 500);
+            }
+        }
 
-                    return StatusCode(500);
-                }
+        /// <summary>
+        /// Get visit by visit id
+        /// </summary>
+        /// <response code="200">Success. Returns a matching visit</response>
+        /// <response code="404">No visit found for visit id</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(Visit), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("visits/{visitId:long}")]
+        public IActionResult GetVisitByVisitId(long visitId)
+        {
+            var response = _getVisitByVisitIdUseCase.Execute(visitId);
+
+            if (response == null)
+            {
+                return NotFound();
             }
 
-            return StatusCode(200, null);
+            return Ok(response);
         }
 
         /// <summary>
@@ -337,18 +372,39 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <reponse code="500">There was a problem creating the record</reponse>
         /// </summary>
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch]
+        [HttpPost]
         [Route("warningnotes")]
-        public IActionResult CreateWarningNote([FromQuery] CreateWarningNoteRequest request)
+        public IActionResult PostWarningNote([FromBody] PostWarningNoteRequest request)
         {
             try
             {
-                var result = _warningNotesUseCase.ExecutePost(request);
+                var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
-            catch (CreateWarningNoteException ex)
+            catch (PostWarningNoteException ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get warning notes by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Success. Returns warning notes related to the specified ID</response>
+        /// <response code="404">No warning notes found for the specified ID</response>
+        [ProducesResponseType(typeof(List<WarningNote>), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("warningnotes/{id}")]
+        public IActionResult GetWarningNote([FromQuery] GetWarningNoteRequest request)
+        {
+            try
+            {
+                return Ok(_warningNoteUseCase.ExecuteGet(request));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
             }
         }
     }

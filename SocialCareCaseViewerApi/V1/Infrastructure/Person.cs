@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<PersonOtherName> OtherNames { get; set; }
         public List<PhoneNumber> PhoneNumbers { get; set; }
         public List<AllocationSet> Allocations { get; set; }
-        public List<WarningNoteSet> WarningNotes { get; set; }
+        public List<WarningNote> WarningNotes { get; set; }
 
         [Column("person_id")]
         [MaxLength(16)]

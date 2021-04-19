@@ -13,67 +13,67 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class WarningNotesUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private WarningNotesUseCase _classUnderTest;
+        private WarningNoteUseCase _classUnderTest;
         private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _classUnderTest = new WarningNotesUseCase(_mockDatabaseGateway.Object);
+            _classUnderTest = new WarningNoteUseCase(_mockDatabaseGateway.Object);
             _fixture = new Fixture();
         }
 
         [Test]
         public void ExecutePostReturnsTheResponse()
         {
-            var request = _fixture.Create<CreateWarningNoteRequest>();
+            var request = _fixture.Create<PostWarningNoteRequest>();
 
-            var responseObject = _fixture.Create<CreateWarningNoteResponse>();
+            var responseObject = _fixture.Create<PostWarningNoteResponse>();
 
             _mockDatabaseGateway
-                .Setup(x => x.CreateWarningNote(
-                    It.IsAny<CreateWarningNoteRequest>()))
+                .Setup(x => x.PostWarningNote(
+                    It.IsAny<PostWarningNoteRequest>()))
                 .Returns(responseObject);
 
-            var response = _classUnderTest.ExecutePost(new CreateWarningNoteRequest());
+            var response = _classUnderTest.ExecutePost(new PostWarningNoteRequest());
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(responseObject);
         }
 
         [Test]
-        public void CreateWarningNoteCallsDatabaseGateway()
+        public void PostWarningNoteCallsDatabaseGateway()
         {
-            var request = _fixture.Create<CreateWarningNoteRequest>();
+            var request = _fixture.Create<PostWarningNoteRequest>();
 
             _classUnderTest.ExecutePost(request);
 
-            _mockDatabaseGateway.Verify(x => x.CreateWarningNote(request));
+            _mockDatabaseGateway.Verify(x => x.PostWarningNote(request));
         }
 
         [Test]
-        public void CreateWarningNoteCallsDatabaseGatewayWithParameters()
+        public void PostWarningNoteCallsDatabaseGatewayWithParameters()
         {
-            var request = _fixture.Create<CreateWarningNoteRequest>();
+            var request = _fixture.Create<PostWarningNoteRequest>();
 
             _classUnderTest.ExecutePost(request);
 
-            _mockDatabaseGateway.Verify(x => x.CreateWarningNote(
-                                    It.Is<CreateWarningNoteRequest>(x => x == request)),
+            _mockDatabaseGateway.Verify(x => x.PostWarningNote(
+                                    It.Is<PostWarningNoteRequest>(x => x == request)),
                                     Times.Once);
         }
 
         [Test]
-        public void CreateWarningNotesReturnsCorrectCaseNoteId()
+        public void PostWarningNotesReturnsCorrectCaseNoteId()
         {
-            var request = new CreateWarningNoteRequest();
+            var request = new PostWarningNoteRequest();
 
-            var expectedResponse = new CreateWarningNoteResponse() { CaseNoteId = _fixture.Create<string>() };
+            var expectedResponse = new PostWarningNoteResponse() { CaseNoteId = _fixture.Create<string>() };
 
             _mockDatabaseGateway
-                .Setup(x => x.CreateWarningNote(
-                    It.Is<CreateWarningNoteRequest>(x => x == request)))
+                .Setup(x => x.PostWarningNote(
+                    It.Is<PostWarningNoteRequest>(x => x == request)))
                 .Returns(expectedResponse);
 
             var response = _classUnderTest.ExecutePost(request);

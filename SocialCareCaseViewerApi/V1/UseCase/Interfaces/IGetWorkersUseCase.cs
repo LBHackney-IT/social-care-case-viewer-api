@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IWarningNotesUseCase
+    public interface IGetWorkersUseCase
     {
-        CreateWarningNoteResponse ExecutePost(CreateWarningNoteRequest request);
+        List<WorkerResponse> Execute(GetWorkersRequest request);
     }
 }
