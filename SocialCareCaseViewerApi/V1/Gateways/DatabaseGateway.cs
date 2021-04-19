@@ -586,7 +586,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = GetWorkerByWorkerId((int)request.AllocatedWorkerId);
+            var worker = GetWorkerByWorkerId((int) request.AllocatedWorkerId);
 
             var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
