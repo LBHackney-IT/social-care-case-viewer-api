@@ -588,7 +588,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var worker = GetWorkerByWorkerId((int) request.AllocatedWorkerId);
 
-            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
+            var team = GetTeamsByTeamId((int) request.AllocatedTeamId).First();
             if (team == null)
             {
                 throw new CreateAllocationException("Team details cannot be found");
