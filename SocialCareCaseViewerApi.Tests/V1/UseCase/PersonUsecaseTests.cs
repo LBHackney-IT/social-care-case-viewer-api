@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
+using System;
 using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
@@ -16,7 +17,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class PersonUsecaseTests
     {
         private Mock<IDatabaseGateway> _mockDataBaseGateway;
-        private PersonUseCase _residentUsecase;
+        private PersonUseCase _personUsecase;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -24,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void SetUp()
         {
             _mockDataBaseGateway = new Mock<IDatabaseGateway>();
-            _residentUsecase = new PersonUseCase(_mockDataBaseGateway.Object);
+            _personUsecase = new PersonUseCase(_mockDataBaseGateway.Object);
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -36,12 +37,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 .Create();
         }
 
+        private UpdatePersonRequest GetValidUpdatePersonRequest()
+        {
+            return new Faker<UpdatePersonRequest>()
+                .RuleFor(x => x.Id, _faker.Random.Long());
+        }
+
         [Test]
         public void ExecuteGetCallsDatabaseGateway()
         {
             var request = GetValidGetPersonRequest();
 
-            _residentUsecase.ExecuteGet(request);
+            _personUsecase.ExecuteGet(request);
 
             _mockDataBaseGateway.Verify(x => x.GetPersonDetailsById(request.Id));
         }
@@ -53,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request.Id)).Returns((dbPerson) null);
 
-            var result = _residentUsecase.ExecuteGet(request);
+            var result = _personUsecase.ExecuteGet(request);
 
             result.Should().BeNull();
         }
@@ -67,9 +74,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request.Id)).Returns(person);
 
-            var response = _residentUsecase.ExecuteGet(request);
+            var response = _personUsecase.ExecuteGet(request);
 
             response.Should().BeOfType<GetPersonResponse>();
         }
-    }
+
+
+
+        [Test]
+        public void ExecutePatchCallsDatabaseGateway()
+        {
+            var request = GetValidUpdatePersonRequest();
+
+            _personUsecase.ExecutePatch(request);
+
+            _mockDataBaseGateway.Verify(x => x.UpdatePerson(request));
+        }
+
+        [Test]
+        public void ExecutePatchReturnsCorrectMessageWhenPersonNotFound()
+        {
+            var request = GetValidUpdatePersonRequest();
+
+            _mockDataBaseGateway.Setup(x => x.UpdatePerson(request)).Returns(new UpdatePersonResponse() { Message = "PersonNotFound" }); 
+
+            var result = _personUsecase.ExecutePatch(request);
+
+            result.Should().NotBeNull();
+            result.Message.Should().Be("PersonNotFound");
+        }
+
+        [Test]
+        public void ExecutePatchReturnsNullWhenPersonIsFoundAndUpdated()
+        {
+            var request = GetValidUpdatePersonRequest();
+
+            _mockDataBaseGateway.Setup(x => x.UpdatePerson(request)).Returns((UpdatePersonResponse) null);
+
+            var response = _personUsecase.ExecutePatch(request);
+
+            response.Should().BeNull();
+        }
+    }    
 }

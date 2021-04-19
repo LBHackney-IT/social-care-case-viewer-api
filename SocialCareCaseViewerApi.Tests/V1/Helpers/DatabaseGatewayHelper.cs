@@ -1,5 +1,6 @@
 using Bogus;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
 using System.Collections.Generic;
 using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
@@ -69,7 +70,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static Address CreateAddressDatabaseEntity(
             long? personId = null,
-            string isDisplayAddress = null
+            string isDisplayAddress = null,
+            DateTime? endDate = null
         )
         {
             return new Faker<Address>()
@@ -77,7 +79,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                  .RuleFor(a => a.CreatedAt, f => f.Date.Past())
                  .RuleFor(a => a.CreatedBy, f => f.Internet.Email())
                  .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
-                 .RuleFor(a => a.EndDate, f => f.Date.Past())
+                 .RuleFor(a => a.EndDate, endDate)
                  .RuleFor(a => a.IsDisplayAddress, f => string.IsNullOrEmpty(isDisplayAddress) ? f.Random.String2(1) : isDisplayAddress)
                  .RuleFor(a => a.LastModifiedAt, f => f.Date.Past())
                  .RuleFor(a => a.LastModifiedBy, f => f.Internet.Email())

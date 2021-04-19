@@ -25,5 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request);
         IEnumerable<WarningNote> GetWarningNotes(GetWarningNoteRequest request);
         Person GetPersonDetailsById(long id);
+        UpdatePersonResponse UpdatePerson(UpdatePersonRequest request);
     }
 }

@@ -313,6 +313,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             EntityFactory.DbAddressToAddressDomain(address).Should().BeEquivalentTo(expectedAddressDomain);
 
         }
+
         #endregion
     }
 }

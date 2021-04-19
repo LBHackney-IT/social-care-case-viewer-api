@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         ///
         [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("person/{id}")]
+        [Route("residents/{id}")]
         public IActionResult GetPerson([FromQuery] GetPersonRequest request)
         {
             var response = _personUseCase.ExecuteGet(request);
@@ -124,6 +124,27 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return StatusCode(200, response);
         }
 
+        /// <summary>
+        /// Update resident details
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem getting the record</response>
+        ///
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("residents/{id}")]
+        public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
+        {
+            var response = _personUseCase.ExecutePatch(request);
+
+            if (!string.IsNullOrEmpty(response.Message) && response.Message == "PersonNotFound")
+            {
+                return NotFound();
+            }
+
+            return StatusCode(200, response);
+        }
 
         /// <summary>
         /// Find cases by Mosaic ID or officer email

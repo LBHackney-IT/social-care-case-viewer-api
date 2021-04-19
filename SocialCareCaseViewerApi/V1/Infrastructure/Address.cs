@@ -29,6 +29,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("end_date")]
         public DateTime? EndDate { get; set; }
 
+        [Column("start_date")]
+        public DateTime? StartDate { get; set; }
+
         [Column("address")]
         [MaxLength(464)]
         public string AddressLines { get; set; }

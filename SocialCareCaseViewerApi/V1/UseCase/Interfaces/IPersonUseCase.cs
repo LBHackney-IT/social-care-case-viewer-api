@@ -6,5 +6,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     public interface IPersonUseCase
     {
         GetPersonResponse ExecuteGet(GetPersonRequest request);
+
+        UpdatePersonResponse ExecutePatch(UpdatePersonRequest request);
     }
 }

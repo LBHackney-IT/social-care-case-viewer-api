@@ -22,5 +22,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return person != null ? ResponseFactory.ToResponse(person) : null;
         }
+
+        public UpdatePersonResponse ExecutePatch(UpdatePersonRequest request)
+        {
+            return _databaseGateway.UpdatePerson(request);
+        }
     }
 }
