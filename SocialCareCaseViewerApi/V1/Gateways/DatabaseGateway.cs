@@ -311,7 +311,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
 
-                if(displayAddress != null)
+                if (displayAddress != null)
                 {
                     displayAddress.IsDisplayAddress = "N";
                     displayAddress.EndDate = DateTime.Now;

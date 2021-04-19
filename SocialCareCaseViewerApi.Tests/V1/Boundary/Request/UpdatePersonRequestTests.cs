@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 FirstName = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName(),
                 OtherNames = _fixture.Create<List<OtherName>>(),
-                Gender = "M", 
+                Gender = "M",
                 DateOfBirth = DateTime.Now.AddYears(-30),
                 DateOfDeath = DateTime.Now,
                 Ethnicity = "Ethinicity",
@@ -43,8 +43,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 Address = _fixture.Create<AddressDomain>(),
                 PhoneNumbers = _fixture.Create<List<PhoneNumber>>(),
                 EmailAddress = _faker.Internet.Email(),
-                PreferredMethodOfContact = "Email", 
-                ContextFlag = "A", 
+                PreferredMethodOfContact = "Email",
+                ContextFlag = "A",
                 CreatedBy = _faker.Internet.Email(),
                 Restricted = "Y"
             };

@@ -69,6 +69,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [Required]
         [RegularExpression("(?i:^Y|N)", ErrorMessage = "Restricted must be 'Y' or 'N' only.")]
-        public string  Restricted { get; set; }
+        public string Restricted { get; set; }
     }
 }

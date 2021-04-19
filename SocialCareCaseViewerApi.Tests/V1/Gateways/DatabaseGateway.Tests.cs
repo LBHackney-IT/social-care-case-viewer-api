@@ -768,7 +768,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonReturnsCorrectMessageWhenPersonNotFound()
         {
-            UpdatePersonResponse expectedResponse = new UpdatePersonResponse() {  Message = "PersonNotFound" };
+            UpdatePersonResponse expectedResponse = new UpdatePersonResponse() { Message = "PersonNotFound" };
 
             var response = _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
 
@@ -777,7 +777,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
         [Test]
         public void UpdatePersonSetsCorrectValuesForPersonEntity()
-        {          
+        {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
@@ -959,7 +959,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             person.OtherNames.Count.Should().Be(0);
         }
-            
+
 
         private Person SavePersonToDatabase(Person person)
         {
