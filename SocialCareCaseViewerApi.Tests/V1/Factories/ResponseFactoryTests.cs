@@ -83,6 +83,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void WhenNoteTypeIsNullReturnsCaseNoteAsAString()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = null;
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case note");
+        }
+
+        [Test]
         public void CanMapVisitToBsonDocument()
         {
             var visit = TestHelpers.CreateVisit();
