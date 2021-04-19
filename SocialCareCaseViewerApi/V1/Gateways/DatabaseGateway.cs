@@ -591,14 +591,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == (int) request.AllocatedWorkerId);
-            // var worker = GetWorkerByWorkerId((int) request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker?.Email))
+            // var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == (int) request.AllocatedWorkerId);
+            var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
+            if (string.IsNullOrEmpty(worker.Email))
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
 
-            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == (int) request.AllocatedTeamId);
+            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
             {
                 throw new CreateAllocationException("Team details cannot be found");
