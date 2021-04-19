@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapCaseNoteToBsonDocument()
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteMappedToDomain()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             var expectedDocument = new BsonDocument(
@@ -84,7 +84,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void WhenNoteTypeIsNullReturnsCaseNoteAsAString()
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteAsAStringWhenNoteTypeIsNull()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             historicalCaseNote.NoteType = null;
@@ -95,7 +95,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void WhenNoteTypeHasASCInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasASCInBrackets()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             historicalCaseNote.NoteType = "Case Summary (ASC)";
@@ -106,7 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void WhenNoteTypeHasYOTInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYOTInBrackets()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             historicalCaseNote.NoteType = "Home Visit (YOT)";
@@ -117,7 +117,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void WhenNoteTypeHasYHInBracketsReturnsFormNameWithoutThemAndWhitespace()
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYHInBrackets()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             historicalCaseNote.NoteType = "Manager's Decisions (YH)";
