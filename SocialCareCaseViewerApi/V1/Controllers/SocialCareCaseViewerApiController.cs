@@ -359,11 +359,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("visits/person/{id}")]
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            return showHistoricData != null && showHistoricData.Equals("true")
-                ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(200, null);
+            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
         }
 
         /// <summary>

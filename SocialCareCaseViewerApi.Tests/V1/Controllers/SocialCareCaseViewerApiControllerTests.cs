@@ -567,10 +567,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #region Visits
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsTrueListVisitsByPersonIdReturns200WhenSuccessful()
+        public void ListVisitsByPersonIdReturns200WhenSuccessful()
         {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
-
             var request = new ListVisitsRequest { Id = "1" };
             var visit = TestHelpers.CreateVisit();
             var visitList = new List<Visit>();
@@ -582,33 +580,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().NotBeNull();
-        }
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAResponseWithNoVisitData()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
-            var request = new ListVisitsRequest { Id = "1" };
-
-            var response = _classUnderTest.ListVisits(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
-        }
-
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAResponseWithNoVisitData()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
-            var request = new ListVisitsRequest { Id = "1" };
-
-            var response = _classUnderTest.ListVisits(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
         }
 
 
