@@ -56,38 +56,29 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
         {
-            try
+            T data = default;
+            var uri = new Uri(path, UriKind.Relative);
+            var responseMessage = _httpClient.GetAsync(uri).Result;
+
+            if ((int) responseMessage.StatusCode == StatusCodes.Status200OK)
             {
-                T data = default;
-
-                var uri = new Uri(path, UriKind.Relative);
-
-                var responseMessage = _httpClient.GetAsync(uri).Result;
-
-                if ((int) responseMessage.StatusCode == StatusCodes.Status200OK)
+                try
                 {
-                    try
-                    {
-                        var result = responseMessage.Content.ReadAsStringAsync().Result;
+                    var result = responseMessage.Content.ReadAsStringAsync().Result;
 
-                        data = JsonConvert.DeserializeObject<T>(result);
-                    }
-                    catch (Exception)
-                    {
-                        throw new SocialCarePlatformApiException($"Unable to deserialize {typeof(T).Name} object");
-                    }
+                    data = JsonConvert.DeserializeObject<T>(result);
                 }
-                else
+                catch (Exception)
                 {
-                    throw new SocialCarePlatformApiException($"{(int) responseMessage.StatusCode}");
+                    throw new SocialCarePlatformApiException($"Unable to deserialize {typeof(T).Name} object");
                 }
-
-                return data;
             }
-            catch (SocialCarePlatformApiException)
+            else
             {
-                throw;
+                throw new SocialCarePlatformApiException($"{(int) responseMessage.StatusCode}");
             }
+
+            return data;
         }
     }
 }

@@ -11,6 +11,7 @@ using MongoDB.Driver.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
@@ -142,22 +143,37 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 casesAndVisits.AddRange(ncIdQuery.ToList());
             }
 
-            var historicVisits = _socialCarePlatformAPIGateway
-                .GetVisitsByPersonId(personId)
-                .Select(ResponseFactory.HistoricalVisitsToDomain)
-                .ToList();
+            List<BsonDocument> historicVisits;
+            try
+            {
+                historicVisits = _socialCarePlatformAPIGateway
+                    .GetVisitsByPersonId(personId)
+                    .Select(ResponseFactory.HistoricalVisitsToDomain)
+                    .ToList();
+            }
+            catch (SocialCarePlatformApiException)
+            {
+                historicVisits = new List<BsonDocument>();
+            }
 
-            var historicCases = _socialCarePlatformAPIGateway
-                .GetCaseNotesByPersonId(personId)
-                .CaseNotes
-                .Select(ResponseFactory.HistoricalCaseNotesToDomain)
-                .ToList();
+            List<BsonDocument> historicCases;
+            try
+            {
+                historicCases = _socialCarePlatformAPIGateway
+                    .GetCaseNotesByPersonId(personId)
+                    .CaseNotes
+                    .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                    .ToList();
+            }
+            catch (SocialCarePlatformApiException)
+            {
+                historicCases = new List<BsonDocument>();
+            }
 
             if (historicVisits.Count > 0)
             {
                 casesAndVisits.AddRange(historicVisits);
             }
-
             if (historicCases.Count > 0)
             {
                 casesAndVisits.AddRange(historicCases);
