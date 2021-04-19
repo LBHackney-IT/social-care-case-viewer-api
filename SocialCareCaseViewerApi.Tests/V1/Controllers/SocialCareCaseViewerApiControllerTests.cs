@@ -152,7 +152,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             UpdatePersonRequest request = new UpdatePersonRequest();
 
-            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Returns(new UpdatePersonResponse());
+            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Returns((UpdatePersonResponse) null);
 
             var result = _classUnderTest.UpdatePerson(request) as ObjectResult;
 

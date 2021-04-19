@@ -129,7 +129,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem getting the record</response>
+        /// <response code="500">There was a problem updating the records</response>
         ///
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPatch]
@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var response = _personUseCase.ExecutePatch(request);
 
-            if (!string.IsNullOrEmpty(response.Message) && response.Message == "PersonNotFound")
+            if(response?.Message == "PersonNotFound")
             {
                 return NotFound();
             }
