@@ -562,10 +562,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         #endregion
 
-        private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime? dt, string modifiedBy)
+        private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
-            allocation.AllocationEndDate = dt ?? DateTime.Now;
+            allocation.AllocationEndDate = dt;
             allocation.CaseStatus = "Closed";
             allocation.CaseClosureDate = dt;
             allocation.LastModifiedBy = modifiedBy;
