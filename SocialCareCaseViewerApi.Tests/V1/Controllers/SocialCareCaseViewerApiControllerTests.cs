@@ -418,24 +418,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(400);
         }
 
-        [Test]
-        public void UpdateAllocationReturns200WhenDeallocationDateInTheFutureAndFeatureFlagNotPresent()
-        {
-            var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
-            var result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
-            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
-
-            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
-
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(result);
-        }
-
         #endregion
 
         #region Case notes
