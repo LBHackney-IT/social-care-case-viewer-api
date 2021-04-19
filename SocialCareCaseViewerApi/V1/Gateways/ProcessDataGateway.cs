@@ -143,27 +143,47 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 casesAndVisits.AddRange(ncIdQuery.ToList());
             }
 
-            List<BsonDocument> historicVisits;
+            var historicVisits = new List<BsonDocument>();
             try
             {
-                historicVisits = _socialCarePlatformAPIGateway
+                var visits = _socialCarePlatformAPIGateway
                     .GetVisitsByPersonId(personId)
-                    .Select(ResponseFactory.HistoricalVisitsToDomain)
                     .ToList();
+
+                if (visits.Count > 0)
+                {
+                    historicVisits = visits
+                        .Select(ResponseFactory.HistoricalVisitsToDomain)
+                        .ToList();
+                }
+
+            }
+            catch (NullReferenceException)
+            {
+                historicVisits = new List<BsonDocument>();
             }
             catch (SocialCarePlatformApiException)
             {
                 historicVisits = new List<BsonDocument>();
             }
 
-            List<BsonDocument> historicCases;
+            var historicCases = new List<BsonDocument>();
             try
             {
-                historicCases = _socialCarePlatformAPIGateway
+                var caseNotes = _socialCarePlatformAPIGateway
                     .GetCaseNotesByPersonId(personId)
-                    .CaseNotes
-                    .Select(ResponseFactory.HistoricalCaseNotesToDomain)
-                    .ToList();
+                    .CaseNotes;
+
+                if (caseNotes?.Count > 0)
+                {
+                    historicCases = caseNotes
+                        .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                        .ToList();
+                }
+            }
+            catch (NullReferenceException)
+            {
+                historicCases = new List<BsonDocument>();
             }
             catch (SocialCarePlatformApiException)
             {
