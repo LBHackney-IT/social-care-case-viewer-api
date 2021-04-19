@@ -149,19 +149,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapHistoricalCaseNoteToCaseNoteResponse()
+        public void ToResponseForCaseNoteReturnsCaseNoteMappedToCaseNoteResponse()
         {
-            var historicalCaseNote = new CaseNote()
-            {
-                MosaicId = "1",
-                CaseNoteId = "123",
-                CaseNoteTitle = "Case Note Title",
-                CaseNoteContent = "Some case note content.",
-                CreatedByName = "John Smith",
-                CreatedByEmail = "john.smith@email.com",
-                NoteType = "Case Summary (ASC)",
-                CreatedOn = new DateTime(2021, 3, 1, 15, 30, 0),
-            };
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.CreatedOn = new DateTime(2021, 3, 1, 15, 30, 0);
 
             var expectedCaseNoteResponse = new CaseNoteResponse()
             {
@@ -177,14 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
-            Assert.AreEqual(expectedCaseNoteResponse.RecordId, result.RecordId);
-            Assert.AreEqual(expectedCaseNoteResponse.PersonId, result.PersonId);
-            Assert.AreEqual(expectedCaseNoteResponse.Title, result.Title);
-            Assert.AreEqual(expectedCaseNoteResponse.Content, result.Content);
-            Assert.AreEqual(expectedCaseNoteResponse.DateOfEvent, result.DateOfEvent);
-            Assert.AreEqual(expectedCaseNoteResponse.OfficerName, result.OfficerName);
-            Assert.AreEqual(expectedCaseNoteResponse.OfficerEmail, result.OfficerEmail);
-            Assert.AreEqual(expectedCaseNoteResponse.FormName, result.FormName);
+            result.Should().BeEquivalentTo(expectedCaseNoteResponse);
         }
     }
 }
