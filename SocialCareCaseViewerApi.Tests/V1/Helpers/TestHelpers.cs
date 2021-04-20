@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseNoteResponse CreateCaseNoteResponse(CaseNote? caseNote)
         {
             return new Faker<CaseNoteResponse>()
-                .RuleFor(c => c.RecordId, f => caseNote?.CaseNoteId ?? f.Lorem.Paragraph())
+                .RuleFor(c => c.RecordId, f => caseNote?.CaseNoteId ?? f.UniqueIndex.ToString())
                 .RuleFor(c => c.PersonId, f => caseNote?.MosaicId ?? f.UniqueIndex.ToString())
                 .RuleFor(c => c.Title, f => caseNote?.CaseNoteTitle ?? f.Lorem.Lines(1))
                 .RuleFor(c => c.Content, f => caseNote?.CaseNoteContent ?? f.Lorem.Paragraph())
