@@ -95,6 +95,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteAsAStringWhenNoteTypeIsAnEmptyString()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "");
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case note");
+        }
+
+        [Test]
         public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasASCInBrackets()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Case Summary (ASC)");
@@ -172,6 +182,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             historicalCaseNote.NoteType = null;
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Case note");
+        }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsCaseNoteAsAStringForFormNameWhenNoteTypeIsAnEmptyString()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "");
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 

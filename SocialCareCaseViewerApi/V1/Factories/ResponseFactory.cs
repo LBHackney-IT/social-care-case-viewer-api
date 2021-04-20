@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,7 +122,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         private static string FormatFormNameForHistoricCaseNote(string noteType)
         {
             string pattern = @"\([^()]*\)$"; // Match brackets at the end e.g. (ASC)
-            var formName = noteType ?? "Case note";
+            var formName = String.IsNullOrEmpty(noteType) ? "Case note" : noteType;
             var formattedFormName = Regex.Replace(formName, pattern, "").TrimEnd();
 
             return formattedFormName;
