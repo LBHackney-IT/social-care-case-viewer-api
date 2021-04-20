@@ -11,6 +11,7 @@ using MongoDB.Driver.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
@@ -142,22 +143,57 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 casesAndVisits.AddRange(ncIdQuery.ToList());
             }
 
-            var historicVisits = _socialCarePlatformAPIGateway
-                .GetVisitsByPersonId(personId)
-                .Select(ResponseFactory.HistoricalVisitsToDomain)
-                .ToList();
+            var historicVisits = new List<BsonDocument>();
+            try
+            {
+                var visits = _socialCarePlatformAPIGateway
+                    .GetVisitsByPersonId(personId)
+                    .ToList();
 
-            var historicCases = _socialCarePlatformAPIGateway
-                .GetCaseNotesByPersonId(personId)
-                .CaseNotes
-                .Select(ResponseFactory.HistoricalCaseNotesToDomain)
-                .ToList();
+                if (visits.Count > 0)
+                {
+                    historicVisits = visits
+                        .Select(ResponseFactory.HistoricalVisitsToDomain)
+                        .ToList();
+                }
+
+            }
+            catch (NullReferenceException)
+            {
+                historicVisits = new List<BsonDocument>();
+            }
+            catch (SocialCarePlatformApiException)
+            {
+                historicVisits = new List<BsonDocument>();
+            }
+
+            var historicCases = new List<BsonDocument>();
+            try
+            {
+                var caseNotes = _socialCarePlatformAPIGateway
+                    .GetCaseNotesByPersonId(personId)
+                    .CaseNotes;
+
+                if (caseNotes?.Count > 0)
+                {
+                    historicCases = caseNotes
+                        .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                        .ToList();
+                }
+            }
+            catch (NullReferenceException)
+            {
+                historicCases = new List<BsonDocument>();
+            }
+            catch (SocialCarePlatformApiException)
+            {
+                historicCases = new List<BsonDocument>();
+            }
 
             if (historicVisits.Count > 0)
             {
                 casesAndVisits.AddRange(historicVisits);
             }
-
             if (historicCases.Count > 0)
             {
                 casesAndVisits.AddRange(historicCases);

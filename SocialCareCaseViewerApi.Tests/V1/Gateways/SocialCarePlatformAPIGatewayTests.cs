@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
@@ -72,6 +73,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GivenHttpClientReturns404ThenGatewayReturnsNoVisits()
+        {
+            const int fakePersonId = 123;
+            var httpClient = CreateHttpClient(HttpStatusCode.NotFound);
+
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetVisitsByPersonId(fakePersonId.ToString()); });
+
+            exception.Message.Should().Be("404");
+        }
+
+        [Test]
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsVisitResponse()
         {
             var visit = TestHelpers.CreateVisit();
@@ -83,6 +97,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(visit);
+        }
+
+        [Test]
+        public void GivenHttpClientReturns404ThenGatewayReturnsNoVisit()
+        {
+            const int fakeVisitId = 123;
+            var httpClient = CreateHttpClient(HttpStatusCode.NotFound);
+
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetVisitByVisitId(fakeVisitId); });
+
+            exception.Message.Should().Be("404");
         }
 
         [Test]

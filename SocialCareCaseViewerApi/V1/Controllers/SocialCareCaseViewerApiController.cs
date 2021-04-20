@@ -214,11 +214,23 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult UpdateAllocation([FromBody] UpdateAllocationRequest request)
         {
+            var validator = new UpdateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             try
             {
                 return Ok(_allocationUseCase.ExecuteUpdate(request));
             }
             catch (EntityUpdateException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (UpdateAllocationException ex)
             {
                 return StatusCode(500, ex.Message);
             }
