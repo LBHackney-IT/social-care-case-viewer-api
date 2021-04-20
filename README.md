@@ -74,11 +74,43 @@ The application will be served at http://localhost:5000.
 
 ### Running the tests
 
-To run all tests and keep the test database running:
+There are two ways of running the tests: using the terminal and using an IDE.
+
+#### Using the terminal
+
+To run all tests, use:
 
 ```sh
-$ docker-compose up
+$ make test
 ```
+
+To run some tests i.e. single or a group, run the test databases in the background:
+
+```sh
+$ make start-test-dbs
+```
+
+And then you can filter through tests, using the `--filter` argument of the
+`dotnet test` command:
+
+```sh
+# E.g. for a specific test, use the test method name
+$ dotnet test --filter GivenHttpClientReturnsValidResponseThenGatewayReturnsListCaseNotesResponse
+# E.g. for a file, use the test class name
+$ dotnet test --filter SocialCarePlatformAPIGatewayTests
+```
+
+See [Microsoft's documentation on running selective unit tests](https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=mstest) for more information.
+
+#### Using an IDE
+
+Run the test databases in the background, using:
+
+```sh
+$ make start-test-dbs
+```
+
+This will allow you to run the tests as normal in your IDE.
 
 ## Active Contributors
 

@@ -16,13 +16,11 @@ shell:
 
 .PHONY: test
 test:
-	docker-compose up test-database & docker-compose build base-api-test && docker-compose up base-api-test
+	docker-compose build social-care-case-viewer-api-test && docker-compose up social-care-case-viewer-api-test
 
-.PHONY: lint
-lint:
-	-dotnet tool install -g dotnet-format
-	dotnet tool update -g dotnet-format
-	dotnet format
+.PHONY: start-test-dbs
+start-test-dbs:
+	docker-compose up -d test-database && docker-compose up -d mongo-db
 
 .PHONY: restart-db
 restart-db:
@@ -30,3 +28,9 @@ restart-db:
 	-docker rm $$(docker ps -q --filter ancestor=test-database -a)
 	docker rmi test-database
 	docker-compose up -d test-database
+
+.PHONY: lint
+lint:
+	-dotnet tool install -g dotnet-format
+	dotnet tool update -g dotnet-format
+	dotnet format
