@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -22,12 +20,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _databaseGateway.PostWarningNote(request);
         }
 
-        public List<WarningNote> ExecuteGet(long personId)
+        public ListWarningNotesResponse ExecuteGet(long personId)
         {
             var warningNotes = _databaseGateway.GetWarningNotes(personId);
 
-            var response = warningNotes.Select(x => x.ToDomain()).ToList();
-            return response;
+            return new ListWarningNotesResponse
+            {
+                WarningNotes = warningNotes.Select(x => x.ToDomain()).ToList()
+            };
         }
     }
 }

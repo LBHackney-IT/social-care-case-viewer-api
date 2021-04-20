@@ -677,17 +677,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
         {
             var testPersonId = _fixture.Create<long>();
-            var stubbedWarningNoteResponse = _fixture.Create<List<WarningNote>>();
+            var stubbedWarningNotesResponse = _fixture.Create<ListWarningNotesResponse>();
 
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
-                .Returns(stubbedWarningNoteResponse);
+                .Returns(stubbedWarningNotesResponse);
 
-            var response = _classUnderTest.GetWarningNote(testPersonId) as OkObjectResult;
+            var response = _classUnderTest.ListWarningNotes(testPersonId) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(stubbedWarningNoteResponse);
+            response.Value.Should().BeEquivalentTo(stubbedWarningNotesResponse);
         }
 
         [Test]
@@ -699,7 +699,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
                 .Throws(new DocumentNotFoundException("Document Not Found"));
 
-            var response = _classUnderTest.GetWarningNote(testPersonId) as ObjectResult;
+            var response = _classUnderTest.ListWarningNotes(testPersonId) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(404);

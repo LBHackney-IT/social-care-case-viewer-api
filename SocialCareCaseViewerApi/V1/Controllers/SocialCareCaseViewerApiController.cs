@@ -392,10 +392,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns warning notes related to the specified ID</response>
         /// <response code="404">No warning notes found for the specified ID</response>
-        [ProducesResponseType(typeof(List<WarningNote>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/warningNotes")]
-        public IActionResult GetWarningNote(long personId)
+        public IActionResult ListWarningNotes(long personId)
         {
             try
             {
