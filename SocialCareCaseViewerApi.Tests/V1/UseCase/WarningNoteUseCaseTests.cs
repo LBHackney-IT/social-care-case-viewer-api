@@ -80,11 +80,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetReturnsAGetWarningNoteResponse()
         {
+            var testPersonId = _fixture.Create<long>();
+
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
+                x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(new List<dbWarningNote>());
 
-            var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
+            var response = _classUnderTest.ExecuteGet(testPersonId);
 
             response.Should().NotBeNull();
             response.Should().BeOfType<List<WarningNote>>();
@@ -93,30 +95,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetCallsTheDatabaseGateWayWithAParameter()
         {
+            var testPersonId = _fixture.Create<long>();
+
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
+                x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(new List<dbWarningNote>());
 
-            var request = new GetWarningNoteRequest();
-
-            _classUnderTest.ExecuteGet(request);
+            _classUnderTest.ExecuteGet(testPersonId);
             _mockDatabaseGateway.Verify(
-                x => x.GetWarningNotes(request), Times.Once);
+                x => x.GetWarningNotes(testPersonId), Times.Once);
         }
 
         [Test]
         public void ExecuteGetReturnsTheExpectedResponse()
         {
+            var testPersonId = _fixture.Create<long>();
+
             var stubbedWarningNote = _fixture.Build<dbWarningNote>()
                                     .Without(x => x.Person)
                                     .Create();
+
             var stubbedList = new List<dbWarningNote>
             {
                 stubbedWarningNote
             };
 
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
+                x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(stubbedList);
 
             var expectedResponse = new List<WarningNote>
@@ -124,7 +129,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                     stubbedWarningNote.ToDomain()
                 };
 
-            var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
+            var response = _classUnderTest.ExecuteGet(testPersonId);
 
             response.Should().BeEquivalentTo(expectedResponse);
         }

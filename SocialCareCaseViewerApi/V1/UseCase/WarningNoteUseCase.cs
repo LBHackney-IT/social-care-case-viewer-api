@@ -22,9 +22,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _databaseGateway.PostWarningNote(request);
         }
 
-        public List<WarningNote> ExecuteGet(GetWarningNoteRequest request)
+        public List<WarningNote> ExecuteGet(long personId)
         {
-            var warningNotes = _databaseGateway.GetWarningNotes(request);
+            var warningNotes = _databaseGateway.GetWarningNotes(personId);
 
             var response = warningNotes.Select(x => x.ToDomain()).ToList();
             return response;

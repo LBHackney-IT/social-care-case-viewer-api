@@ -8,6 +8,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     public interface IWarningNoteUseCase
     {
         PostWarningNoteResponse ExecutePost(PostWarningNoteRequest request);
-        List<WarningNote> ExecuteGet(GetWarningNoteRequest request);
+        List<WarningNote> ExecuteGet(long personId);
     }
 }
