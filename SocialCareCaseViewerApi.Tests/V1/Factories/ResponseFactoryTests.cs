@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -54,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapCaseNoteToBsonDocument()
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteMappedToDomain()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
             var expectedDocument = new BsonDocument(
@@ -63,7 +64,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     new BsonElement("mosaic_id", historicalCaseNote.MosaicId),
                     new BsonElement("worker_email", historicalCaseNote.CreatedByEmail),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", historicalCaseNote.CaseNoteTitle),
+                    new BsonElement("form_name", historicalCaseNote.NoteType),
+                    new BsonElement("title", historicalCaseNote.CaseNoteTitle),
                     new BsonElement("timestamp", historicalCaseNote.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")),
                     new BsonElement("is_historical", true)
             });
@@ -71,6 +73,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
             result.Should().BeEquivalentTo(expectedDocument);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteAsAStringWhenNoteTypeIsNull()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = null;
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case note");
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsCaseNoteAsAStringWhenNoteTypeIsAnEmptyString()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "");
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case note");
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasASCInBrackets()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Case Summary (ASC)");
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Case Summary");
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYOTInBrackets()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Home Visit (YOT)");
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Home Visit");
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYHInBrackets()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Manager's Decisions (YH)");
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo("Manager's Decisions");
         }
 
         [Test]
@@ -95,14 +148,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapHistoricalCaseNoteToCaseNoteResponse()
+        public void ToResponseForCaseNoteReturnsCaseNoteMappedToCaseNoteResponse()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            var historicalCaseNote = TestHelpers.CreateCaseNote(createdOn: new DateTime(2021, 3, 1, 15, 30, 0));
             var expectedCaseNoteResponse = TestHelpers.CreateCaseNoteResponse(historicalCaseNote);
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
             result.Should().BeEquivalentTo(expectedCaseNoteResponse);
+        }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsCaseNoteAsAStringForFormNameWhenNoteTypeIsNull()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+            historicalCaseNote.NoteType = null;
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Case note");
+        }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsCaseNoteAsAStringForFormNameWhenNoteTypeIsAnEmptyString()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "");
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Case note");
+        }
+
+        [Test]
+        public void ToResponseForCaseNoteReturnsNoteTypeWithoutBracketsAndWhitespaceForFormName()
+        {
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Manager's Decisions (YH)");
+
+            var result = ResponseFactory.ToResponse(historicalCaseNote);
+
+            result.FormName.Should().Be("Manager's Decisions");
         }
     }
 }

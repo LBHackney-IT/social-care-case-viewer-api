@@ -37,13 +37,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.CreatedByName, f => f.Person.FullName);
         }
 
-        public static CaseNote CreateCaseNote()
+        public static CaseNote CreateCaseNote(string? noteType = null, DateTime? createdOn = null)
         {
             return new Faker<CaseNote>()
                 .RuleFor(c => c.CaseNoteId, f => f.UniqueIndex.ToString())
                 .RuleFor(c => c.MosaicId, f => f.UniqueIndex.ToString())
-                .RuleFor(c => c.CreatedOn, f => f.Date.Past())
-                .RuleFor(c => c.NoteType, f => f.Random.String2(50))
+                .RuleFor(c => c.CreatedOn, f => createdOn ?? f.Date.Past())
+                .RuleFor(c => c.NoteType, f => noteType ?? f.Random.String2(50))
                 .RuleFor(c => c.CaseNoteContent, f => f.Random.String2(50))
                 .RuleFor(c => c.CaseNoteTitle, f => f.Random.String2(50))
                 .RuleFor(c => c.CreatedByEmail, f => f.Person.Email)
