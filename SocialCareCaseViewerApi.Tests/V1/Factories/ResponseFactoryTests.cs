@@ -98,17 +98,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapHistoricalCaseNoteToCaseNoteResponse()
         {
             var historicalCaseNote = TestHelpers.CreateCaseNote();
-            var expectedCaseNoteResponse = new CaseNoteResponse()
-            {
-                RecordId = historicalCaseNote.CaseNoteId,
-                PersonId = historicalCaseNote.MosaicId,
-                Title = historicalCaseNote.CaseNoteTitle,
-                Content = historicalCaseNote.CaseNoteContent,
-                DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
-                OfficerName = historicalCaseNote.CreatedByName,
-                OfficerEmail = historicalCaseNote.CreatedByEmail,
-                FormName = historicalCaseNote.NoteType
-            };
+            var expectedCaseNoteResponse = TestHelpers.CreateCaseNoteResponse(historicalCaseNote);
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
