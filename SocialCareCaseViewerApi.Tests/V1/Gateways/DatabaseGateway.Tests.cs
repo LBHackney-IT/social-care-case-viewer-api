@@ -21,6 +21,7 @@ using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.Phon
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -687,7 +688,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            Address displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
@@ -706,7 +707,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            Address displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
@@ -826,7 +827,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             return person;
         }
 
-        private Address SaveAddressToDatabase(Address address)
+        private dbAddress SaveAddressToDatabase(dbAddress address)
         {
             DatabaseContext.Addresses.Add(address);
             DatabaseContext.SaveChanges();
