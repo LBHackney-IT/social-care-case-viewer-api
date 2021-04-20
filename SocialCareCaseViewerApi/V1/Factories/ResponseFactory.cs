@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 {
                     new BsonElement("_id", note.CaseNoteId),
                     new BsonElement("mosaic_id", note.MosaicId),
-                    new BsonElement("worker_email", note.CreatedByEmail),
+                    new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
                     new BsonElement("form_name", note.CaseNoteTitle ?? ""),
                     new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
