@@ -131,9 +131,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">One or more request parameters are invalid or missing</response>
         /// <response code="500">There was a problem updating the records</response>
         ///
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
-        [Route("residents/{id}")]
+        [Route("residents")]
         public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
         {
             var response = _personUseCase.ExecutePatch(request);
@@ -143,7 +143,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return NotFound();
             }
 
-            return StatusCode(200, response);
+            return StatusCode(204);
         }
 
         /// <summary>

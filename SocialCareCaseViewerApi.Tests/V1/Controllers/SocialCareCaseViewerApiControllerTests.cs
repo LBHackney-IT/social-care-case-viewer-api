@@ -154,10 +154,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Returns((UpdatePersonResponse) null);
 
-            var result = _classUnderTest.UpdatePerson(request) as ObjectResult;
+            var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
 
             result.Should().NotBeNull();
-            result.StatusCode.Should().Be(200);
+            result.StatusCode.Should().Be(204);
         }
 
         [Test]
