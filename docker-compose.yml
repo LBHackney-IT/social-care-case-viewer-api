@@ -48,5 +48,3 @@ services:
       - 5432:5432
     env_file:
       - database.env
-   
-  
