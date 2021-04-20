@@ -383,6 +383,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.MosaicId;
         }
 
+        public Person GetPersonByMosaicId(int mosaicId)
+        {
+            return _databaseContext.Persons.Where(x => x.Id == mosaicId).FirstOrDefault();
+        }
+
         public string GetNCReferenceByPersonId(string personId)
         {
             PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.MosaicId == personId).FirstOrDefault();
@@ -444,47 +449,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
-            CreateAllocationResponse response = new CreateAllocationResponse();
+            var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            //make sure we have all related entities
-            //worker
-            Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.AllocatedWorkerId);
-
-            if (string.IsNullOrEmpty(worker?.Email))
-            {
-                throw new CreateAllocationException("Worker details cannot be found");
-            }
-
-            //team
-            Team team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
-
-            if (team == null)
-            {
-                throw new CreateAllocationException("Team details cannot be found");
-            }
-
-            //person
-            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.MosaicId);
-
-            if (person == null)
-            {
-                throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
-            }
-
-            //createdBy
-            Worker allocatedBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
-
-            if (allocatedBy == null)
-            {
-                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
-            }
-
-            AllocationSet allocation = new AllocationSet()
+            var allocation = new AllocationSet
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = DateTime.Now,
+                AllocationStartDate = request.AllocationStartDate ?? DateTime.Now,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
@@ -492,12 +464,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.Allocations.Add(allocation);
             _databaseContext.SaveChanges();
 
+
+            var response = new CreateAllocationResponse();
             //Add note
             try
             {
-                DateTime dt = DateTime.Now;
+                var dt = DateTime.Now;
 
-                AllocationCaseNote note = new AllocationCaseNote()
+                var note = new AllocationCaseNote
                 {
                     FirstName = person.FirstName,
                     LastName = person.LastName,
@@ -511,7 +485,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CreatedBy = request.CreatedBy
                 };
 
-                CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+                var caseNotesDocument = new CaseNotesDocument()
                 {
                     CaseFormData = JsonConvert.SerializeObject(note)
                 };
@@ -533,88 +507,61 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
         {
-            DateTime dt = DateTime.Now;
-            UpdateAllocationResponse response = new UpdateAllocationResponse();
+            var response = new UpdateAllocationResponse();
 
             try
             {
-                AllocationSet allocation = _databaseContext.Allocations.Where(x => x.Id == request.Id).FirstOrDefault();
+                var allocation = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
 
-                if (allocation != null)
+                if (allocation == null)
                 {
-                    if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+                    throw new EntityUpdateException($"Allocation {request.Id} not found");
+                }
+
+                if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+                {
+                    throw new UpdateAllocationException("Allocation already closed");
+                }
+
+                var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
+
+
+                //copy existing values in case adding note fails
+                var tmpAllocation = (AllocationSet) allocation.Clone();
+                SetDeallocationValues(allocation, request.DeallocationDate, request.CreatedBy);
+                _databaseContext.SaveChanges();
+
+                try
+                {
+                    var note = new DeallocationCaseNote
                     {
-                        throw new UpdateAllocationException("Allocation already closed");
-                    }
+                        FirstName = person.FirstName,
+                        LastName = person.LastName,
+                        MosaicId = person.Id.ToString(),
+                        Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                        WorkerEmail = createdBy.Email, //required for my cases search
+                        DeallocationReason = request.DeallocationReason,
+                        FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
+                        FormName = "Worker deallocated",
+                        AllocationId = request.Id.ToString(),
+                        CreatedBy = request.CreatedBy
+                    };
 
-                    //check that person exists
-                    Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
-
-                    if (person == null)
+                    var caseNotesDocument = new CaseNotesDocument()
                     {
-                        throw new UpdateAllocationException("Person not found");
-                    }
+                        CaseFormData = JsonConvert.SerializeObject(note)
+                    };
 
-                    Worker worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == allocation.WorkerId);
-
-                    if (worker == null)
-                    {
-                        throw new UpdateAllocationException("Worker not found");
-                    }
-
-                    Worker createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper() == request.CreatedBy.ToUpper());
-
-                    if (createdBy == null)
-                    {
-                        throw new UpdateAllocationException("CreatedBy not found");
-                    }
-
-                    //copy existing values in case adding note fails
-                    AllocationSet tmpAllocation = (AllocationSet) allocation.Clone();
-
-                    SetDeallocationValues(allocation, dt, request.CreatedBy);
+                    response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                }
+                catch (Exception ex)
+                {
+                    var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                    RestoreAllocationValues(tmpAllocation, allocationToRestore);
 
                     _databaseContext.SaveChanges();
 
-                    //TODO: use single data source for records and case notes
-                    try
-                    {
-                        DeallocationCaseNote note = new DeallocationCaseNote()
-                        {
-                            FirstName = person.FirstName,
-                            LastName = person.LastName,
-                            MosaicId = person.Id.ToString(),
-                            Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
-                            WorkerEmail = createdBy.Email, //required for my cases search
-                            DeallocationReason = request.DeallocationReason,
-                            FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
-                            FormName = "Worker deallocated",
-                            AllocationId = request.Id.ToString(),
-                            CreatedBy = request.CreatedBy
-                        };
-
-                        CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
-                        {
-                            CaseFormData = JsonConvert.SerializeObject(note)
-                        };
-
-                        response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-                    }
-                    catch (Exception ex)
-                    {
-                        //roll back allocation record
-                        //TODO: move case notes to postgresql for robust transaction handling
-                        AllocationSet allocationToRestore = _databaseContext.Allocations.Where(x => x.Id == request.Id).FirstOrDefault();
-                        RestoreAllocationValues(tmpAllocation, allocationToRestore);
-
-                        _databaseContext.SaveChanges();
-
-                        throw new UpdateAllocationException($"Unable to create a case note. Allocation not updated: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    throw new EntityUpdateException($"Allocation {request.Id} not found");
+                    throw new UpdateAllocationException($"Unable to create a case note. Allocation not updated: {ex.Message}");
                 }
             }
             catch (Exception ex)
@@ -626,13 +573,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         #region Warning Notes
-        public CreateWarningNoteResponse CreateWarningNote(CreateWarningNoteRequest request)
+        public PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request)
         {
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
 
             if (person == null)
             {
-                throw new CreateWarningNoteException($"Person with given id ({request.PersonId}) not found");
+                throw new PostWarningNoteException($"Person with given id ({request.PersonId}) not found");
             }
 
             //TODO: Extract request to domain process to EntityFactory
@@ -641,23 +588,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = request.PersonId,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
-                IndividualNotified = request.IndividualNotified,
-                NotificationDetails = request.NotificationDetails,
-                ReviewDetails = request.ReviewDetails,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
+                DisclosedDetails = request.DisclosedDetails,
+                Notes = request.Notes,
                 NoteType = request.NoteType,
                 Status = request.Status,
-                DateInformed = request.DateInformed,
-                HowInformed = request.HowInformed,
+                DisclosedDate = request.DisclosedDate,
+                DisclosedHow = request.DisclosedHow,
                 WarningNarrative = request.WarningNarrative,
-                ManagersName = request.ManagersName,
-                DateManagerInformed = request.DateManagerInformed,
+                ManagerName = request.ManagerName,
+                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
                 CreatedBy = request.CreatedBy
             };
 
             _databaseContext.WarningNotes.Add(warningNote);
             _databaseContext.SaveChanges();
 
-            CreateWarningNoteResponse response = new CreateWarningNoteResponse()
+            PostWarningNoteResponse response = new PostWarningNoteResponse()
             {
                 WarningNoteId = warningNote.Id
             };
@@ -690,7 +637,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //     _databaseContext.WarningNotes.Remove(warningNote);
             //     _databaseContext.SaveChanges();
 
-            //     throw new CreateWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
+            //     throw new PostWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
             // }
 
             return response;
@@ -707,7 +654,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         #endregion
-
         public Person GetPersonDetailsById(long id)
         {
             //load related entities to minimise SQL calls
@@ -718,14 +664,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.OtherNames)
                 .FirstOrDefault(x => x.Id == id);
         }
-
-        private static void SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
+        private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime? dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
-            allocation.AllocationEndDate = dt;
+            allocation.AllocationEndDate = dt ?? DateTime.Now;
             allocation.CaseStatus = "Closed";
             allocation.CaseClosureDate = dt;
             allocation.LastModifiedBy = modifiedBy;
+            return allocation;
         }
 
         private static void RestoreAllocationValues(AllocationSet tmpAllocation, AllocationSet allocationToRestore)
@@ -743,6 +689,65 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             string last = string.IsNullOrWhiteSpace(lastName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());
 
             return (first + " " + last).TrimStart().TrimEnd();
+        }
+
+        private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        {
+            // var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == (int) request.AllocatedWorkerId);
+            var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
+            if (string.IsNullOrEmpty(worker.Email))
+            {
+                throw new CreateAllocationException("Worker details cannot be found");
+            }
+
+            var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
+            if (team == null)
+            {
+                throw new CreateAllocationException("Team details cannot be found");
+            }
+
+            var person = _databaseContext.Persons.Where(x => x.Id == request.MosaicId).FirstOrDefault();
+            if (person == null)
+            {
+                throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
+            }
+
+            var allocatedBy = _databaseContext.Workers.Where(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper())).FirstOrDefault();
+            if (allocatedBy == null)
+            {
+                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
+            }
+
+            return (worker, team, person, allocatedBy);
+        }
+
+        private (Person, Worker) GetUpdateAllocationRequirements(AllocationSet allocation, UpdateAllocationRequest request)
+        {
+            if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+            {
+                throw new UpdateAllocationException("Allocation already closed");
+            }
+
+            var worker = GetWorkerByWorkerId(allocation.WorkerId ?? 0);
+
+            if (worker == null)
+            {
+                throw new UpdateAllocationException("Worker not found");
+            }
+
+            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
+            if (person == null)
+            {
+                throw new UpdateAllocationException("Person not found");
+            }
+
+            var createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
+            if (createdBy == null)
+            {
+                throw new UpdateAllocationException("CreatedBy not found");
+            }
+
+            return (person, createdBy);
         }
 
         private static Address GetNewDisplayAddress(string addressLines, string postcode, long? uprn)

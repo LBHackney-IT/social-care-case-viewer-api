@@ -1,9 +1,10 @@
-using SocialCareCaseViewerApi.V1.Boundary.Response;
+using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IVisitsUseCase
     {
-        ListVisitsResponse ExecuteGetByPersonId(string personId);
+        List<Visit> ExecuteGetByPersonId(string personId);
     }
 }

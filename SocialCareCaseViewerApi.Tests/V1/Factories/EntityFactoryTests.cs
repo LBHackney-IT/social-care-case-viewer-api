@@ -153,16 +153,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 PersonId = number,
                 StartDate = dt,
                 EndDate = dt,
-                IndividualNotified = true,
-                NotificationDetails = text,
-                ReviewDetails = text,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
-                DateInformed = dt,
-                HowInformed = text,
+                DisclosedDate = dt,
+                DisclosedHow = text,
                 WarningNarrative = text,
-                ManagersName = text,
-                DateManagerInformed = dt
+                ManagerName = text,
+                DiscussedWithManagerDate = dt
             };
 
             var expectedResponse = new WarningNote()
@@ -171,16 +172,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 PersonId = number,
                 StartDate = dt,
                 EndDate = dt,
-                IndividualNotified = true,
-                NotificationDetails = text,
-                ReviewDetails = text,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
-                DateInformed = dt,
-                HowInformed = text,
+                DisclosedDate = dt,
+                DisclosedHow = text,
                 WarningNarrative = text,
-                ManagersName = text,
-                DateManagerInformed = dt
+                ManagerName = text,
+                DiscussedWithManagerDate = dt
             };
 
             var response = dbWarningNote.ToDomain();

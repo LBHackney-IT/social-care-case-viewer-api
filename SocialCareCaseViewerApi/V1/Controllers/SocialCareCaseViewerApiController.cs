@@ -31,12 +31,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
+        private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
         private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase, IPersonUseCase personUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -47,6 +48,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
+            _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
             _personUseCase = personUseCase;
         }
 
@@ -152,6 +154,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
         /// <response code="400">One or more dates are invalid or missing</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("cases")]
@@ -161,20 +164,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 string dateValidationError = null;
 
-                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
                 {
                     dateValidationError += "Invalid start date";
                 }
-                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+
+                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate,
+                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
                 {
                     dateValidationError += " Invalid end date";
                 }
-                if (!string.IsNullOrEmpty(dateValidationError))
-                {
-                    return StatusCode(400, dateValidationError);
-                }
 
-                return Ok(_processDataUseCase.Execute(request));
+                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
@@ -219,13 +221,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// create new allocations for workers
         /// </summary>
         /// <response code="201">Allocation successfully inserted</response>
-        [ProducesResponseType(typeof(CreateAllocationRequest), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]
         [Route("allocations")]
         public IActionResult CreateAllocation([FromBody] CreateAllocationRequest request)
         {
-            var result = _allocationUseCase.ExecutePost(request);
-            return CreatedAtAction("CreateAllocation", result, result);
+            var validator = new CreateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                var result = _allocationUseCase.ExecutePost(request);
+                return CreatedAtAction("CreateAllocation", result, result);
+            }
+            catch (CreateAllocationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UpdateAllocationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
@@ -239,11 +260,23 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult UpdateAllocation([FromBody] UpdateAllocationRequest request)
         {
+            var validator = new UpdateAllocationRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             try
             {
                 return Ok(_allocationUseCase.ExecuteUpdate(request));
             }
             catch (EntityUpdateException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (UpdateAllocationException ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -338,6 +371,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get visit by visit id
+        /// </summary>
+        /// <response code="200">Success. Returns a matching visit</response>
+        /// <response code="404">No visit found for visit id</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(Visit), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("visits/{visitId:long}")]
+        public IActionResult GetVisitByVisitId(long visitId)
+        {
+            var response = _getVisitByVisitIdUseCase.Execute(visitId);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Get visits by person id
         /// </summary>
         /// <param name="request"></param>
@@ -363,16 +418,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <reponse code="500">There was a problem creating the record</reponse>
         /// </summary>
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch]
+        [HttpPost]
         [Route("warningnotes")]
-        public IActionResult CreateWarningNote([FromQuery] CreateWarningNoteRequest request)
+        public IActionResult PostWarningNote([FromBody] PostWarningNoteRequest request)
         {
             try
             {
                 var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
-            catch (CreateWarningNoteException ex)
+            catch (PostWarningNoteException ex)
             {
                 return StatusCode(500, ex.Message);
             }

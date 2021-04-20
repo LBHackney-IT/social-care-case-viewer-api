@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -9,6 +11,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         CaseNote GetCaseNoteById(string id);
 
-        ListVisitsResponse GetVisitsByPersonId(string id);
+        IEnumerable<Visit> GetVisitsByPersonId(string id);
+
+        Visit GetVisitByVisitId(long id);
+
+        List<ResidentHistoricRecord> GetHistoricCaseNotesAndVisitsByPersonId(long id);
     }
 }
