@@ -97,8 +97,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasASCInBrackets()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
-            historicalCaseNote.NoteType = "Case Summary (ASC)";
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Case Summary (ASC)");
 
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
@@ -108,8 +107,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYOTInBrackets()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
-            historicalCaseNote.NoteType = "Home Visit (YOT)";
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Home Visit (YOT)");
 
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
@@ -119,8 +117,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void HistoricalCaseNotesToDomainReturnsFormNameWithoutBracketsAndWhitespaceWhenNoteTypeHasYHInBrackets()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
-            historicalCaseNote.NoteType = "Manager's Decisions (YH)";
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Manager's Decisions (YH)");
 
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
@@ -151,8 +148,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void ToResponseForCaseNoteReturnsCaseNoteMappedToCaseNoteResponse()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
-            historicalCaseNote.CreatedOn = new DateTime(2021, 3, 1, 15, 30, 0);
+            var historicalCaseNote = TestHelpers.CreateCaseNote(createdOn: new DateTime(2021, 3, 1, 15, 30, 0));
 
             var expectedCaseNoteResponse = new CaseNoteResponse()
             {
@@ -185,8 +181,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void ToResponseForCaseNoteReturnsNoteTypeWithoutBracketsAndWhitespaceForFormName()
         {
-            var historicalCaseNote = TestHelpers.CreateCaseNote();
-            historicalCaseNote.NoteType = "Manager's Decisions (YH)";
+            var historicalCaseNote = TestHelpers.CreateCaseNote(noteType: "Manager's Decisions (YH)");
 
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
