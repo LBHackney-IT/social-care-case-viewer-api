@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTests
     {
-        
+
         private Faker _faker;
 
         [SetUp]
