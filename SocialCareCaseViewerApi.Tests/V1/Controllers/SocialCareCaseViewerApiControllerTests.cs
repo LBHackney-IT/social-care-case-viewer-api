@@ -710,6 +710,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockWarningNoteUseCase.Verify(x => x.ExecutePatch(request), Times.Once);
             response.StatusCode.Should().Be(204);
         }
+
+        [Test]
+        public void PatchWarningNoteReturnsA404ResponseIfItEncountersAnException()
+        {
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecutePatch(It.IsAny<PatchWarningNoteRequest>()))
+                .Throws(new PatchWarningNoteException("exception encountered"));
+
+            var response = _classUnderTest.PatchWarningNote(new PatchWarningNoteRequest()) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("exception encountered");
+
+        }
         #endregion
     }
 }

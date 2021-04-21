@@ -413,14 +413,22 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <response code="204">Amended successfully</response>
+        /// <response code="404">Exception encountered</response>
         /// <response code="500">There was a problem updating the record</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
         [Route("warningnotes")]
         public IActionResult PatchWarningNote([FromBody] PatchWarningNoteRequest request)
         {
-            _warningNoteUseCase.ExecutePatch(request);
-            return NoContent();
+            try
+            {
+                _warningNoteUseCase.ExecutePatch(request);
+                return NoContent();
+            }
+            catch (PatchWarningNoteException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

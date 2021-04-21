@@ -437,8 +437,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(stubbedPerson);
+            DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, stubbedPerson.Id)
@@ -487,8 +488,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PostWarningNoteShouldCallInsertCaseNoteMethod()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(stubbedPerson);
+            DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
                             .With(x => x.PersonId, stubbedPerson.Id)
@@ -581,27 +583,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteUpdatesAnExistingRecordInTheDatabase()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
-
-            Worker stubbedWorker = CreateStubbedWorker();
-            SaveWorkerToDatabase(stubbedWorker);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
             //clone the stub to compare the values later
-            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
 
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
-
-            //grab the given id to "simulate" existing record
-            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
-
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .With(x => x.ReviewedBy, stubbedWorker.Email)
-                                                .With(x => x.Status, "closed")
-                                                .Create();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
 
             _classUnderTest.PatchWarningNote(request);
             var query = DatabaseContext.WarningNotes;
@@ -611,57 +601,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedRecord.LastReviewDate.Should().Be(request.ReviewDate);
             updatedRecord.NextReviewDate.Should().BeNull();
             updatedRecord.Status.Should().Be("closed");
-            updatedRecord.Status.Should().NotBe(stubbedWarningNoteOriginal.Status);
+            updatedRecord.Status.Should().NotBe(stubbedWarningNote.Status);
             updatedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
-            updatedRecord.LastModifiedBy.Should().NotBe(stubbedWarningNoteOriginal.LastModifiedBy);
+            updatedRecord.LastModifiedBy.Should().NotBe(stubbedWarningNote.LastModifiedBy);
 
-            updatedRecord.Id.Should().Be(stubbedWarningNoteOriginal.Id);
-            updatedRecord.PersonId.Should().Be(stubbedWarningNoteOriginal.PersonId);
-            updatedRecord.StartDate.Should().Be(stubbedWarningNoteOriginal.StartDate);
-            updatedRecord.DisclosedWithIndividual.Should().Be(stubbedWarningNoteOriginal.DisclosedWithIndividual);
-            updatedRecord.DisclosedDetails.Should().Be(stubbedWarningNoteOriginal.DisclosedDetails);
-            updatedRecord.Notes.Should().Be(stubbedWarningNoteOriginal.Notes);
-            updatedRecord.NoteType.Should().Be(stubbedWarningNoteOriginal.NoteType);
-            updatedRecord.DisclosedDate.Should().Be(stubbedWarningNoteOriginal.DisclosedDate);
-            updatedRecord.DisclosedHow.Should().Be(stubbedWarningNoteOriginal.DisclosedHow);
-            updatedRecord.WarningNarrative.Should().Be(stubbedWarningNoteOriginal.WarningNarrative);
-            updatedRecord.ManagerName.Should().Be(stubbedWarningNoteOriginal.ManagerName);
-            updatedRecord.DiscussedWithManagerDate.Should().Be(stubbedWarningNoteOriginal.DiscussedWithManagerDate);
-            updatedRecord.CreatedBy.Should().Be(stubbedWarningNoteOriginal.CreatedBy);
+            updatedRecord.Id.Should().Be(stubbedWarningNote.Id);
+            updatedRecord.PersonId.Should().Be(stubbedWarningNote.PersonId);
+            updatedRecord.StartDate.Should().Be(stubbedWarningNote.StartDate);
+            updatedRecord.DisclosedWithIndividual.Should().Be(stubbedWarningNote.DisclosedWithIndividual);
+            updatedRecord.DisclosedDetails.Should().Be(stubbedWarningNote.DisclosedDetails);
+            updatedRecord.Notes.Should().Be(stubbedWarningNote.Notes);
+            updatedRecord.NoteType.Should().Be(stubbedWarningNote.NoteType);
+            updatedRecord.DisclosedDate.Should().Be(stubbedWarningNote.DisclosedDate);
+            updatedRecord.DisclosedHow.Should().Be(stubbedWarningNote.DisclosedHow);
+            updatedRecord.WarningNarrative.Should().Be(stubbedWarningNote.WarningNarrative);
+            updatedRecord.ManagerName.Should().Be(stubbedWarningNote.ManagerName);
+            updatedRecord.DiscussedWithManagerDate.Should().Be(stubbedWarningNote.DiscussedWithManagerDate);
+            updatedRecord.CreatedBy.Should().Be(stubbedWarningNote.CreatedBy);
         }
 
         [Test]
         public void PatchWarningNoteDoesNotChangeTheStatusEndDateOrChangeNextReviewDateToNullIfRequestPropertyIsOpen()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
-
-            Worker stubbedWorker = CreateStubbedWorker();
-            SaveWorkerToDatabase(stubbedWorker);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "open");
 
             //clone the stub to compare the values later
-            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
 
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
-
-            //grab the given id to "simulate" existing record
-            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
-
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .With(x => x.ReviewedBy, stubbedWorker.Email)
-                                                .With(x => x.Status, "open")
-                                                .Create();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
 
             _classUnderTest.PatchWarningNote(request);
             var query = DatabaseContext.WarningNotes;
             var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
 
             updatedRecord.Status.Should().NotBeNull();
-            updatedRecord.Status.Should().Be(stubbedWarningNoteOriginal.Status);
-            updatedRecord.EndDate.Should().Be(stubbedWarningNoteOriginal.EndDate);
+            updatedRecord.Status.Should().Be(stubbedWarningNote.Status);
+            updatedRecord.EndDate.Should().Be(stubbedWarningNote.EndDate);
             updatedRecord.NextReviewDate.Should().NotBeNull();
             updatedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
         }
@@ -669,27 +647,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteClosesTheWarningNoteIfRequestStatusIsClosed()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
-
-            Worker stubbedWorker = CreateStubbedWorker();
-            SaveWorkerToDatabase(stubbedWorker);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
             //clone the stub to compare the values later
-            WarningNote stubbedWarningNoteOriginal = (WarningNote) stubbedWarningNote.Clone();
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
 
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
-
-            //grab the given id to "simulate" existing record
-            stubbedWarningNoteOriginal.Id = stubbedWarningNote.Id;
-
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .With(x => x.ReviewedBy, stubbedWorker.Email)
-                                                .With(x => x.Status, "closed")
-                                                .Create();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
 
             _classUnderTest.PatchWarningNote(request);
             var query = DatabaseContext.WarningNotes;
@@ -712,18 +678,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void PatchWarningNoteThrowsAndExceptionWhenTheWarningNoteIsAlreadyClosed()
+        public void PatchWarningNoteThrowsAnExceptionWhenTheWarningNoteIsAlreadyClosed()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(startingStatus: "closed", requestStatus: "closed");
 
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
-            stubbedWarningNote.Status = "closed";
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
 
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                    .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                    .Create();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
 
             Action act = () => _classUnderTest.PatchWarningNote(request);
 
@@ -734,11 +699,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteThrowsAnExceptionWhenNoPersonPresentInDatabase()
         {
-            WarningNote stubbedWarningNote = _fixture.Build<WarningNote>()
-                                                .Without(x => x.Id)
-                                                .Without(x => x.Person).Create();
-
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
+            WarningNote stubbedWarningNote = TestHelpers.CreateWarningNote();
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
 
             PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
                                                 .With(x => x.WarningNoteId, stubbedWarningNote.Id)
@@ -751,21 +714,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void PatchWarningNoteAddsAWarningNoteReviewToTheDatabase()
+        public void PatchWarningNoteThrowsAnExceptionWhenReviewerIsNotPresentInWorkerTable()
         {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            WarningNote stubbedWarningNote = TestHelpers.CreateWarningNote(personId: stubbedPerson.Id);
 
-            Worker stubbedWorker = CreateStubbedWorker();
-            SaveWorkerToDatabase(stubbedWorker);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
+            DatabaseContext.Persons.Add(stubbedPerson);
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
 
             PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
                                                 .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .With(x => x.ReviewedBy, stubbedWorker.Email)
                                                 .Create();
+
+            Action act = () => _classUnderTest.PatchWarningNote(request);
+
+            act.Should().Throw<PatchWarningNoteException>()
+                        .WithMessage($"Worker ({request.ReviewedBy}) not found");
+        }
+
+        [Test]
+        public void PatchWarningNoteAddsAWarningNoteReviewToTheDatabase()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
 
             _classUnderTest.PatchWarningNote(request);
             var query = DatabaseContext.WarningNoteReview;
@@ -780,88 +760,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
             insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
         }
-
-        [Test]
-        public void PatchWarningNoteThrowsAnExceptionWhenReviewerIsNotPresentInWorkerTable()
-        {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
-
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .Create();
-
-            Action act = () => _classUnderTest.PatchWarningNote(request);
-
-            act.Should().Throw<PatchWarningNoteException>()
-                        .WithMessage($"Worker ({request.ReviewedBy}) not found");
-        }
-
-        [Test]
-        public void PatchWarningNoteThrowsAnExceptionWhenTheWarningNoteReviewIsNotInsertedIntoTheDatabase()
-        {
-            Person stubbedPerson = CreateStubbedPerson();
-            stubbedPerson = SavePersonToDatabase(stubbedPerson);
-
-            Worker stubbedWorker = CreateStubbedWorker();
-            SaveWorkerToDatabase(stubbedWorker);
-
-            WarningNote stubbedWarningNote = CreateStubbedWarningNote(stubbedPerson);
-            stubbedWarningNote = SaveWarningNoteToDatabase(stubbedWarningNote);
-
-            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .With(x => x.ReviewedBy, stubbedWorker.Email)
-                                                .Create();
-        }
         #endregion
-        private Person CreateStubbedPerson()
-        {
-            return _fixture.Build<Person>()
-                        .Without(x => x.Id)
-                        .Without(x => x.Addresses)
-                        .Without(x => x.OtherNames)
-                        .Without(x => x.PhoneNumbers)
-                        .Without(x => x.Allocations)
-                        .Without(x => x.WarningNotes)
-                        .Create();
-        }
-
-        private Person SavePersonToDatabase(Person person)
-        {
-            DatabaseContext.Persons.Add(person);
-            DatabaseContext.SaveChanges();
-            return person;
-        }
-
-        private WarningNote CreateStubbedWarningNote(Person person)
-        {
-            return _fixture.Build<WarningNote>()
-                        .Without(x => x.Id)
-                        .Without(x => x.Person)
-                        .With(x => x.PersonId, person.Id)
-                        .Create();
-        }
-
-        private WarningNote SaveWarningNoteToDatabase(WarningNote warningNote)
-        {
-            DatabaseContext.WarningNotes.Add(warningNote);
-            DatabaseContext.SaveChanges();
-            return warningNote;
-        }
-
-        private Worker CreateStubbedWorker()
-        {
-            return _fixture.Build<Worker>()
-                    .Without(x => x.Id)
-                    .Without(x => x.WorkerTeams)
-                    .Without(x => x.Allocations)
-                    .With(x => x.Email, _faker.Internet.Email())
-                    .Create();
-        }
 
         private Worker SaveWorkerToDatabase(Worker worker)
         {
