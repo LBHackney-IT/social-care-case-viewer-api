@@ -142,11 +142,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 _personUseCase.ExecutePatch(request);
             }
-            catch(UpdatePersonException ex)
+            catch (UpdatePersonException ex)
             {
                 return NotFound(ex.Message);
             }
-           
+
             return StatusCode(204);
         }
 

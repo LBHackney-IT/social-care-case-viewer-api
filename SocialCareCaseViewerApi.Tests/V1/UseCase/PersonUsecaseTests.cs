@@ -89,6 +89,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _personUsecase.ExecutePatch(request);
 
             _mockDataBaseGateway.Verify(x => x.UpdatePerson(request));
-        }       
+        }
     }
 }
