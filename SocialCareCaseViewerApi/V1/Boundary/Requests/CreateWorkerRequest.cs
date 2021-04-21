@@ -36,7 +36,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(w => w.EmailAddress)
                 .NotNull().WithMessage("Email address must be provided")
-                .MinimumLength(1).WithMessage("Email address must be provided")
                 .MaximumLength(62).WithMessage("Email address must be no longer than 62 characters")
                 .EmailAddress().WithMessage("Email address must be valid");
             RuleFor(w => w.FirstName)

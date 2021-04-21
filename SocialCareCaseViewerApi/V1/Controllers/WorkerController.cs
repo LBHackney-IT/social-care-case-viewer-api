@@ -5,13 +5,12 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
     [ApiController]
-    //TODO: Rename to match the APIs endpoint
     [Route("api/v1/workers")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class WorkersController : BaseController
+    public class WorkerController : BaseController
     {
-        public WorkersController()
+        public WorkerController()
         {
 
         }

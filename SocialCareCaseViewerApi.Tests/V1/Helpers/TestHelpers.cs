@@ -262,6 +262,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.CaseNoteErrorMessage, f => f.Random.String2(100));
         }
 
+        public static CreateWorkerRequest CreateWorkerRequest(
+            string? email = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? contextFlag = null,
+            string? team = null,
+            string? role = null,
+            DateTime? dateStart = null
+        )
+        {
+            return new Faker<CreateWorkerRequest>()
+                .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(100))
+                .RuleFor(w => w.Team, f => team ?? f.Random.String2(200))
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
+                .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now);
+        }
+
         private static Team CreateTeam(int? teamId = null)
         {
             return new Faker<Team>()
