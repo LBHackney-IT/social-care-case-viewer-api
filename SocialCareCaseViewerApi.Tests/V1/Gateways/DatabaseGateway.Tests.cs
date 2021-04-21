@@ -588,6 +588,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetWarningNotesReturnsAListOfWarningNotesForASpecificPerson()
+        {
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var firstNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am one note"
+            };
+
+            var secondNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am another note"
+            };
+
+            var separateWarningNote = new WarningNote
+            {
+                PersonId = differentPersonId
+            };
+
+            DatabaseContext.WarningNotes.Add(firstNote);
+            DatabaseContext.WarningNotes.Add(secondNote);
+            DatabaseContext.WarningNotes.Add(separateWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNotes(testPersonId);
+
+            response.Count().Should().Be(2);
+            response.Should().ContainEquivalentOf(firstNote);
+            response.Should().ContainEquivalentOf(secondNote);
+            response.Should().NotContain(separateWarningNote);
+        }
+
+        [Test]
         public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
         {
             var testPersonId = _faker.Random.Int();
