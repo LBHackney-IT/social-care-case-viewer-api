@@ -138,13 +138,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("residents")]
         public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
         {
-            var response = _personUseCase.ExecutePatch(request);
-
-            if (response?.Message == "PersonNotFound")
+            try
             {
-                return NotFound();
+                _personUseCase.ExecutePatch(request);
             }
-
+            catch(UpdatePersonException ex)
+            {
+                return NotFound(ex.Message);
+            }
+           
             return StatusCode(204);
         }
 

@@ -230,7 +230,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return resident.ToResponse(address, names, phoneNumbers, caseNoteId, caseNoteErrorMessage);
         }
 
-        public UpdatePersonResponse UpdatePerson(UpdatePersonRequest request)
+        public void UpdatePerson(UpdatePersonRequest request)
         {
             Person person = _databaseContext
                  .Persons
@@ -241,7 +241,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (person == null)
             {
-                return new UpdatePersonResponse() { Message = "PersonNotFound" };
+                throw new UpdatePersonException("Person not found");
             }
 
             person.AgeContext = request.ContextFlag;
@@ -319,8 +319,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             _databaseContext.SaveChanges();
-
-            return null;
         }
 
         public static Person AddNewPerson(AddNewResidentRequest request)

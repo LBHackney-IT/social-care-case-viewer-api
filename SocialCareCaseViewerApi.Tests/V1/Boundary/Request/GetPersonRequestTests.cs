@@ -8,7 +8,7 @@ using System.Linq;
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
     [TestFixture]
-    public class GetResidentRequestTests
+    public class GetPersonRequestTests
     {
         private GetPersonRequest _request;
         private Faker _faker;

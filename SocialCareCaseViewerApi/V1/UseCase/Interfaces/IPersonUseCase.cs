@@ -7,6 +7,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         GetPersonResponse ExecuteGet(GetPersonRequest request);
 
-        UpdatePersonResponse ExecutePatch(UpdatePersonRequest request);
+        void ExecutePatch(UpdatePersonRequest request);
     }
 }

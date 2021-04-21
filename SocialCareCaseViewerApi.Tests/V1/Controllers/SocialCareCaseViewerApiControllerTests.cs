@@ -127,7 +127,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetPersonByIdReturns200WhenSuccessfull()
         {
             GetPersonRequest request = new GetPersonRequest();
-            GetPersonResponse getPersonResponse = _fixture.Create<GetPersonResponse>();
 
             _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
 
@@ -151,11 +150,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void UpdatePersonReturns200WhenSuccessfull()
+        public void UpdatePersonReturns200WhenSuccessful()
         {
             UpdatePersonRequest request = new UpdatePersonRequest();
-
-            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Returns((UpdatePersonResponse) null);
 
             var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
 
@@ -168,12 +165,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             UpdatePersonRequest request = new UpdatePersonRequest();
 
-            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Returns(new UpdatePersonResponse() { Message = "PersonNotFound" });
+            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
 
-            var result = _classUnderTest.UpdatePerson(request) as NotFoundResult;
+            var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
 
             result.Should().NotBeNull();
             result.StatusCode.Should().Be(404);
+            result.Value.Should().Be("Person not found");
         }
 
         [Test]

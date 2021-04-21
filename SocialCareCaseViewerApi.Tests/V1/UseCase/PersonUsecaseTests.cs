@@ -89,31 +89,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _personUsecase.ExecutePatch(request);
 
             _mockDataBaseGateway.Verify(x => x.UpdatePerson(request));
-        }
-
-        [Test]
-        public void ExecutePatchReturnsCorrectMessageWhenPersonNotFound()
-        {
-            var request = GetValidUpdatePersonRequest();
-
-            _mockDataBaseGateway.Setup(x => x.UpdatePerson(request)).Returns(new UpdatePersonResponse() { Message = "PersonNotFound" });
-
-            var result = _personUsecase.ExecutePatch(request);
-
-            result.Should().NotBeNull();
-            result.Message.Should().Be("PersonNotFound");
-        }
-
-        [Test]
-        public void ExecutePatchReturnsNullWhenPersonIsFoundAndUpdated()
-        {
-            var request = GetValidUpdatePersonRequest();
-
-            _mockDataBaseGateway.Setup(x => x.UpdatePerson(request)).Returns((UpdatePersonResponse) null);
-
-            var response = _personUsecase.ExecutePatch(request);
-
-            response.Should().BeNull();
-        }
+        }       
     }
 }

@@ -625,13 +625,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdatePersonReturnsCorrectMessageWhenPersonNotFound()
+        public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
         {
-            UpdatePersonResponse expectedResponse = new UpdatePersonResponse() { Message = "PersonNotFound" };
+            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
 
-            var response = _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
-
-            response.Should().BeEquivalentTo(expectedResponse);
+            act.Should().Throw<UpdatePersonException>().WithMessage("Person not found");
         }
 
         [Test]
@@ -641,9 +639,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.AgeContext.Should().Be(request.ContextFlag);
             person.DateOfBirth.Should().Be(request.DateOfBirth);
@@ -671,9 +667,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.Addresses.Count.Should().Be(1);
             person.Addresses.First().IsDisplayAddress.Should().Be("Y");
@@ -692,9 +686,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.Addresses.Count.Should().Be(2);
 
@@ -715,9 +707,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             request.Address.Postcode = displayAddress.PostCode;
             request.Address.Uprn = displayAddress.Uprn;
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.Addresses.First().AddressLines.Should().Be(request.Address.Address);
             person.Addresses.First().PostCode.Should().Be(request.Address.Postcode);
@@ -738,8 +728,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             request.Address = null;
 
-            var response = _classUnderTest.UpdatePerson(request);
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.Addresses.First().IsDisplayAddress.Should().Be("N");
             person.Addresses.First().EndDate.Should().NotBeNull();
@@ -753,9 +742,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             PhoneNumber number1 = request.PhoneNumbers.First();
             PhoneNumber number2 = request.PhoneNumbers.Last();
@@ -775,9 +762,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
             request.PhoneNumbers = null;
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.PhoneNumbers.Count.Should().Be(0);
         }
@@ -790,9 +775,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             OtherName name1 = request.OtherNames.First();
             OtherName name2 = request.OtherNames.Last();
@@ -812,9 +795,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
             request.OtherNames = null;
 
-            var response = _classUnderTest.UpdatePerson(request);
-
-            response.Should().BeNull();
+            _classUnderTest.UpdatePerson(request);
 
             person.OtherNames.Count.Should().Be(0);
         }
