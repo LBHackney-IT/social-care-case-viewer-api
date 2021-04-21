@@ -10,8 +10,8 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
-using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
+using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
