@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
-using Bogus.DataSets;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -263,23 +262,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static CreateWorkerRequest CreateWorkerRequest(
+            bool createATeam = true,
+            int? teamId = null,
+            string? teamName = null,
             string? email = null,
             string? firstName = null,
             string? lastName = null,
             string? contextFlag = null,
-            string? team = null,
             string? role = null,
+            string? createdByEmail = null,
             DateTime? dateStart = null
         )
         {
+            var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
+            var teams = createATeam ? new List<WorkerTeamRequest> {team} : new List<WorkerTeamRequest>();
+
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
                 .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(100))
-                .RuleFor(w => w.Team, f => team ?? f.Random.String2(200))
+                .RuleFor(w => w.Teams, teams)
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
-                .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now);
+                .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now)
+                .RuleFor(w => w.CreatedBy, f => createdByEmail ?? f.Person.Email);
+        }
+
+        private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
+            int? teamId = null,
+            string? teamName = null
+        )
+        {
+            return new Faker<WorkerTeamRequest>()
+                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex)
+                .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
         }
 
         private static Team CreateTeam(int? teamId = null)
