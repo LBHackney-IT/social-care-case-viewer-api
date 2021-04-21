@@ -641,12 +641,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
-        public IEnumerable<WarningNote> GetWarningNotes(GetWarningNoteRequest request)
+        public IEnumerable<WarningNote> GetWarningNotes(long personId)
         {
             var warningNotes = _databaseContext.WarningNotes
-                .Where(x => x.PersonId == request.PersonId);
+                .Where(x => x.PersonId == personId);
 
-            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {request.PersonId}");
+            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
 
             return warningNotes;
         }

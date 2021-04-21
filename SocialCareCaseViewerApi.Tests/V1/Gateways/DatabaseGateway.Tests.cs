@@ -564,23 +564,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
-            WarningNote warningNote = new WarningNote()
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var warningNote = new WarningNote
             {
-                PersonId = 12345
+                PersonId = testPersonId
             };
-            WarningNote wrongWarningNote = new WarningNote()
+
+            var wrongWarningNote = new WarningNote
             {
-                PersonId = 67890
+                PersonId = differentPersonId
             };
+
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNotes.Add(wrongWarningNote);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<GetWarningNoteRequest>()
-                            .With(x => x.PersonId, warningNote.PersonId)
-                            .Create();
-
-            var response = _classUnderTest.GetWarningNotes(request);
+            var response = _classUnderTest.GetWarningNotes(testPersonId);
 
             response.Should().ContainSingle();
             response.Should().ContainEquivalentOf(warningNote);
@@ -588,24 +589,58 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetWarningNotesReturnsAListOfWarningNotesForASpecificPerson()
+        {
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var firstNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am one note"
+            };
+
+            var secondNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am another note"
+            };
+
+            var separateWarningNote = new WarningNote
+            {
+                PersonId = differentPersonId
+            };
+
+            DatabaseContext.WarningNotes.Add(firstNote);
+            DatabaseContext.WarningNotes.Add(secondNote);
+            DatabaseContext.WarningNotes.Add(separateWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNotes(testPersonId);
+
+            response.Count().Should().Be(2);
+            response.Should().ContainEquivalentOf(firstNote);
+            response.Should().ContainEquivalentOf(secondNote);
+            response.Should().NotContain(separateWarningNote);
+        }
+
+        [Test]
         public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
         {
-            WarningNote warningNote = new WarningNote()
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var warningNote = new WarningNote
             {
-                PersonId = 12345
+                PersonId = testPersonId
             };
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.SaveChanges();
 
-            var request = new GetWarningNoteRequest()
-            {
-                PersonId = 67890
-            };
-
-            Action act = () => _classUnderTest.GetWarningNotes(request);
+            Action act = () => _classUnderTest.GetWarningNotes(differentPersonId);
 
             act.Should().Throw<DocumentNotFoundException>()
-                .WithMessage($"No warning notes found relating to person id {request.PersonId}");
+                .WithMessage($"No warning notes found relating to person id {differentPersonId}");
         }
         #endregion
 
