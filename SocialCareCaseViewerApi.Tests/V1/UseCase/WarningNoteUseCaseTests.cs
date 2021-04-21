@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Moq;
@@ -9,7 +10,6 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
-using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
@@ -77,51 +77,51 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetReturnsAGetWarningNoteResponse()
         {
+            var testPersonId = _fixture.Create<long>();
+
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
+                x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(new List<dbWarningNote>());
 
-            var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
+            var response = _classUnderTest.ExecuteGet(testPersonId);
 
             response.Should().NotBeNull();
-            response.Should().BeOfType<List<WarningNote>>();
+            response.Should().BeOfType<ListWarningNotesResponse>();
         }
 
         [Test]
         public void ExecuteGetCallsTheDatabaseGateWayWithAParameter()
         {
+            var testPersonId = _fixture.Create<long>();
+
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
+                x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(new List<dbWarningNote>());
 
-            var request = new GetWarningNoteRequest();
-
-            _classUnderTest.ExecuteGet(request);
+            _classUnderTest.ExecuteGet(testPersonId);
             _mockDatabaseGateway.Verify(
-                x => x.GetWarningNotes(request), Times.Once);
+                x => x.GetWarningNotes(testPersonId), Times.Once);
         }
 
         [Test]
         public void ExecuteGetReturnsTheExpectedResponse()
         {
-            var stubbedWarningNote = _fixture.Build<dbWarningNote>()
+            var testPersonId = _fixture.Create<long>();
+
+            var stubbedWarningNotesList = _fixture.Build<dbWarningNote>()
                                     .Without(x => x.Person)
-                                    .Create();
-            var stubbedList = new List<dbWarningNote>
-            {
-                stubbedWarningNote
-            };
+                                    .CreateMany().ToList();
 
             _mockDatabaseGateway.Setup(
-                x => x.GetWarningNotes(It.IsAny<GetWarningNoteRequest>()))
-                .Returns(stubbedList);
+                x => x.GetWarningNotes(It.IsAny<long>()))
+                .Returns(stubbedWarningNotesList);
 
-            var expectedResponse = new List<WarningNote>
-                {
-                    stubbedWarningNote.ToDomain()
-                };
+            var expectedResponse = new ListWarningNotesResponse
+            {
+                WarningNotes = stubbedWarningNotesList.Select(wn => wn.ToDomain()).ToList()
+            };
 
-            var response = _classUnderTest.ExecuteGet(new GetWarningNoteRequest());
+            var response = _classUnderTest.ExecuteGet(testPersonId);
 
             response.Should().BeEquivalentTo(expectedResponse);
         }
