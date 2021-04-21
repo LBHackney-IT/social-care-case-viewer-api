@@ -58,6 +58,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static BsonDocument HistoricalCaseNotesToDomain(CaseNote note)
         {
+            var useNoteTypeForFormName = Environment.GetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE") is ("true");
+
             return new BsonDocument(
                 new List<BsonElement>
                 {
@@ -65,7 +67,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     new BsonElement("mosaic_id", note.MosaicId),
                     new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", FormatFormNameForHistoricCaseNote(note.NoteType)),
+                    new BsonElement("form_name", useNoteTypeForFormName ? FormatFormNameForHistoricCaseNote(note.NoteType) : note.CaseNoteTitle),
                     new BsonElement("title", note.CaseNoteTitle),
                     new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
