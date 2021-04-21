@@ -420,6 +420,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("warningnotes")]
         public IActionResult PatchWarningNote([FromBody] PatchWarningNoteRequest request)
         {
+            var validator = new PatchWarningNoteRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             try
             {
                 _warningNoteUseCase.ExecutePatch(request);

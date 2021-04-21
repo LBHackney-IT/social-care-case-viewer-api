@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AutoFixture;
+using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -33,6 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
 
         private Fixture _fixture;
+        private Faker _faker;
 
         [SetUp]
         public void SetUp()
@@ -52,6 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
             _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
             _fixture = new Fixture();
+            _faker = new Faker();
         }
 
         [Test]
@@ -704,7 +707,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void PatchWarningNoteCallsTheUseCaseAndReturns204WhenSuccessful()
         {
-            var request = new PatchWarningNoteRequest();
+            var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
             var response = _classUnderTest.PatchWarningNote(request) as NoContentResult;
 
             _mockWarningNoteUseCase.Verify(x => x.ExecutePatch(request), Times.Once);
@@ -714,16 +717,145 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void PatchWarningNoteReturnsA404ResponseIfItEncountersAnException()
         {
+            var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
+
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePatch(It.IsAny<PatchWarningNoteRequest>()))
                 .Throws(new PatchWarningNoteException("exception encountered"));
 
-            var response = _classUnderTest.PatchWarningNote(new PatchWarningNoteRequest()) as ObjectResult;
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(404);
             response.Value.Should().Be("exception encountered");
+        }
 
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidWarningNoteId()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(warningNoteId: 0).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidReviewDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(reviewDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidNextReviewDateId()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(nextReviewDate: DateTime.Now).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidStatus()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "invalid").Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidEndedDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(endedDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidReviewNotes()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(reviewNotes: "").Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidManagerName()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(managerName: _faker.Random.String2(101)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidDiscussedWithManagerDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(discussedWithManagerDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
         }
         #endregion
     }
