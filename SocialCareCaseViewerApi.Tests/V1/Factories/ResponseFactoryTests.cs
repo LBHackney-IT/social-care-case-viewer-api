@@ -13,6 +13,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
+        }
+
         [Test]
         public void CanMapResidentAndAddressFromDomainToResponse()
         {
@@ -73,6 +79,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
             result.Should().BeEquivalentTo(expectedDocument);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsNoteTypeForFormNameIfFeatureFlagIsOn()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.NoteType);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsFalse()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "false");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsAnEmptyString()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsNull()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", null);
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
         }
 
         [Test]
