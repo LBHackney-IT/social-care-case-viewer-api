@@ -323,7 +323,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 SexualOrientation = person.SexualOrientation,
                 ContextFlag = person.AgeContext,
                 CreatedBy = person.CreatedBy,
-                Ethinicity = person.Ethnicity,
+                Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
                 FirstName = person.FirstName,
                 Gender = person.Gender,

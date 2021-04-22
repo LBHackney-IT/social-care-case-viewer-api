@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public DateTime? DateOfDeath { get; set; }
 
-        public string Ethinicity { get; set; }
+        public string Ethnicity { get; set; }
 
         public string FirstLanguage { get; set; }
 
