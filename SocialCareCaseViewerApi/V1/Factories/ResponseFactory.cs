@@ -1,14 +1,15 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using domainPhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -58,6 +59,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static BsonDocument HistoricalCaseNotesToDomain(CaseNote note)
         {
+            var useNoteTypeForFormName = Environment.GetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE") is ("true");
+
             return new BsonDocument(
                 new List<BsonElement>
                 {
@@ -65,7 +68,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     new BsonElement("mosaic_id", note.MosaicId),
                     new BsonElement("worker_email", note.CreatedByEmail ?? ""),
                     new BsonElement("form_name_overall", "Historical_Case_Note"),
-                    new BsonElement("form_name", note.CaseNoteTitle ?? ""),
+                    new BsonElement("form_name", useNoteTypeForFormName ? FormatFormNameForHistoricCaseNote(note.NoteType) : note.CaseNoteTitle),
+                    new BsonElement("title", note.CaseNoteTitle),
                     new BsonElement("timestamp", note.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")), //format used in imported data so have to match for now
                     new BsonElement("is_historical", true) //flag for front end
                 }
@@ -100,7 +104,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DateOfEvent = historicalCaseNote.CreatedOn.ToString("s"),
                 OfficerName = historicalCaseNote.CreatedByName,
                 OfficerEmail = historicalCaseNote.CreatedByEmail,
-                FormName = historicalCaseNote.NoteType
+                FormName = FormatFormNameForHistoricCaseNote(historicalCaseNote.NoteType)
             };
         }
 
@@ -115,6 +119,45 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Role = worker.Role,
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
+            };
+        }
+
+        private static string FormatFormNameForHistoricCaseNote(string noteType)
+        {
+            string pattern = @"\([^()]*\)$"; // Match brackets at the end e.g. (ASC)
+            var formName = String.IsNullOrEmpty(noteType) ? "Case note" : noteType;
+            var formattedFormName = Regex.Replace(formName, pattern, "").TrimEnd();
+
+            return formattedFormName;
+        }
+
+        public static GetPersonResponse ToResponse(Person person)
+        {
+            //get the current display address
+            dbAddress displayAddress = person?.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+
+            return new GetPersonResponse()
+            {
+                SexualOrientation = person.SexualOrientation,
+                DateOfBirth = person.DateOfBirth,
+                DateOfDeath = person.DateOfDeath,
+                ContextFlag = person.AgeContext,
+                CreatedBy = person.CreatedBy,
+                EmailAddress = person.EmailAddress,
+                Ethinicity = person.Ethnicity,
+                FirstLanguage = person.FirstLanguage,
+                FirstName = person.FirstName,
+                Gender = person.Gender,
+                LastName = person.LastName,
+                NhsNumber = person.NhsNumber,
+                PersonId = person.Id,
+                PreferredMethodOfContact = person.PreferredMethodOfContact,
+                Religion = person.Religion,
+                Restricted = person.Restricted,
+                Title = person.Title,
+                Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
+                OtherNames = person.OtherNames?.Select(x => x.ToDomain())?.ToList(),
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain())?.ToList()
             };
         }
     }

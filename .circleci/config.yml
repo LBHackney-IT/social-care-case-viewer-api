@@ -271,17 +271,17 @@ workflows:
             - build-and-test
           filters:
             branches:
-              only: development
+              only: master
       - assume-role-mosaic-production:
           context: api-assume-role-social-care-production-context
           requires:
             - permit-mosaic-production-release
           filters:
             branches:
-              only: development
+              only: master
       - deploy-to-mosaic-production:
           requires:
             - assume-role-mosaic-production
           filters:
             branches:
-              only: development
+              only: master

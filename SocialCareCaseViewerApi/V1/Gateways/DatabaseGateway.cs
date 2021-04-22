@@ -230,6 +230,99 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return resident.ToResponse(address, names, phoneNumbers, caseNoteId, caseNoteErrorMessage);
         }
 
+        public void UpdatePerson(UpdatePersonRequest request)
+        {
+            Person person = _databaseContext
+                 .Persons
+                 .Include(x => x.Addresses)
+                 .Include(x => x.PhoneNumbers)
+                 .Include(x => x.OtherNames)
+                 .FirstOrDefault(x => x.Id == request.Id);
+
+            if (person == null)
+            {
+                throw new UpdatePersonException("Person not found");
+            }
+
+            person.AgeContext = request.ContextFlag;
+            person.DateOfBirth = request.DateOfBirth;
+            person.DateOfDeath = request.DateOfDeath;
+            person.EmailAddress = request.EmailAddress;
+            person.Ethnicity = request.Ethnicity;
+            person.FirstLanguage = request.FirstLanguage;
+            person.FirstName = request.FirstName;
+            person.FullName = $"{request.FirstName} {request.LastName}";
+            person.Gender = request.Gender;
+            person.LastModifiedBy = request.CreatedBy;
+            person.LastName = request.LastName;
+            person.NhsNumber = request.NhsNumber;
+            person.PreferredMethodOfContact = request.PreferredMethodOfContact;
+            person.Religion = request.Religion;
+            person.Restricted = request.Restricted;
+            person.SexualOrientation = request.SexualOrientation;
+            person.Title = request.Title;
+
+            //replace phone numbers
+            _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
+
+            if (request.PhoneNumbers != null)
+            {
+                foreach (var number in request.PhoneNumbers)
+                {
+                    person.PhoneNumbers.Add(number.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //replace other names
+            _databaseContext.PersonOtherNames.RemoveRange(person.OtherNames);
+
+            if (request.OtherNames != null)
+            {
+                foreach (var otherName in request.OtherNames)
+                {
+                    person.OtherNames.Add(otherName.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //check for changed address
+            if (request.Address != null)
+            {
+                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+
+                if (displayAddress == null)
+                {
+                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
+                }
+                else
+                {
+                    //has address changed?
+                    if (!(request.Address.Address == displayAddress.AddressLines
+                            && request.Address.Postcode == displayAddress.PostCode
+                            && displayAddress.Uprn == request.Address.Uprn))
+                    {
+                        displayAddress.IsDisplayAddress = "N";
+                        displayAddress.EndDate = DateTime.Now;
+                        displayAddress.LastModifiedBy = request.CreatedBy;
+
+                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
+                    }
+                }
+            }
+            else //address not provided, remove current display address if it exists
+            {
+                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+
+                if (displayAddress != null)
+                {
+                    displayAddress.IsDisplayAddress = "N";
+                    displayAddress.EndDate = DateTime.Now;
+                    displayAddress.LastModifiedBy = request.CreatedBy;
+                }
+            }
+
+            _databaseContext.SaveChanges();
+        }
+
         public static Person AddNewPerson(AddNewResidentRequest request)
         {
             return new Person
@@ -550,17 +643,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
-        public IEnumerable<WarningNote> GetWarningNotes(GetWarningNoteRequest request)
+        public IEnumerable<WarningNote> GetWarningNotes(long personId)
         {
             var warningNotes = _databaseContext.WarningNotes
-                .Where(x => x.PersonId == request.PersonId);
+                .Where(x => x.PersonId == personId);
 
-            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {request.PersonId}");
+            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
 
             return warningNotes;
         }
 
         #endregion
+        public Person GetPersonDetailsById(long id)
+        {
+            //load related entities to minimise SQL calls
+            return _databaseContext
+                .Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.OtherNames)
+                .FirstOrDefault(x => x.Id == id);
+        }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
@@ -645,6 +748,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             return (person, createdBy);
+        }
+
+        private static Address GetNewDisplayAddress(string addressLines, string postcode, long? uprn, string createdBy)
+        {
+            return new Address()
+            {
+                AddressLines = addressLines,
+                PostCode = postcode,
+                Uprn = uprn,
+                IsDisplayAddress = "Y",
+                DataIsFromDmPersonsBackup = "N",
+                StartDate = DateTime.Now,
+                CreatedBy = createdBy
+            };
         }
     }
 }
