@@ -36,7 +36,7 @@ functions:
       SOCIAL_CARE_PLATFORM_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-url}
       SOCIAL_CARE_PLATFORM_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-token~true}
       SOCIAL_CARE_SHOW_HISTORIC_DATA: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_show_historic_data~true}
-      SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_note_response~true}
+      SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_notes_response~true}
     events:
       - http:
           path: /{proxy+}
