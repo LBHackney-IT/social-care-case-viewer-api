@@ -29,5 +29,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 WarningNotes = warningNotes.Select(x => x.ToDomain()).ToList()
             };
         }
+
+        public void ExecutePatch(PatchWarningNoteRequest request)
+        {
+            _databaseGateway.PatchWarningNote(request);
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
         public DbSet<Audit> Audits { get; set; }
         public DbSet<WarningNote> WarningNotes { get; set; }
+        public DbSet<WarningNoteReview> WarningNoteReview { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
