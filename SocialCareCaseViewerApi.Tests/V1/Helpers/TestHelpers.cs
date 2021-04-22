@@ -186,7 +186,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
                 .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
-                .RuleFor(p => p.Ethnicity, f => f.Address.Country())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(0, 30))
                 .RuleFor(p => p.FirstLanguage, f => f.Random.String2(10, 100))
                 .RuleFor(p => p.Religion, f => f.Random.String2(10, 80))
                 .RuleFor(p => p.EmailAddress, f => f.Person.Email)
