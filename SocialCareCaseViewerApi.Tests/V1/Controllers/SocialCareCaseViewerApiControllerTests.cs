@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
+        private Mock<IPersonUseCase> _mockPersonUseCase;
 
         private Fixture _fixture;
         private Faker _faker;
@@ -51,10 +52,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
+            _mockPersonUseCase = new Mock<IPersonUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object);
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -124,6 +126,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("Address could not be inserted");
+        }
+
+        [Test]
+        public void GetPersonByIdReturns200WhenSuccessfull()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
+
+            var response = _classUnderTest.GetPerson(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void GetPersonByIdReturns404WhenPersonNotFound()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+            GetPersonResponse response = null;
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(response);
+
+            var result = _classUnderTest.GetPerson(request) as NotFoundResult;
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void UpdatePersonReturns200WhenSuccessful()
+        {
+            UpdatePersonRequest request = new UpdatePersonRequest();
+
+            var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void UpdatePersonReturns404WhenPersonNotFound()
+        {
+            UpdatePersonRequest request = new UpdatePersonRequest();
+
+            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
+
+            var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be(404);
+            result.Value.Should().Be("Person not found");
         }
 
         [Test]

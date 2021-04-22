@@ -47,4 +47,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public PatchWarningNoteException(string message) : base(message) { }
     }
+
+    public class UpdatePersonException : Exception
+    {
+        public UpdatePersonException(string message) : base(message) { }
+    }
 }

@@ -32,11 +32,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
+        private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -48,6 +49,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
+            _personUseCase = personUseCase;
         }
 
         /// <summary>
@@ -100,6 +102,52 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Get resident by id
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem getting the record</response>
+        ///
+        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("residents/{id}")]
+        public IActionResult GetPerson([FromQuery] GetPersonRequest request)
+        {
+            var response = _personUseCase.ExecuteGet(request);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(200, response);
+        }
+
+        /// <summary>
+        /// Update resident details
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem updating the records</response>
+        ///
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        [Route("residents")]
+        public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
+        {
+            try
+            {
+                _personUseCase.ExecutePatch(request);
+            }
+            catch (UpdatePersonException ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+            return StatusCode(204);
         }
 
         /// <summary>
