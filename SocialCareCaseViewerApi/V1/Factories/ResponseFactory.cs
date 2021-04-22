@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ContextFlag = person.AgeContext,
                 CreatedBy = person.CreatedBy,
                 EmailAddress = person.EmailAddress,
-                Ethinicity = person.Ethnicity,
+                Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
                 FirstName = person.FirstName,
                 Gender = person.Gender,

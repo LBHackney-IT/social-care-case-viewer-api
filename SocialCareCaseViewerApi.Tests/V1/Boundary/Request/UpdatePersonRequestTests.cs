@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 Gender = "M",
                 DateOfBirth = DateTime.Now.AddYears(-30),
                 DateOfDeath = DateTime.Now,
-                Ethnicity = "Ethinicity",
+                Ethnicity = "Ethnicity",
                 FirstLanguage = "English",
                 Religion = "Religion",
                 SexualOrientation = "Sexual orientation",
