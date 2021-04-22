@@ -21,6 +21,7 @@ using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.Phon
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -642,6 +643,293 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .WithMessage($"No warning notes found relating to person id {differentPersonId}");
         }
         #endregion
+
+        [Test]
+        public void GetPersonDetailsByIdReturnsPerson()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            //add all necessary related entities using person id
+            SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id));
+            SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            var response = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            response.Should().BeEquivalentTo(person);
+        }
+
+        [Test]
+        public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
+        {
+            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
+
+            act.Should().Throw<UpdatePersonException>().WithMessage("Person not found");
+        }
+
+        [Test]
+        public void UpdatePersonSetsCorrectValuesForPersonEntity()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.AgeContext.Should().Be(request.ContextFlag);
+            person.DateOfBirth.Should().Be(request.DateOfBirth);
+            person.DateOfDeath.Should().Be(request.DateOfDeath);
+            person.EmailAddress.Should().Be(request.EmailAddress);
+            person.Ethnicity.Should().Be(request.Ethnicity);
+            person.FirstLanguage.Should().Be(request.FirstLanguage);
+            person.FirstName.Should().Be(request.FirstName);
+            person.FullName.Should().Be($"{request.FirstName} {request.LastName}");
+            person.Gender.Should().Be(request.Gender);
+            person.LastModifiedBy.Should().Be(request.CreatedBy);
+            person.LastName.Should().Be(request.LastName);
+            person.NhsNumber.Should().Be(request.NhsNumber);
+            person.PreferredMethodOfContact.Should().Be(request.PreferredMethodOfContact);
+            person.Religion.Should().Be(request.Religion);
+            person.Restricted.Should().Be(request.Restricted);
+            person.SexualOrientation.Should().Be(request.SexualOrientation);
+            person.Title.Should().Be(request.Title);
+        }
+
+        [Test]
+        public void UpdatePersonSetsNewDisplayAddressWhenOneDoesntExist()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.Count.Should().Be(1);
+            person.Addresses.First().IsDisplayAddress.Should().Be("Y");
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").AddressLines.Should().Be(request.Address.Address);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").PostCode.Should().Be(request.Address.Postcode);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").Uprn.Should().Be(request.Address.Uprn);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedBy.Should().Be(request.CreatedBy);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedAt.Should().NotBeNull();
+            person.Addresses.First().StartDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonUpdatesTheCurrentDisplayAddressToBeHistrocalAddress()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.Count.Should().Be(2);
+
+            displayAddress.IsDisplayAddress.Should().Be("N");
+            displayAddress.LastModifiedBy.Should().Be(request.CreatedBy);
+            displayAddress.EndDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonDoesntUpdateCurrentDisplayAddressIfAddressHasntChanged()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            request.Address.Address = displayAddress.AddressLines;
+            request.Address.Postcode = displayAddress.PostCode;
+            request.Address.Uprn = displayAddress.Uprn;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.First().AddressLines.Should().Be(request.Address.Address);
+            person.Addresses.First().PostCode.Should().Be(request.Address.Postcode);
+            person.Addresses.First().Uprn.Should().Be(request.Address.Uprn);
+
+            person.Addresses.First().IsDisplayAddress.Should().Be("Y");
+            person.Addresses.First().EndDate.Should().BeNull();
+        }
+
+        [Test]
+        public void UpdatePersonSetsTheCurrentDisplayAddressNotToBeDisplayAddressWhenAddressIsNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            request.Address = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.First().IsDisplayAddress.Should().Be("N");
+            person.Addresses.First().LastModifiedBy.Should().Be(request.CreatedBy);
+            person.Addresses.First().EndDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonReplacesPhoneNumbers()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            PhoneNumber number1 = request.PhoneNumbers.First();
+            PhoneNumber number2 = request.PhoneNumbers.Last();
+
+            person.PhoneNumbers.First(x => x.Number == number1.Number).Type.Should().Be(number1.Type);
+            person.PhoneNumbers.First(x => x.Number == number2.Number).Type.Should().Be(number2.Type);
+
+            person.PhoneNumbers.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.First().CreatedAt.Should().NotBeNull();
+
+            person.PhoneNumbers.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.Last().CreatedAt.Should().NotBeNull();
+
+            person.PhoneNumbers.Count.Should().Be(request.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void UpdatePersonRemovesPhoneNumbersIfNewOnesAreNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            request.PhoneNumbers = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.PhoneNumbers.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void UpdatePersonReplacesOtherNames()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            OtherName name1 = request.OtherNames.First();
+            OtherName name2 = request.OtherNames.Last();
+
+            person.OtherNames.First(x => x.FirstName == name1.FirstName).LastName.Should().Be(name1.LastName);
+            person.OtherNames.First(x => x.FirstName == name2.FirstName).LastName.Should().Be(name2.LastName);
+
+            person.OtherNames.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.First().CreatedAt.Should().NotBeNull();
+
+            person.OtherNames.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.Last().CreatedAt.Should().NotBeNull();
+
+            person.OtherNames.Count.Should().Be(request.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void UpdatePersonRemovesOtherNamesIfNewOnesAreNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            request.OtherNames = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.OtherNames.Count.Should().Be(0);
+        }
+
+
+        private Person SavePersonToDatabase(Person person)
+        {
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+            return person;
+        }
+
+        private dbAddress SaveAddressToDatabase(dbAddress address)
+        {
+            DatabaseContext.Addresses.Add(address);
+            DatabaseContext.SaveChanges();
+            return address;
+        }
+
+        private PhoneNumberInfrastructure SavePhoneNumberToDataBase(PhoneNumberInfrastructure phoneNumber)
+        {
+            DatabaseContext.PhoneNumbers.Add(phoneNumber);
+            DatabaseContext.SaveChanges();
+            return phoneNumber;
+        }
+
+        private PersonOtherName SavePersonOtherNameToDatabase(PersonOtherName name)
+        {
+            DatabaseContext.PersonOtherNames.Add(name);
+            DatabaseContext.SaveChanges();
+            return name;
+        }
+
+        private static UpdatePersonRequest GetValidUpdatePersonRequest(long personId)
+        {
+            AddressDomain address = new Faker<AddressDomain>()
+               .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+               .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+               .RuleFor(a => a.Uprn, f => f.Random.Int());
+
+            List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
+            {
+                new Faker<PhoneNumber>()
+                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                     .RuleFor(p => p.Type, f => f.Random.Word()),
+
+                new Faker<PhoneNumber>()
+                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                     .RuleFor(p => p.Type, f => f.Random.Word())
+            };
+
+            List<OtherName> otherNames = new List<OtherName>()
+            {
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName),
+
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName)
+            };
+
+            return new Faker<UpdatePersonRequest>()
+               .RuleFor(p => p.Id, personId)
+               .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+               .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
+               .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
+               .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
+               .RuleFor(p => p.Ethnicity, f => f.Random.Word())
+               .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
+               .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+               .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+               .RuleFor(p => p.LastName, f => f.Person.LastName)
+               .RuleFor(p => p.Title, f => f.Random.String2(2))
+               .RuleFor(p => p.Gender, f => f.Random.String2(1))
+               .RuleFor(p => p.NhsNumber, f => f.Random.Number())
+               .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
+               .RuleFor(p => p.Religion, f => f.Random.Word())
+               .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+               .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
+               .RuleFor(p => p.Address, address)
+               .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+               .RuleFor(p => p.OtherNames, otherNames);
+        }
     }
 }
-
