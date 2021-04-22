@@ -281,11 +281,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
-                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(100))
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
                 .RuleFor(w => w.Teams, teams)
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
                 .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now)
                 .RuleFor(w => w.CreatedBy, f => createdByEmail ?? f.Person.Email);
+        }
+
+        public static WorkerResponse CreateWorkerResponse(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            int? allocationCount = null,
+            string? role = null)
+        {
+            return new Faker<WorkerResponse>()
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.AllocationCount, f => allocationCount ?? f.Random.Int(1, 10))
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
         }
 
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
@@ -294,7 +311,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         )
         {
             return new Faker<WorkerTeamRequest>()
-                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex)
+                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
         }
 
