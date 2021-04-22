@@ -709,6 +709,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Addresses.First(x => x.IsDisplayAddress == "Y").AddressLines.Should().Be(request.Address.Address);
             person.Addresses.First(x => x.IsDisplayAddress == "Y").PostCode.Should().Be(request.Address.Postcode);
             person.Addresses.First(x => x.IsDisplayAddress == "Y").Uprn.Should().Be(request.Address.Uprn);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedBy.Should().Be(request.CreatedBy);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedAt.Should().NotBeNull();
             person.Addresses.First().StartDate.Should().NotBeNull();
         }
 
@@ -726,6 +728,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Addresses.Count.Should().Be(2);
 
             displayAddress.IsDisplayAddress.Should().Be("N");
+            displayAddress.LastModifiedBy.Should().Be(request.CreatedBy);
             displayAddress.EndDate.Should().NotBeNull();
         }
 
@@ -766,6 +769,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.UpdatePerson(request);
 
             person.Addresses.First().IsDisplayAddress.Should().Be("N");
+            person.Addresses.First().LastModifiedBy.Should().Be(request.CreatedBy);
             person.Addresses.First().EndDate.Should().NotBeNull();
         }
 
@@ -784,6 +788,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             person.PhoneNumbers.First(x => x.Number == number1.Number).Type.Should().Be(number1.Type);
             person.PhoneNumbers.First(x => x.Number == number2.Number).Type.Should().Be(number2.Type);
+
+            person.PhoneNumbers.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.First().CreatedAt.Should().NotBeNull();
+
+            person.PhoneNumbers.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.Last().CreatedAt.Should().NotBeNull();
 
             person.PhoneNumbers.Count.Should().Be(request.PhoneNumbers.Count);
         }
@@ -817,6 +827,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             person.OtherNames.First(x => x.FirstName == name1.FirstName).LastName.Should().Be(name1.LastName);
             person.OtherNames.First(x => x.FirstName == name2.FirstName).LastName.Should().Be(name2.LastName);
+
+            person.OtherNames.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.First().CreatedAt.Should().NotBeNull();
+
+            person.OtherNames.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.Last().CreatedAt.Should().NotBeNull();
 
             person.OtherNames.Count.Should().Be(request.PhoneNumbers.Count);
         }

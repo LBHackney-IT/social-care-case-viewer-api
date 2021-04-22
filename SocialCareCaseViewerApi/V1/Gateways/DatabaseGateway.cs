@@ -291,7 +291,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (displayAddress == null)
                 {
-                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn));
+                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
                 }
                 else
                 {
@@ -302,8 +302,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     {
                         displayAddress.IsDisplayAddress = "N";
                         displayAddress.EndDate = DateTime.Now;
+                        displayAddress.LastModifiedBy = request.CreatedBy;
 
-                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn));
+                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
                     }
                 }
             }
@@ -315,6 +316,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     displayAddress.IsDisplayAddress = "N";
                     displayAddress.EndDate = DateTime.Now;
+                    displayAddress.LastModifiedBy = request.CreatedBy;
                 }
             }
 
@@ -748,7 +750,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (person, createdBy);
         }
 
-        private static Address GetNewDisplayAddress(string addressLines, string postcode, long? uprn)
+        private static Address GetNewDisplayAddress(string addressLines, string postcode, long? uprn, string createdBy)
         {
             return new Address()
             {
@@ -757,7 +759,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Uprn = uprn,
                 IsDisplayAddress = "Y",
                 DataIsFromDmPersonsBackup = "N",
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+                CreatedBy = createdBy
             };
         }
     }
