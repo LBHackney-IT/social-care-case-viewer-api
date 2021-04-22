@@ -165,13 +165,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
-        private static Worker CreateWorker(int? workerId = null)
+        public static Worker CreateWorker(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            string? role = null)
         {
             return new Faker<Worker>()
-                .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)
-                .RuleFor(w => w.Email, f => f.Person.Email)
-                .RuleFor(w => w.FirstName, f => f.Person.FirstName)
-                .RuleFor(w => w.LastName, f => f.Person.LastName);
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)
