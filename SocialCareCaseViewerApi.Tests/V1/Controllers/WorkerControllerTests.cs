@@ -1,10 +1,14 @@
 using System;
 using Bogus;
 using FluentAssertions;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Controllers;
+using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -13,12 +17,52 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private WorkerController _workerController;
         private Faker _faker;
+        private Mock<IWorkersUseCase> _workerUseCase;
 
         [SetUp]
         public void SetUp()
         {
-            _workerController = new WorkerController();
             _faker = new Faker();
+            _workerUseCase = new Mock<IWorkersUseCase>();
+            _workerController = new WorkerController(_workerUseCase.Object);
+        }
+
+        [Test]
+        public void CreateWorkerReturns201StatusAndWorkerWhenSuccessful()
+        {
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest();
+            var worker = TestHelpers.CreateWorkerResponse(firstName: createWorkerRequest.FirstName,
+                lastName: createWorkerRequest.LastName, email: createWorkerRequest.EmailAddress, role: createWorkerRequest.Role);
+            _workerUseCase.Setup(x => x.ExecutePost(createWorkerRequest)).Returns(worker);
+
+            var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(worker);
+        }
+
+        [Test]
+        public void CreateWorkerReturns404StatusWhenCreateWorkerExceptionThrown()
+        {
+            const string errorMessage = "Failed to create worker";
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest();
+            _workerUseCase.Setup(x => x.ExecutePost(createWorkerRequest))
+                .Throws(new PostWorkerException(errorMessage));
+
+            var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be(errorMessage);
         }
 
         [Test]
