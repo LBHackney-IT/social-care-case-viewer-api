@@ -749,6 +749,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
             insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
         }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsAReviewMadeOnTheWarningNote()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(request);
+
+            var response = _classUnderTest.GetReviewsForWarningNoteId(warningNote.Id);
+
+            response.Should().NotBeEmpty();
+            response.Count.Should().Be(1);
+
+            var expectedWarningNoteReview = response.FirstOrDefault();
+
+            expectedWarningNoteReview.WarningNoteId.Should().Be(warningNote.Id);
+            expectedWarningNoteReview.ReviewDate.Should().Be(request.ReviewDate);
+            expectedWarningNoteReview.Notes.Should().Be(request.ReviewNotes);
+            expectedWarningNoteReview.ManagerName.Should().Be(request.ManagerName);
+            expectedWarningNoteReview.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+            expectedWarningNoteReview.CreatedBy.Should().Be(request.ReviewedBy);
+            expectedWarningNoteReview.LastModifiedBy.Should().Be(request.ReviewedBy);
+        }
         #endregion
 
         private Worker SaveWorkerToDatabase(Worker worker)

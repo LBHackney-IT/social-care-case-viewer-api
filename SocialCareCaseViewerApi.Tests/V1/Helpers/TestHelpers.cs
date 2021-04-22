@@ -167,7 +167,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
-        private static Worker CreateWorker(int? workerId = null)
+        public static Worker CreateWorker(int? workerId = null)
         {
             return new Faker<Worker>()
                 .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)
@@ -307,7 +307,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var person = CreatePerson();
             var worker = CreateWorker();
-            WarningNote warningNote = CreateWarningNote(personId: person.Id, status: startingStatus);
+            WarningNote warningNote = CreateWarningNote(person.Id, startingStatus);
 
             var patchWarningNoteRequest = new Faker<PatchWarningNoteRequest>()
                 .RuleFor(p => p.WarningNoteId, f => warningNoteId ?? warningNote.Id)
