@@ -308,7 +308,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     }
                 }
             }
-            else //address not provided, remove current display address if it exists 
+            else //address not provided, remove current display address if it exists
             {
                 Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
 
@@ -456,7 +456,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = person.Id,
                 WorkerId = worker.Id,
                 TeamId = team.Id,
-                AllocationStartDate = request.AllocationStartDate ?? DateTime.Now,
+                AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
                 CreatedBy = allocatedBy.Email
             };
@@ -664,10 +664,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.OtherNames)
                 .FirstOrDefault(x => x.Id == id);
         }
-        private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime? dt, string modifiedBy)
+
+        private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
-            allocation.AllocationEndDate = dt ?? DateTime.Now;
+            allocation.AllocationEndDate = dt;
             allocation.CaseStatus = "Closed";
             allocation.CaseClosureDate = dt;
             allocation.LastModifiedBy = modifiedBy;
@@ -693,7 +694,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            // var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == (int) request.AllocatedWorkerId);
             var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
             if (string.IsNullOrEmpty(worker.Email))
             {
