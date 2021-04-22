@@ -170,14 +170,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? firstName = null,
             string? lastName = null,
             string? email = null,
-            string? role = null)
+            string? role = null,
+            string? contextFlag = null,
+            string? createdBy = null,
+            DateTime? dateStart = null)
         {
             return new Faker<Worker>()
-                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
                 .RuleFor(w => w.Email, f => email ?? f.Person.Email)
-                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200))
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.CreatedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Soon());
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)

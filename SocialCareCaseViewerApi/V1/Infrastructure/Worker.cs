@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -30,8 +31,18 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("role")]
         [MaxLength(200)]
-        public string Role { get; set; } = null!;
+        public string? Role { get; set; }
 
+        [Column("context_flag")]
+        [MaxLength(1)]
+        public string? ContextFlag { get; set; }
+
+        [Column("created_by")]
+        [MaxLength(62)]
+        public string? CreatedBy { get; set; }
+
+        [Column("date_start")]
+        public DateTime? DateStart { get; set; }
 
         //nav props
         public ICollection<WorkerTeam> WorkerTeams { get; set; } = null!;

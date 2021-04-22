@@ -218,7 +218,10 @@ CREATE TABLE DBO.SCCV_WORKER (
   FIRST_NAME varchar(100) NOT NULL,
   LAST_NAME varchar(100) NOT NULL,
   TEAM_ID bigint,
-  ROLE varchar(200)
+  ROLE varchar(200),
+  CONTEXT_FLAG varchar(1),
+  CREATED_BY varchar(62),
+  DATE_START timestamp
 );
 
 ALTER TABLE DBO.SCCV_WORKER
