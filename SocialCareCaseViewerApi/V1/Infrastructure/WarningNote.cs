@@ -24,6 +24,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("end_date")]
         public DateTime? EndDate { get; set; }
 
+        [Column("last_review_date")]
+        public DateTime? LastReviewDate { get; set; }
+
+        [Column("next_review_date")]
+        public DateTime? NextReviewDate { get; set; }
+
         [Column("individual_notified")]
         public bool DisclosedWithIndividual { get; set; }
 
@@ -34,9 +40,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("review_details")]
         [MaxLength(1000)]
         public string Notes { get; set; }
-
-        [Column("next_review_date")]
-        public DateTime? NextReviewDate { get; set; }
 
         [Column("note_type")]
         [MaxLength(50)]

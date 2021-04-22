@@ -28,7 +28,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _fixture = new Fixture();
         }
 
-        #region Create Warning Note
         [Test]
         public void ExecutePostReturnsTheResponse()
         {
@@ -74,9 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.CaseNoteId.Should().BeEquivalentTo(expectedResponse.CaseNoteId);
         }
-        #endregion
 
-        #region Get Warning Note
         [Test]
         public void ExecuteGetReturnsAGetWarningNoteResponse()
         {
@@ -128,6 +125,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.Should().BeEquivalentTo(expectedResponse);
         }
-        #endregion
+
+        [Test]
+        public void ExecutePatchCallsTheDatabaseGatewayOnce()
+        {
+            var request = _fixture.Create<PatchWarningNoteRequest>();
+
+            _classUnderTest.ExecutePatch(request);
+
+            _mockDatabaseGateway.Verify(x => x.PatchWarningNote(request),
+                                    Times.Once);
+
+        }
     }
 }
