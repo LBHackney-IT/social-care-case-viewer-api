@@ -188,5 +188,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             result.FormName.Should().Be("Manager's Decisions");
         }
+
+        [Test]
+        public void CanMapDomainWorkerToResponse()
+        {
+            var domainWorker = TestHelpers.CreateWorker().ToDomain(true);
+            var expectedResponse = new WorkerResponse
+            {
+                Id = domainWorker.Id,
+                Role = domainWorker.Role,
+                Email = domainWorker.Email,
+                Teams = domainWorker.Teams,
+                AllocationCount = domainWorker.AllocationCount,
+                ContextFlag = domainWorker.ContextFlag,
+                CreatedBy = domainWorker.CreatedBy,
+                DateStart = domainWorker.DateStart,
+                FirstName = domainWorker.FirstName,
+                LastName = domainWorker.LastName
+            };
+
+            var response = domainWorker.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
     }
 }

@@ -114,6 +114,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
                 Role = worker.Role,
+                ContextFlag = worker.ContextFlag ?? "",
+                CreatedBy = worker.CreatedBy ?? "",
+                DateStart = worker.DateStart,
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
             };
