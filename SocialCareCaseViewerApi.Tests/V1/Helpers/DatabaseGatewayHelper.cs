@@ -48,7 +48,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past())
                 .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
-                .RuleFor(p => p.Ethnicity, f => f.Random.Word())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(30))
                 .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
