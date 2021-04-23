@@ -29,7 +29,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 FirstName = _faker.Person.FirstName,
                 LastName = _faker.Person.LastName,
                 WorkerEmail = _faker.Internet.Email(),
-                DateOfBirth = DateTime.Now.AddYears(-20).ToString(),
+                DateOfBirth = DateTime.Now.AddYears(-20),
+                DateOfEvent = DateTime.Now.AddDays(-3),
                 PersonId = 5,
                 ContextFlag = "A",
                 CaseFormData = _faker.Random.String()
