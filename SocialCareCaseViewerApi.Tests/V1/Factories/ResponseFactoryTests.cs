@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new AddNewResidentResponse
             {
-                PersonId = person.Id,
+                Id = person.Id,
                 AddressId = address.AddressId,
                 OtherNameIds = new List<int>() { otherName1.Id, otherName2.Id },
                 PhoneNumberIds = new List<int> { phoneNumber1.Id, phoneNumber2.Id },
