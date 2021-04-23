@@ -251,7 +251,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     if (success) return dateOfEvent;
 
                     bool successForISOFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISOFormat);
-                    if (success) return dateOfEventISOFormat;
+                    if (successForISOFormat) return dateOfEventISOFormat;
                 }
 
                 return null;
