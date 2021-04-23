@@ -79,15 +79,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static BsonDocument HistoricalVisitsToDomain(Visit visit)
         {
             var formTimeStamp = visit.ActualDateTime?.ToString("dd/MM/yyyy H:mm:ss") ??
-                                visit.PlannedDateTime?.ToString("dd/MM/yyyy H:mm:ss"); //format used in imported data from mongo so have to match for now
+                                visit.PlannedDateTime?.ToString("dd/MM/yyyy H:mm:ss") ?? ""; //format used in imported data from mongo so have to match for now
 
             return new BsonDocument(new List<BsonElement>
             {
                 new BsonElement("_id", visit.VisitId.ToString()),
                 new BsonElement("mosaic_id", visit.PersonId.ToString()),
-                new BsonElement("worker_email", visit.CreatedByEmail),
+                new BsonElement("worker_email", visit.CreatedByEmail ?? ""),
                 new BsonElement("form_name_overall", "Historical_Visit"),
-                new BsonElement("form_name", $"Historical Visit - {visit.VisitType}"),
+                new BsonElement("form_name", $"Historical Visit - {visit.VisitType ?? ""}"),
                 new BsonElement("timestamp", formTimeStamp),
                 new BsonElement("is_historical", true)
             });
@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ContextFlag = person.AgeContext,
                 CreatedBy = person.CreatedBy,
                 EmailAddress = person.EmailAddress,
-                Ethinicity = person.Ethnicity,
+                Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
