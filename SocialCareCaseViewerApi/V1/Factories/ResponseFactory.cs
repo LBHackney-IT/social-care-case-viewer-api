@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Email = worker.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                Role = worker.Role,
+                Role = worker.Role ?? "",
                 ContextFlag = worker.ContextFlag ?? "",
                 CreatedBy = worker.CreatedBy ?? "",
                 DateStart = worker.DateStart?.ToString("s") ?? "",
