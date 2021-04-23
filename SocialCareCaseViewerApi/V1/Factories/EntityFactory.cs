@@ -52,6 +52,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static AddressDomain DbAddressToAddressDomain(DbAddress address)
+        {
+            return new AddressDomain()
+            {
+                Address = address.AddressLines,
+                Postcode = address.PostCode,
+                Uprn = address.Uprn
+            };
+        }
+
         public static Worker ToDomain(this DbWorker worker, bool includeTeamData)
         {
             return new Worker
@@ -110,6 +120,25 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate
             };
         }
+
+        public static PhoneNumber ToDomain(this dbPhoneNumber phoneNumber)
+        {
+            return new PhoneNumber()
+            {
+                Number = phoneNumber.Number,
+                Type = phoneNumber.Type
+            };
+        }
+
+        public static OtherName ToDomain(this PersonOtherName otherName)
+        {
+            return new OtherName()
+            {
+                FirstName = otherName.FirstName,
+                LastName = otherName.LastName
+            };
+        }
+
         #endregion
         #region ToEntity
         public static AllocationSet ToEntity(this CreateAllocationRequest request, int workerId, DateTime allocationStartDate, string caseStatus)

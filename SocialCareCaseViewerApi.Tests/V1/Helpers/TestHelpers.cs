@@ -9,6 +9,7 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 #nullable enable
@@ -196,7 +197,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
                 .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
-                .RuleFor(p => p.Ethnicity, f => f.Address.Country())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(0, 30))
                 .RuleFor(p => p.FirstLanguage, f => f.Random.String2(10, 100))
                 .RuleFor(p => p.Religion, f => f.Random.String2(10, 80))
                 .RuleFor(p => p.EmailAddress, f => f.Person.Email)
@@ -265,7 +266,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var caseNote = CreateCaseNote();
 
             return new Faker<AddNewResidentResponse>()
-                .RuleFor(a => a.PersonId, personId ?? person.Id)
+                .RuleFor(a => a.Id, personId ?? person.Id)
                 .RuleFor(a => a.AddressId, addressId ?? address.AddressId)
                 .RuleFor(a => a.OtherNameIds, otherNameIds ?? new Faker<List<int>>())
                 .RuleFor(a => a.PhoneNumberIds, phoneNumberIds ?? new Faker<List<int>>())
@@ -333,6 +334,59 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => f.Random.String2(1))
                 .RuleFor(t => t.Name, f => f.Random.String2(1, 200));
+        }
+
+        public static WarningNote CreateWarningNote(long? personId = null, string? status = null)
+        {
+            return new Faker<WarningNote>()
+                .RuleFor(w => w.Id, f => f.UniqueIndex + 1)
+                .RuleFor(w => w.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(w => w.StartDate, f => f.Date.Recent())
+                .RuleFor(w => w.ReviewDate, f => f.Date.Recent())
+                .RuleFor(w => w.EndDate, f => f.Date.Recent())
+                .RuleFor(w => w.LastReviewDate, f => f.Date.Recent())
+                .RuleFor(w => w.NextReviewDate, f => f.Date.Recent())
+                .RuleFor(w => w.DisclosedWithIndividual, f => f.Random.Bool())
+                .RuleFor(w => w.DisclosedDetails, f => f.Random.String2(1, 1000))
+                .RuleFor(w => w.Notes, f => f.Random.String2(1, 1000))
+                .RuleFor(w => w.NoteType, f => f.Random.String2(1, 50))
+                .RuleFor(w => w.Status, f => status ?? f.Random.String2(1, 50))
+                .RuleFor(w => w.DisclosedDate, f => f.Date.Recent())
+                .RuleFor(w => w.DisclosedHow, f => f.Random.String2(1, 50))
+                .RuleFor(w => w.WarningNarrative, f => f.Random.String2(1, 1000))
+                .RuleFor(w => w.ManagerName, f => f.Random.String2(1, 100))
+                .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent());
+        }
+
+        public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote) CreatePatchWarningNoteRequest(
+            long? warningNoteId = null,
+            DateTime? reviewDate = null,
+            DateTime? nextReviewDate = null,
+            string? startingStatus = "open",
+            string? requestStatus = "open",
+            DateTime? endedDate = null,
+            string? reviewNotes = null,
+            string? managerName = null,
+            DateTime? discussedWithManagerDate = null
+        )
+        {
+            var person = CreatePerson();
+            var worker = CreateWorker();
+            WarningNote warningNote = CreateWarningNote(personId: person.Id, status: startingStatus);
+
+            var patchWarningNoteRequest = new Faker<PatchWarningNoteRequest>()
+                .RuleFor(p => p.WarningNoteId, f => warningNoteId ?? warningNote.Id)
+                .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
+                .RuleFor(p => p.ReviewedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
+                .RuleFor(p => p.Status, f => requestStatus)
+                .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
+                .RuleFor(p => p.EndedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.ReviewNotes, f => reviewNotes ?? f.Random.String2(1, 1000))
+                .RuleFor(p => p.ManagerName, f => managerName ?? f.Random.String2(1, 100))
+                .RuleFor(p => p.DiscussedWithManagerDate, f => discussedWithManagerDate ?? f.Date.Recent());
+
+            return (patchWarningNoteRequest, person, worker, warningNote);
         }
     }
 }

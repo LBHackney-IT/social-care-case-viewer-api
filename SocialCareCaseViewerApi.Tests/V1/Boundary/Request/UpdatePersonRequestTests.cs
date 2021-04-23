@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using Bogus;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
     [TestFixture]
-    public class AddNewResidentRequestTests
+    public class UpdatePersonRequestTests
     {
-        private AddNewResidentRequest _request;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -22,18 +21,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             _fixture = new Fixture();
             _faker = new Faker();
-            _request = new AddNewResidentRequest();
         }
 
-        private AddNewResidentRequest GetValidRequest()
+        private UpdatePersonRequest GetValidRequest()
         {
-            return new AddNewResidentRequest()
+            return new UpdatePersonRequest()
             {
+                Id = 555,
                 Title = "Title",
                 FirstName = _faker.Name.FirstName(),
                 LastName = _faker.Name.LastName(),
                 OtherNames = _fixture.Create<List<OtherName>>(),
-                Gender = "M", //TODO: set and test valid values
+                Gender = "M",
                 DateOfBirth = DateTime.Now.AddYears(-30),
                 DateOfDeath = DateTime.Now,
                 Ethnicity = "Ethnicity",
@@ -44,124 +43,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 Address = _fixture.Create<AddressDomain>(),
                 PhoneNumbers = _fixture.Create<List<PhoneNumber>>(),
                 EmailAddress = _faker.Internet.Email(),
-                PreferredMethodOfContact = "Email", //TOOD: set and test valid values?
-                ContextFlag = "A", //TOOD: set and test valid values,
-                CreatedBy = _faker.Internet.Email()
+                PreferredMethodOfContact = "Email",
+                ContextFlag = "A",
+                CreatedBy = _faker.Internet.Email(),
+                Restricted = "Y"
             };
         }
-
-        #region Model
-        [Test]
-        public void RequestHasTitle()
-        {
-            Assert.IsNull(_request.Title);
-        }
-
-        [Test]
-        public void RequestHasFirstName()
-        {
-            Assert.IsNull(_request.FirstName);
-        }
-
-        [Test]
-        public void RequestHasLastName()
-        {
-            Assert.IsNull(_request.LastName);
-        }
-
-        [Test]
-        public void RequestHasOtherNames()
-        {
-            Assert.IsNull(_request.OtherNames);
-        }
-
-        [Test]
-        public void RequestHasGender()
-        {
-            Assert.IsNull(_request.Gender);
-        }
-
-        [Test]
-        public void RequestHasDateOfBirth()
-        {
-            Assert.AreEqual(null, _request.DateOfBirth);
-        }
-
-        [Test]
-        public void RequestHasDateOfDeath()
-        {
-            Assert.IsNull(_request.DateOfDeath);
-        }
-
-
-        [Test]
-        public void RequestHasEthnicity()
-        {
-            Assert.IsNull(_request.Ethnicity);
-        }
-
-        [Test]
-        public void RequestHasFirstLanguage()
-        {
-            Assert.IsNull(_request.FirstLanguage);
-        }
-
-        [Test]
-        public void RequestHasReligion()
-        {
-            Assert.IsNull(_request.Religion);
-        }
-
-        [Test]
-        public void RequestHasSexualOrientation()
-        {
-            Assert.IsNull(_request.SexualOrientation);
-        }
-
-        [Test]
-        public void RequestHasNHSNumber()
-        {
-            Assert.IsNull(_request.NhsNumber);
-        }
-
-        [Test]
-        public void RequestHasAddress()
-        {
-            Assert.IsNull(_request.Address);
-        }
-
-        [Test]
-        public void RequestHasPhoneNumbers()
-        {
-            Assert.IsNull(_request.PhoneNumbers);
-        }
-
-        [Test]
-        public void RequestHasEmailAddress()
-        {
-            Assert.IsNull(_request.EmailAddress);
-        }
-
-        [Test]
-        public void RequestHasPreferredMethodOfContact()
-        {
-            Assert.IsNull(_request.PreferredMethodOfContact);
-        }
-
-        [Test]
-        public void RequestHasContextFlag()
-        {
-            Assert.IsNull(_request.ContextFlag);
-        }
-
-        [Test]
-        public void RequestHasCreatedBy()
-        {
-            Assert.IsNull(_request.CreatedBy);
-        }
-        #endregion
-
-        #region Model validation
 
         [Test]
         public void ValidationPassesWhenAllPropertiesAreSetWithValidValues()
@@ -171,7 +58,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var errors = ValidationHelper.ValidateModel(request);
 
             Assert.AreEqual(0, errors.Count);
+        }
 
+        [Test]
+        public void ValidationFailsIfPersonIdIsNotBiggerThan0()
+        {
+            UpdatePersonRequest request = GetValidRequest();
+            request.Id = 0;
+
+            var errors = ValidationHelper.ValidateModel(request);
+
+            Assert.AreEqual(errors.Count, 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter valid person id")));
         }
 
         [Test]
@@ -186,6 +84,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.First().ErrorMessage == "The FirstName field is required.");
         }
+
         [Test]
         public void ValidationFailsIfLastNameIsNotProvided()
         {
@@ -266,6 +165,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.First().ErrorMessage == "The CreatedBy field is not a valid e-mail address.");
         }
-        #endregion
+
+        [Test]
+        [TestCase("Y")]
+        [TestCase("N")]
+        public void ModelValidationSucceedsIfRestrictedIsProvidedAndTheValueIsValid(string restricted)
+        {
+            var request = GetValidRequest();
+            request.Restricted = restricted;
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 0);
+        }
+
+        [Test]
+        public void ModelValidationFailsIfRestrictedIsProvidedButTheValueIsNotEitherYorN()
+        {
+            var request = GetValidRequest();
+            request.Restricted = "X";
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Restricted must be 'Y' or 'N' only")));
+        }
     }
 }

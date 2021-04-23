@@ -1,13 +1,17 @@
+using SocialCareCaseViewerApi.V1.Domain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class AddNewResidentRequest
+    public class UpdatePersonRequest
     {
         private string _email;
+
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter valid person id")]
+        public long Id { get; set; }
 
         public string Title { get; set; }
 
@@ -61,5 +65,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Required]
         [EmailAddress]
         public string CreatedBy { get; set; }
+
+        [Required]
+        [RegularExpression("(?i:^Y|N)", ErrorMessage = "Restricted must be 'Y' or 'N' only.")]
+        public string Restricted { get; set; }
     }
 }

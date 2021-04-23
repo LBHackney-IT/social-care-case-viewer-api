@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AutoFixture;
+using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -12,8 +13,10 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -31,8 +34,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
+        private Mock<IPersonUseCase> _mockPersonUseCase;
 
         private Fixture _fixture;
+        private Faker _faker;
 
         [SetUp]
         public void SetUp()
@@ -47,11 +52,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
+            _mockPersonUseCase = new Mock<IPersonUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
             _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockGetWorkersUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
+            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object);
             _fixture = new Fixture();
+            _faker = new Faker();
         }
 
         [Test]
@@ -119,6 +126,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(500);
             response.Value.Should().Be("Address could not be inserted");
+        }
+
+        [Test]
+        public void GetPersonByIdReturns200WhenSuccessfull()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
+
+            var response = _classUnderTest.GetPerson(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void GetPersonByIdReturns404WhenPersonNotFound()
+        {
+            GetPersonRequest request = new GetPersonRequest();
+            GetPersonResponse response = null;
+
+            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(response);
+
+            var result = _classUnderTest.GetPerson(request) as NotFoundResult;
+
+            result.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void UpdatePersonReturns200WhenSuccessful()
+        {
+            UpdatePersonRequest request = new UpdatePersonRequest();
+
+            var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void UpdatePersonReturns404WhenPersonNotFound()
+        {
+            UpdatePersonRequest request = new UpdatePersonRequest();
+
+            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
+
+            var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
+
+            result.Should().NotBeNull();
+            result.StatusCode.Should().Be(404);
+            result.Value.Should().Be("Person not found");
         }
 
         [Test]
@@ -407,7 +465,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdateAllocationReturns400WhenDeallocationDateInTheFuture()
         {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_DEALLOCATION_DATE", "true");
             var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
 
             var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
@@ -417,24 +474,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 throw new NullReferenceException();
             }
             response.StatusCode.Should().Be(400);
-        }
-
-        [Test]
-        public void UpdateAllocationReturns200WhenDeallocationDateInTheFutureAndFeatureFlagNotPresent()
-        {
-            var request = TestHelpers.CreateUpdateAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)).Item1;
-            var result = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
-            _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Returns(result);
-
-            var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
-
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(result);
         }
 
         #endregion
@@ -567,10 +606,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         #region Visits
 
         [Test]
-        public void WhenShowHistoricDataFeatureFlagIsTrueListVisitsByPersonIdReturns200WhenSuccessful()
+        public void ListVisitsByPersonIdReturns200WhenSuccessful()
         {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "true");
-
             var request = new ListVisitsRequest { Id = "1" };
             var visit = TestHelpers.CreateVisit();
             var visitList = new List<Visit>();
@@ -582,33 +619,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().NotBeNull();
-        }
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNullListVisitsByPersonIdReturnsAResponseWithNoVisitData()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", null);
-            var request = new ListVisitsRequest { Id = "1" };
-
-            var response = _classUnderTest.ListVisits(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
-        }
-
-
-        [Test]
-        public void WhenShowHistoricDataFeatureFlagIsNotEqualToTrueListVisitsByPersonIdReturnsAResponseWithNoVisitData()
-        {
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA", "false");
-            var request = new ListVisitsRequest { Id = "1" };
-
-            var response = _classUnderTest.ListVisits(request) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeNull();
         }
 
 
@@ -644,17 +654,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void PostWarningNoteReturns201WhenSuccessful()
         {
-            var PostWarningNoteResponse = _fixture.Create<PostWarningNoteResponse>();
-            var PostWarningNoteRequest = new PostWarningNoteRequest();
+            var postWarningNoteResponse = _fixture.Create<PostWarningNoteResponse>();
+            var postWarningNoteRequest = new PostWarningNoteRequest();
 
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecutePost(PostWarningNoteRequest))
-                .Returns(PostWarningNoteResponse);
-            var response = _classUnderTest.PostWarningNote(PostWarningNoteRequest) as CreatedAtActionResult;
+                .Setup(x => x.ExecutePost(postWarningNoteRequest))
+                .Returns(postWarningNoteResponse);
+            var response = _classUnderTest.PostWarningNote(postWarningNoteRequest) as CreatedAtActionResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(PostWarningNoteResponse);
+            response.Value.Should().BeEquivalentTo(postWarningNoteResponse);
         }
 
         [Test]
@@ -674,31 +684,188 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
         {
-            var stubbedWarningNoteResponse = _fixture.Create<List<WarningNote>>();
+            var testPersonId = _fixture.Create<long>();
+            var stubbedWarningNotesResponse = _fixture.Create<ListWarningNotesResponse>();
 
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
-                .Returns(stubbedWarningNoteResponse);
+                .Setup(x => x.ExecuteGet(It.IsAny<long>()))
+                .Returns(stubbedWarningNotesResponse);
 
-            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as OkObjectResult;
+            var response = _classUnderTest.ListWarningNotes(testPersonId) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(stubbedWarningNoteResponse);
+            response.Value.Should().BeEquivalentTo(stubbedWarningNotesResponse);
         }
 
         [Test]
-        public void GetWarningNoteReturns404IfDocumentNotDound()
+        public void GetWarningNoteReturns404IfDocumentNotFound()
         {
+            var testPersonId = _fixture.Create<long>();
+
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGet(It.IsAny<GetWarningNoteRequest>()))
+                .Setup(x => x.ExecuteGet(It.IsAny<long>()))
                 .Throws(new DocumentNotFoundException("Document Not Found"));
 
-            var response = _classUnderTest.GetWarningNote(new GetWarningNoteRequest()) as ObjectResult;
+            var response = _classUnderTest.ListWarningNotes(testPersonId) as ObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(404);
             response.Value.Should().Be("Document Not Found");
+        }
+
+        [Test]
+        public void PatchWarningNoteCallsTheUseCaseAndReturns204WhenSuccessful()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
+            var response = _classUnderTest.PatchWarningNote(request) as NoContentResult;
+
+            _mockWarningNoteUseCase.Verify(x => x.ExecutePatch(request), Times.Once);
+            response.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturnsA404ResponseIfItEncountersAnException()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
+
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecutePatch(It.IsAny<PatchWarningNoteRequest>()))
+                .Throws(new PatchWarningNoteException("exception encountered"));
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("exception encountered");
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidWarningNoteId()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(warningNoteId: 0).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidReviewDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(reviewDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidNextReviewDateId()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(nextReviewDate: DateTime.Now).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidStatus()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "invalid").Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidEndedDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(endedDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidReviewNotes()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(reviewNotes: "").Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidManagerName()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(managerName: _faker.Random.String2(101)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void PatchWarningNoteReturns400WhenInvalidDiscussedWithManagerDate()
+        {
+            var request = TestHelpers.CreatePatchWarningNoteRequest(discussedWithManagerDate: DateTime.Now.AddDays(1)).Item1;
+
+            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
         }
         #endregion
     }

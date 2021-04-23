@@ -1,18 +1,33 @@
 using System;
 using System.Collections.Generic;
+using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTests
     {
+
+        private Faker _faker;
+
+        [SetUp]
+        public void SetUp()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
+            _faker = new Faker();
+        }
+
         [Test]
         public void CanMapResidentAndAddressFromDomainToResponse()
         {
@@ -43,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new AddNewResidentResponse
             {
-                PersonId = person.Id,
+                Id = person.Id,
                 AddressId = address.AddressId,
                 OtherNameIds = new List<int>() { otherName1.Id, otherName2.Id },
                 PhoneNumberIds = new List<int> { phoneNumber1.Id, phoneNumber2.Id },
@@ -73,6 +88,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
 
             result.Should().BeEquivalentTo(expectedDocument);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsNoteTypeForFormNameIfFeatureFlagIsOn()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.NoteType);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsFalse()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "false");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsAnEmptyString()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "");
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
+        }
+
+        [Test]
+        public void HistoricalCaseNotesToDomainReturnsTitleForFormNameIfFeatureFlagIsNull()
+        {
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", null);
+            var historicalCaseNote = TestHelpers.CreateCaseNote();
+
+            var result = ResponseFactory.HistoricalCaseNotesToDomain(historicalCaseNote);
+
+            result.GetValue("form_name").AsString.Should().BeEquivalentTo(historicalCaseNote.CaseNoteTitle);
         }
 
         [Test]
@@ -210,6 +269,99 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var response = domainWorker.ToResponse();
 
             response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        public void CanMapPersonDetailsToGetPersonResponse()
+        {
+            Person person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person.Id = 123;
+
+            Address address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id);
+
+            //set to display address
+            address.IsDisplayAddress = "Y";
+
+            PhoneNumber phoneNumber1 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
+            PhoneNumber phoneNumber2 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
+
+            PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
+            PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
+
+            person.Addresses = new List<Address>
+            {
+                address
+            };
+
+            person.PhoneNumbers = new List<PhoneNumber>
+            {
+                phoneNumber1,
+                phoneNumber2
+            };
+
+            person.OtherNames = new List<PersonOtherName>
+            {
+                otherName1,
+                otherName2
+            };
+
+            AddressDomain addressDomain = new AddressDomain()
+            {
+                Address = address.AddressLines,
+                Postcode = address.PostCode,
+                Uprn = address.Uprn
+            };
+
+            OtherName personOtherName1 = new OtherName()
+            {
+                FirstName = otherName1.FirstName,
+                LastName = otherName1.LastName
+            };
+
+            OtherName personOtherName2 = new OtherName()
+            {
+                FirstName = otherName2.FirstName,
+                LastName = otherName2.LastName
+            };
+
+            PhoneNumberDomain phoneNumberDomain1 = new PhoneNumberDomain()
+            {
+                Number = phoneNumber1.Number,
+                Type = phoneNumber1.Type
+            };
+
+            PhoneNumberDomain phoneNumberDomain2 = new PhoneNumberDomain()
+            {
+                Number = phoneNumber2.Number,
+                Type = phoneNumber2.Type
+            };
+
+            var expectedResponse = new GetPersonResponse()
+            {
+                EmailAddress = person.EmailAddress,
+                DateOfBirth = person.DateOfBirth.Value,
+                DateOfDeath = person.DateOfDeath.Value,
+                Address = addressDomain,
+                SexualOrientation = person.SexualOrientation,
+                ContextFlag = person.AgeContext,
+                CreatedBy = person.CreatedBy,
+                Ethnicity = person.Ethnicity,
+                FirstLanguage = person.FirstLanguage,
+                FirstName = person.FirstName,
+                Gender = person.Gender,
+                LastName = person.LastName,
+                NhsNumber = person.NhsNumber.Value,
+                Id = person.Id,
+                PreferredMethodOfContact = person.PreferredMethodOfContact,
+                Religion = person.Religion,
+                Restricted = person.Restricted,
+                Title = person.Title,
+                OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
+                PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 }
+            };
+
+            var result = ResponseFactory.ToResponse(person);
+
+            result.Should().BeEquivalentTo(expectedResponse);
         }
     }
 }

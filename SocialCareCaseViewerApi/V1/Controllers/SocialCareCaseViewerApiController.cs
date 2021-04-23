@@ -32,11 +32,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
+        private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
+            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -48,6 +49,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
+            _personUseCase = personUseCase;
         }
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var response = _addNewResidentUseCase.Execute(residentRequest);
 
-                return CreatedAtAction("GetResident", new { id = response.PersonId }, response); //TODO: return object with IDs for all related entities
+                return CreatedAtAction("GetResident", new { id = response.Id }, response); //TODO: return object with IDs for all related entities
             }
             catch (ResidentCouldNotBeinsertedException ex)
             {
@@ -100,6 +102,52 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Get resident by id
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem getting the record</response>
+        ///
+        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("residents/{id}")]
+        public IActionResult GetPerson([FromQuery] GetPersonRequest request)
+        {
+            var response = _personUseCase.ExecuteGet(request);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(200, response);
+        }
+
+        /// <summary>
+        /// Update resident details
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem updating the records</response>
+        ///
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        [Route("residents")]
+        public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
+        {
+            try
+            {
+                _personUseCase.ExecutePatch(request);
+            }
+            catch (UpdatePersonException ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+            return StatusCode(204);
         }
 
         /// <summary>
@@ -359,11 +407,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("visits/person/{id}")]
         public IActionResult ListVisits([FromQuery] ListVisitsRequest request)
         {
-            var showHistoricData = Environment.GetEnvironmentVariable("SOCIAL_CARE_SHOW_HISTORIC_DATA");
-
-            return showHistoricData != null && showHistoricData.Equals("true")
-                ? Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id))
-                : StatusCode(200, null);
+            return Ok(_visitsUseCase.ExecuteGetByPersonId(request.Id));
         }
 
         /// <summary>
@@ -388,21 +432,51 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get warning notes by person id
+        /// Get all warning notes created for a specific person
         /// </summary>
-        /// <param name="request"></param>
         /// <response code="200">Success. Returns warning notes related to the specified ID</response>
         /// <response code="404">No warning notes found for the specified ID</response>
-        [ProducesResponseType(typeof(List<WarningNote>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("warningnotes/{id}")]
-        public IActionResult GetWarningNote([FromQuery] GetWarningNoteRequest request)
+        [Route("residents/{personId}/warningNotes")]
+        public IActionResult ListWarningNotes(long personId)
         {
             try
             {
-                return Ok(_warningNoteUseCase.ExecuteGet(request));
+                return Ok(_warningNoteUseCase.ExecuteGet(personId));
             }
             catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Amend Warning Notes in response to a review and add a Warning Note Review to the database
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="204">Amended successfully</response>
+        /// <response code="404">Exception encountered</response>
+        /// <response code="500">There was a problem updating the record</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        [Route("warningnotes")]
+        public IActionResult PatchWarningNote([FromBody] PatchWarningNoteRequest request)
+        {
+            var validator = new PatchWarningNoteRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _warningNoteUseCase.ExecutePatch(request);
+                return NoContent();
+            }
+            catch (PatchWarningNoteException e)
             {
                 return NotFound(e.Message);
             }

@@ -21,6 +21,7 @@ using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.Phon
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -422,7 +423,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             AddNewResidentResponse response = _classUnderTest.AddNewResident(request);
 
-            Assert.IsNotNull(response.PersonId);
+            Assert.IsNotNull(response.Id);
 
             Assert.IsNotNull(response.OtherNameIds);
             Assert.AreEqual(2, response.OtherNameIds.Count);
@@ -433,7 +434,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(2, response.PhoneNumberIds.Count);
 
             //check that person was created with correct values
-            var person = DatabaseContext.Persons.FirstOrDefault(x => x.Id == response.PersonId);
+            var person = DatabaseContext.Persons.FirstOrDefault(x => x.Id == response.Id);
 
             Assert.IsNotNull(person);
 
@@ -578,15 +579,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
-            Person person = new Person()
-            {
-                FullName = "full name"
-            };
-            DatabaseContext.Persons.Add(person);
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(stubbedPerson);
             DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
-                            .With(x => x.PersonId, person.Id)
+                            .With(x => x.PersonId, stubbedPerson.Id)
                             .Create();
 
             var response = _classUnderTest.PostWarningNote(request);
@@ -603,7 +601,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
             insertedRecord.Notes.Should().Be(request.Notes);
             insertedRecord.NoteType.Should().Be(request.NoteType);
-            insertedRecord.Status.Should().Be(request.Status);
+            insertedRecord.Status.Should().Be("open");
             insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
             insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
             insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
@@ -632,15 +630,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PostWarningNoteShouldCallInsertCaseNoteMethod()
         {
-            Person person = new Person()
-            {
-                FullName = "full name"
-            };
-            DatabaseContext.Persons.Add(person);
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(stubbedPerson);
             DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
-                            .With(x => x.PersonId, person.Id)
+                            .With(x => x.PersonId, stubbedPerson.Id)
                             .Create();
 
             _mockProcessDataGateway.Setup(
@@ -654,27 +649,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mockProcessDataGateway.Verify();
             response.CaseNoteId.Should().NotBeNull();
             response.CaseNoteId.Should().Be("CaseNoteId");
-        }
-
-        private Worker SaveWorkerToDatabase(Worker worker)
-        {
-            DatabaseContext.Workers.Add(worker);
-            DatabaseContext.SaveChanges();
-            return worker;
-        }
-
-        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
-        {
-            DatabaseContext.WorkerTeams.Add(workerTeam);
-            DatabaseContext.SaveChanges();
-            return workerTeam;
-        }
-
-        private Team SaveTeamToDatabase(Team team)
-        {
-            DatabaseContext.Teams.Add(team);
-            DatabaseContext.SaveChanges();
-            return team;
         }
 
         // [Test]
@@ -704,23 +678,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
-            WarningNote warningNote = new WarningNote()
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var warningNote = new WarningNote
             {
-                PersonId = 12345
+                PersonId = testPersonId
             };
-            WarningNote wrongWarningNote = new WarningNote()
+
+            var wrongWarningNote = new WarningNote
             {
-                PersonId = 67890
+                PersonId = differentPersonId
             };
+
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNotes.Add(wrongWarningNote);
             DatabaseContext.SaveChanges();
 
-            var request = _fixture.Build<GetWarningNoteRequest>()
-                            .With(x => x.PersonId, warningNote.PersonId)
-                            .Create();
-
-            var response = _classUnderTest.GetWarningNotes(request);
+            var response = _classUnderTest.GetWarningNotes(testPersonId);
 
             response.Should().ContainSingle();
             response.Should().ContainEquivalentOf(warningNote);
@@ -728,26 +703,549 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetWarningNotesReturnsAListOfWarningNotesForASpecificPerson()
+        {
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var firstNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am one note"
+            };
+
+            var secondNote = new WarningNote
+            {
+                PersonId = testPersonId,
+                Notes = "I am another note"
+            };
+
+            var separateWarningNote = new WarningNote
+            {
+                PersonId = differentPersonId
+            };
+
+            DatabaseContext.WarningNotes.Add(firstNote);
+            DatabaseContext.WarningNotes.Add(secondNote);
+            DatabaseContext.WarningNotes.Add(separateWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNotes(testPersonId);
+
+            response.Count().Should().Be(2);
+            response.Should().ContainEquivalentOf(firstNote);
+            response.Should().ContainEquivalentOf(secondNote);
+            response.Should().NotContain(separateWarningNote);
+        }
+
+        [Test]
         public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
         {
-            WarningNote warningNote = new WarningNote()
+            var testPersonId = _faker.Random.Int();
+            var differentPersonId = _faker.Random.Int();
+
+            var warningNote = new WarningNote
             {
-                PersonId = 12345
+                PersonId = testPersonId
             };
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.SaveChanges();
 
-            var request = new GetWarningNoteRequest()
-            {
-                PersonId = 67890
-            };
-
-            Action act = () => _classUnderTest.GetWarningNotes(request);
+            Action act = () => _classUnderTest.GetWarningNotes(differentPersonId);
 
             act.Should().Throw<DocumentNotFoundException>()
-                .WithMessage($"No warning notes found relating to person id {request.PersonId}");
+                .WithMessage($"No warning notes found relating to person id {differentPersonId}");
+        }
+
+        [Test]
+        public void PatchWarningNoteUpdatesAnExistingRecordInTheDatabase()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.EndDate.Should().Be(request.EndedDate);
+            updatedRecord.LastReviewDate.Should().Be(request.ReviewDate);
+            updatedRecord.NextReviewDate.Should().BeNull();
+            updatedRecord.Status.Should().Be("closed");
+            updatedRecord.Status.Should().NotBe(stubbedWarningNote.Status);
+            updatedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+            updatedRecord.LastModifiedBy.Should().NotBe(stubbedWarningNote.LastModifiedBy);
+
+            updatedRecord.Id.Should().Be(stubbedWarningNote.Id);
+            updatedRecord.PersonId.Should().Be(stubbedWarningNote.PersonId);
+            updatedRecord.StartDate.Should().Be(stubbedWarningNote.StartDate);
+            updatedRecord.DisclosedWithIndividual.Should().Be(stubbedWarningNote.DisclosedWithIndividual);
+            updatedRecord.DisclosedDetails.Should().Be(stubbedWarningNote.DisclosedDetails);
+            updatedRecord.Notes.Should().Be(stubbedWarningNote.Notes);
+            updatedRecord.NoteType.Should().Be(stubbedWarningNote.NoteType);
+            updatedRecord.DisclosedDate.Should().Be(stubbedWarningNote.DisclosedDate);
+            updatedRecord.DisclosedHow.Should().Be(stubbedWarningNote.DisclosedHow);
+            updatedRecord.WarningNarrative.Should().Be(stubbedWarningNote.WarningNarrative);
+            updatedRecord.ManagerName.Should().Be(stubbedWarningNote.ManagerName);
+            updatedRecord.DiscussedWithManagerDate.Should().Be(stubbedWarningNote.DiscussedWithManagerDate);
+            updatedRecord.CreatedBy.Should().Be(stubbedWarningNote.CreatedBy);
+        }
+
+        [Test]
+        public void PatchWarningNoteDoesNotChangeTheStatusEndDateOrChangeNextReviewDateToNullIfRequestPropertyIsOpen()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "open");
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.Status.Should().NotBeNull();
+            updatedRecord.Status.Should().Be(stubbedWarningNote.Status);
+            updatedRecord.EndDate.Should().Be(stubbedWarningNote.EndDate);
+            updatedRecord.NextReviewDate.Should().NotBeNull();
+            updatedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
+        }
+
+        [Test]
+        public void PatchWarningNoteClosesTheWarningNoteIfRequestStatusIsClosed()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNotes;
+            var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
+
+            updatedRecord.Status.Should().Be("closed");
+            updatedRecord.EndDate.Should().Be(request.EndedDate);
+            updatedRecord.NextReviewDate.Should().BeNull();
+        }
+
+        [Test]
+        public void PatchWarningNoteThrowsAnExceptionWhenTheWarningNoteIsNotInTheWarningNoteTable()
+        {
+            PatchWarningNoteRequest request = new PatchWarningNoteRequest();
+
+            Action act = () => _classUnderTest.PatchWarningNote(request);
+
+            act.Should().Throw<PatchWarningNoteException>()
+                        .WithMessage($"Warning Note with given id ({request.WarningNoteId}) not found");
+        }
+
+        [Test]
+        public void PatchWarningNoteThrowsAnExceptionWhenTheWarningNoteIsAlreadyClosed()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(startingStatus: "closed", requestStatus: "closed");
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.PatchWarningNote(request);
+
+            act.Should().Throw<PatchWarningNoteException>()
+                        .WithMessage($"Warning Note with given id ({request.WarningNoteId}) has already been closed");
+        }
+
+        [Test]
+        public void PatchWarningNoteThrowsAnExceptionWhenNoPersonPresentInDatabase()
+        {
+            WarningNote stubbedWarningNote = TestHelpers.CreateWarningNote();
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
+
+            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
+                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                                                .Create();
+
+            Action act = () => _classUnderTest.PatchWarningNote(request);
+
+            act.Should().Throw<PatchWarningNoteException>()
+                        .WithMessage($"Person not found");
+        }
+
+        [Test]
+        public void PatchWarningNoteThrowsAnExceptionWhenReviewerIsNotPresentInWorkerTable()
+        {
+            Person stubbedPerson = TestHelpers.CreatePerson();
+            WarningNote stubbedWarningNote = TestHelpers.CreateWarningNote(personId: stubbedPerson.Id);
+
+            DatabaseContext.Persons.Add(stubbedPerson);
+            DatabaseContext.WarningNotes.Add(stubbedWarningNote);
+            DatabaseContext.SaveChanges();
+
+            PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
+                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                                                .Create();
+
+            Action act = () => _classUnderTest.PatchWarningNote(request);
+
+            act.Should().Throw<PatchWarningNoteException>()
+                        .WithMessage($"Worker ({request.ReviewedBy}) not found");
+        }
+
+        [Test]
+        public void PatchWarningNoteAddsAWarningNoteReviewToTheDatabase()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
+
+            //clone the stub to compare the values later
+            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+
+            _classUnderTest.PatchWarningNote(request);
+            var query = DatabaseContext.WarningNoteReview;
+            var insertedRecord = query.FirstOrDefault(
+                                    x => x.WarningNoteId == request.WarningNoteId);
+
+            insertedRecord.WarningNoteId.Should().Be(request.WarningNoteId);
+            insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord.Notes.Should().Be(request.ReviewNotes);
+            insertedRecord.ManagerName.Should().Be(request.ManagerName);
+            insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+            insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
+            insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
         }
         #endregion
+
+        private Worker SaveWorkerToDatabase(Worker worker)
+        {
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+            return worker;
+        }
+
+        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
+        {
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+            return workerTeam;
+        }
+
+        private Team SaveTeamToDatabase(Team team)
+        {
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+            return team;
+        }
+
+        [Test]
+        public void GetPersonDetailsByIdReturnsPerson()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            //add all necessary related entities using person id
+            SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id));
+            SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            var response = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            response.Should().BeEquivalentTo(person);
+        }
+
+        [Test]
+        public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
+        {
+            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
+
+            act.Should().Throw<UpdatePersonException>().WithMessage("Person not found");
+        }
+
+        [Test]
+        public void UpdatePersonSetsCorrectValuesForPersonEntity()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.AgeContext.Should().Be(request.ContextFlag);
+            person.DateOfBirth.Should().Be(request.DateOfBirth);
+            person.DateOfDeath.Should().Be(request.DateOfDeath);
+            person.EmailAddress.Should().Be(request.EmailAddress);
+            person.Ethnicity.Should().Be(request.Ethnicity);
+            person.FirstLanguage.Should().Be(request.FirstLanguage);
+            person.FirstName.Should().Be(request.FirstName);
+            person.FullName.Should().Be($"{request.FirstName} {request.LastName}");
+            person.Gender.Should().Be(request.Gender);
+            person.LastModifiedBy.Should().Be(request.CreatedBy);
+            person.LastName.Should().Be(request.LastName);
+            person.NhsNumber.Should().Be(request.NhsNumber);
+            person.PreferredMethodOfContact.Should().Be(request.PreferredMethodOfContact);
+            person.Religion.Should().Be(request.Religion);
+            person.Restricted.Should().Be(request.Restricted);
+            person.SexualOrientation.Should().Be(request.SexualOrientation);
+            person.Title.Should().Be(request.Title);
+        }
+
+        [Test]
+        public void UpdatePersonSetsNewDisplayAddressWhenOneDoesntExist()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.Count.Should().Be(1);
+            person.Addresses.First().IsDisplayAddress.Should().Be("Y");
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").AddressLines.Should().Be(request.Address.Address);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").PostCode.Should().Be(request.Address.Postcode);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").Uprn.Should().Be(request.Address.Uprn);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedBy.Should().Be(request.CreatedBy);
+            person.Addresses.First(x => x.IsDisplayAddress == "Y").CreatedAt.Should().NotBeNull();
+            person.Addresses.First().StartDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonUpdatesTheCurrentDisplayAddressToBeHistrocalAddress()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.Count.Should().Be(2);
+
+            displayAddress.IsDisplayAddress.Should().Be("N");
+            displayAddress.LastModifiedBy.Should().Be(request.CreatedBy);
+            displayAddress.EndDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonDoesntUpdateCurrentDisplayAddressIfAddressHasntChanged()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            request.Address.Address = displayAddress.AddressLines;
+            request.Address.Postcode = displayAddress.PostCode;
+            request.Address.Uprn = displayAddress.Uprn;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.First().AddressLines.Should().Be(request.Address.Address);
+            person.Addresses.First().PostCode.Should().Be(request.Address.Postcode);
+            person.Addresses.First().Uprn.Should().Be(request.Address.Uprn);
+
+            person.Addresses.First().IsDisplayAddress.Should().Be("Y");
+            person.Addresses.First().EndDate.Should().BeNull();
+        }
+
+        [Test]
+        public void UpdatePersonSetsTheCurrentDisplayAddressNotToBeDisplayAddressWhenAddressIsNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            request.Address = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.Addresses.First().IsDisplayAddress.Should().Be("N");
+            person.Addresses.First().LastModifiedBy.Should().Be(request.CreatedBy);
+            person.Addresses.First().EndDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void UpdatePersonReplacesPhoneNumbers()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            PhoneNumber number1 = request.PhoneNumbers.First();
+            PhoneNumber number2 = request.PhoneNumbers.Last();
+
+            person.PhoneNumbers.First(x => x.Number == number1.Number).Type.Should().Be(number1.Type);
+            person.PhoneNumbers.First(x => x.Number == number2.Number).Type.Should().Be(number2.Type);
+
+            person.PhoneNumbers.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.First().CreatedAt.Should().NotBeNull();
+
+            person.PhoneNumbers.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.PhoneNumbers.Last().CreatedAt.Should().NotBeNull();
+
+            person.PhoneNumbers.Count.Should().Be(request.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void UpdatePersonRemovesPhoneNumbersIfNewOnesAreNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            request.PhoneNumbers = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.PhoneNumbers.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void UpdatePersonReplacesOtherNames()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            OtherName name1 = request.OtherNames.First();
+            OtherName name2 = request.OtherNames.Last();
+
+            person.OtherNames.First(x => x.FirstName == name1.FirstName).LastName.Should().Be(name1.LastName);
+            person.OtherNames.First(x => x.FirstName == name2.FirstName).LastName.Should().Be(name2.LastName);
+
+            person.OtherNames.First().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.First().CreatedAt.Should().NotBeNull();
+
+            person.OtherNames.Last().CreatedBy.Should().Be(request.CreatedBy);
+            person.OtherNames.Last().CreatedAt.Should().NotBeNull();
+
+            person.OtherNames.Count.Should().Be(request.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void UpdatePersonRemovesOtherNamesIfNewOnesAreNotProvided()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            request.OtherNames = null;
+
+            _classUnderTest.UpdatePerson(request);
+
+            person.OtherNames.Count.Should().Be(0);
+        }
+
+
+        private Person SavePersonToDatabase(Person person)
+        {
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+            return person;
+        }
+
+        private dbAddress SaveAddressToDatabase(dbAddress address)
+        {
+            DatabaseContext.Addresses.Add(address);
+            DatabaseContext.SaveChanges();
+            return address;
+        }
+
+        private PhoneNumberInfrastructure SavePhoneNumberToDataBase(PhoneNumberInfrastructure phoneNumber)
+        {
+            DatabaseContext.PhoneNumbers.Add(phoneNumber);
+            DatabaseContext.SaveChanges();
+            return phoneNumber;
+        }
+
+        private PersonOtherName SavePersonOtherNameToDatabase(PersonOtherName name)
+        {
+            DatabaseContext.PersonOtherNames.Add(name);
+            DatabaseContext.SaveChanges();
+            return name;
+        }
+
+        private static UpdatePersonRequest GetValidUpdatePersonRequest(long personId)
+        {
+            AddressDomain address = new Faker<AddressDomain>()
+               .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+               .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+               .RuleFor(a => a.Uprn, f => f.Random.Int());
+
+            List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
+            {
+                new Faker<PhoneNumber>()
+                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                     .RuleFor(p => p.Type, f => f.Random.Word()),
+
+                new Faker<PhoneNumber>()
+                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                     .RuleFor(p => p.Type, f => f.Random.Word())
+            };
+
+            List<OtherName> otherNames = new List<OtherName>()
+            {
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName),
+
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName)
+            };
+
+            return new Faker<UpdatePersonRequest>()
+               .RuleFor(p => p.Id, personId)
+               .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+               .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
+               .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
+               .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
+               .RuleFor(p => p.Ethnicity, f => f.Random.Word())
+               .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
+               .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+               .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+               .RuleFor(p => p.LastName, f => f.Person.LastName)
+               .RuleFor(p => p.Title, f => f.Random.String2(2))
+               .RuleFor(p => p.Gender, f => f.Random.String2(1))
+               .RuleFor(p => p.NhsNumber, f => f.Random.Number())
+               .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
+               .RuleFor(p => p.Religion, f => f.Random.Word())
+               .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+               .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
+               .RuleFor(p => p.Address, address)
+               .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+               .RuleFor(p => p.OtherNames, otherNames);
+        }
     }
 }
-
