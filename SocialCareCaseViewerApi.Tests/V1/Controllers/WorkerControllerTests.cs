@@ -172,6 +172,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void CreateWorkerReturns400WhenContextFlagNotAOrC()
+        {
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest(contextFlag: "B");
+            var response = _workerController.CreateWorker(createWorkerRequest) as BadRequestObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
         public void CreateWorkerReturns400WhenContextFlagLongerThan100Character()
         {
             var createWorkerRequest = TestHelpers.CreateWorkerRequest(contextFlag: _faker.Random.String2(101));

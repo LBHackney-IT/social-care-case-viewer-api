@@ -62,7 +62,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(w => w.ContextFlag)
                 .NotNull().WithMessage("Context flag must be provided")
                 .MinimumLength(1).WithMessage("Context flag must be provided")
-                .MaximumLength(1).WithMessage("Context flag must be no longer than 1 character");
+                .MaximumLength(1).WithMessage("Context flag must be no longer than 1 character")
+                .Matches("(?i:^A|C)").WithMessage("Context flag must be 'A' or 'C'");
             RuleFor(w => w.Teams.Count).GreaterThan(0).WithMessage("A team must be provided");
             RuleForEach(w => w.Teams)
                 .ChildRules(team =>
