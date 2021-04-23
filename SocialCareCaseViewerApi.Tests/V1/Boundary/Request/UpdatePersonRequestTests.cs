@@ -98,18 +98,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfDateOfBirthIsNotProvided()
-        {
-            var request = GetValidRequest();
-            request.DateOfBirth = null;
-
-            var errors = ValidationHelper.ValidateModel(request);
-
-            Assert.AreEqual(1, errors.Count);
-            Assert.IsTrue(errors.First().ErrorMessage == "The DateOfBirth field is required.");
-        }
-
-        [Test]
         public void ValidationFailsIfEmailAddressIsNotInValidFormat()
         {
             var request = GetValidRequest();
