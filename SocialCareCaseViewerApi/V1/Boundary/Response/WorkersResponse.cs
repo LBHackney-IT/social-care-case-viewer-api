@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Domain;
 
@@ -20,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string CreatedBy { get; set; }
 
-        public DateTime? DateStart { get; set; }
+        public string DateStart { get; set; }
 
         public int AllocationCount { get; set; }
 

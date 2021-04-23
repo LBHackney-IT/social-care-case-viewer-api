@@ -24,5 +24,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
         IEnumerable<WarningNote> GetWarningNotes(GetWarningNoteRequest request);
+        Worker CreateWorker(CreateWorkerRequest createWorkerRequest);
     }
 }

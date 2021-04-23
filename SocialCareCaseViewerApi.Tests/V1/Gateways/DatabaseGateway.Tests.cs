@@ -85,6 +85,91 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
+        {
+            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+
+            var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
+
+            var expectedResponse = new Worker
+            {
+                Id = createdWorker.Id,
+                FirstName = createWorkerRequest.FirstName,
+                LastName = createWorkerRequest.LastName,
+                Email = createWorkerRequest.EmailAddress,
+                Role = createWorkerRequest.Role,
+                ContextFlag = createWorkerRequest.ContextFlag,
+                CreatedBy = createWorkerRequest.CreatedBy,
+                DateStart = createWorkerRequest.DateStart,
+
+            };
+
+            var responseWorkerTeam = createdWorker.WorkerTeams.ToList()[0];
+
+            createdWorker.Id.Should().Be(expectedResponse.Id);
+            createdWorker.FirstName.Should().Be(expectedResponse.FirstName);
+            createdWorker.LastName.Should().Be(expectedResponse.LastName);
+            createdWorker.Email.Should().Be(expectedResponse.Email);
+            createdWorker.Role.Should().Be(expectedResponse.Role);
+            createdWorker.ContextFlag.Should().Be(expectedResponse.ContextFlag);
+            createdWorker.CreatedBy.Should().Be(expectedResponse.CreatedBy);
+            createdWorker.DateStart.Should().Be(expectedResponse.DateStart);
+
+            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+        }
+        // when no teams
+
+        // when duplicate teams
+
+        // after adding worker to team can get by team id and find worker!
+
+        [Test]
+        public void CreateWorkerThenFindByWorkerId()
+        {
+            // var response2 = _classUnderTest.GetWorkerByWorkerId(createdWorker.Id);
+        }
+
+        [Test]
+        public void CreateWorkerThenFindByTeamId()
+        {
+            // var response3 = _classUnderTest.GetTeamsByTeamId(createdTeams[0].Id);
+        }
+
+        [Test]
+        public void CreateWorkerWithInvalidTeamIdThrowsPostWorkerException()
+        {
+
+        }
+
+        [Test]
+        public void CreateWorkerWithDuplicateTeamIdDoesNotDuplicateAddingWorkerToTeam()
+        {
+
+        }
+
+        private (CreateWorkerRequest, List<Team>) CreateWorkerAndAddToDatabase(bool addTeamsToDatabase = true)
+        {
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest();
+
+            var createdTeams = new List<Team>();
+
+            if (addTeamsToDatabase)
+            {
+                foreach (var team in createWorkerRequest.Teams)
+                {
+                    var createdTeam = new Team {Id = team.Id, Name = team.Name, Context = "A"};
+                    createdTeams.Add(createdTeam);
+                    SaveTeamToDatabase(createdTeam);
+                }
+            }
+
+
+
+            return (createWorkerRequest, createdTeams);
+        }
+
+        [Test]
         public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
         {
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));

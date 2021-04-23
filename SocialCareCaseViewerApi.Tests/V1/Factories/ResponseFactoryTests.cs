@@ -202,7 +202,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = domainWorker.AllocationCount,
                 ContextFlag = domainWorker.ContextFlag,
                 CreatedBy = domainWorker.CreatedBy,
-                DateStart = domainWorker.DateStart,
+                DateStart = domainWorker.DateStart?.ToString("s") ?? "",
                 FirstName = domainWorker.FirstName,
                 LastName = domainWorker.LastName
             };

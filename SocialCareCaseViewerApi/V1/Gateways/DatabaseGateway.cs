@@ -322,6 +322,59 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault();
         }
 
+        public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
+        {
+            var worker = new Worker
+            {
+                Role = createWorkerRequest.Role,
+                Email = createWorkerRequest.EmailAddress,
+                FirstName = createWorkerRequest.FirstName,
+                LastName = createWorkerRequest.LastName,
+                CreatedBy = createWorkerRequest.CreatedBy,
+                ContextFlag = createWorkerRequest.ContextFlag,
+                DateStart = createWorkerRequest.DateStart
+            };
+
+            var workerTeams = GetWorkersTeams(createWorkerRequest, worker);
+
+            if (workerTeams.Count == 0)
+            {
+                throw new PostWorkerException($"Worker must be assigned to a team");
+            }
+            foreach (var workerTeam in workerTeams)
+            {
+                _databaseContext.WorkerTeams.Add(workerTeam);
+            }
+
+            _databaseContext.Workers.Add(worker);
+            _databaseContext.SaveChanges();
+            return worker;
+        }
+
+        // we also have the worker teams here so need to create these and save
+        // validate team exists
+        // what if invalid team id?? - Test this
+        private ICollection<WorkerTeam> GetWorkersTeams(CreateWorkerRequest createWorkerRequest, Worker worker)
+        {
+            var teamsWorkerBelongsIn = new List<Team>();
+            foreach (var requestTeam in createWorkerRequest.Teams)
+            {
+                var teams = GetTeamsByTeamId(requestTeam.Id);
+                if (teams.Count == 0)
+                {
+                    throw new PostWorkerException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
+                }
+                teamsWorkerBelongsIn.AddRange(teams);
+            }
+
+            var workerTeams = teamsWorkerBelongsIn
+                .Select(teams => new WorkerTeam {Team = teams, Worker = worker, TeamId = teams.Id, WorkerId = worker.Id})
+                .ToList();
+
+            ICollection<WorkerTeam> workerTeamsNoDuplicates = new HashSet<WorkerTeam>(workerTeams);
+            return workerTeamsNoDuplicates;
+        }
+
         public List<Team> GetTeamsByTeamId(int teamId)
         {
             return _databaseContext.Teams
