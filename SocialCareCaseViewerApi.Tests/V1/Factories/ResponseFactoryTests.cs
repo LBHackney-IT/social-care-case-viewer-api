@@ -18,14 +18,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTests
     {
-
-        private Faker _faker;
-
         [SetUp]
         public void SetUp()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
-            _faker = new Faker();
         }
 
         [Test]
@@ -271,6 +267,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             response.Should().BeEquivalentTo(expectedResponse);
         }
 
+        [Test]
         public void CanMapPersonDetailsToGetPersonResponse()
         {
             Person person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
