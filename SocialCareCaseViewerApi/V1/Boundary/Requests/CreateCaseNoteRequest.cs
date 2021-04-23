@@ -23,6 +23,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string DateOfBirth { get; set; }
 
+        public DateTime? DateOfEvent { get; set; }
+
         [Required]
         [Range(1, int.MaxValue)]
         public int PersonId { get; set; }

@@ -176,6 +176,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Timestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
                 DateOfBirth = request.DateOfBirth?.ToString(),
+                DateOfEvent = request.DateOfEvent?.ToString(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 FormName = request.FormName,
