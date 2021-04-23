@@ -186,7 +186,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
                 .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
-                .RuleFor(p => p.Ethnicity, f => f.Address.Country())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(0, 30))
                 .RuleFor(p => p.FirstLanguage, f => f.Random.String2(10, 100))
                 .RuleFor(p => p.Religion, f => f.Random.String2(10, 80))
                 .RuleFor(p => p.EmailAddress, f => f.Person.Email)
@@ -255,7 +255,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var caseNote = CreateCaseNote();
 
             return new Faker<AddNewResidentResponse>()
-                .RuleFor(a => a.PersonId, personId ?? person.Id)
+                .RuleFor(a => a.Id, personId ?? person.Id)
                 .RuleFor(a => a.AddressId, addressId ?? address.AddressId)
                 .RuleFor(a => a.OtherNameIds, otherNameIds ?? new Faker<List<int>>())
                 .RuleFor(a => a.PhoneNumberIds, phoneNumberIds ?? new Faker<List<int>>())

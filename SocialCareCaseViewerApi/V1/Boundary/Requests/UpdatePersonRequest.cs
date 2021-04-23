@@ -25,7 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string Gender { get; set; }
 
-        [Required]
         public DateTime? DateOfBirth { get; set; }
 
         public DateTime? DateOfDeath { get; set; }
