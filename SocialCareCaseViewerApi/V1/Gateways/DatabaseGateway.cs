@@ -461,7 +461,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var workerTeams = teamsWorkerBelongsIn
-                .Select(teams => new WorkerTeam {Team = teams, Worker = worker, TeamId = teams.Id, WorkerId = worker.Id})
+                .Select(teams => new WorkerTeam { Team = teams, Worker = worker, TeamId = teams.Id, WorkerId = worker.Id })
                 .ToList();
 
             ICollection<WorkerTeam> workerTeamsNoDuplicates = new HashSet<WorkerTeam>(workerTeams);

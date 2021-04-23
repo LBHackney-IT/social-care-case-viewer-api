@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 lastName: createWorkerRequest.LastName, email: createWorkerRequest.EmailAddress, role: createWorkerRequest.Role);
             _mockDatabaseGateway.Setup(x => x.CreateWorker(createWorkerRequest)).Returns(worker);
 
-            var response =  _workersUseCase.ExecutePost(createWorkerRequest);
+            var response = _workersUseCase.ExecutePost(createWorkerRequest);
 
             response.Should().BeEquivalentTo(worker.ToDomain(true).ToResponse());
         }

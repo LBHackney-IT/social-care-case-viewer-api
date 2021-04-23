@@ -288,7 +288,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         )
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> {team} : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
 
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)

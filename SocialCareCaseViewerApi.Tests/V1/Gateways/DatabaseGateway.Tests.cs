@@ -217,7 +217,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             {
                 foreach (var team in createWorkerRequest.Teams)
                 {
-                    var createdTeam = new Team {Id = team.Id, Name = team.Name, Context = "A"};
+                    var createdTeam = new Team { Id = team.Id, Name = team.Name, Context = "A" };
                     createdTeams.Add(createdTeam);
                     SaveTeamToDatabase(createdTeam);
                 }

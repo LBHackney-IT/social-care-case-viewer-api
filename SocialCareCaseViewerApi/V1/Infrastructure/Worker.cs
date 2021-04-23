@@ -47,6 +47,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         //nav props
         public ICollection<WorkerTeam> WorkerTeams { get; set; } = null!;
 
-        public ICollection<AllocationSet> Allocations { get; set; }  = null!;
+        public ICollection<AllocationSet> Allocations { get; set; } = null!;
     }
 }

@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string EmailAddress { get; set; } = null!;
 
         [JsonPropertyName("firstName")]
-        public string FirstName { get; set; }= null!;
+        public string FirstName { get; set; } = null!;
 
         [JsonPropertyName("lastName")]
         public string LastName { get; set; } = null!;
