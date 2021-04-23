@@ -444,9 +444,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return worker;
         }
 
-        // we also have the worker teams here so need to create these and save
-        // validate team exists
-        // what if invalid team id?? - Test this
         private ICollection<WorkerTeam> GetWorkersTeams(CreateWorkerRequest createWorkerRequest, Worker worker)
         {
             var teamsWorkerBelongsIn = new List<Team>();
