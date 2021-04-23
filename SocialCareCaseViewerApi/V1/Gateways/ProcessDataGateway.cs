@@ -250,8 +250,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     bool success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEvent);
                     if (success) return dateOfEvent;
 
-                    bool successForISOFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISOFormat);
-                    if (successForISOFormat) return dateOfEventISOFormat;
+                    bool successForISODateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateTimeFormat);
+                    if (successForISODateTimeFormat) return dateOfEventISODateTimeFormat;
+
+                    bool successForISODateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateFormat);
+                    if (successForISODateFormat) return dateOfEventISODateFormat;
                 }
 
                 return null;
