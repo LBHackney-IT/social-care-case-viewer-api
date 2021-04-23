@@ -820,6 +820,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             response.Should().BeEmpty();
         }
+
+        [Test]
+        public void GetReviewsForWarningNoteIdShouldNotReturnReviewsIfNoReviewsExists()
+        {
+            var newWarningNote = TestHelpers.CreateWarningNote();
+            DatabaseContext.WarningNotes.Add(newWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetReviewsForWarningNoteId(newWarningNote.Id);
+
+            response.Should().BeEmpty();
+        }
         #endregion
 
         private Worker SaveWorkerToDatabase(Worker worker)
