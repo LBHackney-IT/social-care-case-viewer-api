@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class GetPersonResponse
     {
-        public long PersonId { get; set; }
+        public long Id { get; set; }
 
         public string Title { get; set; }
 

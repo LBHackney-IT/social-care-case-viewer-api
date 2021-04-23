@@ -150,7 +150,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Gender = person.Gender,
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber,
-                PersonId = person.Id,
+                Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,
                 Restricted = person.Restricted,
