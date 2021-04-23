@@ -175,7 +175,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             GenericCaseNote note = new GenericCaseNote()
             {
                 Timestamp = DateTime.Now.ToString("dd/MM/yyy hh:mm"),
-                DateOfBirth = request.DateOfBirth.ToString(),
+                DateOfBirth = request.DateOfBirth?.ToString(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 FormName = request.FormName,
