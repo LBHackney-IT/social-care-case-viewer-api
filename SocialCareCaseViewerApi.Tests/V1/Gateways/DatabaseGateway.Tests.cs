@@ -282,7 +282,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             AddNewResidentResponse response = _classUnderTest.AddNewResident(request);
 
-            Assert.IsNotNull(response.PersonId);
+            Assert.IsNotNull(response.Id);
 
             Assert.IsNotNull(response.OtherNameIds);
             Assert.AreEqual(2, response.OtherNameIds.Count);
@@ -293,7 +293,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(2, response.PhoneNumberIds.Count);
 
             //check that person was created with correct values
-            var person = DatabaseContext.Persons.FirstOrDefault(x => x.Id == response.PersonId);
+            var person = DatabaseContext.Persons.FirstOrDefault(x => x.Id == response.Id);
 
             Assert.IsNotNull(person);
 

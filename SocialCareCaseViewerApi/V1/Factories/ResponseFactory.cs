@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new AddNewResidentResponse
             {
-                PersonId = resident.Id,
+                Id = resident.Id,
                 AddressId = address?.AddressId,
                 OtherNameIds = names?.Count > 0 ? names.Select(x => x.Id).ToList() : null,
                 PhoneNumberIds = phoneNumbers?.Count > 0 ? phoneNumbers.Select(x => x.Id).ToList() : null,

@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var response = _addNewResidentUseCase.Execute(residentRequest);
 
-                return CreatedAtAction("GetResident", new { id = response.PersonId }, response); //TODO: return object with IDs for all related entities
+                return CreatedAtAction("GetResident", new { id = response.Id }, response); //TODO: return object with IDs for all related entities
             }
             catch (ResidentCouldNotBeinsertedException ex)
             {

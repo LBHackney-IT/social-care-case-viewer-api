@@ -255,7 +255,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var caseNote = CreateCaseNote();
 
             return new Faker<AddNewResidentResponse>()
-                .RuleFor(a => a.PersonId, personId ?? person.Id)
+                .RuleFor(a => a.Id, personId ?? person.Id)
                 .RuleFor(a => a.AddressId, addressId ?? address.AddressId)
                 .RuleFor(a => a.OtherNameIds, otherNameIds ?? new Faker<List<int>>())
                 .RuleFor(a => a.PhoneNumberIds, phoneNumberIds ?? new Faker<List<int>>())
