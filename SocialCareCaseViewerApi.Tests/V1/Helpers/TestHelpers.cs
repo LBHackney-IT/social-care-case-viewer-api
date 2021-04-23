@@ -296,10 +296,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote) CreatePatchWarningNoteRequest(
             long? warningNoteId = null,
             DateTime? reviewDate = null,
+            string? reviewedBy = null,
             DateTime? nextReviewDate = null,
             string? startingStatus = "open",
             string? requestStatus = "open",
             DateTime? endedDate = null,
+            string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
             DateTime? discussedWithManagerDate = null
@@ -312,11 +314,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var patchWarningNoteRequest = new Faker<PatchWarningNoteRequest>()
                 .RuleFor(p => p.WarningNoteId, f => warningNoteId ?? warningNote.Id)
                 .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
-                .RuleFor(p => p.ReviewedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.ReviewedBy, f => reviewedBy ?? worker.Email)
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
                 .RuleFor(p => p.Status, f => requestStatus)
                 .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
-                .RuleFor(p => p.EndedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
                 .RuleFor(p => p.ReviewNotes, f => reviewNotes ?? f.Random.String2(1, 1000))
                 .RuleFor(p => p.ManagerName, f => managerName ?? f.Random.String2(1, 100))
                 .RuleFor(p => p.DiscussedWithManagerDate, f => discussedWithManagerDate ?? f.Date.Recent());

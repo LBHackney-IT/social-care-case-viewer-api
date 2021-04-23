@@ -671,6 +671,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new PatchWarningNoteException($"Worker ({request.ReviewedBy}) not found");
             }
 
+
             warningNote.LastReviewDate = request.ReviewDate;
             warningNote.NextReviewDate = request.NextReviewDate;
             if (request.Status?.ToLower() == "closed")

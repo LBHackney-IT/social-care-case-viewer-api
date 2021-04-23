@@ -751,7 +751,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetWarningNoteByIdReturnsAReviewMadeOnTheWarningNote()
+        public void GetReviewsForWarningNoteIdReturnsASingleWarningNoteReview()
         {
             var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
 
@@ -776,6 +776,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             expectedWarningNoteReview.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
             expectedWarningNoteReview.CreatedBy.Should().Be(request.ReviewedBy);
             expectedWarningNoteReview.LastModifiedBy.Should().Be(request.ReviewedBy);
+        }
+
+        [Test]
+        public void GetReviewsForWarningNoteIdReturnsAllReviewsMadeForASpecificWarningNote()
+        {
+            var firstReviewDate = new DateTime(2005, 12, 31);
+            var (firstRequest, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(reviewDate: firstReviewDate);
+
+            var secondReviewDate = new DateTime(2006, 12, 31);
+            var (secondRequest, _, _, _) =
+                TestHelpers.CreatePatchWarningNoteRequest(warningNote.Id, secondReviewDate, worker.Email, endedBy: worker.Email, managerName: "NewManager");
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(firstRequest);
+            _classUnderTest.PatchWarningNote(secondRequest);
+
+            var response = _classUnderTest.GetReviewsForWarningNoteId(warningNote.Id);
+
+            response.Should().NotBeEmpty();
+            response.Count.Should().Be(2);
+        }
+
+        [Test]
+        public void GetReviewsForWarningNoteIdShouldNotReturnReviewsMadeForADifferentWarningNote()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
+            var differentWarningNote = TestHelpers.CreateWarningNote(person.Id);
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNotes.Add(differentWarningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.PatchWarningNote(request);
+
+            var response = _classUnderTest.GetReviewsForWarningNoteId(differentWarningNote.Id);
+
+            response.Should().BeEmpty();
         }
         #endregion
 
