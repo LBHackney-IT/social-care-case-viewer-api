@@ -10,5 +10,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     {
         [JsonProperty("date_of_birth")]
         public string DateOfBirth { get; set; }
+
+        [JsonProperty("date_of_event")]
+        public string DateOfEvent { get; set; }
     }
 }
