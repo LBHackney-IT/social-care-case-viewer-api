@@ -715,6 +715,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetWarningNoteByIdReturns200WhenSuccessful()
+        {
+            var warningNoteId = _fixture.Create<long>();
+            var stubbedResponse = _fixture.Create<WarningNoteResponse>();
+
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()))
+                .Returns(stubbedResponse);
+
+            var response = _classUnderTest.GetWarningNoteById(warningNoteId) as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(stubbedResponse);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturns404IfNoWarningNoteIsFound()
+        {
+            var warningNoteId = _fixture.Create<long>();
+
+            _mockWarningNoteUseCase
+                .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()))
+                .Throws(new DocumentNotFoundException($"No warning note found for the specified ID: {warningNoteId}"));
+
+            var response = _classUnderTest.GetWarningNoteById(warningNoteId) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be($"No warning note found for the specified ID: {warningNoteId}");
+        }
+
+        [Test]
         public void PatchWarningNoteCallsTheUseCaseAndReturns204WhenSuccessful()
         {
             var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
