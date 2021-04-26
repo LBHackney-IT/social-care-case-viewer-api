@@ -428,15 +428,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 DateStart = createWorkerRequest.DateStart
             };
 
-            var workerTeams = GetWorkersTeams(createWorkerRequest, worker);
+            var workerTeams = GetTeams(createWorkerRequest);
 
-            if (workerTeams.Count == 0)
+            worker.WorkerTeams = new List<WorkerTeam>();
+            foreach (var team in workerTeams)
             {
-                throw new PostWorkerException($"Worker must be assigned to a team");
-            }
-            foreach (var workerTeam in workerTeams)
-            {
-                _databaseContext.WorkerTeams.Add(workerTeam);
+                worker.WorkerTeams.Add(new WorkerTeam
+                {
+                    Team = team,
+                    Worker = worker
+                });
             }
 
             _databaseContext.Workers.Add(worker);
@@ -444,7 +445,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return worker;
         }
 
-        private ICollection<WorkerTeam> GetWorkersTeams(CreateWorkerRequest createWorkerRequest, Worker worker)
+        private ICollection<Team> GetTeams(CreateWorkerRequest createWorkerRequest)
         {
             var teamsWorkerBelongsIn = new List<Team>();
             foreach (var requestTeam in createWorkerRequest.Teams)
@@ -457,12 +458,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 teamsWorkerBelongsIn.AddRange(teams);
             }
 
-            var workerTeams = teamsWorkerBelongsIn
-                .Select(teams => new WorkerTeam { Team = teams, Worker = worker, TeamId = teams.Id, WorkerId = worker.Id })
-                .ToList();
-
-            ICollection<WorkerTeam> workerTeamsNoDuplicates = new HashSet<WorkerTeam>(workerTeams);
-            return workerTeamsNoDuplicates;
+            return teamsWorkerBelongsIn;
         }
 
         public List<Team> GetTeamsByTeamId(int teamId)
