@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdWorker = _workersUseCase.ExecutePost(request);
-                return CreatedAtAction("Create Worker", createdWorker);
+                return CreatedAtAction("Worker created successfully", createdWorker);
             }
             catch (PostWorkerException e)
             {
