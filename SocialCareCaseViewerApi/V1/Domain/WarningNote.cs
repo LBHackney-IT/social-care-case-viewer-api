@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Domain
 {
@@ -21,5 +23,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string ManagerName { get; set; }
         public DateTime? DiscussedWithManagerDate { get; set; }
         public string CreatedBy { get; set; }
+        public List<WarningNoteReview> WarningNoteReviews { get; set; }
     }
 }

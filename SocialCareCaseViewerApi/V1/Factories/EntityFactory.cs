@@ -95,7 +95,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static WarningNote ToDomain(this dbWarningNote dbWarningNote)
+        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview> reviews = null)
         {
             return new WarningNote
             {
@@ -115,7 +115,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 WarningNarrative = dbWarningNote.WarningNarrative,
                 ManagerName = dbWarningNote.ManagerName,
                 DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate,
-                CreatedBy = dbWarningNote.CreatedBy
+                CreatedBy = dbWarningNote.CreatedBy,
+                WarningNoteReviews = reviews ?? new List<WarningNoteReview>()
             };
         }
 

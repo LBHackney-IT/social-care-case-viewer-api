@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
-using Bogus.DataSets;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -324,6 +323,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.DiscussedWithManagerDate, f => discussedWithManagerDate ?? f.Date.Recent());
 
             return (patchWarningNoteRequest, person, worker, warningNote);
+        }
+
+        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId)
+        {
+            return new Faker<WarningNoteReview>()
+                .RuleFor(r => r.Id, f => f.UniqueIndex)
+                .RuleFor(r => r.WarningNoteId, f => warningNoteId)
+                .RuleFor(r => r.ReviewDate, f => f.Date.Future())
+                .RuleFor(r => r.DisclosedWithIndividual, f => f.Random.Bool())
+                .RuleFor(r => r.Notes, f => f.Random.String2(1, 50))
+                .RuleFor(r => r.ManagerName, f => f.Person.FullName)
+                .RuleFor(r => r.DiscussedWithManagerDate, f => f.Date.Past())
+                .RuleFor(r => r.CreatedAt, f => f.Date.Past())
+                .RuleFor(r => r.CreatedBy, f => f.Person.FullName)
+                .RuleFor(r => r.LastModifiedAt, f => f.Date.Recent())
+                .RuleFor(r => r.LastModifiedBy, f => f.Person.FullName);
         }
     }
 }

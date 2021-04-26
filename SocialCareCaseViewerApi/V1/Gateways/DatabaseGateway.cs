@@ -637,12 +637,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return warningNotes;
         }
 
-        public List<WarningNoteReview> GetReviewsForWarningNoteId(long warningNoteId)
+        public Domain.WarningNote GetWarningNoteById(long warningNoteId)
         {
-            var allReviews = _databaseContext.WarningNoteReview
-                .Where(x => x.WarningNoteId == warningNoteId);
+            var warningNote = _databaseContext.WarningNotes.FirstOrDefault(x => x.Id == warningNoteId);
 
-            return allReviews.ToList();
+            var reviews = _databaseContext.WarningNoteReview
+                .Where(x => x.WarningNoteId == warningNoteId).ToList();
+
+            return warningNote?.ToDomain(reviews);
         }
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
