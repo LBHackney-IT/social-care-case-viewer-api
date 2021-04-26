@@ -388,5 +388,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return (patchWarningNoteRequest, person, worker, warningNote);
         }
+
+        public static UpdateWorkerRequest CreateUpdateWorkersRequest(
+            bool createATeam = true,
+            int? teamId = null,
+            string? teamName = null,
+            string? email = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? contextFlag = null,
+            string? role = null,
+            DateTime? dateStart = null)
+        {
+            var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+
+            return new Faker<UpdateWorkerRequest>()
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.Teams, teams)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
+                .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Recent())
+                .RuleFor(w => w.IsActive, f => f.Random.Bool());
+        }
     }
 }
