@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
