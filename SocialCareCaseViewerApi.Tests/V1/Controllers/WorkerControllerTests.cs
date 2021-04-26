@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void CreateWorkerReturns404StatusWhenCreateWorkerExceptionThrown()
+        public void CreateWorkerReturns422StatusWhenCreateWorkerExceptionThrown()
         {
             const string errorMessage = "Failed to create worker";
             var createWorkerRequest = TestHelpers.CreateWorkerRequest();
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 throw new NullReferenceException();
             }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
+            response.StatusCode.Should().Be(422);
             response.Value.Should().Be(errorMessage);
         }
     }

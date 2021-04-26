@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (PostWorkerException e)
             {
-                return NotFound(e.Message);
+                return UnprocessableEntity(e.Message);
             }
         }
     }
