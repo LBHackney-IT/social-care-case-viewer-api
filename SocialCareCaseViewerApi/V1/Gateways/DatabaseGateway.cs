@@ -348,7 +348,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //calculated and additional values
                 FullName = $"{request.FirstName} {request.LastName}",
                 DataIsFromDmPersonsBackup = "N",
-                CreatedBy = request.CreatedBy
+                CreatedBy = request.CreatedBy,
+                Restricted = request.Restricted 
             };
         }
 

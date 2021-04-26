@@ -61,5 +61,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Required]
         [EmailAddress]
         public string CreatedBy { get; set; }
+
+        [MaxLength(1)]
+        [RegularExpression("(?i:^Y|N)", ErrorMessage = "The restricted must be 'Y' or 'N' only.")]
+        public string Restricted { get; set; } = "N";
     }
 }

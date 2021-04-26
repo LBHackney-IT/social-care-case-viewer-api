@@ -46,122 +46,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 EmailAddress = _faker.Internet.Email(),
                 PreferredMethodOfContact = "Email", //TOOD: set and test valid values?
                 ContextFlag = "A", //TOOD: set and test valid values,
-                CreatedBy = _faker.Internet.Email()
+                CreatedBy = _faker.Internet.Email(),
+                Restricted = "Y"
             };
         }
-
-        #region Model
-        [Test]
-        public void RequestHasTitle()
-        {
-            Assert.IsNull(_request.Title);
-        }
-
-        [Test]
-        public void RequestHasFirstName()
-        {
-            Assert.IsNull(_request.FirstName);
-        }
-
-        [Test]
-        public void RequestHasLastName()
-        {
-            Assert.IsNull(_request.LastName);
-        }
-
-        [Test]
-        public void RequestHasOtherNames()
-        {
-            Assert.IsNull(_request.OtherNames);
-        }
-
-        [Test]
-        public void RequestHasGender()
-        {
-            Assert.IsNull(_request.Gender);
-        }
-
-        [Test]
-        public void RequestHasDateOfBirth()
-        {
-            Assert.AreEqual(null, _request.DateOfBirth);
-        }
-
-        [Test]
-        public void RequestHasDateOfDeath()
-        {
-            Assert.IsNull(_request.DateOfDeath);
-        }
-
-
-        [Test]
-        public void RequestHasEthnicity()
-        {
-            Assert.IsNull(_request.Ethnicity);
-        }
-
-        [Test]
-        public void RequestHasFirstLanguage()
-        {
-            Assert.IsNull(_request.FirstLanguage);
-        }
-
-        [Test]
-        public void RequestHasReligion()
-        {
-            Assert.IsNull(_request.Religion);
-        }
-
-        [Test]
-        public void RequestHasSexualOrientation()
-        {
-            Assert.IsNull(_request.SexualOrientation);
-        }
-
-        [Test]
-        public void RequestHasNHSNumber()
-        {
-            Assert.IsNull(_request.NhsNumber);
-        }
-
-        [Test]
-        public void RequestHasAddress()
-        {
-            Assert.IsNull(_request.Address);
-        }
-
-        [Test]
-        public void RequestHasPhoneNumbers()
-        {
-            Assert.IsNull(_request.PhoneNumbers);
-        }
-
-        [Test]
-        public void RequestHasEmailAddress()
-        {
-            Assert.IsNull(_request.EmailAddress);
-        }
-
-        [Test]
-        public void RequestHasPreferredMethodOfContact()
-        {
-            Assert.IsNull(_request.PreferredMethodOfContact);
-        }
-
-        [Test]
-        public void RequestHasContextFlag()
-        {
-            Assert.IsNull(_request.ContextFlag);
-        }
-
-        [Test]
-        public void RequestHasCreatedBy()
-        {
-            Assert.IsNull(_request.CreatedBy);
-        }
-        #endregion
-
-        #region Model validation
 
         [Test]
         public void ValidationPassesWhenAllPropertiesAreSetWithValidValues()
@@ -266,6 +154,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.First().ErrorMessage == "The CreatedBy field is not a valid e-mail address.");
         }
-        #endregion
+
+        [Test]
+        [TestCase("Y")]
+        [TestCase("N")]
+        public void ModelValidationSucceedsIfRestrictedIsProvidedAndTheValueIsValid(string restricted)
+        {
+            var request = GetValidRequest();
+            request.Restricted = restricted;
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 0);
+        }
+
+        [Test]
+        public void ModelValidationFailsIfRestrictedIsProvidedButTheValueIsNotEitherYorN()
+        {
+            var request = GetValidRequest();
+            request.Restricted = "X";
+
+            var errors = ValidationHelper.ValidateModel(request);
+            Assert.IsTrue(errors.Count == 1);
+            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The restricted must be 'Y' or 'N' only")));
+        }
     }
 }
