@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -21,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void UpdateWorkerReturns400WhenInvalidRequest()
+        public void UpdateWorkerReturnsIsNotValidForInvalidRequest()
         {
             const string longEmail = "thisEmailIsLongerThan62CharactersAndAlsoValid@HereIAmJustCreatingMoreCharacters.com";
 
@@ -60,6 +59,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 validationResponse.ToString().Should().Be(errorMessage);
             }
 
+        }
+
+        [Test]
+        public void UpdateWorkerReturnsIsValidForValidRequest()
+        {
+            var request = TestHelpers.CreateUpdateWorkersRequest();
+            var validator = new UpdateWorkerRequestValidator();
+
+            var validationResponse = validator.Validate(request);
+
+            if (validationResponse == null)
+            {
+                throw new NullReferenceException();
+            }
+            validationResponse.Should().NotBeNull();
+            validationResponse.IsValid.Should().Be(true);
         }
     }
 }

@@ -20,7 +20,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("contextFlag")]
         public string ContextFlag { get; set; } = null!;
 
-        // can a worker only be part of a single team??
         [JsonPropertyName("teams")]
         public List<WorkerTeamRequest> Teams { get; set; } = null!;
 
