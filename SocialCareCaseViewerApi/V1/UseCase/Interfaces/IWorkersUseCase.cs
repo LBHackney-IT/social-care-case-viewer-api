@@ -6,5 +6,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     public interface IWorkersUseCase
     {
         WorkerResponse ExecutePost(CreateWorkerRequest createWorkerRequest);
+
+        void ExecutePatch(UpdateWorkerRequest updateWorkerRequest);
     }
 }
