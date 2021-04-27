@@ -144,10 +144,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapWarningNoteFromDatabaseEntityToDomainObject()
         {
             long number = _faker.Random.Number();
-            DateTime dt = DateTime.Now;
-            string text = _faker.Random.String();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
 
-            var dbWarningNote = new dbWarningNote()
+            var dbWarningNote = new dbWarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -156,6 +156,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -163,10 +164,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
             };
 
-            var expectedResponse = new WarningNote()
+            var expectedResponse = new WarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -175,6 +177,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -182,7 +185,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
             };
 
             var response = dbWarningNote.ToDomain();

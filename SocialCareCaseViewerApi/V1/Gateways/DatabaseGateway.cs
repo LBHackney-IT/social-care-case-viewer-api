@@ -584,11 +584,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             //TODO: Extract request to domain process to EntityFactory
-            WarningNote warningNote = new WarningNote()
+            WarningNote warningNote = new WarningNote
             {
                 PersonId = request.PersonId,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
+                ReviewDate = request.ReviewDate,
+                NextReviewDate = request.NextReviewDate,
                 DisclosedWithIndividual = request.DisclosedWithIndividual,
                 DisclosedDetails = request.DisclosedDetails,
                 Notes = request.Notes,

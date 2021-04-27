@@ -106,6 +106,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisclosedWithIndividual = dbWarningNote.DisclosedWithIndividual,
                 DisclosedDetails = dbWarningNote.DisclosedDetails,
                 Notes = dbWarningNote.Notes,
+                ReviewDate = dbWarningNote.ReviewDate,
                 NextReviewDate = dbWarningNote.NextReviewDate,
                 NoteType = dbWarningNote.NoteType,
                 Status = dbWarningNote.Status,
@@ -113,7 +114,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisclosedHow = dbWarningNote.DisclosedHow,
                 WarningNarrative = dbWarningNote.WarningNarrative,
                 ManagerName = dbWarningNote.ManagerName,
-                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate
+                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate,
+                CreatedBy = dbWarningNote.CreatedBy
             };
         }
 

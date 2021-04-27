@@ -285,7 +285,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DisclosedDetails, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.Notes, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.NoteType, f => f.Random.String2(1, 50))
-                .RuleFor(w => w.Status, f => status ?? f.Random.String2(1, 50))
+                .RuleFor(w => w.Status, f => status ?? "open")
                 .RuleFor(w => w.DisclosedDate, f => f.Date.Recent())
                 .RuleFor(w => w.DisclosedHow, f => f.Random.String2(1, 50))
                 .RuleFor(w => w.WarningNarrative, f => f.Random.String2(1, 1000))
