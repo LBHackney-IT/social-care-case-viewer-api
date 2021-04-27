@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_worker", Schema = "dbo")]
-    public class Worker
+    public class Worker : IAuditEntity
     {
         [Column("id")]
         [MaxLength(16)]
@@ -29,6 +29,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public string LastName { get; set; } = null!;
 
+        [Column("is_active")]
+        [Required]
+        public bool IsActive { get; set; }
+
         [Column("role")]
         [MaxLength(200)]
         public string? Role { get; set; }
@@ -43,6 +47,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("date_start")]
         public DateTime? DateStart { get; set; }
+
+        [Column("date_end")]
+        public DateTime? DateEnd { get; set; }
+
+        public string LastModifiedBy { get; set; } = null!;
+
+        // save changes override populates created at and lost modified at
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
 
         //nav props
         public ICollection<WorkerTeam> WorkerTeams { get; set; } = null!;

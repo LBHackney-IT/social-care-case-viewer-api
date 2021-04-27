@@ -423,9 +423,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Email = createWorkerRequest.EmailAddress,
                 FirstName = createWorkerRequest.FirstName,
                 LastName = createWorkerRequest.LastName,
+                IsActive = true,
                 CreatedBy = createWorkerRequest.CreatedBy,
                 ContextFlag = createWorkerRequest.ContextFlag,
-                DateStart = createWorkerRequest.DateStart
+                DateStart = createWorkerRequest.DateStart,
+                DateEnd = null,
+                LastModifiedBy = createWorkerRequest.CreatedBy
             };
 
             var workerTeams = GetTeams(createWorkerRequest);
