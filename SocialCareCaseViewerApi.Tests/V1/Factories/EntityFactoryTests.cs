@@ -196,6 +196,59 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void CanMapPostWarningNoteRequestToDatabaseObject()
+        {
+            long number = _faker.Random.Number();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
+
+            var request = new PostWarningNoteRequest
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                Status = text,
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var expectedResponse = new dbWarningNote
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                Status = "open",
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var response = request.ToDatabaseEntity();
+
+            response.Should().BeOfType<dbWarningNote>();
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
         public void CanMapPhoneNumberFromDatabaseEntityToDomainObject()
         {
             dbPhoneNumber phoneNumber = DatabaseGatewayHelper.CreatePhoneNumberEntity(_faker.Random.Long());

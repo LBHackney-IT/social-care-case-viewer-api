@@ -201,6 +201,29 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormData = coreProps.ToString()
             };
         }
+
+        public static dbWarningNote ToDatabaseEntity(this PostWarningNoteRequest request)
+        {
+            return new dbWarningNote
+            {
+                PersonId = request.PersonId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                ReviewDate = request.ReviewDate,
+                NextReviewDate = request.NextReviewDate,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
+                DisclosedDetails = request.DisclosedDetails,
+                Notes = request.Notes,
+                NoteType = request.NoteType,
+                Status = "open",
+                DisclosedDate = request.DisclosedDate,
+                DisclosedHow = request.DisclosedHow,
+                WarningNarrative = request.WarningNarrative,
+                ManagerName = request.ManagerName,
+                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
+                CreatedBy = request.CreatedBy
+            };
+        }
         #endregion
     }
 }
