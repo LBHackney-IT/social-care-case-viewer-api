@@ -393,6 +393,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             bool createATeam = true,
             int? teamId = null,
             string? teamName = null,
+            int? workerId = null,
+            string? modifiedBy = null,
             string? email = null,
             string? firstName = null,
             string? lastName = null,
@@ -404,6 +406,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
 
             return new Faker<UpdateWorkerRequest>()
+                .RuleFor(w => w.WorkerId, f => workerId ?? f.UniqueIndex + 1)
+                .RuleFor(w => w.ModifiedBy, f => modifiedBy ?? f.Person.Email)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
