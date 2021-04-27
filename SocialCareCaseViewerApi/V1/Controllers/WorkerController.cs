@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <param name="request"></param>
         /// <response code="201">Worker created successfully</response>
         /// <response code="400">Invalid CreateWorkerRequest received</response>
-        /// <response code="404">Exception encountered finding worker team</response>
+        /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(WorkerResponse), StatusCodes.Status201Created)]
         [HttpPost]
         public IActionResult CreateWorker([FromBody] CreateWorkerRequest request)
