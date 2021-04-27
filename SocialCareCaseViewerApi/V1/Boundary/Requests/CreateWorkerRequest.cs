@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                     team.RuleFor(t => t.Id).GreaterThan(0).WithMessage("Team ID must be greater than 0");
                     team.RuleFor(t => t.Name).NotNull().WithMessage("Team must be provided with a name");
                     team.RuleFor(t => t.Name).MinimumLength(1).WithMessage("Team must be provided with a name");
-                    team.RuleFor(t => t.Name).MaximumLength(200).WithMessage("Team name must be no more than 100 characters");
+                    team.RuleFor(t => t.Name).MaximumLength(200).WithMessage("Team name must be no more than 200 characters");
                 });
             RuleFor(w => w.Role)
                 .NotNull().WithMessage("Role must be provided")

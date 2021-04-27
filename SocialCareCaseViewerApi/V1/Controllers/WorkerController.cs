@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -45,13 +42,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdWorker = _workersUseCase.ExecutePost(request);
-                return CreatedAtAction("Create Worker", createdWorker);
+                return CreatedAtAction("Worker created successfully", createdWorker);
             }
             catch (PostWorkerException e)
             {
-                return NotFound(e.Message);
+                return UnprocessableEntity(e.Message);
             }
         }
-
     }
 }
