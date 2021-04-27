@@ -51,10 +51,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("date_end")]
         public DateTime? DateEnd { get; set; }
 
+        [Column("last_modified_by")]
         public string LastModifiedBy { get; set; } = null!;
 
         // save changes override populates created at and lost modified at
+
+        [Column("created_at")]
         public DateTime? CreatedAt { get; set; }
+
+        [Column("last_modified_at")]
         public DateTime? LastModifiedAt { get; set; }
 
         //nav props
