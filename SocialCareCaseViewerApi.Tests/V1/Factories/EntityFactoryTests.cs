@@ -214,7 +214,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
-                Status = text,
                 DisclosedDate = dt,
                 DisclosedHow = text,
                 WarningNarrative = text,
