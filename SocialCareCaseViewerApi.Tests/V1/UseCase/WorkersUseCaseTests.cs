@@ -62,16 +62,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Verify(x => x.UpdateWorker(updateWorkerRequest));
             _mockDatabaseGateway.Verify(x => x.UpdateWorker(It.Is<UpdateWorkerRequest>(w => w == updateWorkerRequest)), Times.Once());
         }
-
-        [Test]
-        public void ExecutePatchReturnsNothingOnSuccess()
-        {
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
-            _mockDatabaseGateway.Setup(x => x.UpdateWorker(updateWorkerRequest));
-
-            var response = _workersUseCase.ExecutePatch(updateWorkerRequest);
-
-            response.Should().BeNull();
-        }
     }
 }
