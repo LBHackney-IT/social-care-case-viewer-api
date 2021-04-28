@@ -468,7 +468,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with {request.WorkerId} not found");
+                throw new WorkerNotFoundException($"Worker with Id {request.WorkerId} not found");
             }
 
             worker.Email = request.EmailAddress;
@@ -488,6 +488,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 worker.WorkerTeams.Add(new WorkerTeam {Team = team, Worker = worker});
             }
+
+            _databaseContext.SaveChanges();
         }
 
         private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)
@@ -747,8 +749,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
         {
-            WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId)
-                .FirstOrDefault();
+            WarningNote warningNote = _databaseContext.WarningNotes.First(x => x.Id == request.WarningNoteId);
 
             if (warningNote == null)
             {

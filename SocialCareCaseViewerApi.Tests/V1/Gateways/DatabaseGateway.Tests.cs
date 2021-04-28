@@ -235,29 +235,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Teams.Add(team);
             DatabaseContext.SaveChanges();
 
-            var workerTeamRequest = _fixture.Build<WorkerTeamRequest>()
-                .With(x => x.Id, worker.WorkerTeams.FirstOrDefault().TeamId)
-                .Create();
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.Should().BeEquivalentTo(worker);
 
-            var request = _fixture.Build<UpdateWorkerRequest>()
-                .With(x => x.WorkerId, worker.Id)
-                .With(x => x.Teams, new List<WorkerTeamRequest> {workerTeamRequest})
-                .With(x => x.IsActive, true)
-                .Create();
-
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id);
             _classUnderTest.UpdateWorker(request);
-            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
 
-            response.Email.Should().BeEquivalentTo(request.EmailAddress);
-            response.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
-            response.FirstName.Should().BeEquivalentTo(request.FirstName);
-            response.LastName.Should().BeEquivalentTo(request.LastName);
-            response.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
-            response.Role.Should().BeEquivalentTo(request.Role);
-            response.DateStart.Should().Be(request.DateStart);
-            response.DateEnd.Should().BeNull();
-            response.IsActive.Should().Be(request.IsActive);
-            response.WorkerTeams.Should().BeEquivalentTo(request.Teams);
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+
+            updatedWorker.Should().NotBeEquivalentTo(originalWorker);
+
+            updatedWorker.Email.Should().BeEquivalentTo(request.EmailAddress);
+            updatedWorker.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
+            updatedWorker.FirstName.Should().BeEquivalentTo(request.FirstName);
+            updatedWorker.LastName.Should().BeEquivalentTo(request.LastName);
+            updatedWorker.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
+            updatedWorker.Role.Should().BeEquivalentTo(request.Role);
+            updatedWorker.DateStart.Should().Be(request.DateStart);
+            updatedWorker.DateEnd.Should().BeNull();
+            updatedWorker.IsActive.Should().Be(request.IsActive);
+
+            var updatedWorkerTeam = updatedWorker.WorkerTeams.First();
+            var requestTeam = request.Teams.First();
+            updatedWorkerTeam.TeamId.Should().Be(requestTeam.Id);
+            updatedWorkerTeam.WorkerId.Should().Be(worker.Id);
+            updatedWorkerTeam.Team.Should().Be(team);
+            updatedWorkerTeam.Worker.Should().Be(worker);
         }
 
         private (CreateWorkerRequest, List<Team>) CreateWorkerRequestAndAddTeamsToDatabase(
