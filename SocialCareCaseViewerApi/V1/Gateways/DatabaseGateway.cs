@@ -45,21 +45,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PersonDateOfBirth = x.Person.DateOfBirth,
-                        PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
-                        AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName }",
-                        AllocatedWorkerTeam = x.Team.Name,
-                        WorkerType = x.Worker.Role,
-                        AllocationStartDate = x.AllocationStartDate,
-                        AllocationEndDate = x.AllocationEndDate,
-                        CaseStatus = x.CaseStatus,
-                        PersonAddress = x.Person.Addresses.FirstOrDefault(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") == null ? null : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y").AddressLines
-                    }
+                        {
+                            Id = x.Id,
+                            PersonId = x.PersonId,
+                            PersonDateOfBirth = x.Person.DateOfBirth,
+                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
+                            AllocatedWorkerTeam = x.Team.Name,
+                            WorkerType = x.Worker.Role,
+                            AllocationStartDate = x.AllocationStartDate,
+                            AllocationEndDate = x.AllocationEndDate,
+                            CaseStatus = x.CaseStatus,
+                            PersonAddress =
+                                x.Person.Addresses.FirstOrDefault(x =>
+                                    !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") ==
+                                null
+                                    ? null
+                                    : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
+                                        .AddressLines
+                        }
                     ).AsNoTracking().ToList();
-
             }
             else if (workerId != 0)
             {
@@ -69,19 +74,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PersonDateOfBirth = x.Person.DateOfBirth,
-                        PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
-                        AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName }",
-                        AllocatedWorkerTeam = x.Team.Name,
-                        WorkerType = x.Worker.Role,
-                        AllocationStartDate = x.AllocationStartDate,
-                        AllocationEndDate = x.AllocationEndDate,
-                        CaseStatus = x.CaseStatus,
-                        PersonAddress = x.Person.Addresses.FirstOrDefault(x => !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") == null ? null : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y").AddressLines
-                    }
+                        {
+                            Id = x.Id,
+                            PersonId = x.PersonId,
+                            PersonDateOfBirth = x.Person.DateOfBirth,
+                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
+                            AllocatedWorkerTeam = x.Team.Name,
+                            WorkerType = x.Worker.Role,
+                            AllocationStartDate = x.AllocationStartDate,
+                            AllocationEndDate = x.AllocationEndDate,
+                            CaseStatus = x.CaseStatus,
+                            PersonAddress =
+                                x.Person.Addresses.FirstOrDefault(x =>
+                                    !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") ==
+                                null
+                                    ? null
+                                    : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
+                                        .AddressLines
+                        }
                     ).AsNoTracking().ToList();
             }
 
@@ -123,7 +134,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(person =>
                     string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
                 .Where(person =>
-                    string.IsNullOrEmpty(dateOfBirth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
+                    string.IsNullOrEmpty(dateOfBirth) ||
+                    EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
                 .Where(person =>
                     string.IsNullOrEmpty(mosaicid) || EF.Functions.ILike(person.Id.ToString(), mosaicIdSearchPattern))
                 .Where(person =>
@@ -150,7 +162,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return $"%{str?.Replace(" ", "")}%";
         }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Include case note creation error as a message to the response until this is refactored to new pattern")]
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types",
+            Justification =
+                "Include case note creation error as a message to the response until this is refactored to new pattern")]
         //Handle case note creation exception like below for now
         public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
         {
@@ -166,10 +180,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 if (request.Address != null)
                 {
                     address = AddResidentAddress(request.Address, resident.Id, request.CreatedBy);
-                    resident.Addresses = new List<Address>
-                    {
-                        address
-                    };
+                    resident.Addresses = new List<Address> {address};
                 }
 
                 if (request.OtherNames?.Count > 0)
@@ -178,6 +189,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     resident.OtherNames = new List<PersonOtherName>();
                     resident.OtherNames.AddRange(names);
                 }
+
                 if (request.PhoneNumbers?.Count > 0)
                 {
                     phoneNumbers = AddPhoneNumbers(request.PhoneNumbers, resident.Id, request.CreatedBy);
@@ -190,8 +202,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             catch (DbUpdateException ex)
             {
-                throw new ResidentCouldNotBeinsertedException($"Error with inserting resident record has occurred - {ex.Message}");
+                throw new ResidentCouldNotBeinsertedException(
+                    $"Error with inserting resident record has occurred - {ex.Message}");
             }
+
             string caseNoteId = null;
             string caseNoteErrorMessage = null;
 
@@ -224,7 +238,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             catch (Exception ex)
             {
-                caseNoteErrorMessage = $"Unable to create a case note for creating a person {resident.Id}: {ex.Message}";
+                caseNoteErrorMessage =
+                    $"Unable to create a case note for creating a person {resident.Id}: {ex.Message}";
             }
 
             return resident.ToResponse(address, names, phoneNumbers, caseNoteId, caseNoteErrorMessage);
@@ -233,11 +248,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public void UpdatePerson(UpdatePersonRequest request)
         {
             Person person = _databaseContext
-                 .Persons
-                 .Include(x => x.Addresses)
-                 .Include(x => x.PhoneNumbers)
-                 .Include(x => x.OtherNames)
-                 .FirstOrDefault(x => x.Id == request.Id);
+                .Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.OtherNames)
+                .FirstOrDefault(x => x.Id == request.Id);
 
             if (person == null)
             {
@@ -291,20 +306,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (displayAddress == null)
                 {
-                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
+                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                        request.Address.Uprn, request.CreatedBy));
                 }
                 else
                 {
                     //has address changed?
                     if (!(request.Address.Address == displayAddress.AddressLines
-                            && request.Address.Postcode == displayAddress.PostCode
-                            && displayAddress.Uprn == request.Address.Uprn))
+                          && request.Address.Postcode == displayAddress.PostCode
+                          && displayAddress.Uprn == request.Address.Uprn))
                     {
                         displayAddress.IsDisplayAddress = "N";
                         displayAddress.EndDate = DateTime.Now;
                         displayAddress.LastModifiedBy = request.CreatedBy;
 
-                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode, request.Address.Uprn, request.CreatedBy));
+                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                            request.Address.Uprn, request.CreatedBy));
                     }
                 }
             }
@@ -368,7 +385,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public static List<PersonOtherName> AddOtherNames(List<OtherName> names, long personId, string createdBy)
         {
-            return names.Where(x => x.FirstName != null || x.LastName != null).Select(x => x.ToEntity(personId, createdBy)).ToList();
+            return names.Where(x => x.FirstName != null || x.LastName != null)
+                .Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
         public static List<dbPhoneNumber> AddPhoneNumbers(List<PhoneNumber> numbers, long personId, string createdBy)
@@ -436,11 +454,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.WorkerTeams = new List<WorkerTeam>();
             foreach (var team in workerTeams)
             {
-                worker.WorkerTeams.Add(new WorkerTeam
-                {
-                    Team = team,
-                    Worker = worker
-                });
+                worker.WorkerTeams.Add(new WorkerTeam {Team = team, Worker = worker});
             }
 
             _databaseContext.Workers.Add(worker);
@@ -450,8 +464,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void UpdateWorker(UpdateWorkerRequest request)
         {
-            // exception if worker is null
             var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.WorkerId);
+
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with {request.WorkerId} not found");
+            }
+
             worker.Email = request.EmailAddress;
             worker.LastModifiedBy = request.ModifiedBy;
             worker.FirstName = request.FirstName;
@@ -467,11 +486,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.WorkerTeams = new List<WorkerTeam>();
             foreach (var team in workerTeams)
             {
-                worker.WorkerTeams.Add(new WorkerTeam
-                {
-                    Team = team,
-                    Worker = worker
-                });
+                worker.WorkerTeams.Add(new WorkerTeam {Team = team, Worker = worker});
             }
         }
 
@@ -485,6 +500,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     throw new GetTeamException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
                 }
+
                 teamsWorkerBelongsIn.AddRange(teams);
             }
 
@@ -508,7 +524,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             foreach (var worker in workers)
             {
-                allocationsPerWorker.Add(new { WorkerId = worker.Id, AllocationCount = _databaseContext.Allocations.Where(x => x.WorkerId == worker.Id).Count() });
+                allocationsPerWorker.Add(new
+                {
+                    WorkerId = worker.Id,
+                    AllocationCount = _databaseContext.Allocations.Where(x => x.WorkerId == worker.Id).Count()
+                });
             }
 
             return allocationsPerWorker;
@@ -554,17 +574,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     MosaicId = person.Id.ToString(),
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = allocatedBy.Email,
-                    Note = $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                    Note =
+                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
                     AllocationId = allocation.Id.ToString(),
                     CreatedBy = request.CreatedBy
                 };
 
-                var caseNotesDocument = new CaseNotesDocument()
-                {
-                    CaseFormData = JsonConvert.SerializeObject(note)
-                };
+                var caseNotesDocument = new CaseNotesDocument() {CaseFormData = JsonConvert.SerializeObject(note)};
 
                 response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
                 response.AllocationId = allocation.Id;
@@ -575,7 +593,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 _databaseContext.Allocations.Remove(allocation);
                 _databaseContext.SaveChanges();
 
-                throw new UpdateAllocationException($"Unable to create a case note. Allocation not created: {ex.Message}");
+                throw new UpdateAllocationException(
+                    $"Unable to create a case note. Allocation not created: {ex.Message}");
             }
 
             return response;
@@ -623,10 +642,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         CreatedBy = request.CreatedBy
                     };
 
-                    var caseNotesDocument = new CaseNotesDocument()
-                    {
-                        CaseFormData = JsonConvert.SerializeObject(note)
-                    };
+                    var caseNotesDocument = new CaseNotesDocument() {CaseFormData = JsonConvert.SerializeObject(note)};
 
                     response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
                 }
@@ -637,7 +653,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     _databaseContext.SaveChanges();
 
-                    throw new UpdateAllocationException($"Unable to create a case note. Allocation not updated: {ex.Message}");
+                    throw new UpdateAllocationException(
+                        $"Unable to create a case note. Allocation not updated: {ex.Message}");
                 }
             }
             catch (Exception ex)
@@ -649,6 +666,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         #region Warning Notes
+
         public PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request)
         {
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
@@ -680,10 +698,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.WarningNotes.Add(warningNote);
             _databaseContext.SaveChanges();
 
-            PostWarningNoteResponse response = new PostWarningNoteResponse()
-            {
-                WarningNoteId = warningNote.Id
-            };
+            PostWarningNoteResponse response = new PostWarningNoteResponse() {WarningNoteId = warningNote.Id};
 
             // try
             // {
@@ -724,14 +739,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var warningNotes = _databaseContext.WarningNotes
                 .Where(x => x.PersonId == personId);
 
-            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
+            if (warningNotes.FirstOrDefault() == null)
+                throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
 
             return warningNotes;
         }
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
         {
-            WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId).FirstOrDefault();
+            WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId)
+                .FirstOrDefault();
 
             if (warningNote == null)
             {
@@ -740,7 +757,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (warningNote.Status == "closed")
             {
-                throw new PatchWarningNoteException($"Warning Note with given id ({request.WarningNoteId}) has already been closed");
+                throw new PatchWarningNoteException(
+                    $"Warning Note with given id ({request.WarningNoteId}) has already been closed");
             }
 
             Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == warningNote.PersonId);
@@ -763,6 +781,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 warningNote.EndDate = request.EndedDate;
                 warningNote.NextReviewDate = null;
             }
+
             warningNote.LastModifiedBy = request.ReviewedBy;
 
             var review = PostWarningNoteReview(request);
@@ -785,6 +804,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         #endregion
+
         public Person GetPersonDetailsById(long id)
         {
             //load related entities to minimise SQL calls
@@ -817,8 +837,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private static string ToTitleCaseFullPersonName(string firstName, string lastName)
         {
-            string first = string.IsNullOrWhiteSpace(firstName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower());
-            string last = string.IsNullOrWhiteSpace(lastName) ? null : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());
+            string first = string.IsNullOrWhiteSpace(firstName)
+                ? null
+                : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstName.ToLower());
+            string last = string.IsNullOrWhiteSpace(lastName)
+                ? null
+                : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastName.ToLower());
 
             return (first + " " + last).TrimStart().TrimEnd();
         }
@@ -843,16 +867,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CreateAllocationException($"Person with given id ({request.MosaicId}) not found");
             }
 
-            var allocatedBy = _databaseContext.Workers.Where(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper())).FirstOrDefault();
+            var allocatedBy = _databaseContext.Workers.Where(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()))
+                .FirstOrDefault();
             if (allocatedBy == null)
             {
-                throw new CreateAllocationException($"Worker with given allocated by email address ({request.CreatedBy}) not found");
+                throw new CreateAllocationException(
+                    $"Worker with given allocated by email address ({request.CreatedBy}) not found");
             }
 
             return (worker, team, person, allocatedBy);
         }
 
-        private (Person, Worker) GetUpdateAllocationRequirements(AllocationSet allocation, UpdateAllocationRequest request)
+        private (Person, Worker) GetUpdateAllocationRequirements(AllocationSet allocation,
+            UpdateAllocationRequest request)
         {
             if (allocation.CaseStatus?.ToUpper() == "CLOSED")
             {
@@ -872,7 +899,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdateAllocationException("Person not found");
             }
 
-            var createdBy = _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
+            var createdBy =
+                _databaseContext.Workers.FirstOrDefault(x => x.Email.ToUpper().Equals(request.CreatedBy.ToUpper()));
             if (createdBy == null)
             {
                 throw new UpdateAllocationException("CreatedBy not found");
