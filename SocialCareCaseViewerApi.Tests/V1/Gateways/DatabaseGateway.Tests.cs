@@ -228,7 +228,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker();
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
             var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
-            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -254,7 +254,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker(isActive: true);
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
             var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
-            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -306,7 +306,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             {
                 foreach (var team in createWorkerRequest.Teams)
                 {
-                    var createdTeam = new Team {Id = team.Id, Name = team.Name, Context = "A"};
+                    var createdTeam = new Team { Id = team.Id, Name = team.Name, Context = "A" };
                     createdTeams.Add(createdTeam);
                     SaveTeamToDatabase(createdTeam);
                 }
@@ -323,7 +323,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetTeamsByTeamId(team.Id);
 
-            response.Should().BeEquivalentTo(new List<Team> {team});
+            response.Should().BeEquivalentTo(new List<Team> { team });
         }
 
         [Test]
@@ -345,7 +345,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 SaveWorkerTeamToDatabase(
                     DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id,
                         worker: workerTwo));
-            var workerTeams = new List<WorkerTeam> {workerTeamOne, workerTeamTwo};
+            var workerTeams = new List<WorkerTeam> { workerTeamOne, workerTeamTwo };
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
 
             var responseTeams = _classUnderTest.GetTeamsByTeamId(team.Id);
@@ -454,10 +454,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             const string gender = "M";
 
-            OtherName otherNameOne = new OtherName() {FirstName = otherNameFirstOne, LastName = otherNameLastOne};
-            OtherName otherNameTwo = new OtherName() {FirstName = otherNameFirstTwo, LastName = otherNameLastTwo};
+            OtherName otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
+            OtherName otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
 
-            List<OtherName> otherNames = new List<OtherName>() {otherNameOne, otherNameTwo};
+            List<OtherName> otherNames = new List<OtherName>() { otherNameOne, otherNameTwo };
 
             DateTime dateOfBirth = DateTime.Now.AddYears(-70);
             DateTime dateOfDeath = DateTime.Now.AddDays(-10);
@@ -474,7 +474,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string isDiplayAddress = "Y";
             string dataIsFromDmPersonsBackup = "N";
 
-            AddressDomain address = new AddressDomain() {Address = addressLine, Postcode = postCode, Uprn = uprn};
+            AddressDomain address = new AddressDomain() { Address = addressLine, Postcode = postCode, Uprn = uprn };
 
             string phoneNumberOne = "07755555555";
             string phoneNumberTypeOne = "Mobile";
@@ -776,9 +776,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var testPersonId = _faker.Random.Int();
             var differentPersonId = _faker.Random.Int();
 
-            var warningNote = new WarningNote {PersonId = testPersonId};
+            var warningNote = new WarningNote { PersonId = testPersonId };
 
-            var wrongWarningNote = new WarningNote {PersonId = differentPersonId};
+            var wrongWarningNote = new WarningNote { PersonId = differentPersonId };
 
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNotes.Add(wrongWarningNote);
@@ -797,11 +797,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var testPersonId = _faker.Random.Int();
             var differentPersonId = _faker.Random.Int();
 
-            var firstNote = new WarningNote {PersonId = testPersonId, Notes = "I am one note"};
+            var firstNote = new WarningNote { PersonId = testPersonId, Notes = "I am one note" };
 
-            var secondNote = new WarningNote {PersonId = testPersonId, Notes = "I am another note"};
+            var secondNote = new WarningNote { PersonId = testPersonId, Notes = "I am another note" };
 
-            var separateWarningNote = new WarningNote {PersonId = differentPersonId};
+            var separateWarningNote = new WarningNote { PersonId = differentPersonId };
 
             DatabaseContext.WarningNotes.Add(firstNote);
             DatabaseContext.WarningNotes.Add(secondNote);
@@ -822,7 +822,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var testPersonId = _faker.Random.Int();
             var differentPersonId = _faker.Random.Int();
 
-            var warningNote = new WarningNote {PersonId = testPersonId};
+            var warningNote = new WarningNote { PersonId = testPersonId };
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.SaveChanges();
 
@@ -1058,7 +1058,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
         {
-            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() {Id = _faker.Random.Long()});
+            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
 
             act.Should().Throw<UpdatePersonException>().WithMessage("Person not found");
         }
