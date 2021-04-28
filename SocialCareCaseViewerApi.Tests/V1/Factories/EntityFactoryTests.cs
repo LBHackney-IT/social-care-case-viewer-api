@@ -186,7 +186,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 WarningNarrative = text,
                 ManagerName = text,
                 DiscussedWithManagerDate = dt,
-                CreatedBy = text
+                CreatedBy = text,
+                WarningNoteReviews = new List<WarningNoteReview>()
             };
 
             var response = dbWarningNote.ToDomain();

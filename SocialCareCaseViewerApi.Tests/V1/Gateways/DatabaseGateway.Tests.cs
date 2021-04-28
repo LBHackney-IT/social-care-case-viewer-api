@@ -12,6 +12,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
@@ -748,6 +749,94 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
             insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
             insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnTheSpecifiedWarningNote()
+        {
+            var newWarningNote = TestHelpers.CreateWarningNote();
+            DatabaseContext.WarningNotes.Add(newWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var expectedResponse = newWarningNote.ToDomain();
+
+            var response = _classUnderTest.GetWarningNoteById(newWarningNote.Id);
+
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(expectedResponse);
+            response.WarningNoteReviews.Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsNullWhenThereAreNoMatchingRecords()
+        {
+            var response = _classUnderTest.GetWarningNoteById(123);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsAReviewWithTheWarningNoteIfAny()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+
+            var review = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNoteReview.Add(review);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(1);
+            response.WarningNoteReviews.FirstOrDefault().Should().BeEquivalentTo(review);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsReturnsMultipleReviewsWithTheWarningNote()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+            var firstReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNoteReview.Add(firstReview);
+            DatabaseContext.WarningNoteReview.Add(secondReview);
+            DatabaseContext.WarningNoteReview.Add(thirdReview);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(3);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(firstReview);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(secondReview);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(thirdReview);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdShouldNotReturnReviewsMadeForADifferentWarningNote()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+            var differentWarningNote = TestHelpers.CreateWarningNote();
+
+            var review = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var differentReview = TestHelpers.CreateWarningNoteReview(differentWarningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNotes.Add(differentWarningNote);
+            DatabaseContext.WarningNoteReview.Add(review);
+            DatabaseContext.WarningNoteReview.Add(differentReview);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(1);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(review);
+            response.WarningNoteReviews.Should().NotContain(differentReview);
         }
         #endregion
 

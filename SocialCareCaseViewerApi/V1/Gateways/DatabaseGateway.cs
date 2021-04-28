@@ -637,6 +637,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return warningNotes;
         }
 
+        public Domain.WarningNote GetWarningNoteById(long warningNoteId)
+        {
+            var warningNote = _databaseContext.WarningNotes.FirstOrDefault(x => x.Id == warningNoteId);
+
+            var reviews = _databaseContext.WarningNoteReview
+                .Where(x => x.WarningNoteId == warningNoteId).ToList();
+
+            return warningNote?.ToDomain(reviews);
+        }
+
         public void PatchWarningNote(PatchWarningNoteRequest request)
         {
             WarningNote warningNote = _databaseContext.WarningNotes.Where(x => x.Id == request.WarningNoteId).FirstOrDefault();
@@ -662,6 +672,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 throw new PatchWarningNoteException($"Worker ({request.ReviewedBy}) not found");
             }
+
 
             warningNote.LastReviewDate = request.ReviewDate;
             warningNote.NextReviewDate = request.NextReviewDate;

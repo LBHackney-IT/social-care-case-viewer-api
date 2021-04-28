@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -14,6 +13,7 @@ using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -339,6 +339,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             var result = ResponseFactory.ToResponse(person);
+
+            result.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void MapWarningNoteToResponseReturnsAnObjectWithFormattedDates()
+        {
+            var dbWarningNote = TestHelpers.CreateWarningNote();
+            var dbWarningNoteReview = TestHelpers.CreateWarningNoteReview(dbWarningNote.Id);
+            var reviewList = new List<WarningNoteReview> { dbWarningNoteReview };
+
+            var expectedWarningReviewResponse = new WarningNoteReviewResponse
+            {
+                Id = dbWarningNoteReview.Id,
+                WarningNoteId = dbWarningNoteReview.WarningNoteId,
+                ReviewDate = dbWarningNoteReview.ReviewDate?.ToString("s"),
+                DisclosedWithIndividual = dbWarningNoteReview.DisclosedWithIndividual,
+                Notes = dbWarningNoteReview.Notes,
+                ManagerName = dbWarningNoteReview.ManagerName,
+                DiscussedWithManagerDate = dbWarningNoteReview.DiscussedWithManagerDate?.ToString("s"),
+                CreatedAt = dbWarningNoteReview.CreatedAt?.ToString("s"),
+                CreatedBy = dbWarningNoteReview.CreatedBy,
+                LastModifiedAt = dbWarningNoteReview.LastModifiedAt?.ToString("s"),
+                LastModifiedBy = dbWarningNoteReview.LastModifiedBy
+            };
+
+            var expectedResponse = new WarningNoteResponse
+            {
+                Id = dbWarningNote.Id,
+                PersonId = dbWarningNote.PersonId,
+                StartDate = dbWarningNote.StartDate?.ToString("s"),
+                EndDate = dbWarningNote.EndDate?.ToString("s"),
+                DisclosedWithIndividual = dbWarningNote.DisclosedWithIndividual,
+                DisclosedDetails = dbWarningNote.DisclosedDetails,
+                Notes = dbWarningNote.Notes,
+                ReviewDate = dbWarningNote.ReviewDate?.ToString("s"),
+                NextReviewDate = dbWarningNote.NextReviewDate?.ToString("s"),
+                NoteType = dbWarningNote.NoteType,
+                Status = dbWarningNote.Status,
+                DisclosedDate = dbWarningNote.DisclosedDate?.ToString("s"),
+                DisclosedHow = dbWarningNote.DisclosedHow,
+                WarningNarrative = dbWarningNote.WarningNarrative,
+                ManagerName = dbWarningNote.ManagerName,
+                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate?.ToString("s"),
+                CreatedBy = dbWarningNote.CreatedBy,
+                WarningNoteReviews = new List<WarningNoteReviewResponse> { expectedWarningReviewResponse }
+            };
+
+            var domainWarningNote = dbWarningNote.ToDomain(reviewList);
+
+            var result = domainWarningNote.ToResponse();
 
             result.Should().BeEquivalentTo(expectedResponse);
         }

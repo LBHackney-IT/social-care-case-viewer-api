@@ -452,6 +452,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get a specific warning note along with any associated warning note reviews
+        /// </summary>
+        /// <response code="200">Success. Returns warning note and any related reviews for the specified ID</response>
+        /// <response code="404">No warning note found for the specified ID</response>
+        [ProducesResponseType(typeof(WarningNoteResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("/warningNotes/{warningNoteId}")]
+        public IActionResult GetWarningNoteById(long warningNoteId)
+        {
+            try
+            {
+                return Ok(_warningNoteUseCase.ExecuteGetWarningNoteById(warningNoteId));
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
         /// Amend Warning Notes in response to a review and add a Warning Note Review to the database
         /// </summary>
         /// <param name="request"></param>
