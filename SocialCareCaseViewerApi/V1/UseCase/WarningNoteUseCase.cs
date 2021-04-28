@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return new ListWarningNotesResponse
             {
-                WarningNotes = warningNotes.Select(x => x.ToDomain()).ToList()
+                WarningNotes = warningNotes?.Select(x => x.ToDomain()).ToList()
             };
         }
 

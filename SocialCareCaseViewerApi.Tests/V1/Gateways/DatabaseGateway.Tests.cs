@@ -552,22 +552,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
+        public void GetWarningNotesReturnsANullIfNoWarningNotesExist()
         {
-            var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
+            var response = _classUnderTest.GetWarningNotes(123);
 
-            var warningNote = new WarningNote
-            {
-                PersonId = testPersonId
-            };
-            DatabaseContext.WarningNotes.Add(warningNote);
-            DatabaseContext.SaveChanges();
-
-            Action act = () => _classUnderTest.GetWarningNotes(differentPersonId);
-
-            act.Should().Throw<DocumentNotFoundException>()
-                .WithMessage($"No warning notes found relating to person id {differentPersonId}");
+            response.Should().BeNull();
         }
 
         [Test]
