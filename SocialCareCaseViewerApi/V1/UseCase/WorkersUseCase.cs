@@ -25,7 +25,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public void ExecutePatch(UpdateWorkerRequest updateWorkerRequest)
         {
-            _databaseGateway.UpdateWorker(newWorker);
+            var currentWorker = _databaseGateway.GetWorkerByWorkerId(updateWorkerRequest.WorkerId);
+            var currentAllocations = currentWorker.ToDomain(true).AllocationCount;
+
+            if (currentAllocations > 0)
+            {
+                throw new PatchWorkerException("Worker still has allocations");
+            }
+
+            _databaseGateway.UpdateWorker(updateWorkerRequest);
         }
     }
 }
