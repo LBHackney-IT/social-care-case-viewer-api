@@ -749,7 +749,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
         {
-            WarningNote warningNote = _databaseContext.WarningNotes.First(x => x.Id == request.WarningNoteId);
+            WarningNote warningNote = _databaseContext.WarningNotes.FirstOrDefault(x => x.Id == request.WarningNoteId);
 
             if (warningNote == null)
             {

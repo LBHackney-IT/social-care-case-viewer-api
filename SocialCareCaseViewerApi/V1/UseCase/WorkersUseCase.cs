@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new PatchWorkerException("Worker still has allocations");
             }
 
-            // _databaseGateway.UpdateWorker(updateWorkerRequest);
+            _databaseGateway.UpdateWorker(updateWorkerRequest);
         }
     }
 }

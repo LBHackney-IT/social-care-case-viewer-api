@@ -10,7 +10,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IDatabaseGateway
     {
-        List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null, string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null);
+        List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
+            string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null);
+
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
         List<Allocation> SelectAllocations(long mosaicId, long workerId);
         CreateAllocationResponse CreateAllocation(CreateAllocationRequest request);
@@ -24,6 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
         Worker CreateWorker(CreateWorkerRequest createWorkerRequest);
+        void UpdateWorker(UpdateWorkerRequest updateWorkerRequest);
         void PatchWarningNote(PatchWarningNoteRequest request);
         IEnumerable<WarningNote> GetWarningNotes(long personId);
         Person GetPersonDetailsById(long id);

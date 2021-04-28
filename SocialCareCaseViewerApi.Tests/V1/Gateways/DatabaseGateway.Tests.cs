@@ -199,7 +199,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.CreateWorker(createWorkerRequest);
 
-            act.Should().Throw<PostWorkerException>()
+            act.Should().Throw<GetTeamException>()
                 .WithMessage(
                     $"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
         }
@@ -219,7 +219,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Action act = () => _classUnderTest.UpdateWorker(request);
 
             act.Should().Throw<WorkerNotFoundException>()
-                .WithMessage($"Worker with {request.WorkerId} not found");
+                .WithMessage($"Worker with Id {request.WorkerId} not found");
         }
 
         [Test]
