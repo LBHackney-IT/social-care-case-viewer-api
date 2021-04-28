@@ -16,87 +16,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         }
 
         [Test]
-        public void WarningNoteHasId()
+        public void WarningNoteContainsTheRelevantInformationAboutItself()
         {
+            // Unique ID
             _classUnderTest.Id.Should().Be(0);
-        }
 
-        [Test]
-        public void WarningNoteHasPersonId()
-        {
+            // Current Status
+            _classUnderTest.Status.Should().BeNull();
+
+            // Associated with a specific resident
             _classUnderTest.PersonId.Should().Be(0);
-        }
 
-        [Test]
-        public void WarningNoteHasStartDate()
-        {
-            _classUnderTest.StartDate.Should().Be(null);
-        }
+            // Start and End Dates
+            _classUnderTest.StartDate.Should().BeNull();
+            _classUnderTest.EndDate.Should().BeNull();
 
-        [Test]
-        public void WarningNoteHasEndDate()
-        {
-            _classUnderTest.EndDate.Should().Be(null);
-        }
+            // Review Details
+            _classUnderTest.ReviewDate.Should().BeNull();
+            _classUnderTest.NextReviewDate.Should().BeNull();
 
-        [Test]
-        public void WarningNoteHasIndividualNotified()
-        {
-            _classUnderTest.DisclosedWithIndividual.Should().Be(false);
-        }
+            // Creator of the Note
+            _classUnderTest.CreatedBy.Should().BeNull();
 
-        [Test]
-        public void WarningNoteHasNotificationDetails()
-        {
-            _classUnderTest.DisclosedDetails.Should().Be(null);
-        }
+            // Details about notifying an individual
+            _classUnderTest.DisclosedWithIndividual.Should().BeFalse();
+            _classUnderTest.DisclosedDetails.Should().BeNull();
+            _classUnderTest.DisclosedDate.Should().BeNull();
+            _classUnderTest.DisclosedHow.Should().BeNull();
 
-        [Test]
-        public void WarningNoteHasReviewDetails()
-        {
-            _classUnderTest.Notes.Should().Be(null);
-        }
+            // Warning Note Content
+            _classUnderTest.Notes.Should().BeNull();
+            _classUnderTest.NoteType.Should().BeNull();
+            _classUnderTest.WarningNarrative.Should().BeNull();
 
-        [Test]
-        public void WarningNoteHasNoteType()
-        {
-            _classUnderTest.NoteType.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasStatus()
-        {
-            _classUnderTest.Status.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasDateInformed()
-        {
-            _classUnderTest.DisclosedDate.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasHowInformed()
-        {
-            _classUnderTest.DisclosedHow.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasWarningNarrative()
-        {
-            _classUnderTest.WarningNarrative.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasManagersName()
-        {
-            _classUnderTest.ManagerName.Should().Be(null);
-        }
-
-        [Test]
-        public void WarningNoteHasDateManagerInformed()
-        {
-            _classUnderTest.DiscussedWithManagerDate.Should().Be(null);
+            // Informing a Manager
+            _classUnderTest.ManagerName.Should().BeNull();
+            _classUnderTest.DiscussedWithManagerDate.Should().BeNull();
         }
     }
 }

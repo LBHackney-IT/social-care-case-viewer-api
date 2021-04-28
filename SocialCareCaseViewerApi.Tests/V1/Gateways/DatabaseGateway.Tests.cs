@@ -352,7 +352,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy == createdBy));
             Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy != null));
 
-            //TODO: create separate test setup for audit            
+            //TODO: create separate test setup for audit
         }
 
         [Test]
@@ -378,7 +378,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
-            Person stubbedPerson = TestHelpers.CreatePerson();
+            var stubbedPerson = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(stubbedPerson);
             DatabaseContext.SaveChanges();
 
@@ -393,24 +393,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var insertedRecord = query.FirstOrDefault(x => x.Id == response.WarningNoteId);
 
             insertedRecord.Should().NotBeNull();
+
             insertedRecord.PersonId.Should().Be(request.PersonId);
+            insertedRecord.Status.Should().Be("open");
+
             insertedRecord.StartDate.Should().Be(request.StartDate);
             insertedRecord.EndDate.Should().Be(request.EndDate);
+
+            insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
+
             insertedRecord.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
             insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
-            insertedRecord.Notes.Should().Be(request.Notes);
-            insertedRecord.NoteType.Should().Be(request.NoteType);
-            insertedRecord.Status.Should().Be("open");
             insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
             insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
+
+            insertedRecord.Notes.Should().Be(request.Notes);
+            insertedRecord.NoteType.Should().Be(request.NoteType);
             insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
+
             insertedRecord.ManagerName.Should().Be(request.ManagerName);
             insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+
+            insertedRecord.CreatedBy.Should().Be(request.CreatedBy);
 
             //audit properties
             insertedRecord.CreatedAt.Should().NotBeNull();
             insertedRecord.CreatedAt.Should().NotBe(DateTime.MinValue);
-            insertedRecord.CreatedBy.Should().Be(request.CreatedBy);
+
             insertedRecord.LastModifiedAt.Should().BeNull();
             insertedRecord.LastModifiedBy.Should().BeNull();
         }
@@ -474,67 +484,70 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     act.Should().Throw<PostWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
+
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
             var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
 
-            var warningNote = new WarningNote
-            {
-                PersonId = testPersonId
-            };
-
-            var wrongWarningNote = new WarningNote
-            {
-                PersonId = differentPersonId
-            };
+            var warningNote = TestHelpers.CreateWarningNote(testPersonId);
 
             DatabaseContext.WarningNotes.Add(warningNote);
-            DatabaseContext.WarningNotes.Add(wrongWarningNote);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetWarningNotes(testPersonId);
+            var retrievedWarningNote = response.FirstOrDefault();
 
             response.Should().ContainSingle();
-            response.Should().ContainEquivalentOf(warningNote);
-            response.Should().NotContain(wrongWarningNote);
+
+            retrievedWarningNote.Id.Should().Be(warningNote.Id);
+            retrievedWarningNote.Status.Should().Be("open");
+
+            retrievedWarningNote.PersonId.Should().Be(warningNote.PersonId);
+
+            retrievedWarningNote.WarningNarrative.Should().Be(warningNote.WarningNarrative);
+
+            retrievedWarningNote.StartDate.Should().Be(warningNote.StartDate);
+            retrievedWarningNote.EndDate.Should().Be(warningNote.EndDate);
+
+            retrievedWarningNote.ReviewDate.Should().Be(warningNote.ReviewDate);
+            retrievedWarningNote.NextReviewDate.Should().Be(warningNote.NextReviewDate);
+
+            retrievedWarningNote.DisclosedWithIndividual.Should().Be(warningNote.DisclosedWithIndividual);
+            retrievedWarningNote.DisclosedDetails.Should().Be(warningNote.DisclosedDetails);
+            retrievedWarningNote.DisclosedDate.Should().Be(warningNote.DisclosedDate);
+            retrievedWarningNote.DisclosedHow.Should().Be(warningNote.DisclosedHow);
+
+            retrievedWarningNote.Notes.Should().Be(warningNote.Notes);
+            retrievedWarningNote.NoteType.Should().Be(warningNote.NoteType);
+
+            retrievedWarningNote.ManagerName.Should().Be(warningNote.ManagerName);
+            retrievedWarningNote.DiscussedWithManagerDate.Should().Be(warningNote.DiscussedWithManagerDate);
+
+            retrievedWarningNote.CreatedBy.Should().Be(warningNote.CreatedBy);
         }
 
         [Test]
         public void GetWarningNotesReturnsAListOfWarningNotesForASpecificPerson()
         {
             var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
 
-            var firstNote = new WarningNote
-            {
-                PersonId = testPersonId,
-                Notes = "I am one note"
-            };
+            var firstWarningNote = TestHelpers.CreateWarningNote(testPersonId);
+            var secondWarningNote = TestHelpers.CreateWarningNote(testPersonId);
 
-            var secondNote = new WarningNote
-            {
-                PersonId = testPersonId,
-                Notes = "I am another note"
-            };
+            var differentWarningNote = TestHelpers.CreateWarningNote();
 
-            var separateWarningNote = new WarningNote
-            {
-                PersonId = differentPersonId
-            };
-
-            DatabaseContext.WarningNotes.Add(firstNote);
-            DatabaseContext.WarningNotes.Add(secondNote);
-            DatabaseContext.WarningNotes.Add(separateWarningNote);
+            DatabaseContext.WarningNotes.Add(firstWarningNote);
+            DatabaseContext.WarningNotes.Add(secondWarningNote);
+            DatabaseContext.WarningNotes.Add(differentWarningNote);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetWarningNotes(testPersonId);
 
             response.Count().Should().Be(2);
-            response.Should().ContainEquivalentOf(firstNote);
-            response.Should().ContainEquivalentOf(secondNote);
-            response.Should().NotContain(separateWarningNote);
+            response.Should().ContainEquivalentOf(firstWarningNote);
+            response.Should().ContainEquivalentOf(secondWarningNote);
+            response.Should().NotContain(differentWarningNote);
         }
 
         [Test]
