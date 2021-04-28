@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string Role { get; set; } = null!;
 
         [JsonPropertyName("dateDetailsChanged")]
-        public DateTime DateStart { get; set; }
+        public DateTime? DateStart { get; set; }
 
         [JsonPropertyName("isActive")]
         public bool IsActive { get; set; }

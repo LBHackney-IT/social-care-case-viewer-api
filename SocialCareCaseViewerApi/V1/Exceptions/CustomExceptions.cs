@@ -62,4 +62,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public UpdatePersonException(string message) : base(message) { }
     }
+
+    public class GetTeamException : Exception
+    {
+        public GetTeamException(string message) : base(message) { }
+    }
 }

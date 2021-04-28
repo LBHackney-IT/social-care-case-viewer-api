@@ -431,7 +431,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 LastModifiedBy = createWorkerRequest.CreatedBy
             };
 
-            var workerTeams = GetTeams(createWorkerRequest);
+            var workerTeams = GetTeams(createWorkerRequest.Teams);
 
             worker.WorkerTeams = new List<WorkerTeam>();
             foreach (var team in workerTeams)
@@ -448,15 +448,42 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return worker;
         }
 
-        private ICollection<Team> GetTeams(CreateWorkerRequest createWorkerRequest)
+        public void UpdateWorker(UpdateWorkerRequest request)
+        {
+            // exception if worker is null
+            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.WorkerId);
+            worker.Email = request.EmailAddress;
+            worker.LastModifiedBy = request.ModifiedBy;
+            worker.FirstName = request.FirstName;
+            worker.LastName = request.LastName;
+            worker.ContextFlag = request.ContextFlag;
+            worker.Role = request.Role;
+            worker.DateStart = request.IsActive ? request.DateStart : null;
+            worker.DateEnd = request.IsActive ? null : request.DateStart;
+            worker.IsActive = request.IsActive;
+
+            var workerTeams = GetTeams(request.Teams);
+
+            worker.WorkerTeams = new List<WorkerTeam>();
+            foreach (var team in workerTeams)
+            {
+                worker.WorkerTeams.Add(new WorkerTeam
+                {
+                    Team = team,
+                    Worker = worker
+                });
+            }
+        }
+
+        private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)
         {
             var teamsWorkerBelongsIn = new List<Team>();
-            foreach (var requestTeam in createWorkerRequest.Teams)
+            foreach (var requestTeam in request)
             {
                 var teams = GetTeamsByTeamId(requestTeam.Id);
                 if (teams.Count == 0)
                 {
-                    throw new PostWorkerException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
+                    throw new GetTeamException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
                 }
                 teamsWorkerBelongsIn.AddRange(teams);
             }

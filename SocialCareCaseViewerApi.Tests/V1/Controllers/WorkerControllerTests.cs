@@ -78,55 +78,55 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Value.Should().Be(errorMessage);
         }
 
-        [Test]
-        public void UpdateWorkerReturns201StatusAndWorkerWhenSuccessful()
-        {
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
-            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest));
+        // [Test]
+        // public void UpdateWorkerReturns201StatusAndWorkerWhenSuccessful()
+        // {
+        //     var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+        //     _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest));
 
-            var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
+        //     var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
 
-            _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(204);
-        }
+        //     _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
+        //     if (response == null)
+        //     {
+        //         throw new NullReferenceException();
+        //     }
+        //     response.Should().NotBeNull();
+        //     response.StatusCode.Should().Be(204);
+        // }
 
-        [Test]
-        public void UpdateWorkerReturns400WhenValidationResultsIsNotValid()
-        {
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(firstName: "");
+        // [Test]
+        // public void UpdateWorkerReturns400WhenValidationResultsIsNotValid()
+        // {
+        //     var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(firstName: "");
 
-            var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
+        //     var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(400);
-        }
+        //     if (response == null)
+        //     {
+        //         throw new NullReferenceException();
+        //     }
+        //     response.Should().NotBeNull();
+        //     response.StatusCode.Should().Be(400);
+        // }
 
-        [Test]
-        public void UpdateWorkerReturns422StatusWhenUpdateWorkerExceptionThrown()
-        {
-            const string errorMessage = "Failed to update worker";
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
-            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest))
-                .Throws(new PatchWorkerException(errorMessage));
+        // [Test]
+        // public void UpdateWorkerReturns422StatusWhenUpdateWorkerExceptionThrown()
+        // {
+        //     const string errorMessage = "Failed to update worker";
+        //     var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+        //     _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest))
+        //         .Throws(new PatchWorkerException(errorMessage));
 
-            var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
+        //     var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(422);
-            response.Value.Should().Be(errorMessage);
-        }
+        //     if (response == null)
+        //     {
+        //         throw new NullReferenceException();
+        //     }
+        //     response.Should().NotBeNull();
+        //     response.StatusCode.Should().Be(422);
+        //     response.Value.Should().Be(errorMessage);
+        // }
     }
 }

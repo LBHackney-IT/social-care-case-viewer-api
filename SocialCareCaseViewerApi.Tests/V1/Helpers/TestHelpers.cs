@@ -318,6 +318,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
         }
 
+        public static WorkerTeam CreateWorkerTeam(
+            int? workerId = null
+        )
+        {
+            return new Faker<WorkerTeam>()
+                .RuleFor(t => t.Id, f => f.UniqueIndex)
+                .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex)
+                .RuleFor(t => t.TeamId, f => f.UniqueIndex);
+        }
+
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
             int? teamId = null,
             string? teamName = null
@@ -328,7 +338,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
         }
 
-        private static Team CreateTeam(int? teamId = null)
+        public static Team CreateTeam(int? teamId = null)
         {
             return new Faker<Team>()
                 .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)

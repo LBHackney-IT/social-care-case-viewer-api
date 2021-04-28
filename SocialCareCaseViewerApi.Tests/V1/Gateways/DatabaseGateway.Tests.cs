@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
         {
-            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+            var (createWorkerRequest, createdTeams) = CreateWorkerRequestAndAddTeamsToDatabase();
 
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
@@ -123,7 +123,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreateWorkerThenFindByWorkerId()
         {
-            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+            var (createWorkerRequest, createdTeams) = CreateWorkerRequestAndAddTeamsToDatabase();
 
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
@@ -160,7 +160,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreateWorkerThenFindByTeamId()
         {
-            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+            var (createWorkerRequest, createdTeams) = CreateWorkerRequestAndAddTeamsToDatabase();
 
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
@@ -197,7 +197,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreateWorkerWithInvalidTeamIdThrowsPostWorkerException()
         {
-            var (createWorkerRequest, _) = CreateWorkerAndAddToDatabase(addTeamsToDatabase: false);
+            var (createWorkerRequest, _) = CreateWorkerRequestAndAddTeamsToDatabase(addTeamsToDatabase: false);
 
             Action act = () => _classUnderTest.CreateWorker(createWorkerRequest);
 
@@ -205,7 +205,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .WithMessage($"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
         }
 
-        private (CreateWorkerRequest, List<Team>) CreateWorkerAndAddToDatabase(
+        [Test]
+        public void UpdateWorkerUpdatesAnExistingWorkerInDatabase()
+        {
+            var worker = TestHelpers.CreateWorker();
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam>{ workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var workerTeamRequest = _fixture.Build<WorkerTeamRequest>()
+                                        .With(x => x.Id, worker.WorkerTeams.FirstOrDefault().TeamId)
+                                        .Create();
+
+            var request = _fixture.Build<UpdateWorkerRequest>()
+                            .With(x => x.WorkerId, worker.Id)
+                            .With(x => x.Teams, new List<WorkerTeamRequest> { workerTeamRequest })
+                            .With(x => x.IsActive, true)
+                            .Create();
+
+            _classUnderTest.UpdateWorker(request);
+            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
+
+            response.Email.Should().BeEquivalentTo(request.EmailAddress);
+            response.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
+            response.FirstName.Should().BeEquivalentTo(request.FirstName);
+            response.LastName.Should().BeEquivalentTo(request.LastName);
+            response.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
+            response.Role.Should().BeEquivalentTo(request.Role);
+            response.DateStart.Should().Be(request.DateStart);
+            response.DateEnd.Should().BeNull();
+            response.IsActive.Should().Be(request.IsActive);
+            response.WorkerTeams.Should().BeEquivalentTo(request.Teams);
+        }
+
+        private (CreateWorkerRequest, List<Team>) CreateWorkerRequestAndAddTeamsToDatabase(
             bool addTeamsToDatabase = true
             )
         {
