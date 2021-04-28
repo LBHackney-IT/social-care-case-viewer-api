@@ -76,9 +76,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         // }
 
         [Test]
-        public void ExecutePatchThrowsPatchWorkerExceptionIfWorkerHasAllocations()
+        public void ExecutePatchThrowsPatchWorkerExceptionIfWorkerHasAllocationsAndTryingToDeactivate()
         {
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(isActive: false);
             _mockDatabaseGateway
                 .Setup(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId))
                 .Returns(new Worker()

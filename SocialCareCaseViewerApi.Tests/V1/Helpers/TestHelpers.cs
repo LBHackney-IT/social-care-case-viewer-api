@@ -410,7 +410,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? lastName = null,
             string? contextFlag = null,
             string? role = null,
-            DateTime? dateStart = null)
+            DateTime? dateStart = null,
+            bool isActive = true)
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
             var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
@@ -425,7 +426,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.Teams, teams)
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
                 .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Recent())
-                .RuleFor(w => w.IsActive, f => f.Random.Bool());
+                .RuleFor(w => w.IsActive, isActive);
         }
     }
 }
