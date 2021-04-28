@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var currentWorker = _databaseGateway.GetWorkerByWorkerId(updateWorkerRequest.WorkerId);
             var currentAllocations = currentWorker.ToDomain(true).AllocationCount;
 
-            if (currentAllocations > 0)
+            if (currentAllocations > 0 && !updateWorkerRequest.IsActive)
             {
                 throw new PatchWorkerException("Worker still has allocations");
             }
