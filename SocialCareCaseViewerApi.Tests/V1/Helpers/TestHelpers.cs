@@ -289,7 +289,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DisclosedHow, f => f.Random.String2(1, 50))
                 .RuleFor(w => w.WarningNarrative, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.ManagerName, f => f.Random.String2(1, 100))
-                .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent());
+                .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent())
+                .RuleFor(w => w.CreatedBy, f => f.Internet.Email());
         }
 
         public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote) CreatePatchWarningNoteRequest(

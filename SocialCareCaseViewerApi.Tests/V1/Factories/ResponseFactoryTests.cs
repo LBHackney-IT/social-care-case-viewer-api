@@ -374,6 +374,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = dbWarningNote.DisclosedWithIndividual,
                 DisclosedDetails = dbWarningNote.DisclosedDetails,
                 Notes = dbWarningNote.Notes,
+                ReviewDate = dbWarningNote.ReviewDate?.ToString("s"),
                 NextReviewDate = dbWarningNote.NextReviewDate?.ToString("s"),
                 NoteType = dbWarningNote.NoteType,
                 Status = dbWarningNote.Status,
@@ -382,6 +383,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 WarningNarrative = dbWarningNote.WarningNarrative,
                 ManagerName = dbWarningNote.ManagerName,
                 DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate?.ToString("s"),
+                CreatedBy = dbWarningNote.CreatedBy,
                 WarningNoteReviews = new List<WarningNoteReviewResponse> { expectedWarningReviewResponse }
             };
 

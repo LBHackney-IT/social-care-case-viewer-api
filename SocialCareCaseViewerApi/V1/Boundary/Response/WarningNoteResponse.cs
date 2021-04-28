@@ -11,6 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public bool DisclosedWithIndividual { get; set; }
         public string DisclosedDetails { get; set; }
         public string Notes { get; set; }
+        public string ReviewDate { get; set; }
         public string NextReviewDate { get; set; }
         public string NoteType { get; set; }
         public string Status { get; set; }
@@ -19,6 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string WarningNarrative { get; set; }
         public string ManagerName { get; set; }
         public string DiscussedWithManagerDate { get; set; }
+        public string CreatedBy { get; set; }
         public List<WarningNoteReviewResponse> WarningNoteReviews { get; set; }
     }
 

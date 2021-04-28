@@ -172,6 +172,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisclosedWithIndividual = warningNote.DisclosedWithIndividual,
                 DisclosedDetails = warningNote.DisclosedDetails,
                 Notes = warningNote.Notes,
+                ReviewDate = warningNote.ReviewDate?.ToString("s"),
                 NextReviewDate = warningNote.NextReviewDate?.ToString("s"),
                 NoteType = warningNote.NoteType,
                 Status = warningNote.Status,
@@ -180,6 +181,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 WarningNarrative = warningNote.WarningNarrative,
                 ManagerName = warningNote.ManagerName,
                 DiscussedWithManagerDate = warningNote.DiscussedWithManagerDate?.ToString("s"),
+                CreatedBy = warningNote.CreatedBy,
                 WarningNoteReviews = warningNote.WarningNoteReviews?.Select(x => x.ToResponse()).ToList()
             };
         }
