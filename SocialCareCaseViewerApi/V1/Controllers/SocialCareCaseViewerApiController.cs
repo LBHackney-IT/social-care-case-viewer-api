@@ -435,20 +435,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Get all warning notes created for a specific person
         /// </summary>
         /// <response code="200">Success. Returns warning notes related to the specified ID</response>
-        /// <response code="404">No warning notes found for the specified ID</response>
+        /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/warningNotes")]
         public IActionResult ListWarningNotes(long personId)
         {
-            try
-            {
-                return Ok(_warningNoteUseCase.ExecuteGet(personId));
-            }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            return Ok(_warningNoteUseCase.ExecuteGet(personId));
         }
 
         /// <summary>

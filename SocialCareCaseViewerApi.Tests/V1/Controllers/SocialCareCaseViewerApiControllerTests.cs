@@ -699,19 +699,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetWarningNoteReturns404IfDocumentNotFound()
+        public void GetWarningNoteWouldReturns200IfNoWarningNotesAreFoundForThePerson()
         {
             var testPersonId = _fixture.Create<long>();
 
+            var emptyWarningNotesResponse = new ListWarningNotesResponse();
+
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
-                .Throws(new DocumentNotFoundException("Document Not Found"));
+                .Returns(emptyWarningNotesResponse);
 
             var response = _classUnderTest.ListWarningNotes(testPersonId) as ObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
-            response.Value.Should().Be("Document Not Found");
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(emptyWarningNotesResponse);
         }
 
         [Test]

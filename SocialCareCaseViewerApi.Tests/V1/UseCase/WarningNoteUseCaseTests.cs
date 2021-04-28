@@ -130,6 +130,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecuteGetReturnsEmptyResponseIfNoWarningNoteIsReturned()
+        {
+            var testPersonId = _fixture.Create<long>();
+
+            var expectedResponse = new ListWarningNotesResponse();
+
+            _mockDatabaseGateway.Setup(
+                    x => x.GetWarningNotes(It.IsAny<long>()))
+                .Returns((IEnumerable<dbWarningNote>) null);
+
+            var response = _classUnderTest.ExecuteGet(testPersonId);
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
         public void ExecutePatchCallsTheDatabaseGatewayOnce()
         {
             var request = _fixture.Create<PatchWarningNoteRequest>();
