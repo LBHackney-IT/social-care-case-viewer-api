@@ -245,6 +245,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             updatedWorker.Should().NotBeEquivalentTo(originalWorker);
 
+            CompareUpdatedWorkerAndRequest(updatedWorker, request, worker, team);
+        }
+
+        [Test]
+        public void UpdateWorkerIsActiveFlipsDateStartAndDateEndFromTimeToNull()
+        {
+            var worker = TestHelpers.CreateWorker(isActive: true);
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.DateEnd.Should().BeNull();
+            originalWorker.DateStart.Should().NotBeNull();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id, isActive: false);
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+            updatedWorker.DateStart.Should().BeNull();
+            updatedWorker.DateEnd.Should().NotBeNull();
+        }
+
+        private static void CompareUpdatedWorkerAndRequest(Worker updatedWorker, UpdateWorkerRequest request,
+            Worker testWorker, Team testTeam)
+        {
             updatedWorker.Email.Should().BeEquivalentTo(request.EmailAddress);
             updatedWorker.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
             updatedWorker.FirstName.Should().BeEquivalentTo(request.FirstName);
@@ -258,9 +289,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var updatedWorkerTeam = updatedWorker.WorkerTeams.First();
             var requestTeam = request.Teams.First();
             updatedWorkerTeam.TeamId.Should().Be(requestTeam.Id);
-            updatedWorkerTeam.WorkerId.Should().Be(worker.Id);
-            updatedWorkerTeam.Team.Should().Be(team);
-            updatedWorkerTeam.Worker.Should().Be(worker);
+            updatedWorkerTeam.WorkerId.Should().Be(testWorker.Id);
+            updatedWorkerTeam.Team.Should().Be(testTeam);
+            updatedWorkerTeam.Worker.Should().Be(testWorker);
         }
 
         private (CreateWorkerRequest, List<Team>) CreateWorkerRequestAndAddTeamsToDatabase(

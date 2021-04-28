@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int? teamId = null,
             int? workerId = null,
             string? createdBy = null
-            )
+        )
         {
             var worker = CreateWorker();
             var createdByWorker = CreateWorker();
@@ -145,11 +145,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (createAllocationRequest, worker, createdByWorker, person, team);
         }
 
-        public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team) CreateUpdateAllocationRequest(
-            int? id = null,
-            string? deallocationReason = null,
-            string? createdBy = null,
-            DateTime? deallocationDate = null
+        public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team)
+            CreateUpdateAllocationRequest(
+                int? id = null,
+                string? deallocationReason = null,
+                string? createdBy = null,
+                DateTime? deallocationDate = null
             )
         {
             var worker = CreateWorker();
@@ -174,8 +175,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? role = null,
             string? contextFlag = null,
             string? createdBy = null,
-            DateTime? dateStart = null)
+            DateTime? createdAt = null,
+            bool isActive = true)
         {
+            DateTime? start = null;
+            if (isActive)
+            {
+                start = DateTime.Now;
+            }
+
+            DateTime? end = null;
+            if (!isActive)
+            {
+                end = DateTime.Now;
+            }
+
             return new Faker<Worker>()
                 .RuleFor(w => w.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
@@ -184,7 +198,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200))
                 .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
                 .RuleFor(w => w.CreatedBy, f => createdBy ?? f.Person.Email)
-                .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Soon());
+                .RuleFor(w => w.CreatedAt, f => createdAt ?? f.Date.Soon())
+                .RuleFor(w => w.DateStart, start)
+                .RuleFor(w => w.DateEnd, end)
+                .RuleFor(w => w.IsActive, f => isActive);
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)
@@ -259,7 +276,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? caseNoteId = null,
             List<int>? otherNameIds = null,
             List<int>? phoneNumberIds = null
-            )
+        )
         {
             var person = CreatePerson();
             var address = CreateAddress();
@@ -288,7 +305,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         )
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> {team} : new List<WorkerTeamRequest>();
 
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
@@ -368,17 +385,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent());
         }
 
-        public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote) CreatePatchWarningNoteRequest(
-            long? warningNoteId = null,
-            DateTime? reviewDate = null,
-            DateTime? nextReviewDate = null,
-            string? startingStatus = "open",
-            string? requestStatus = "open",
-            DateTime? endedDate = null,
-            string? reviewNotes = null,
-            string? managerName = null,
-            DateTime? discussedWithManagerDate = null
-        )
+        public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote)
+            CreatePatchWarningNoteRequest(
+                long? warningNoteId = null,
+                DateTime? reviewDate = null,
+                DateTime? nextReviewDate = null,
+                string? startingStatus = "open",
+                string? requestStatus = "open",
+                DateTime? endedDate = null,
+                string? reviewNotes = null,
+                string? managerName = null,
+                DateTime? discussedWithManagerDate = null
+            )
         {
             var person = CreatePerson();
             var worker = CreateWorker();
@@ -414,7 +432,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             bool isActive = true)
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> {team} : new List<WorkerTeamRequest>();
 
             return new Faker<UpdateWorkerRequest>()
                 .RuleFor(w => w.WorkerId, f => workerId ?? f.UniqueIndex + 1)
