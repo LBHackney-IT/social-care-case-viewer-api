@@ -348,7 +348,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //calculated and additional values
                 FullName = $"{request.FirstName} {request.LastName}",
                 DataIsFromDmPersonsBackup = "N",
-                CreatedBy = request.CreatedBy
+                CreatedBy = request.CreatedBy,
+                Restricted = request.Restricted
             };
         }
 
@@ -624,45 +625,28 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         #region Warning Notes
         public PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request)
         {
-            Person person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
+            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.PersonId);
 
             if (person == null)
             {
                 throw new PostWarningNoteException($"Person with given id ({request.PersonId}) not found");
             }
 
-            //TODO: Extract request to domain process to EntityFactory
-            WarningNote warningNote = new WarningNote()
-            {
-                PersonId = request.PersonId,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                DisclosedWithIndividual = request.DisclosedWithIndividual,
-                DisclosedDetails = request.DisclosedDetails,
-                Notes = request.Notes,
-                NoteType = request.NoteType,
-                Status = "open",
-                DisclosedDate = request.DisclosedDate,
-                DisclosedHow = request.DisclosedHow,
-                WarningNarrative = request.WarningNarrative,
-                ManagerName = request.ManagerName,
-                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
-                CreatedBy = request.CreatedBy
-            };
+            var warningNote = request.ToDatabaseEntity();
 
             _databaseContext.WarningNotes.Add(warningNote);
             _databaseContext.SaveChanges();
 
-            PostWarningNoteResponse response = new PostWarningNoteResponse()
+            var response = new PostWarningNoteResponse
             {
                 WarningNoteId = warningNote.Id
             };
 
             // try
             // {
-            DateTime dt = DateTime.Now;
+            var dt = DateTime.Now;
 
-            WarningNoteCaseNote note = new WarningNoteCaseNote()
+            var note = new WarningNoteCaseNote
             {
                 FirstName = person.FirstName,
                 LastName = person.LastName,
@@ -674,7 +658,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WarningNoteId = warningNote.Id.ToString()
             };
 
-            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            var caseNotesDocument = new CaseNotesDocument
             {
                 CaseFormData = JsonConvert.SerializeObject(note)
             };
@@ -697,9 +681,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var warningNotes = _databaseContext.WarningNotes
                 .Where(x => x.PersonId == personId);
 
-            if (warningNotes.FirstOrDefault() == null) throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
+            if (warningNotes.FirstOrDefault() == null) return null;
 
             return warningNotes;
+        }
+
+        public Domain.WarningNote GetWarningNoteById(long warningNoteId)
+        {
+            var warningNote = _databaseContext.WarningNotes.FirstOrDefault(x => x.Id == warningNoteId);
+
+            var reviews = _databaseContext.WarningNoteReview
+                .Where(x => x.WarningNoteId == warningNoteId).ToList();
+
+            return warningNote?.ToDomain(reviews);
         }
 
         public void PatchWarningNote(PatchWarningNoteRequest request)
@@ -727,6 +721,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 throw new PatchWarningNoteException($"Worker ({request.ReviewedBy}) not found");
             }
+
 
             warningNote.LastReviewDate = request.ReviewDate;
             warningNote.NextReviewDate = request.NextReviewDate;

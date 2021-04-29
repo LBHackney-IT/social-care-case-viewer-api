@@ -32,9 +32,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
         public string NoteType { get; set; }
 
-        [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]
-        public string Status { get; set; }
-
         public DateTime? DisclosedDate { get; set; }
 
         [StringLength(50, ErrorMessage = "Character limit of 50 exceeded")]

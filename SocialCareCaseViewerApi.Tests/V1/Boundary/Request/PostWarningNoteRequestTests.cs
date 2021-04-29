@@ -73,12 +73,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasStatus()
-        {
-            _classUnderTest.Status.Should().Be(null);
-        }
-
-        [Test]
         public void RequestHasDisclosedDate()
         {
             _classUnderTest.DisclosedDate.Should().Be(null);
@@ -204,27 +198,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfStatusIsLongerThan50Characters()
-        {
-            var request = GetValidPostWarningNoteRequest();
-            request.Status = new string('a', 51);
-            var error = ValidationHelper.ValidateModel(request);
-
-            error.Count.Should().Be(1);
-            error.Should().Contain(x => x.ErrorMessage.Contains("Character limit of 50 exceeded"));
-        }
-
-        [Test]
-        public void ValidationPassesIfStatusIsNull()
-        {
-            var request = GetValidPostWarningNoteRequest();
-            request.Status = null;
-            var error = ValidationHelper.ValidateModel(request);
-
-            error.Count.Should().Be(0);
-        }
-
-        [Test]
         public void ValidationFailsIfDisclosedHowIsLongerThan50Characters()
         {
             var request = GetValidPostWarningNoteRequest();
@@ -314,7 +287,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
         private PostWarningNoteRequest GetValidPostWarningNoteRequest()
         {
-            return new PostWarningNoteRequest()
+            return new PostWarningNoteRequest
             {
                 PersonId = _fixture.Create<long>(),
                 StartDate = DateTime.Now,
@@ -324,7 +297,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 DisclosedDetails = _fixture.Create<string>(),
                 Notes = _fixture.Create<string>(),
                 NoteType = _fixture.Create<string>(),
-                Status = _fixture.Create<string>(),
                 DisclosedDate = DateTime.Now,
                 DisclosedHow = _fixture.Create<string>(),
                 WarningNarrative = _fixture.Create<string>(),

@@ -240,19 +240,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             static DateTime? GetDateToSortBy(CareCaseData x)
             {
-                DateTime? dt = null;
-
                 if (string.IsNullOrEmpty(x.DateOfEvent))
                 {
                     bool success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
-                    if (success) dt = timeStamp;
+                    if (success) return timeStamp;
                 }
                 else
                 {
                     bool success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEvent);
-                    if (success) dt = dateOfEvent;
+                    if (success) return dateOfEvent;
+
+                    bool successForISODateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateTimeFormat);
+                    if (successForISODateTimeFormat) return dateOfEventISODateTimeFormat;
+
+                    bool successForISODateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateFormat);
+                    if (successForISODateFormat) return dateOfEventISODateFormat;
                 }
-                return dt;
+
+                return null;
             }
         }
 

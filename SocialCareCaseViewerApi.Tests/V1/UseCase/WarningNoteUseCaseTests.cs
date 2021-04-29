@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -6,10 +7,12 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
+using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
@@ -127,6 +130,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecuteGetReturnsEmptyResponseIfNoWarningNoteIsReturned()
+        {
+            var testPersonId = _fixture.Create<long>();
+
+            var expectedResponse = new ListWarningNotesResponse();
+
+            _mockDatabaseGateway.Setup(
+                    x => x.GetWarningNotes(It.IsAny<long>()))
+                .Returns((IEnumerable<dbWarningNote>) null);
+
+            var response = _classUnderTest.ExecuteGet(testPersonId);
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
         public void ExecutePatchCallsTheDatabaseGatewayOnce()
         {
             var request = _fixture.Create<PatchWarningNoteRequest>();
@@ -136,6 +155,54 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Verify(x => x.PatchWarningNote(request),
                                     Times.Once);
 
+        }
+
+        [Test]
+        public void ExecuteGetWarningNoteByIdCallsTheDatabaseGatewayWithAWarningNoteId()
+        {
+            var warningNoteId = _fixture.Create<long>();
+
+            _mockDatabaseGateway.Setup(
+                    x => x.GetWarningNoteById(It.IsAny<long>()))
+                .Returns(new WarningNote());
+
+            _classUnderTest.ExecuteGetWarningNoteById(warningNoteId);
+
+            _mockDatabaseGateway.Verify(
+                x => x.GetWarningNoteById(warningNoteId), Times.Once);
+
+        }
+
+        [Test]
+        public void ExecuteGetWarningNoteByIdReturnsTheExpectedResponse()
+        {
+            var warningNoteId = _fixture.Create<long>();
+
+            var warningNote = _fixture.Create<WarningNote>();
+
+            _mockDatabaseGateway.Setup(
+                    x => x.GetWarningNoteById(It.IsAny<long>()))
+                .Returns(warningNote);
+
+            var expectedResponse = warningNote.ToResponse();
+
+            var response = _classUnderTest.ExecuteGetWarningNoteById(warningNoteId);
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void ExecuteGetWarningNoteByIdThrowNotFoundErrorIfNoWarningNoteIsReturned()
+        {
+            var warningNoteId = _fixture.Create<long>();
+
+            _mockDatabaseGateway.Setup(
+                    x => x.GetWarningNoteById(It.IsAny<long>()))
+                .Returns((WarningNote) null);
+
+            Func<WarningNoteResponse> testDelegate = () => _classUnderTest.ExecuteGetWarningNoteById(warningNoteId);
+
+            testDelegate.Should().Throw<DocumentNotFoundException>();
         }
     }
 }

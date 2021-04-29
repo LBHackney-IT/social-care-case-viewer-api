@@ -435,15 +435,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Get all warning notes created for a specific person
         /// </summary>
         /// <response code="200">Success. Returns warning notes related to the specified ID</response>
-        /// <response code="404">No warning notes found for the specified ID</response>
+        /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/warningNotes")]
         public IActionResult ListWarningNotes(long personId)
         {
+            return Ok(_warningNoteUseCase.ExecuteGet(personId));
+        }
+
+        /// <summary>
+        /// Get a specific warning note along with any associated warning note reviews
+        /// </summary>
+        /// <response code="200">Success. Returns warning note and any related reviews for the specified ID</response>
+        /// <response code="404">No warning note found for the specified ID</response>
+        [ProducesResponseType(typeof(WarningNoteResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("/warningNotes/{warningNoteId}")]
+        public IActionResult GetWarningNoteById(long warningNoteId)
+        {
             try
             {
-                return Ok(_warningNoteUseCase.ExecuteGet(personId));
+                return Ok(_warningNoteUseCase.ExecuteGetWarningNoteById(warningNoteId));
             }
             catch (DocumentNotFoundException e)
             {

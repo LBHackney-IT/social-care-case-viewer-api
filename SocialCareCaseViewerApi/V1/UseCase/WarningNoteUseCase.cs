@@ -1,6 +1,7 @@
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -26,8 +27,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return new ListWarningNotesResponse
             {
-                WarningNotes = warningNotes.Select(x => x.ToDomain()).ToList()
+                WarningNotes = warningNotes?.Select(x => x.ToDomain()).ToList()
             };
+        }
+
+        public WarningNoteResponse ExecuteGetWarningNoteById(long warningNoteId)
+        {
+            var warningNote = _databaseGateway.GetWarningNoteById(warningNoteId);
+
+            if (warningNote == null) throw new DocumentNotFoundException($"No warning note found for the specified ID: {warningNoteId}");
+
+            return warningNote.ToResponse();
         }
 
         public void ExecutePatch(PatchWarningNoteRequest request)
