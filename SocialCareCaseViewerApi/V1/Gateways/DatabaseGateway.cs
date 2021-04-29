@@ -416,6 +416,55 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault();
         }
 
+        public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
+        {
+            var worker = new Worker
+            {
+                Role = createWorkerRequest.Role,
+                Email = createWorkerRequest.EmailAddress,
+                FirstName = createWorkerRequest.FirstName,
+                LastName = createWorkerRequest.LastName,
+                IsActive = true,
+                CreatedBy = createWorkerRequest.CreatedBy,
+                ContextFlag = createWorkerRequest.ContextFlag,
+                DateStart = createWorkerRequest.DateStart,
+                DateEnd = null,
+                LastModifiedBy = createWorkerRequest.CreatedBy
+            };
+
+            var workerTeams = GetTeams(createWorkerRequest);
+
+            worker.WorkerTeams = new List<WorkerTeam>();
+            foreach (var team in workerTeams)
+            {
+                worker.WorkerTeams.Add(new WorkerTeam
+                {
+                    Team = team,
+                    Worker = worker
+                });
+            }
+
+            _databaseContext.Workers.Add(worker);
+            _databaseContext.SaveChanges();
+            return worker;
+        }
+
+        private ICollection<Team> GetTeams(CreateWorkerRequest createWorkerRequest)
+        {
+            var teamsWorkerBelongsIn = new List<Team>();
+            foreach (var requestTeam in createWorkerRequest.Teams)
+            {
+                var teams = GetTeamsByTeamId(requestTeam.Id);
+                if (teams.Count == 0)
+                {
+                    throw new PostWorkerException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
+                }
+                teamsWorkerBelongsIn.AddRange(teams);
+            }
+
+            return teamsWorkerBelongsIn;
+        }
+
         public List<Team> GetTeamsByTeamId(int teamId)
         {
             return _databaseContext.Teams

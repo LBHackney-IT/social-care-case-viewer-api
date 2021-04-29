@@ -166,13 +166,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
-        public static Worker CreateWorker(int? workerId = null)
+        public static Worker CreateWorker(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            string? role = null,
+            string? contextFlag = null,
+            string? createdBy = null,
+            DateTime? dateStart = null)
         {
             return new Faker<Worker>()
-                .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)
-                .RuleFor(w => w.Email, f => f.Person.Email)
-                .RuleFor(w => w.FirstName, f => f.Person.FirstName)
-                .RuleFor(w => w.LastName, f => f.Person.LastName);
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200))
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.CreatedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Soon());
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)
@@ -260,6 +272,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.PhoneNumberIds, phoneNumberIds ?? new Faker<List<int>>())
                 .RuleFor(a => a.CaseNoteId, caseNoteId ?? caseNote.CaseNoteId)
                 .RuleFor(a => a.CaseNoteErrorMessage, f => f.Random.String2(100));
+        }
+
+        public static CreateWorkerRequest CreateWorkerRequest(
+            bool createATeam = true,
+            int? teamId = null,
+            string? teamName = null,
+            string? email = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? contextFlag = null,
+            string? role = null,
+            string? createdByEmail = null,
+            DateTime? dateStart = null
+        )
+        {
+            var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+
+            return new Faker<CreateWorkerRequest>()
+                .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.Teams, teams)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
+                .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now)
+                .RuleFor(w => w.CreatedBy, f => createdByEmail ?? f.Person.Email);
+        }
+
+        public static WorkerResponse CreateWorkerResponse(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            int? allocationCount = null,
+            string? role = null)
+        {
+            return new Faker<WorkerResponse>()
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.AllocationCount, f => allocationCount ?? f.Random.Int(1, 10))
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
+        }
+
+        private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
+            int? teamId = null,
+            string? teamName = null
+        )
+        {
+            return new Faker<WorkerTeamRequest>()
+                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
+                .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
         }
 
         private static Team CreateTeam(int? teamId = null)

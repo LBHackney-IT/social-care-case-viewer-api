@@ -23,6 +23,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         List<Team> GetTeams(string context);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
+        Worker CreateWorker(CreateWorkerRequest createWorkerRequest);
         void PatchWarningNote(PatchWarningNoteRequest request);
         IEnumerable<WarningNote> GetWarningNotes(long personId);
         Domain.WarningNote GetWarningNoteById(long warningNoteId);

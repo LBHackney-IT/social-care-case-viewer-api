@@ -15,6 +15,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string Role { get; set; }
 
+        public string ContextFlag { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        public string DateStart { get; set; }
+
         public int AllocationCount { get; set; }
 
         public IList<Team> Teams { get; set; } = new List<Team>();

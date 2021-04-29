@@ -43,6 +43,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var id = 1;
             var role = _faker.Random.Word();
             int allocationCount = 1;
+            var contextFlag = "A";
+            var createdBy = _faker.Internet.Email();
+            var dateStart = DateTime.Now;
 
             var dbWorker = new dbWorker()
             {
@@ -51,6 +54,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = lastName,
                 Id = id,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Allocations = new List<AllocationSet>() {
                     new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Open" },
                     new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Closed" }
@@ -65,6 +71,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = allocationCount,
                 Email = email,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Teams = null
             };
 
@@ -80,6 +89,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var id = 1;
             var role = _faker.Random.Word();
             int allocationCount = 1; //open allocations
+            var contextFlag = "A";
+            var createdBy = _faker.Internet.Email();
+            var dateStart = DateTime.Now;
 
             var dbWorker = new dbWorker()
             {
@@ -88,6 +100,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = lastName,
                 Id = id,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Allocations = new List<AllocationSet>() {
                     new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Closed" },
                     new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Open" }
@@ -107,6 +122,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = allocationCount,
                 Email = email,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Teams = new List<Team>()
                 {
                     new Team() { Id = 1, Name = "Team 1"},

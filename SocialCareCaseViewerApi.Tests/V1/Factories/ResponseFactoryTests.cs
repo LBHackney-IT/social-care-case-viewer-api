@@ -19,14 +19,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
     public class ResponseFactoryTests
     {
-
-        private Faker _faker;
-
         [SetUp]
         public void SetUp()
         {
             Environment.SetEnvironmentVariable("SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE", "true");
-            _faker = new Faker();
         }
 
         [Test]
@@ -247,6 +243,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var result = ResponseFactory.ToResponse(historicalCaseNote);
 
             result.FormName.Should().Be("Manager's Decisions");
+        }
+
+        [Test]
+        public void CanMapDomainWorkerToResponse()
+        {
+            var domainWorker = TestHelpers.CreateWorker().ToDomain(true);
+            var expectedResponse = new WorkerResponse
+            {
+                Id = domainWorker.Id,
+                Role = domainWorker.Role,
+                Email = domainWorker.Email,
+                Teams = domainWorker.Teams,
+                AllocationCount = domainWorker.AllocationCount,
+                ContextFlag = domainWorker.ContextFlag,
+                CreatedBy = domainWorker.CreatedBy,
+                DateStart = domainWorker.DateStart?.ToString("s") ?? "",
+                FirstName = domainWorker.FirstName,
+                LastName = domainWorker.LastName
+            };
+
+            var response = domainWorker.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
