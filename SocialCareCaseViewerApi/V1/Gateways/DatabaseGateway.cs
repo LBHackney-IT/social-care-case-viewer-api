@@ -320,6 +320,29 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            DateTime dt = DateTime.Now;
+
+            UpdatePersonCaseNote note = new UpdatePersonCaseNote()
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MosaicId = person.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                WorkerEmail = request.CreatedBy,
+                Note = $"{dt.ToShortDateString()} Person details updated - by {request.CreatedBy}.",
+                FormNameOverall = "API_Update_Person",
+                FormName = "Person updated",
+                CreatedBy = request.CreatedBy
+            };
+
+            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            //TODO: refactor so gateways don't call each other
+            _ = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+
             _databaseContext.SaveChanges();
         }
 
