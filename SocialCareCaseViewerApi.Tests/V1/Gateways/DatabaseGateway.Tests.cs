@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _faker = new Faker();
             _fixture = new Fixture();
             _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
-            _processDataGateway = new ProcessDataGateway(SccvDbContext, _mockSocialCarePlatformAPIGateway.Object);
+            _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockSocialCarePlatformAPIGateway.Object);
             _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway);
         }
 
@@ -1217,7 +1217,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var filter = Builders<BsonDocument>.Filter.Eq("mosaic_id", person.Id.ToString());
 
-            var result = SccvDbContext.getCollection().Find(filter).First();
+            var result = MongoDbTestContext.getCollection().Find(filter).First();
 
             string note = $"Person details updated - by {request.CreatedBy}."; //TODO: work out timestamp handling
 
