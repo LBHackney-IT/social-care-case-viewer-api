@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests
             _transaction.Dispose();
 
             //remove any documents inserted during the test
-            //MongoDbTestContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
+            MongoDbTestContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
         }
     }
 }
