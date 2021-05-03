@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests
                 localTrustStore.Close();
             }
 
-            _mongoClient = new MongoClient(new MongoUrl("mongodb://localhost:1433"));
+            _mongoClient = new MongoClient(new MongoUrl("mongodb://mongo-db:27017/?gssapiServiceName=mongodb"));
             //create a new blank database if database does not exist, otherwise get existing database
             _mongoDatabase = _mongoClient.GetDatabase("social_care_db_test");
             //create collection to hold the documents if it does not exist, otherwise retrieve existing
