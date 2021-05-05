@@ -26,7 +26,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
-        private readonly IGetWorkersUseCase _getWorkersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
@@ -35,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
+            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
             IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
@@ -43,7 +42,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
-            _getWorkersUseCase = getWorkersUseCase;
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
@@ -297,26 +295,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
-        }
-
-        /// <summary>
-        /// Get a list of workers by worker id, worker email or team id
-        /// </summary>
-        /// <response code="404">No workers found for inserted worker id, worker email or team id</response>
-        /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(List<WorkerResponse>), StatusCodes.Status200OK)]
-        [Produces("application/json")]
-        [HttpGet]
-        [Route("workers")]
-        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
-        {
-            var workers = _getWorkersUseCase.Execute(request);
-
-            if (workers.Count == 0)
-            {
-                return NotFound();
-            }
-            return Ok(workers);
         }
 
         /// <summary>
