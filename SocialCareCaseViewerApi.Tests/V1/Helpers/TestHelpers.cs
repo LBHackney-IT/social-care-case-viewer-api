@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
-using Bogus.DataSets;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -24,8 +23,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.VisitId, f => f.UniqueIndex)
                 .RuleFor(v => v.PersonId, f => f.UniqueIndex)
                 .RuleFor(v => v.VisitType, f => f.Random.String2(1, 20))
-                .RuleFor(v => v.PlannedDateTime, f => f.Date.Past())
-                .RuleFor(v => v.ActualDateTime, f => f.Date.Past())
+                .RuleFor(v => v.PlannedDateTime, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(v => v.ActualDateTime, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(v => v.ReasonNotPlanned, f => f.Random.String2(1, 16))
                 .RuleFor(v => v.ReasonVisitNotMade, f => f.Random.String2(1, 16))
                 .RuleFor(v => v.SeenAloneFlag, f => f.Random.Bool())
@@ -43,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseNote>()
                 .RuleFor(c => c.CaseNoteId, f => f.UniqueIndex.ToString())
                 .RuleFor(c => c.MosaicId, f => f.UniqueIndex.ToString())
-                .RuleFor(c => c.CreatedOn, f => createdOn ?? f.Date.Past())
+                .RuleFor(c => c.CreatedOn, f => createdOn ?? f.Date.Past().ToUniversalTime())
                 .RuleFor(c => c.NoteType, f => noteType ?? f.Random.String2(50))
                 .RuleFor(c => c.CaseNoteContent, f => f.Random.String2(50))
                 .RuleFor(c => c.CaseNoteTitle, f => f.Random.String2(50))
@@ -167,13 +166,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
-        private static Worker CreateWorker(int? workerId = null)
+        public static Worker CreateWorker(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            string? role = null,
+            string? contextFlag = null,
+            string? createdBy = null,
+            DateTime? dateStart = null)
         {
             return new Faker<Worker>()
-                .RuleFor(w => w.Id, f => workerId ?? f.UniqueIndex + 1)
-                .RuleFor(w => w.Email, f => f.Person.Email)
-                .RuleFor(w => w.FirstName, f => f.Person.FirstName)
-                .RuleFor(w => w.LastName, f => f.Person.LastName);
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200))
+                .RuleFor(w => w.IsActive, f => f.Random.Bool())
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.CreatedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.CreatedAt, DateTime.Now)
+                .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Soon());
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)
@@ -263,6 +277,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.CaseNoteErrorMessage, f => f.Random.String2(100));
         }
 
+        public static CreateWorkerRequest CreateWorkerRequest(
+            bool createATeam = true,
+            int? teamId = null,
+            string? teamName = null,
+            string? email = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? contextFlag = null,
+            string? role = null,
+            string? createdByEmail = null,
+            DateTime? dateStart = null
+        )
+        {
+            var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+
+            return new Faker<CreateWorkerRequest>()
+                .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
+                .RuleFor(w => w.Teams, teams)
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))
+                .RuleFor(w => w.DateStart, dateStart ?? DateTime.Now)
+                .RuleFor(w => w.CreatedBy, f => createdByEmail ?? f.Person.Email);
+        }
+
+        public static WorkerResponse CreateWorkerResponse(
+            int? id = null,
+            string? firstName = null,
+            string? lastName = null,
+            string? email = null,
+            int? allocationCount = null,
+            string? role = null)
+        {
+            return new Faker<WorkerResponse>()
+                .RuleFor(w => w.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
+                .RuleFor(w => w.Email, f => email ?? f.Person.Email)
+                .RuleFor(w => w.AllocationCount, f => allocationCount ?? f.Random.Int(1, 10))
+                .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200));
+        }
+
+        private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
+            int? teamId = null,
+            string? teamName = null
+        )
+        {
+            return new Faker<WorkerTeamRequest>()
+                .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
+                .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
+        }
+
         private static Team CreateTeam(int? teamId = null)
         {
             return new Faker<Team>()
@@ -285,21 +353,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DisclosedDetails, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.Notes, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.NoteType, f => f.Random.String2(1, 50))
-                .RuleFor(w => w.Status, f => status ?? f.Random.String2(1, 50))
+                .RuleFor(w => w.Status, f => status ?? "open")
                 .RuleFor(w => w.DisclosedDate, f => f.Date.Recent())
                 .RuleFor(w => w.DisclosedHow, f => f.Random.String2(1, 50))
                 .RuleFor(w => w.WarningNarrative, f => f.Random.String2(1, 1000))
                 .RuleFor(w => w.ManagerName, f => f.Random.String2(1, 100))
-                .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent());
+                .RuleFor(w => w.DiscussedWithManagerDate, f => f.Date.Recent())
+                .RuleFor(w => w.CreatedBy, f => f.Internet.Email());
         }
 
         public static (PatchWarningNoteRequest, InfrastructurePerson, Worker, WarningNote) CreatePatchWarningNoteRequest(
             long? warningNoteId = null,
             DateTime? reviewDate = null,
+            string? reviewedBy = null,
             DateTime? nextReviewDate = null,
             string? startingStatus = "open",
             string? requestStatus = "open",
             DateTime? endedDate = null,
+            string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
             DateTime? discussedWithManagerDate = null
@@ -307,21 +378,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var person = CreatePerson();
             var worker = CreateWorker();
-            WarningNote warningNote = CreateWarningNote(personId: person.Id, status: startingStatus);
+            WarningNote warningNote = CreateWarningNote(person.Id, startingStatus);
 
             var patchWarningNoteRequest = new Faker<PatchWarningNoteRequest>()
                 .RuleFor(p => p.WarningNoteId, f => warningNoteId ?? warningNote.Id)
                 .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
-                .RuleFor(p => p.ReviewedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.ReviewedBy, f => reviewedBy ?? worker.Email)
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
                 .RuleFor(p => p.Status, f => requestStatus)
                 .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
-                .RuleFor(p => p.EndedBy, f => worker.Email ?? f.Person.Email)
+                .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
                 .RuleFor(p => p.ReviewNotes, f => reviewNotes ?? f.Random.String2(1, 1000))
                 .RuleFor(p => p.ManagerName, f => managerName ?? f.Random.String2(1, 100))
                 .RuleFor(p => p.DiscussedWithManagerDate, f => discussedWithManagerDate ?? f.Date.Recent());
 
             return (patchWarningNoteRequest, person, worker, warningNote);
+        }
+
+        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId)
+        {
+            return new Faker<WarningNoteReview>()
+                .RuleFor(r => r.Id, f => f.UniqueIndex)
+                .RuleFor(r => r.WarningNoteId, f => warningNoteId)
+                .RuleFor(r => r.ReviewDate, f => f.Date.Future())
+                .RuleFor(r => r.DisclosedWithIndividual, f => f.Random.Bool())
+                .RuleFor(r => r.Notes, f => f.Random.String2(1, 50))
+                .RuleFor(r => r.ManagerName, f => f.Person.FullName)
+                .RuleFor(r => r.DiscussedWithManagerDate, f => f.Date.Past())
+                .RuleFor(r => r.CreatedAt, f => f.Date.Past())
+                .RuleFor(r => r.CreatedBy, f => f.Person.FullName)
+                .RuleFor(r => r.LastModifiedAt, f => f.Date.Recent())
+                .RuleFor(r => r.LastModifiedBy, f => f.Person.FullName);
         }
     }
 }

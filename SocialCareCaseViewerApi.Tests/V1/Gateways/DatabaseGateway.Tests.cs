@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -12,16 +10,21 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -29,9 +32,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     public class DatabaseGatewayTests : DatabaseTests
     {
         private DatabaseGateway _classUnderTest;
+        private DatabaseGateway _classUnderTestWithProcessDataGateway;
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Faker _faker;
         private Fixture _fixture;
+        private ProcessDataGateway _processDataGateway;
+        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
 
         [SetUp]
         public void Setup()
@@ -40,12 +46,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
             _faker = new Faker();
             _fixture = new Fixture();
+            _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
+            _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockSocialCarePlatformAPIGateway.Object);
+            _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway);
         }
 
         [Test]
         public void GetWorkerByWorkerIdReturnsWorker()
         {
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
 
             var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
 
@@ -55,11 +64,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWorkerByWorkerIdReturnsNullWhenIdNotPresent()
         {
-            const int workerId = 123;
-            const int nonExistentWorkerId = 321;
-
-            SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: workerId));
-            var response = _classUnderTest.GetWorkerByWorkerId(nonExistentWorkerId);
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
+            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id + 1);
 
             response.Should().BeNull();
         }
@@ -67,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWorkerByWorkerEmailReturnsWorker()
         {
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
             var response = _classUnderTest.GetWorkerByEmail(worker.Email);
 
             response.Should().BeEquivalentTo(worker);
@@ -83,6 +89,150 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.GetWorkerByEmail(nonExistentWorkerEmail);
 
             response.Should().BeNull();
+        }
+
+
+        // test certain columns being null to see what breaks!!
+        [Test]
+        public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
+        {
+            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+
+            var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
+
+            var expectedResponse = new Worker
+            {
+                Id = createdWorker.Id,
+                FirstName = createWorkerRequest.FirstName,
+                LastName = createWorkerRequest.LastName,
+                Email = createWorkerRequest.EmailAddress,
+                Role = createWorkerRequest.Role,
+                ContextFlag = createWorkerRequest.ContextFlag,
+                CreatedBy = createWorkerRequest.CreatedBy,
+                DateStart = createWorkerRequest.DateStart,
+            };
+
+            var responseWorkerTeam = createdWorker.WorkerTeams.ToList()[0];
+
+            createdWorker.Id.Should().Be(expectedResponse.Id);
+            createdWorker.FirstName.Should().Be(expectedResponse.FirstName);
+            createdWorker.LastName.Should().Be(expectedResponse.LastName);
+            createdWorker.Email.Should().Be(expectedResponse.Email);
+            createdWorker.Role.Should().Be(expectedResponse.Role);
+            createdWorker.ContextFlag.Should().Be(expectedResponse.ContextFlag);
+            createdWorker.CreatedBy.Should().Be(expectedResponse.CreatedBy);
+            createdWorker.DateStart.Should().Be(expectedResponse.DateStart);
+            createdWorker.LastModifiedBy.Should().Be(expectedResponse.CreatedBy);
+            createdWorker.IsActive.Should().BeTrue();
+
+            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+        }
+
+        [Test]
+        public void CreateWorkerThenFindByWorkerId()
+        {
+            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+
+            var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
+
+            var workerByGetWorkerById = _classUnderTest.GetWorkerByWorkerId(createdWorker.Id);
+
+            var expectedResponse = new Worker
+            {
+                Id = workerByGetWorkerById.Id,
+                FirstName = workerByGetWorkerById.FirstName,
+                LastName = workerByGetWorkerById.LastName,
+                Email = workerByGetWorkerById.Email,
+                Role = workerByGetWorkerById.Role,
+                ContextFlag = workerByGetWorkerById.ContextFlag,
+                CreatedBy = workerByGetWorkerById.CreatedBy,
+                DateStart = workerByGetWorkerById.DateStart,
+
+            };
+
+            var responseWorkerTeam = workerByGetWorkerById.WorkerTeams.ToList()[0];
+
+            workerByGetWorkerById.Id.Should().Be(expectedResponse.Id);
+            workerByGetWorkerById.FirstName.Should().Be(expectedResponse.FirstName);
+            workerByGetWorkerById.LastName.Should().Be(expectedResponse.LastName);
+            workerByGetWorkerById.Email.Should().Be(expectedResponse.Email);
+            workerByGetWorkerById.Role.Should().Be(expectedResponse.Role);
+            workerByGetWorkerById.ContextFlag.Should().Be(expectedResponse.ContextFlag);
+            workerByGetWorkerById.CreatedBy.Should().Be(expectedResponse.CreatedBy);
+            workerByGetWorkerById.DateStart.Should().Be(expectedResponse.DateStart);
+
+            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+        }
+
+        [Test]
+        public void CreateWorkerThenFindByTeamId()
+        {
+            var (createWorkerRequest, createdTeams) = CreateWorkerAndAddToDatabase();
+
+            var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
+
+            var workerGetByTeamId = _classUnderTest.GetTeamsByTeamId(createdTeams[0].Id)[0].WorkerTeams.ToList()[0].Worker;
+
+            var expectedResponse = new Worker
+            {
+                Id = createdWorker.Id,
+                FirstName = workerGetByTeamId.FirstName,
+                LastName = workerGetByTeamId.LastName,
+                Email = workerGetByTeamId.Email,
+                Role = workerGetByTeamId.Role,
+                ContextFlag = workerGetByTeamId.ContextFlag,
+                CreatedBy = workerGetByTeamId.CreatedBy,
+                DateStart = workerGetByTeamId.DateStart,
+
+            };
+
+            var responseWorkerTeam = workerGetByTeamId.WorkerTeams.ToList()[0];
+
+            workerGetByTeamId.Id.Should().Be(expectedResponse.Id);
+            workerGetByTeamId.FirstName.Should().Be(expectedResponse.FirstName);
+            workerGetByTeamId.LastName.Should().Be(expectedResponse.LastName);
+            workerGetByTeamId.Email.Should().Be(expectedResponse.Email);
+            workerGetByTeamId.Role.Should().Be(expectedResponse.Role);
+            workerGetByTeamId.ContextFlag.Should().Be(expectedResponse.ContextFlag);
+            workerGetByTeamId.CreatedBy.Should().Be(expectedResponse.CreatedBy);
+            workerGetByTeamId.DateStart.Should().Be(expectedResponse.DateStart);
+
+            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+        }
+
+        [Test]
+        public void CreateWorkerWithInvalidTeamIdThrowsPostWorkerException()
+        {
+            var (createWorkerRequest, _) = CreateWorkerAndAddToDatabase(addTeamsToDatabase: false);
+
+            Action act = () => _classUnderTest.CreateWorker(createWorkerRequest);
+
+            act.Should().Throw<PostWorkerException>()
+                .WithMessage($"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
+        }
+
+        private (CreateWorkerRequest, List<Team>) CreateWorkerAndAddToDatabase(
+            bool addTeamsToDatabase = true
+            )
+        {
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest();
+
+            var createdTeams = new List<Team>();
+
+            if (addTeamsToDatabase)
+            {
+                foreach (var team in createWorkerRequest.Teams)
+                {
+                    var createdTeam = new Team { Id = team.Id, Name = team.Name, Context = "A" };
+                    createdTeams.Add(createdTeam);
+                    SaveTeamToDatabase(createdTeam);
+                }
+            }
+
+            return (createWorkerRequest, createdTeams);
         }
 
         [Test]
@@ -209,6 +359,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string otherNameLastTwo = _faker.Name.LastName();
 
             const string gender = "M";
+            const string restricted = "Y";
 
             OtherName otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
             OtherName otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
@@ -277,7 +428,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 EmailAddress = emailAddress,
                 PreferredMethodOfContact = preferredMethodOfContact,
                 ContextFlag = contextFlag,
-                CreatedBy = createdBy
+                CreatedBy = createdBy,
+                Restricted = restricted
             };
 
             AddNewResidentResponse response = _classUnderTest.AddNewResident(request);
@@ -311,6 +463,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(emailAddress, person.EmailAddress);
             Assert.AreEqual(preferredMethodOfContact, person.PreferredMethodOfContact);
             Assert.AreEqual(contextFlag, person.AgeContext);
+            Assert.AreEqual(restricted, person.Restricted);
 
             //check that othernames were created with correct values
             Assert.AreEqual(2, person.OtherNames.Count);
@@ -350,95 +503,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.IsTrue(person.PhoneNumbers.All(x => x.CreatedBy != null));
 
             //TODO: create separate test setup for audit
-            //////person audit record
-            //var personRecord = DatabaseContext.Audits.First(x => x.KeyValues.RootElement.GetProperty("Id").GetInt64() == person.Id && x.EntityState == "Added" && x.TableName == "dm_persons");
-            //Assert.IsNotNull(personRecord.KeyValues.RootElement.GetProperty("Id").GetInt64());
+        }
 
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Title").GetString() == person.Title);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("FirstName").GetString() == person.FirstName);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("LastName").GetString() == person.LastName);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Gender").GetString() == person.Gender);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("DateOfBirth").GetDateTime() == person.DateOfBirth);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("DateOfDeath").GetDateTime() == person.DateOfDeath);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Ethnicity").GetString() == person.Ethnicity);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("FirstLanguage").GetString() == person.FirstLanguage);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("Religion").GetString() == person.Religion);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("SexualOrientation").GetString() == person.SexualOrientation);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("NhsNumber").GetInt64() == person.NhsNumber);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("EmailAddress").GetString() == person.EmailAddress);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("PreferredMethodOfContact").GetString() == person.PreferredMethodOfContact);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("AgeContext").GetString() == person.AgeContext);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
+        [Test]
+        public void CreatePersonRequestWithoutRestrictedValueSetShouldCreateRecordWithRestrictedValueSetToN()
+        {
+            AddNewResidentRequest request = new AddNewResidentRequest()
+            {
+                FirstName = _faker.Person.FirstName,
+                LastName = _faker.Person.LastName,
+                ContextFlag = "A",
+                CreatedBy = _faker.Internet.Email().ToString()
+            };
 
-            ////address record
-            //var addressRecord = DatabaseContext.Audits.First(x => x.TableName == "dm_addresses" && x.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Id && x.EntityState == "Added");
-            //Assert.IsNotNull(addressRecord.KeyValues.RootElement.GetProperty("PersonAddressId").GetInt64());
+            var response = _classUnderTest.AddNewResident(request);
 
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("Uprn").GetInt64() == person.Addresses.First().Uprn);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("EndDate").GetString() == null);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("PersonId").GetInt64() == person.Addresses.First().PersonId);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("PostCode").GetString() == person.Addresses.First().PostCode);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("AddressLines").GetString() == person.Addresses.First().AddressLines);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("IsDisplayAddress").GetString() == person.Addresses.First().IsDisplayAddress);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("DataIsFromDmPersonsBackup").GetString() == person.Addresses.First().DataIsFromDmPersonsBackup);
+            Person person = DatabaseContext.Persons.First(x => x.Id == response.Id);
 
-            ////other names
-            //var otherNamesRecordOne = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstOne && x.EntityState == "Added");
-            //Assert.IsNotNull(otherNamesRecordOne.KeyValues.RootElement.GetProperty("Id").GetInt64());
-
-            //Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstOne);
-            //Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("LastName").GetString(), otherNameLastOne);
-            //Assert.AreEqual(otherNamesRecordOne.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
-
-            //var otherNamesRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "sccv_person_other_name" && x.NewValues.RootElement.GetProperty("FirstName").GetString() == otherNameFirstTwo && x.EntityState == "Added");
-            //Assert.IsNotNull(otherNamesRecordTwo.KeyValues.RootElement.GetProperty("Id").GetInt64());
-
-            //Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("FirstName").GetString(), otherNameFirstTwo);
-            //Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("LastName").GetString(), otherNameLastTwo);
-            //Assert.AreEqual(otherNamesRecordTwo.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-            //Assert.IsTrue(personRecord.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(personRecord.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(addressRecord.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
-
-            ////phone numbers
-            //var phoneNumberRecordOne = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberOne.ToString() && x.EntityState == "Added");
-
-            //Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeOne);
-            //Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberOne.ToString());
-            //Assert.AreEqual(phoneNumberRecordOne.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-
-            //Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(phoneNumberRecordOne.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(phoneNumberRecordOne.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
-
-            //var phoneNumberRecordTwo = DatabaseContext.Audits.First(x => x.TableName == "dm_telephone_numbers" && x.NewValues.RootElement.GetProperty("Number").GetString() == phoneNumberTwo.ToString() && x.EntityState == "Added");
-
-            //Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Type").GetString(), phoneNumberTypeTwo);
-            //Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("Number").GetString(), phoneNumberTwo.ToString());
-            //Assert.AreEqual(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("PersonId").GetInt64(), person.Id);
-
-            //Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("CreatedBy").GetString() == person.CreatedBy);
-            //Assert.IsNotNull(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("CreatedAt").GetDateTime());
-            //Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedAt").GetString() == null);
-            //Assert.IsTrue(phoneNumberRecordTwo.NewValues.RootElement.GetProperty("LastModifiedBy").GetString() == null);
+            response.Should().NotBeNull();
+            person.Restricted.Should().Be("N");
         }
 
         #region Warning Notes
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
-            Person stubbedPerson = TestHelpers.CreatePerson();
+            var stubbedPerson = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(stubbedPerson);
             DatabaseContext.SaveChanges();
 
@@ -453,24 +543,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var insertedRecord = query.FirstOrDefault(x => x.Id == response.WarningNoteId);
 
             insertedRecord.Should().NotBeNull();
+
             insertedRecord.PersonId.Should().Be(request.PersonId);
+            insertedRecord.Status.Should().Be("open");
+
             insertedRecord.StartDate.Should().Be(request.StartDate);
             insertedRecord.EndDate.Should().Be(request.EndDate);
+
+            insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
+
             insertedRecord.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
             insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
-            insertedRecord.Notes.Should().Be(request.Notes);
-            insertedRecord.NoteType.Should().Be(request.NoteType);
-            insertedRecord.Status.Should().Be("open");
             insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
             insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
+
+            insertedRecord.Notes.Should().Be(request.Notes);
+            insertedRecord.NoteType.Should().Be(request.NoteType);
             insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
+
             insertedRecord.ManagerName.Should().Be(request.ManagerName);
             insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+
+            insertedRecord.CreatedBy.Should().Be(request.CreatedBy);
 
             //audit properties
             insertedRecord.CreatedAt.Should().NotBeNull();
             insertedRecord.CreatedAt.Should().NotBe(DateTime.MinValue);
-            insertedRecord.CreatedBy.Should().Be(request.CreatedBy);
+
             insertedRecord.LastModifiedAt.Should().BeNull();
             insertedRecord.LastModifiedBy.Should().BeNull();
         }
@@ -534,86 +634,78 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         //     act.Should().Throw<PostWarningNoteException>()
         //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
         // }
+
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
             var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
 
-            var warningNote = new WarningNote
-            {
-                PersonId = testPersonId
-            };
-
-            var wrongWarningNote = new WarningNote
-            {
-                PersonId = differentPersonId
-            };
+            var warningNote = TestHelpers.CreateWarningNote(testPersonId);
 
             DatabaseContext.WarningNotes.Add(warningNote);
-            DatabaseContext.WarningNotes.Add(wrongWarningNote);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetWarningNotes(testPersonId);
+            var retrievedWarningNote = response.FirstOrDefault();
 
             response.Should().ContainSingle();
-            response.Should().ContainEquivalentOf(warningNote);
-            response.Should().NotContain(wrongWarningNote);
+
+            retrievedWarningNote.Id.Should().Be(warningNote.Id);
+            retrievedWarningNote.Status.Should().Be("open");
+
+            retrievedWarningNote.PersonId.Should().Be(warningNote.PersonId);
+
+            retrievedWarningNote.WarningNarrative.Should().Be(warningNote.WarningNarrative);
+
+            retrievedWarningNote.StartDate.Should().Be(warningNote.StartDate);
+            retrievedWarningNote.EndDate.Should().Be(warningNote.EndDate);
+
+            retrievedWarningNote.ReviewDate.Should().Be(warningNote.ReviewDate);
+            retrievedWarningNote.NextReviewDate.Should().Be(warningNote.NextReviewDate);
+
+            retrievedWarningNote.DisclosedWithIndividual.Should().Be(warningNote.DisclosedWithIndividual);
+            retrievedWarningNote.DisclosedDetails.Should().Be(warningNote.DisclosedDetails);
+            retrievedWarningNote.DisclosedDate.Should().Be(warningNote.DisclosedDate);
+            retrievedWarningNote.DisclosedHow.Should().Be(warningNote.DisclosedHow);
+
+            retrievedWarningNote.Notes.Should().Be(warningNote.Notes);
+            retrievedWarningNote.NoteType.Should().Be(warningNote.NoteType);
+
+            retrievedWarningNote.ManagerName.Should().Be(warningNote.ManagerName);
+            retrievedWarningNote.DiscussedWithManagerDate.Should().Be(warningNote.DiscussedWithManagerDate);
+
+            retrievedWarningNote.CreatedBy.Should().Be(warningNote.CreatedBy);
         }
 
         [Test]
         public void GetWarningNotesReturnsAListOfWarningNotesForASpecificPerson()
         {
             var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
 
-            var firstNote = new WarningNote
-            {
-                PersonId = testPersonId,
-                Notes = "I am one note"
-            };
+            var firstWarningNote = TestHelpers.CreateWarningNote(testPersonId);
+            var secondWarningNote = TestHelpers.CreateWarningNote(testPersonId);
 
-            var secondNote = new WarningNote
-            {
-                PersonId = testPersonId,
-                Notes = "I am another note"
-            };
+            var differentWarningNote = TestHelpers.CreateWarningNote();
 
-            var separateWarningNote = new WarningNote
-            {
-                PersonId = differentPersonId
-            };
-
-            DatabaseContext.WarningNotes.Add(firstNote);
-            DatabaseContext.WarningNotes.Add(secondNote);
-            DatabaseContext.WarningNotes.Add(separateWarningNote);
+            DatabaseContext.WarningNotes.Add(firstWarningNote);
+            DatabaseContext.WarningNotes.Add(secondWarningNote);
+            DatabaseContext.WarningNotes.Add(differentWarningNote);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetWarningNotes(testPersonId);
 
             response.Count().Should().Be(2);
-            response.Should().ContainEquivalentOf(firstNote);
-            response.Should().ContainEquivalentOf(secondNote);
-            response.Should().NotContain(separateWarningNote);
+            response.Should().ContainEquivalentOf(firstWarningNote);
+            response.Should().ContainEquivalentOf(secondWarningNote);
+            response.Should().NotContain(differentWarningNote);
         }
 
         [Test]
-        public void GetWarningNotesReturnsAnExceptionIfTheWarningNoteDoesNotExist()
+        public void GetWarningNotesReturnsANullIfNoWarningNotesExist()
         {
-            var testPersonId = _faker.Random.Int();
-            var differentPersonId = _faker.Random.Int();
+            var response = _classUnderTest.GetWarningNotes(123);
 
-            var warningNote = new WarningNote
-            {
-                PersonId = testPersonId
-            };
-            DatabaseContext.WarningNotes.Add(warningNote);
-            DatabaseContext.SaveChanges();
-
-            Action act = () => _classUnderTest.GetWarningNotes(differentPersonId);
-
-            act.Should().Throw<DocumentNotFoundException>()
-                .WithMessage($"No warning notes found relating to person id {differentPersonId}");
+            response.Should().BeNull();
         }
 
         [Test]
@@ -795,6 +887,94 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
             insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
             insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnTheSpecifiedWarningNote()
+        {
+            var newWarningNote = TestHelpers.CreateWarningNote();
+            DatabaseContext.WarningNotes.Add(newWarningNote);
+            DatabaseContext.SaveChanges();
+
+            var expectedResponse = newWarningNote.ToDomain();
+
+            var response = _classUnderTest.GetWarningNoteById(newWarningNote.Id);
+
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(expectedResponse);
+            response.WarningNoteReviews.Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsNullWhenThereAreNoMatchingRecords()
+        {
+            var response = _classUnderTest.GetWarningNoteById(123);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsAReviewWithTheWarningNoteIfAny()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+
+            var review = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNoteReview.Add(review);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(1);
+            response.WarningNoteReviews.FirstOrDefault().Should().BeEquivalentTo(review);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdReturnsReturnsMultipleReviewsWithTheWarningNote()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+            var firstReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNoteReview.Add(firstReview);
+            DatabaseContext.WarningNoteReview.Add(secondReview);
+            DatabaseContext.WarningNoteReview.Add(thirdReview);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(3);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(firstReview);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(secondReview);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(thirdReview);
+        }
+
+        [Test]
+        public void GetWarningNoteByIdShouldNotReturnReviewsMadeForADifferentWarningNote()
+        {
+            var warningNote = TestHelpers.CreateWarningNote();
+            var differentWarningNote = TestHelpers.CreateWarningNote();
+
+            var review = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var differentReview = TestHelpers.CreateWarningNoteReview(differentWarningNote.Id);
+
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.WarningNotes.Add(differentWarningNote);
+            DatabaseContext.WarningNoteReview.Add(review);
+            DatabaseContext.WarningNoteReview.Add(differentReview);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
+
+            response.Should().NotBeNull();
+            response.WarningNoteReviews.Count.Should().Be(1);
+            response.WarningNoteReviews.Should().ContainEquivalentOf(review);
+            response.WarningNoteReviews.Should().NotContain(differentReview);
         }
         #endregion
 
@@ -1026,6 +1206,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.OtherNames.Count.Should().Be(0);
         }
 
+        [Test]
+        public void UpdatePersonCreatesCorrectCaseHistoryNoteByCallingProcessDataGateway()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTestWithProcessDataGateway.UpdatePerson(request);
+
+            var filter = Builders<BsonDocument>.Filter.Eq("mosaic_id", person.Id.ToString());
+
+            var result = MongoDbTestContext.getCollection().Find(filter).First();
+
+            string note = $"Person details updated - by {request.CreatedBy}."; //TODO: work out timestamp handling
+
+            result["note"].ToString().Should().Contain(note);
+            result["created_by"].Should().Be(request.CreatedBy);
+            result["first_name"].Should().Be(person.FirstName);
+            result["last_name"].Should().Be(person.LastName);
+            result["mosaic_id"].Should().Be(person.Id.ToString());
+            result["worker_email"].Should().Be(request.CreatedBy);
+            result["form_name_overall"].Should().Be("API_Update_Person");
+            result["form_name"].Should().Be("Person updated");
+            result["is_imported"].Should().Be(false);
+        }
 
         private Person SavePersonToDatabase(Person person)
         {

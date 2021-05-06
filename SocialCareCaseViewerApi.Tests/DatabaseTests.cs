@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
@@ -10,6 +12,7 @@ namespace SocialCareCaseViewerApi.Tests
     {
         private IDbContextTransaction _transaction;
         protected DatabaseContext DatabaseContext { get; private set; }
+        protected ISccvDbContext MongoDbTestContext { get; private set; }
 
         [SetUp]
         public void RunBeforeAnyTests()
@@ -20,6 +23,8 @@ namespace SocialCareCaseViewerApi.Tests
 
             DatabaseContext.Database.EnsureCreated();
             _transaction = DatabaseContext.Database.BeginTransaction();
+
+            MongoDbTestContext = new MongoDbTestContext();
         }
 
         [TearDown]
@@ -27,6 +32,9 @@ namespace SocialCareCaseViewerApi.Tests
         {
             _transaction.Rollback();
             _transaction.Dispose();
+
+            //remove any documents inserted during the test
+            MongoDbTestContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
         }
     }
 }

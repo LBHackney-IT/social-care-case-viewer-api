@@ -43,6 +43,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var id = 1;
             var role = _faker.Random.Word();
             int allocationCount = 1;
+            var contextFlag = "A";
+            var createdBy = _faker.Internet.Email();
+            var dateStart = DateTime.Now;
 
             var dbWorker = new dbWorker()
             {
@@ -51,6 +54,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = lastName,
                 Id = id,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Allocations = new List<AllocationSet>() {
                     new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Open" },
                     new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Closed" }
@@ -65,6 +71,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = allocationCount,
                 Email = email,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Teams = null
             };
 
@@ -80,6 +89,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var id = 1;
             var role = _faker.Random.Word();
             int allocationCount = 1; //open allocations
+            var contextFlag = "A";
+            var createdBy = _faker.Internet.Email();
+            var dateStart = DateTime.Now;
 
             var dbWorker = new dbWorker()
             {
@@ -88,6 +100,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = lastName,
                 Id = id,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Allocations = new List<AllocationSet>() {
                     new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Closed" },
                     new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Open" }
@@ -107,6 +122,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocationCount = allocationCount,
                 Email = email,
                 Role = role,
+                ContextFlag = contextFlag,
+                CreatedBy = createdBy,
+                DateStart = dateStart,
                 Teams = new List<Team>()
                 {
                     new Team() { Id = 1, Name = "Team 1"},
@@ -144,10 +162,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapWarningNoteFromDatabaseEntityToDomainObject()
         {
             long number = _faker.Random.Number();
-            DateTime dt = DateTime.Now;
-            string text = _faker.Random.String();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
 
-            var dbWarningNote = new dbWarningNote()
+            var dbWarningNote = new dbWarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -156,6 +174,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -163,10 +182,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
             };
 
-            var expectedResponse = new WarningNote()
+            var expectedResponse = new WarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -175,6 +195,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -182,12 +203,66 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text,
+                WarningNoteReviews = new List<WarningNoteReview>()
             };
 
             var response = dbWarningNote.ToDomain();
 
             response.Should().BeOfType<WarningNote>();
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapPostWarningNoteRequestToDatabaseObject()
+        {
+            long number = _faker.Random.Number();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
+
+            var request = new PostWarningNoteRequest
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var expectedResponse = new dbWarningNote
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                Status = "open",
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var response = request.ToDatabaseEntity();
+
+            response.Should().BeOfType<dbWarningNote>();
             response.Should().BeEquivalentTo(expectedResponse);
         }
 

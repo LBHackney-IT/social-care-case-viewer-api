@@ -9,7 +9,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
-using domainPhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -116,7 +116,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Email = worker.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                Role = worker.Role,
+                Role = worker.Role ?? "",
+                ContextFlag = worker.ContextFlag ?? "",
+                CreatedBy = worker.CreatedBy ?? "",
+                DateStart = worker.DateStart?.ToString("s") ?? "",
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
             };
@@ -158,6 +161,49 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain())?.ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain())?.ToList()
+            };
+        }
+
+        public static WarningNoteResponse ToResponse(this WarningNote warningNote)
+        {
+            return new WarningNoteResponse
+            {
+                Id = warningNote.Id,
+                PersonId = warningNote.PersonId,
+                StartDate = warningNote.StartDate?.ToString("s"),
+                EndDate = warningNote.EndDate?.ToString("s"),
+                DisclosedWithIndividual = warningNote.DisclosedWithIndividual,
+                DisclosedDetails = warningNote.DisclosedDetails,
+                Notes = warningNote.Notes,
+                ReviewDate = warningNote.ReviewDate?.ToString("s"),
+                NextReviewDate = warningNote.NextReviewDate?.ToString("s"),
+                NoteType = warningNote.NoteType,
+                Status = warningNote.Status,
+                DisclosedDate = warningNote.DisclosedDate?.ToString("s"),
+                DisclosedHow = warningNote.DisclosedHow,
+                WarningNarrative = warningNote.WarningNarrative,
+                ManagerName = warningNote.ManagerName,
+                DiscussedWithManagerDate = warningNote.DiscussedWithManagerDate?.ToString("s"),
+                CreatedBy = warningNote.CreatedBy,
+                WarningNoteReviews = warningNote.WarningNoteReviews?.Select(x => x.ToResponse()).ToList()
+            };
+        }
+
+        private static WarningNoteReviewResponse ToResponse(this WarningNoteReview review)
+        {
+            return new WarningNoteReviewResponse
+            {
+                Id = review.Id,
+                WarningNoteId = review.WarningNoteId,
+                ReviewDate = review.ReviewDate?.ToString("s"),
+                DisclosedWithIndividual = review.DisclosedWithIndividual,
+                Notes = review.Notes,
+                ManagerName = review.ManagerName,
+                DiscussedWithManagerDate = review.DiscussedWithManagerDate?.ToString("s"),
+                CreatedAt = review.CreatedAt?.ToString("s"),
+                CreatedBy = review.CreatedBy,
+                LastModifiedAt = review.LastModifiedAt?.ToString("s"),
+                LastModifiedBy = review.LastModifiedBy
             };
         }
     }

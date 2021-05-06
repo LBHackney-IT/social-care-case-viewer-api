@@ -71,8 +71,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
                 Role = worker.Role,
+                ContextFlag = worker.ContextFlag,
+                CreatedBy = worker.CreatedBy,
+                DateStart = worker.DateStart,
                 AllocationCount = worker?.Allocations == null ? 0 : worker.Allocations.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count(),
-                Teams = includeTeamData ? worker.WorkerTeams?.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name }).ToList() : null
+                Teams = includeTeamData ? worker.WorkerTeams?.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name }).ToList() : null,
             };
         }
 
@@ -95,7 +98,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static WarningNote ToDomain(this dbWarningNote dbWarningNote)
+        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview> reviews = null)
         {
             return new WarningNote
             {
@@ -106,6 +109,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisclosedWithIndividual = dbWarningNote.DisclosedWithIndividual,
                 DisclosedDetails = dbWarningNote.DisclosedDetails,
                 Notes = dbWarningNote.Notes,
+                ReviewDate = dbWarningNote.ReviewDate,
                 NextReviewDate = dbWarningNote.NextReviewDate,
                 NoteType = dbWarningNote.NoteType,
                 Status = dbWarningNote.Status,
@@ -113,7 +117,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisclosedHow = dbWarningNote.DisclosedHow,
                 WarningNarrative = dbWarningNote.WarningNarrative,
                 ManagerName = dbWarningNote.ManagerName,
-                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate
+                DiscussedWithManagerDate = dbWarningNote.DiscussedWithManagerDate,
+                CreatedBy = dbWarningNote.CreatedBy,
+                WarningNoteReviews = reviews ?? new List<WarningNoteReview>()
             };
         }
 
@@ -197,6 +203,29 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new CaseNotesDocument()
             {
                 CaseFormData = coreProps.ToString()
+            };
+        }
+
+        public static dbWarningNote ToDatabaseEntity(this PostWarningNoteRequest request)
+        {
+            return new dbWarningNote
+            {
+                PersonId = request.PersonId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                ReviewDate = request.ReviewDate,
+                NextReviewDate = request.NextReviewDate,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
+                DisclosedDetails = request.DisclosedDetails,
+                Notes = request.Notes,
+                NoteType = request.NoteType,
+                Status = "open",
+                DisclosedDate = request.DisclosedDate,
+                DisclosedHow = request.DisclosedHow,
+                WarningNarrative = request.WarningNarrative,
+                ManagerName = request.ManagerName,
+                DiscussedWithManagerDate = request.DiscussedWithManagerDate,
+                CreatedBy = request.CreatedBy
             };
         }
         #endregion

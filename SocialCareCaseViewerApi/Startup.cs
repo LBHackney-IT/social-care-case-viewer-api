@@ -120,6 +120,7 @@ namespace SocialCareCaseViewerApi
 
             services.AddTransient<IValidator<CreateAllocationRequest>, CreateAllocationRequestValidator>();
             services.AddTransient<IValidator<UpdateAllocationRequest>, UpdateAllocationRequestValidator>();
+            services.AddTransient<IValidator<CreateWorkerRequest>, CreateWorkerRequestValidator>();
             services.AddTransient<IValidator<PatchWarningNoteRequest>, PatchWarningNoteRequestValidator>();
         }
 
@@ -153,6 +154,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IVisitsUseCase, VisitsUseCase>();
             services.AddScoped<IWarningNoteUseCase, WarningNoteUseCase>();
             services.AddScoped<IGetVisitByVisitIdUseCase, GetVisitByVisitIdUseCase>();
+            services.AddScoped<IWorkersUseCase, WorkersUseCase>();
             services.AddScoped<IPersonUseCase, PersonUseCase>();
         }
 
