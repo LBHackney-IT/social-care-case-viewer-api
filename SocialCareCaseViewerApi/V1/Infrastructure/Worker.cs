@@ -30,7 +30,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string LastName { get; set; } = null!;
 
         [Column("is_active")]
-        [Required]
         public bool IsActive { get; set; }
 
         [Column("role")]
