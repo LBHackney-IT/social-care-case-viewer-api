@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -15,12 +19,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private WorkerController _workerController;
         private Mock<IWorkersUseCase> _workerUseCase;
+        private Mock<IGetWorkersUseCase> _getWorkersUseCase;
+        private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _workerUseCase = new Mock<IWorkersUseCase>();
-            _workerController = new WorkerController(_workerUseCase.Object);
+            _getWorkersUseCase = new Mock<IGetWorkersUseCase>();
+            _workerController = new WorkerController(_workerUseCase.Object, _getWorkersUseCase.Object);
+            _fixture = new Fixture();
         }
 
         [Test]
@@ -77,5 +85,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(422);
             response.Value.Should().Be(errorMessage);
         }
+
+        [Test]
+        public void GetWorkersReturns200WhenMatchingWorker()
+        {
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            var workersList = _fixture.Create<List<WorkerResponse>>();
+            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workersList);
+
+            var response = _workerController.GetWorkers(request) as OkObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+
+            var responseValue = response.Value as List<WorkerResponse>;
+
+            responseValue.Should().BeOfType<List<WorkerResponse>>();
+            responseValue.Count.Should().Be(workersList.Count);
+        }
+
+        [Test]
+        public void GetWorkersReturns404WhenNoWorkersFound()
+        {
+            var workers = new List<WorkerResponse>();
+            var request = new GetWorkersRequest() { TeamId = 5 };
+            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workers);
+
+            var response = _workerController.GetWorkers(request) as NotFoundResult;
+
+            response.StatusCode.Should().Be(404);
+        }
+
     }
 }

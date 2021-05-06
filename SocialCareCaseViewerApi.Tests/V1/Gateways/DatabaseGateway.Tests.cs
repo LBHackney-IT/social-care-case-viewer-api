@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWorkerByWorkerIdReturnsWorker()
         {
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
 
             var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
 
@@ -64,11 +64,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWorkerByWorkerIdReturnsNullWhenIdNotPresent()
         {
-            const int workerId = 123;
-            const int nonExistentWorkerId = 321;
-
-            SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: workerId));
-            var response = _classUnderTest.GetWorkerByWorkerId(nonExistentWorkerId);
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
+            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id + 1);
 
             response.Should().BeNull();
         }
@@ -76,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetWorkerByWorkerEmailReturnsWorker()
         {
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
             var response = _classUnderTest.GetWorkerByEmail(worker.Email);
 
             response.Should().BeEquivalentTo(worker);
@@ -94,6 +91,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeNull();
         }
 
+
+        // test certain columns being null to see what breaks!!
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
         {
@@ -111,7 +110,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 ContextFlag = createWorkerRequest.ContextFlag,
                 CreatedBy = createWorkerRequest.CreatedBy,
                 DateStart = createWorkerRequest.DateStart,
-
             };
 
             var responseWorkerTeam = createdWorker.WorkerTeams.ToList()[0];
@@ -124,6 +122,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             createdWorker.ContextFlag.Should().Be(expectedResponse.ContextFlag);
             createdWorker.CreatedBy.Should().Be(expectedResponse.CreatedBy);
             createdWorker.DateStart.Should().Be(expectedResponse.DateStart);
+            createdWorker.LastModifiedBy.Should().Be(expectedResponse.CreatedBy);
+            createdWorker.IsActive.Should().BeTrue();
 
             responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
             responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
