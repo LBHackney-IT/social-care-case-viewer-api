@@ -182,8 +182,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
                 .RuleFor(w => w.Email, f => email ?? f.Person.Email)
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(1, 200))
+                .RuleFor(w => w.IsActive, f => f.Random.Bool())
                 .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
                 .RuleFor(w => w.CreatedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email)
+                .RuleFor(w => w.CreatedAt, DateTime.Now)
                 .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Soon());
         }
 
