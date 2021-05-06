@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? DateEnd { get; set; }
 
         [Column("last_modified_by")]
-        public string LastModifiedBy { get; set; } = null!;
+        public string? LastModifiedBy { get; set; }
 
         // save changes override populates created at and lost modified at
 
