@@ -451,7 +451,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No warning note found for the specified ID</response>
         [ProducesResponseType(typeof(WarningNoteResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("/warningNotes/{warningNoteId}")]
+        [Route("warningnotes/{warningNoteId}")]
         public IActionResult GetWarningNoteById(long warningNoteId)
         {
             try
