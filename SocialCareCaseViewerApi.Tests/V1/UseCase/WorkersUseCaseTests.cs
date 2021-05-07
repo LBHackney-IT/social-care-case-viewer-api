@@ -55,25 +55,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(worker.ToDomain(true).ToResponse());
         }
 
-        // [Test]
-        // public void ExecutePatchCallsDatabaseGateway()
-        // {
-        //     var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+        [Test]
+        public void ExecutePatchCallsDatabaseGateway()
+        {
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
 
-        //     _mockDatabaseGateway
-        //         .Setup(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId))
-        //         .Returns(new Worker());
+            _mockDatabaseGateway
+                .Setup(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId))
+                .Returns(new Worker());
 
-        //     _mockDatabaseGateway.Setup(x => x.UpdateWorker(updateWorkerRequest));
+            _mockDatabaseGateway.Setup(x => x.UpdateWorker(updateWorkerRequest));
 
-        //     _workersUseCase.ExecutePatch(updateWorkerRequest);
+            _workersUseCase.ExecutePatch(updateWorkerRequest);
 
-        //     _mockDatabaseGateway.Verify(x => x.UpdateWorker(updateWorkerRequest));
-        //     _mockDatabaseGateway.Verify(x => x.UpdateWorker(It.Is<UpdateWorkerRequest>(w => w == updateWorkerRequest)), Times.Once());
+            _mockDatabaseGateway.Verify(x => x.UpdateWorker(updateWorkerRequest));
+            _mockDatabaseGateway.Verify(x => x.UpdateWorker(It.Is<UpdateWorkerRequest>(w => w == updateWorkerRequest)), Times.Once());
 
-        //     _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId));
-        //     _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(It.Is<int>(w => w == updateWorkerRequest.WorkerId)), Times.Once());
-        // }
+            _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId));
+            _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(It.Is<int>(w => w == updateWorkerRequest.WorkerId)), Times.Once());
+        }
 
         [Test]
         public void ExecutePatchThrowsPatchWorkerExceptionIfWorkerHasAllocationsAndTryingToDeactivate()
