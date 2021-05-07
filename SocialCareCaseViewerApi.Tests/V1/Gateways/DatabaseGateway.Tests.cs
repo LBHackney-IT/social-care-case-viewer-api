@@ -715,11 +715,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetWarningNotesReturnsANullIfNoWarningNotesExist()
+        public void GetWarningNotesReturnsAnEmptyListIfNoWarningNotesExist()
         {
             var response = _classUnderTest.GetWarningNotes(123);
 
-            response.Should().BeNull();
+            response.Should().BeEmpty();
         }
 
         [Test]

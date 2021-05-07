@@ -706,12 +706,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IEnumerable<WarningNote> GetWarningNotes(long personId)
         {
-            var warningNotes = _databaseContext.WarningNotes
+            return _databaseContext.WarningNotes
                 .Where(x => x.PersonId == personId);
-
-            if (warningNotes.FirstOrDefault() == null) return null;
-
-            return warningNotes;
         }
 
         public Domain.WarningNote GetWarningNoteById(long warningNoteId)
