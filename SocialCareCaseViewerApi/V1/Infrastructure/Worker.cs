@@ -26,9 +26,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public string LastName { get; set; } = null!;
 
-        [Column("is_active")] [Required] public bool IsActive { get; set; }
+        [Column("is_active")]
+        public bool IsActive { get; set; }
 
-        [Column("role")] [MaxLength(200)] public string? Role { get; set; }
+        [Column("role")]
+        [MaxLength(200)]
+        public string? Role { get; set; }
 
         [Column("context_flag")]
         [MaxLength(1)]
@@ -40,7 +43,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("date_end")] public DateTime? DateEnd { get; set; }
 
-        [Column("last_modified_by")] public string LastModifiedBy { get; set; } = null!;
+
+        [Column("last_modified_by")]
+        public string? LastModifiedBy { get; set; }
 
         // save changes override populates created at and lost modified at
 

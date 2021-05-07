@@ -162,10 +162,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CanMapWarningNoteFromDatabaseEntityToDomainObject()
         {
             long number = _faker.Random.Number();
-            DateTime dt = DateTime.Now;
-            string text = _faker.Random.String();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
 
-            var dbWarningNote = new dbWarningNote()
+            var dbWarningNote = new dbWarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -174,6 +174,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -181,10 +182,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
             };
 
-            var expectedResponse = new WarningNote()
+            var expectedResponse = new WarningNote
             {
                 Id = number,
                 PersonId = number,
@@ -193,6 +195,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedWithIndividual = true,
                 DisclosedDetails = text,
                 Notes = text,
+                ReviewDate = dt,
                 NextReviewDate = dt,
                 NoteType = text,
                 Status = text,
@@ -200,12 +203,66 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisclosedHow = text,
                 WarningNarrative = text,
                 ManagerName = text,
-                DiscussedWithManagerDate = dt
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text,
+                WarningNoteReviews = new List<WarningNoteReview>()
             };
 
             var response = dbWarningNote.ToDomain();
 
             response.Should().BeOfType<WarningNote>();
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapPostWarningNoteRequestToDatabaseObject()
+        {
+            long number = _faker.Random.Number();
+            var dt = DateTime.Now;
+            var text = _faker.Random.String();
+
+            var request = new PostWarningNoteRequest
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var expectedResponse = new dbWarningNote
+            {
+                PersonId = number,
+                StartDate = dt,
+                EndDate = dt,
+                DisclosedWithIndividual = true,
+                DisclosedDetails = text,
+                Notes = text,
+                ReviewDate = dt,
+                NextReviewDate = dt,
+                NoteType = text,
+                Status = "open",
+                DisclosedDate = dt,
+                DisclosedHow = text,
+                WarningNarrative = text,
+                ManagerName = text,
+                DiscussedWithManagerDate = dt,
+                CreatedBy = text
+            };
+
+            var response = request.ToDatabaseEntity();
+
+            response.Should().BeOfType<dbWarningNote>();
             response.Should().BeEquivalentTo(expectedResponse);
         }
 

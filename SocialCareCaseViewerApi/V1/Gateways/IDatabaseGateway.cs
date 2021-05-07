@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         void UpdateWorker(UpdateWorkerRequest updateWorkerRequest);
         void PatchWarningNote(PatchWarningNoteRequest request);
         IEnumerable<WarningNote> GetWarningNotes(long personId);
+        Domain.WarningNote GetWarningNoteById(long warningNoteId);
         Person GetPersonDetailsById(long id);
         void UpdatePerson(UpdatePersonRequest request);
     }

@@ -21,7 +21,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [EmailAddress]
         public string WorkerEmail { get; set; }
 
-        public string DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+
+        public DateTime? DateOfEvent { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]

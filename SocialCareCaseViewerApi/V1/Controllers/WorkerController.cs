@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -14,10 +15,31 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class WorkerController : BaseController
     {
         private readonly IWorkersUseCase _workersUseCase;
+        private readonly IGetWorkersUseCase _getWorkersUseCase;
 
-        public WorkerController(IWorkersUseCase workersUseCase)
+        public WorkerController(IWorkersUseCase workersUseCase, IGetWorkersUseCase getWorkersUseCase)
         {
             _workersUseCase = workersUseCase;
+            _getWorkersUseCase = getWorkersUseCase;
+        }
+
+        /// <summary>
+        /// Get a list of workers by worker id, worker email or team id
+        /// </summary>
+        /// <response code="404">No workers found for inserted worker id, worker email or team id</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(List<WorkerResponse>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
+        {
+            var workers = _getWorkersUseCase.Execute(request);
+
+            if (workers.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(workers);
         }
 
         /// <summary>
@@ -26,7 +48,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <param name="request"></param>
         /// <response code="201">Worker created successfully</response>
         /// <response code="400">Invalid CreateWorkerRequest received</response>
-        /// <response code="404">Exception encountered finding worker team</response>
+        /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(WorkerResponse), StatusCodes.Status201Created)]
         [HttpPost]
         public IActionResult CreateWorker([FromBody] CreateWorkerRequest request)

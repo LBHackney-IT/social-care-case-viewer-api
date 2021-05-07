@@ -26,7 +26,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
-        private readonly IGetWorkersUseCase _getWorkersUseCase;
         private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
@@ -35,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, IGetWorkersUseCase getWorkersUseCase,
+            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase,
             ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
             IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
@@ -43,7 +42,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
-            _getWorkersUseCase = getWorkersUseCase;
             _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
@@ -300,26 +298,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get a list of workers by worker id, worker email or team id
-        /// </summary>
-        /// <response code="404">No workers found for inserted worker id, worker email or team id</response>
-        /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(List<WorkerResponse>), StatusCodes.Status200OK)]
-        [Produces("application/json")]
-        [HttpGet]
-        [Route("workers")]
-        public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
-        {
-            var workers = _getWorkersUseCase.Execute(request);
-
-            if (workers.Count == 0)
-            {
-                return NotFound();
-            }
-            return Ok(workers);
-        }
-
-        /// <summary>
         /// Get a list of teams by context
         /// </summary>
         /// <response code="400">One or more request parameters are invalid or missing</response>
@@ -435,15 +413,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Get all warning notes created for a specific person
         /// </summary>
         /// <response code="200">Success. Returns warning notes related to the specified ID</response>
-        /// <response code="404">No warning notes found for the specified ID</response>
+        /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/warningNotes")]
         public IActionResult ListWarningNotes(long personId)
         {
+            return Ok(_warningNoteUseCase.ExecuteGet(personId));
+        }
+
+        /// <summary>
+        /// Get a specific warning note along with any associated warning note reviews
+        /// </summary>
+        /// <response code="200">Success. Returns warning note and any related reviews for the specified ID</response>
+        /// <response code="404">No warning note found for the specified ID</response>
+        [ProducesResponseType(typeof(WarningNoteResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("warningnotes/{warningNoteId}")]
+        public IActionResult GetWarningNoteById(long warningNoteId)
+        {
             try
             {
-                return Ok(_warningNoteUseCase.ExecuteGet(personId));
+                return Ok(_warningNoteUseCase.ExecuteGetWarningNoteById(warningNoteId));
             }
             catch (DocumentNotFoundException e)
             {
