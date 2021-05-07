@@ -214,11 +214,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .WithMessage($"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
         }
 
+        [Test]
+        public void CreateWorkerWithDuplicateEmailThrowsPostWorkerException()
+        {
+            var (createWorkerRequest, _) = CreateWorkerAndAddToDatabase(true);
+            var (createWorkerRequestDuplicate, _) = CreateWorkerAndAddToDatabase(true, createWorkerRequest.EmailAddress);
+
+            _classUnderTest.CreateWorker(createWorkerRequest);
+            Action act = () => _classUnderTest.CreateWorker(createWorkerRequestDuplicate);
+
+            act.Should().Throw<PostWorkerException>()
+                .WithMessage($"Worker with Email {createWorkerRequestDuplicate.EmailAddress} already exists");
+        }
+
         private (CreateWorkerRequest, List<Team>) CreateWorkerAndAddToDatabase(
-            bool addTeamsToDatabase = true
+            bool addTeamsToDatabase = true,
+            string workerEmail = null
             )
         {
-            var createWorkerRequest = TestHelpers.CreateWorkerRequest();
+            var createWorkerRequest = TestHelpers.CreateWorkerRequest(email: workerEmail);
 
             var createdTeams = new List<Team>();
 
