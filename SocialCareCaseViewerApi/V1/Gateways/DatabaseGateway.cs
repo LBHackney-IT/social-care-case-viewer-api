@@ -441,6 +441,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
         {
+            if (GetWorkerByEmail(createWorkerRequest.EmailAddress) != null)
+            {
+                throw new PostWorkerException($"Worker with Email {createWorkerRequest.EmailAddress} already exists");
+            }
+
             var worker = new Worker
             {
                 Role = createWorkerRequest.Role,
