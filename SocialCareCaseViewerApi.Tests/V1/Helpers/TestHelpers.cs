@@ -436,7 +436,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             bool isActive = true)
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> {team} : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
 
             return new Faker<UpdateWorkerRequest>()
                 .RuleFor(w => w.WorkerId, f => workerId ?? f.UniqueIndex + 1)
