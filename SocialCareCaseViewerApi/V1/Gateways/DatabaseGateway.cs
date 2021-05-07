@@ -756,12 +756,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var warningNotes = _databaseContext.WarningNotes
                 .Where(x => x.PersonId == personId);
 
-<<<<<<< HEAD
-            if (warningNotes.FirstOrDefault() == null)
-                throw new DocumentNotFoundException($"No warning notes found relating to person id {personId}");
-=======
             if (warningNotes.FirstOrDefault() == null) return null;
->>>>>>> development
 
             return warningNotes;
         }
