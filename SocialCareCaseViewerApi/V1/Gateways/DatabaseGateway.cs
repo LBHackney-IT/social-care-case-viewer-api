@@ -500,6 +500,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new WorkerNotFoundException($"Worker with Id {request.WorkerId} not found");
             }
 
+            if (request.EmailAddress != worker.Email && GetWorkerByEmail(request.EmailAddress) != null)
+            {
+                throw new PatchWorkerException($"A worker is already assigned to the email address {request.EmailAddress}");
+            }
+
             worker.Email = request.EmailAddress;
             worker.LastModifiedBy = request.ModifiedBy;
             worker.FirstName = request.FirstName;

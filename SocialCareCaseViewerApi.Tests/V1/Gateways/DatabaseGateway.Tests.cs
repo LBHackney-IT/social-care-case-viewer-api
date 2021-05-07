@@ -232,6 +232,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdateWorkerThrowsPatchWorkerExceptionWhenEmailAddressAlreadyTaken()
+        {
+            var worker1 = TestHelpers.CreateWorker();
+            var worker2 = TestHelpers.CreateWorker();
+
+            DatabaseContext.Workers.Add(worker1);
+            DatabaseContext.Workers.Add(worker2);
+            DatabaseContext.SaveChanges();
+
+            var request = _fixture.Build<UpdateWorkerRequest>()
+                .With(x => x.WorkerId, worker2.Id)
+                .With(x => x.EmailAddress, worker1.Email)
+                .Create();
+
+            Action act = () => _classUnderTest.UpdateWorker(request);
+
+            act.Should().Throw<PatchWorkerException>()
+                .WithMessage($"A worker is already assigned to the email address {request.EmailAddress}");
+        }
+
+        [Test]
         public void UpdateWorkerUpdatesAnExistingWorkerInDatabase()
         {
             var worker = TestHelpers.CreateWorker();
