@@ -123,7 +123,7 @@ This will allow you to run the tests as normal in your IDE.
 
 ### Updating the Schema
 
-- In the database repository update the schema.sql file
+- In the database repository update the [schema.sql](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/database/schema.sql) file
 - In SocialCareCaseViewerAPI/Infrastructure either update an existing class or create a new class for the schema changes
 - To test locally run `make restart-db`
 - To deploy changes to AWS:
