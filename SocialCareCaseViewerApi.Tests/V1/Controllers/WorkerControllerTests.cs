@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void UpdateWorkerReturns201StatusAndWorkerWhenSuccessful()
+        public void UpdateWorkerReturns204StatusAndWorkerWhenSuccessful()
         {
             var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
             _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest));
