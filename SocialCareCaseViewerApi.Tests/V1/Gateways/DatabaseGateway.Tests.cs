@@ -275,7 +275,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             updatedWorker.Should().NotBeEquivalentTo(originalWorker);
 
-            CompareUpdatedWorkerAndRequest(updatedWorker, request, worker, team);
+            UpdatedWorkerShouldBeEquivalentToRequest(updatedWorker, request, worker, team);
         }
 
         [Test]
