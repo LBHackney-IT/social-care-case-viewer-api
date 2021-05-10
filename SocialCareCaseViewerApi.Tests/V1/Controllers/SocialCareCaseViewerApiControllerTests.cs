@@ -673,7 +673,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var testPersonId = _fixture.Create<long>();
 
-            var emptyWarningNotesResponse = new ListWarningNotesResponse();
+            var emptyWarningNotesResponse = new ListWarningNotesResponse
+            {
+                WarningNotes = new List<WarningNote>()
+            };
 
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))

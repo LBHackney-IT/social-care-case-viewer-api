@@ -134,15 +134,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var testPersonId = _fixture.Create<long>();
 
-            var expectedResponse = new ListWarningNotesResponse();
+            var expectedResponse = new ListWarningNotesResponse
+            {
+                WarningNotes = new List<WarningNote>()
+            };
+
+            var emptyList = Enumerable.Empty<dbWarningNote>();
 
             _mockDatabaseGateway.Setup(
                     x => x.GetWarningNotes(It.IsAny<long>()))
-                .Returns((IEnumerable<dbWarningNote>) null);
+                .Returns(emptyList);
 
             var response = _classUnderTest.ExecuteGet(testPersonId);
 
             response.Should().BeEquivalentTo(expectedResponse);
+            response.WarningNotes.Should().BeEmpty();
         }
 
         [Test]
