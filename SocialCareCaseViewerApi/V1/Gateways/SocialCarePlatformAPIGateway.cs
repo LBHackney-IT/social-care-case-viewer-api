@@ -48,12 +48,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return GetDataFromSocialCarePlatformAPI<Visit>(path);
         }
 
-        public List<ResidentHistoricRecord> GetHistoricCaseNotesAndVisitsByPersonId(long id)
-        {
-            var path = $"residents/{id}/records";
-            return GetDataFromSocialCarePlatformAPI<List<ResidentHistoricRecord>>(path);
-        }
-
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
         {
             T data = default;

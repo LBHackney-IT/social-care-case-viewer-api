@@ -137,21 +137,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GivenHttpClientReturnsValidResponseThenGatewayReturnsResidentHistoricRecords()
-        {
-
-            var residentHistoricRecord = TestHelpers.CreateResidentHistoricRecord();
-            var residentHistoricRecordList = new List<ResidentHistoricRecord> { residentHistoricRecord };
-
-            var httpClient = CreateHttpClient(residentHistoricRecordList);
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
-
-            var response = _socialCarePlatformAPIGateway.GetHistoricCaseNotesAndVisitsByPersonId(residentHistoricRecord.PersonId);
-
-            response.Should().BeEquivalentTo(residentHistoricRecordList);
-        }
-
-        [Test]
         public void GivenHttpClientReturnsUnauthorisedResponseThenGatewayThrowsSocialCarePlatformApiException()
         {
             var httpClient = CreateHttpClient(HttpStatusCode.Unauthorized);
