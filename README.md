@@ -131,7 +131,7 @@ This will allow you to run the tests as normal in your IDE.
     - Go to Systems Manager
     - Go to Session Manager
     - Choose `RDS jump box-Platform APIs (new)` and click `Start Session`, this allows us to have a CLI into the instance hosting our database
-    - Connect to PostgreSQL `psql --host=social-care-db-production.c1rcth1f5uzc.eu-west-2.rds.amazonaws.com --port=5600 --username=<username> --password=<password> --dbname=social_care`
+    - Connect to PostgreSQL `psql --host=<hostname> --port=5600 --username=<username> --password=<password> --dbname=social_care`
     - Backup the table you are going to apply changes to `create table_backup as table_copied`, it can be useful use the same table name for the backup but to append the date to the table name
     - If we later make breaking changes to the table in use we rename the backup table to make it our `active` version of the table
     - Manually apply schema changes to the table we are interested in
