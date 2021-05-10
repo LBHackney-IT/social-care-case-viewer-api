@@ -14,7 +14,5 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         IEnumerable<Visit> GetVisitsByPersonId(string id);
 
         Visit GetVisitByVisitId(long id);
-
-        List<ResidentHistoricRecord> GetHistoricCaseNotesAndVisitsByPersonId(long id);
     }
 }
