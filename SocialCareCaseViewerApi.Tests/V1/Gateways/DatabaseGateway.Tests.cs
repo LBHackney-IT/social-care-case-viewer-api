@@ -303,7 +303,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedWorker.DateEnd.Should().NotBeNull();
         }
 
-        private static void CompareUpdatedWorkerAndRequest(Worker updatedWorker, UpdateWorkerRequest request,
+        private static void UpdatedWorkerShouldBeEquivalentToRequest(Worker updatedWorker, UpdateWorkerRequest request,
             Worker testWorker, Team testTeam)
         {
             updatedWorker.Email.Should().BeEquivalentTo(request.EmailAddress);
