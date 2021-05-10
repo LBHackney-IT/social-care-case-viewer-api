@@ -279,7 +279,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdateWorkerIsActiveFlipsDateStartAndDateEndFromTimeToNull()
+        public void UpdateWorkerCanSetIsActiveToFalse()
         {
             var worker = TestHelpers.CreateWorker(isActive: true);
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
@@ -301,6 +301,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
             updatedWorker.DateStart.Should().BeNull();
             updatedWorker.DateEnd.Should().NotBeNull();
+            updatedWorker.IsActive.Should().BeFalse();
+        }
+
+        [Test]
+        public void UpdateWorkerCanSetIsActiveToTrue()
+        {
+            var worker = TestHelpers.CreateWorker(isActive: false);
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.DateEnd.Should().NotBeNull();
+            originalWorker.DateStart.Should().BeNull();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id, isActive: true);
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+            updatedWorker.DateStart.Should().NotBeNull();
+            updatedWorker.DateEnd.Should().BeNull();
         }
 
         private static void CompareUpdatedWorkerAndRequest(Worker updatedWorker, UpdateWorkerRequest request,
