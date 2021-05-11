@@ -136,7 +136,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapTeamFromInfrastrcutureToDomain()
+        public void CanMapTeamFromInfrastructureToDomain()
         {
             var id = _faker.Random.Number();
             var name = _faker.Name.ToString();
@@ -149,13 +149,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Context = context
             };
 
-            var exptectedResponse = new Team()
+            var expectedResponse = new Team()
             {
                 Id = id,
-                Name = name
+                Name = name,
+                Context = context
             };
 
-            dbTeam.ToDomain().Should().BeEquivalentTo(exptectedResponse);
+            dbTeam.ToDomain().Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
