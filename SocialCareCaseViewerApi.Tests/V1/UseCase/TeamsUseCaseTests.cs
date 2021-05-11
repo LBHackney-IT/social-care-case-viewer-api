@@ -1,6 +1,4 @@
-
 using System.Collections.Generic;
-using Bogus.DataSets;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -32,8 +30,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetTeamsByContextReturnsListTeamsResponse()
         {
             var request = new ListTeamsRequest();
-
-            var response = new ListTeamsResponse();
 
             _mockDatabaseGateway.Setup(x => x.GetTeams(It.IsAny<string>())).Returns(new List<DbTeam>());
 
