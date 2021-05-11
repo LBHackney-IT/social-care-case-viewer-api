@@ -19,6 +19,7 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
       - [Using the terminal](#using-the-terminal)
       - [Using an IDE](#using-an-ide)
     - [Updating the Schema](#updating-the-schema)
+    - [Local Debugging](#local-debugging)
   - [Active Contributors](#active-contributors)
   - [License](#license)
 
@@ -135,6 +136,12 @@ This will allow you to run the tests as normal in your IDE.
     - Backup the table you are going to apply changes to `create table_backup as table_copied`, it can be useful use the same table name for the backup but to append the date to the table name
     - If we later make breaking changes to the table in use we rename the backup table to make it our `active` version of the table
     - Manually apply schema changes to the table we are interested in
+
+### Local Debugging
+
+- Non Windows users will have to deactivate the code running in [SccvDbContext](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs)
+- Comment out everything inside the `SccvDbContext()` function
+- Now when you run the application locally and make requests to localhost you should no longer get an error of type `OpenSslCryptographicException`
 
 ## Active Contributors
 
