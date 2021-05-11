@@ -89,7 +89,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new Team
             {
                 Id = team.Id,
-                Name = team.Name
+                Name = team.Name,
+                Context = team.Context
             };
         }
 
