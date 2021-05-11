@@ -20,6 +20,7 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
       - [Using an IDE](#using-an-ide)
     - [Updating the Schema](#updating-the-schema)
     - [Local Debugging](#local-debugging)
+    - [Validating Requests](#validating-requests)
   - [Active Contributors](#active-contributors)
   - [License](#license)
 
@@ -142,6 +143,21 @@ This will allow you to run the tests as normal in your IDE.
 - Non Windows users will have to deactivate the code running in [SccvDbContext](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs)
 - Comment out everything inside the `SccvDbContext()` function
 - Now when you run the application locally and make requests to localhost you should no longer get an error of type `OpenSslCryptographicException`
+
+### Validating Requests
+
+We are looking to use Fluent Validation to validate incoming network requests that contain a request body. The reason is that Fluent Validation comes with many common required validations out of the box but unlike data attributes it is easy to create our own custom validations and error handling.
+
+Some of our old code is still using data attributes but anything going forward should look to use the Fluent Validation library.
+
+Fluent Validation is a highly used library with a large community and well written [documentation](https://docs.fluentvalidation.net/en/latest/)
+
+As a reminder make sure to add any new Validators to [Startup.cs](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/SocialCareCaseViewerApi/Startup.cs#L121)
+
+Here is an example of a validator: [example](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/SocialCareCaseViewerApi/V1/Boundary/Requests/CreateWorkerRequest.cs)
+
+Here is an example of a controller utilising the validator: [example](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/SocialCareCaseViewerApi/V1/Controllers/WorkerController.cs#L54)
+
 
 ## Active Contributors
 
