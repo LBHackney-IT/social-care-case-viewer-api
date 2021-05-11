@@ -555,7 +555,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Team CreateTeam(CreateTeamRequest request)
         {
-            var team = new Team {Name = request.Name, Context = request.Context, WorkerTeams = new List<WorkerTeam>()};
+            var team = new Team { Name = request.Name, Context = request.Context, WorkerTeams = new List<WorkerTeam>() };
 
             _databaseContext.Teams.Add(team);
             _databaseContext.SaveChanges();

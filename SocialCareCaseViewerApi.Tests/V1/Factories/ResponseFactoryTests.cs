@@ -420,7 +420,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new TeamResponse
             {
-                Id = domainTeam.Id, Context = domainTeam.Context, Name = domainTeam.Name
+                Id = domainTeam.Id,
+                Context = domainTeam.Context,
+                Name = domainTeam.Name
             };
 
             domainTeam.ToResponse().Should().BeEquivalentTo(expectedResponse);

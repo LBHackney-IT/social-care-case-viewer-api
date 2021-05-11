@@ -192,7 +192,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static TeamResponse ToResponse(this Team team)
         {
-            return new TeamResponse {Id = team.Id, Name = team.Name, Context = team.Context};
+            return new TeamResponse { Id = team.Id, Name = team.Name, Context = team.Context };
         }
 
         private static WarningNoteReviewResponse ToResponse(this WarningNoteReview review)
