@@ -19,15 +19,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private WorkerController _workerController;
         private Mock<IWorkersUseCase> _workerUseCase;
-        private Mock<IGetWorkersUseCase> _getWorkersUseCase;
         private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _workerUseCase = new Mock<IWorkersUseCase>();
-            _getWorkersUseCase = new Mock<IGetWorkersUseCase>();
-            _workerController = new WorkerController(_workerUseCase.Object, _getWorkersUseCase.Object);
+            _workerController = new WorkerController(_workerUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -142,7 +140,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new GetWorkersRequest() { TeamId = 5 };
             var workersList = _fixture.Create<List<WorkerResponse>>();
-            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workersList);
+            _workerUseCase.Setup(x => x.ExecuteGet(request)).Returns(workersList);
 
             var response = _workerController.GetWorkers(request) as OkObjectResult;
 
@@ -160,7 +158,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var workers = new List<WorkerResponse>();
             var request = new GetWorkersRequest() { TeamId = 5 };
-            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workers);
+            _workerUseCase.Setup(x => x.ExecuteGet(request)).Returns(workers);
 
             var response = _workerController.GetWorkers(request) as NotFoundResult;
 

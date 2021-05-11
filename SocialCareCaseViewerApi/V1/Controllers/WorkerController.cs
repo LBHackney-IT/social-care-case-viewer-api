@@ -15,12 +15,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class WorkerController : BaseController
     {
         private readonly IWorkersUseCase _workersUseCase;
-        private readonly IGetWorkersUseCase _getWorkersUseCase;
 
-        public WorkerController(IWorkersUseCase workersUseCase, IGetWorkersUseCase getWorkersUseCase)
+        public WorkerController(IWorkersUseCase workersUseCase)
         {
             _workersUseCase = workersUseCase;
-            _getWorkersUseCase = getWorkersUseCase;
         }
 
         /// <summary>
@@ -33,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
-            var workers = _getWorkersUseCase.Execute(request);
+            var workers = _workersUseCase.ExecuteGet(request);
 
             if (workers.Count == 0)
             {
