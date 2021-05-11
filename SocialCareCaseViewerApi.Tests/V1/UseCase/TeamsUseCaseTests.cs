@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetTeamsByContextReturnsListTeamsResponse()
         {
-            var request = new ListTeamsRequest();
+            var request = new GetTeamsRequest();
 
             _mockDatabaseGateway.Setup(x => x.GetTeams(It.IsAny<string>())).Returns(new List<DbTeam>());
 

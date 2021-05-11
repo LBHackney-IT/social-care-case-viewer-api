@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class ListTeamsRequest
+    public class GetTeamsRequest
     {
         [FromQuery(Name = "context_flag")]
         [Required]

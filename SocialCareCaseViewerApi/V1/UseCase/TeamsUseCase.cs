@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListTeamsResponse ExecuteGet(ListTeamsRequest request)
+        public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
             var teams = _databaseGateway.GetTeams(request.ContextFlag);
 

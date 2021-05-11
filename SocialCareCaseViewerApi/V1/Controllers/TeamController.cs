@@ -28,9 +28,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
-        public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
+        public IActionResult GetTeams([FromQuery] GetTeamsRequest request)
         {
-            return Ok(_teamsUseCase.ExecuteGet(request));
+            var teams = _teamsUseCase.ExecuteGet(request);
+
+            if (teams.Teams.Count == 0)
+            {
+                return NotFound("No team found");
+            }
+            return Ok(teams);
         }
 
         /// <summary>

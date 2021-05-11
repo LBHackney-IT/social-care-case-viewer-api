@@ -28,7 +28,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
-        private Mock<ITeamsUseCase> _mockTeamsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
@@ -45,7 +44,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
-            _mockTeamsUseCase = new Mock<ITeamsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
@@ -53,8 +51,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockPersonUseCase = new Mock<IPersonUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockTeamsUseCase.Object,
-            _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object);
+            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
+            _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object);
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -203,24 +201,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(404);
             response.Value.Should().Be("Document Not Found");
         }
-
-
-
-        #region Teams
-        [Test]
-        public void GetTeamsReturns200WhenSuccessful()
-        {
-            var request = new ListTeamsRequest() { ContextFlag = "A" };
-
-            var teamsList = _fixture.Create<ListTeamsResponse>();
-
-            _mockTeamsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListTeamsRequest>())).Returns(teamsList);
-
-            var response = _classUnderTest.ListTeams(request);
-
-            response.Should().NotBeNull();
-        }
-        #endregion
 
         #region Allocations
         [Test]

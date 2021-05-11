@@ -8,25 +8,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class ListTeamsRequestTests
     {
-        private ListTeamsRequest _listTeamsRequest;
+        private GetTeamsRequest _getTeamsRequest;
 
         [SetUp]
         public void SetUp()
         {
-            _listTeamsRequest = new ListTeamsRequest();
+            _getTeamsRequest = new GetTeamsRequest();
         }
 
         [Test]
         public void RequestHasContextFlag()
         {
-            Assert.AreEqual(null, _listTeamsRequest.ContextFlag);
+            Assert.AreEqual(null, _getTeamsRequest.ContextFlag);
         }
 
         #region Model validation
         [Test]
         public void ModelValidationFailsIfContextIsNotProvided() //TODO: move message check to separate tests
         {
-            ListTeamsRequest request = new ListTeamsRequest();
+            GetTeamsRequest request = new GetTeamsRequest();
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("ContextFlag field is required")));
             Assert.IsTrue(errors.Count == 1);
@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ModelValidationFailsIfContextIsProvidedButTheValueIsLongerThanOne()
         {
-            ListTeamsRequest request = new ListTeamsRequest() { ContextFlag = "random" };
+            GetTeamsRequest request = new GetTeamsRequest() { ContextFlag = "random" };
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The context_flag must be 1 character")));
         }
@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ModelValidationFailsIfContextIsProvidedButTheValueIsNotEitherAorC()
         {
-            ListTeamsRequest request = new ListTeamsRequest() { ContextFlag = "d" };
+            GetTeamsRequest request = new GetTeamsRequest() { ContextFlag = "d" };
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Count == 1);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("The context_flag must be 'A', 'B' or 'C' only")));
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [TestCase("C")]
         public void ModelValidationSucceedsIfContextIsProvidedAndTheValueIsValid(string context)
         {
-            ListTeamsRequest request = new ListTeamsRequest() { ContextFlag = context };
+            GetTeamsRequest request = new GetTeamsRequest() { ContextFlag = context };
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Count == 0);
         }
@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [TestCase("c")]
         public void ModelValidationSucceedsIfContextIsProvidedAndTheValueIsValidIgnoringCase(string context)
         {
-            ListTeamsRequest request = new ListTeamsRequest() { ContextFlag = context };
+            GetTeamsRequest request = new GetTeamsRequest() { ContextFlag = context };
             var errors = ValidationHelper.ValidateModel(request);
             Assert.IsTrue(errors.Count == 0);
         }
