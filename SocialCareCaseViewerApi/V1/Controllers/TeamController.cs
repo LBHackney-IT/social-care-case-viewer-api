@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -12,9 +13,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class TeamController : BaseController
     {
-        public TeamController()
-        {
+        private readonly ITeamsUseCase _teamsUseCase;
 
+        public TeamController(ITeamsUseCase teamsUseCase)
+        {
+            _teamsUseCase = teamsUseCase;
         }
 
         /// <summary>
