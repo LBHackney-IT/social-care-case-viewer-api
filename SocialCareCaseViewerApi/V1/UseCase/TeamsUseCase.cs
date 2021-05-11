@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class TeamsUseCase : ITeamsUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
         public TeamsUseCase(IDatabaseGateway databaseGateway)
         {
