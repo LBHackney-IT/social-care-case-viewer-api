@@ -87,6 +87,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void UpdateWorkerReturns204StatusAndWorkerWhenSuccessful()
+        {
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest));
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
+
+            _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void UpdateWorkerReturns400WhenValidationResultsIsNotValid()
+        {
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(firstName: "");
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateWorkerReturns422StatusWhenUpdateWorkerExceptionThrown()
+        {
+            const string errorMessage = "Failed to update worker";
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest))
+                .Throws(new PatchWorkerException(errorMessage));
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(422);
+            response.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
         public void GetWorkersReturns200WhenMatchingWorker()
         {
             var request = new GetWorkersRequest() { TeamId = 5 };
@@ -115,6 +166,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.StatusCode.Should().Be(404);
         }
-
     }
 }

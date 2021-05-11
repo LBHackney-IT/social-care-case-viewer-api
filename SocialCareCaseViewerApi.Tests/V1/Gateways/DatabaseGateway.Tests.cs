@@ -92,7 +92,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
 
-        // test certain columns being null to see what breaks!!
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
         {
@@ -148,7 +147,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 ContextFlag = workerByGetWorkerById.ContextFlag,
                 CreatedBy = workerByGetWorkerById.CreatedBy,
                 DateStart = workerByGetWorkerById.DateStart,
-
             };
 
             var responseWorkerTeam = workerByGetWorkerById.WorkerTeams.ToList()[0];
@@ -173,7 +171,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
-            var workerGetByTeamId = _classUnderTest.GetTeamsByTeamId(createdTeams[0].Id)[0].WorkerTeams.ToList()[0].Worker;
+            var workerGetByTeamId =
+                _classUnderTest.GetTeamsByTeamId(createdTeams[0].Id)[0].WorkerTeams.ToList()[0].Worker;
 
             var expectedResponse = new Worker
             {
@@ -185,7 +184,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 ContextFlag = workerGetByTeamId.ContextFlag,
                 CreatedBy = workerGetByTeamId.CreatedBy,
                 DateStart = workerGetByTeamId.DateStart,
-
             };
 
             var responseWorkerTeam = workerGetByTeamId.WorkerTeams.ToList()[0];
@@ -210,8 +208,146 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.CreateWorker(createWorkerRequest);
 
-            act.Should().Throw<PostWorkerException>()
-                .WithMessage($"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
+            act.Should().Throw<GetTeamException>()
+                .WithMessage(
+                    $"Team with Name {createWorkerRequest.Teams[0].Name} and ID {createWorkerRequest.Teams[0].Id} not found");
+        }
+
+        [Test]
+        public void UpdateWorkerThrowsWorkerNotFoundExceptionWhenWorkerDoesNotExist()
+        {
+            var worker = TestHelpers.CreateWorker();
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var request = _fixture.Build<UpdateWorkerRequest>()
+                .With(x => x.WorkerId, worker.Id + 1)
+                .Create();
+
+            Action act = () => _classUnderTest.UpdateWorker(request);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with Id {request.WorkerId} not found");
+        }
+
+        [Test]
+        public void UpdateWorkerThrowsPatchWorkerExceptionWhenEmailAddressAlreadyTaken()
+        {
+            var worker1 = TestHelpers.CreateWorker();
+            var worker2 = TestHelpers.CreateWorker();
+
+            DatabaseContext.Workers.Add(worker1);
+            DatabaseContext.Workers.Add(worker2);
+            DatabaseContext.SaveChanges();
+
+            var request = _fixture.Build<UpdateWorkerRequest>()
+                .With(x => x.WorkerId, worker2.Id)
+                .With(x => x.EmailAddress, worker1.Email)
+                .Create();
+
+            Action act = () => _classUnderTest.UpdateWorker(request);
+
+            act.Should().Throw<PatchWorkerException>()
+                .WithMessage($"A worker is already assigned to the email address {request.EmailAddress}");
+        }
+
+        [Test]
+        public void UpdateWorkerUpdatesAnExistingWorkerInDatabase()
+        {
+            var worker = TestHelpers.CreateWorker();
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.Should().BeEquivalentTo(worker);
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id);
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+
+            updatedWorker.Should().NotBeEquivalentTo(originalWorker);
+
+            UpdatedWorkerShouldBeEquivalentToRequest(updatedWorker, request, worker, team);
+        }
+
+        [Test]
+        public void UpdateWorkerCanSetIsActiveToFalse()
+        {
+            var worker = TestHelpers.CreateWorker(isActive: true);
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.DateEnd.Should().BeNull();
+            originalWorker.DateStart.Should().NotBeNull();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id, isActive: false);
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+            updatedWorker.DateStart.Should().BeNull();
+            updatedWorker.DateEnd.Should().NotBeNull();
+            updatedWorker.IsActive.Should().BeFalse();
+        }
+
+        [Test]
+        public void UpdateWorkerCanSetIsActiveToTrue()
+        {
+            var worker = TestHelpers.CreateWorker(isActive: false);
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.SaveChanges();
+
+            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
+            originalWorker.DateEnd.Should().NotBeNull();
+            originalWorker.DateStart.Should().BeNull();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id, isActive: true);
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+            updatedWorker.DateStart.Should().NotBeNull();
+            updatedWorker.DateEnd.Should().BeNull();
+        }
+
+        private static void UpdatedWorkerShouldBeEquivalentToRequest(Worker updatedWorker, UpdateWorkerRequest request,
+            Worker testWorker, Team testTeam)
+        {
+            updatedWorker.Email.Should().BeEquivalentTo(request.EmailAddress);
+            updatedWorker.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
+            updatedWorker.FirstName.Should().BeEquivalentTo(request.FirstName);
+            updatedWorker.LastName.Should().BeEquivalentTo(request.LastName);
+            updatedWorker.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
+            updatedWorker.Role.Should().BeEquivalentTo(request.Role);
+            updatedWorker.DateStart.Should().Be(request.DateStart);
+            updatedWorker.DateEnd.Should().BeNull();
+            updatedWorker.IsActive.Should().Be(request.IsActive);
+
+            var updatedWorkerTeam = updatedWorker.WorkerTeams.First();
+            var requestTeam = request.Teams.First();
+            updatedWorkerTeam.TeamId.Should().Be(requestTeam.Id);
+            updatedWorkerTeam.WorkerId.Should().Be(testWorker.Id);
+            updatedWorkerTeam.Team.Should().Be(testTeam);
+            updatedWorkerTeam.Worker.Should().Be(testWorker);
         }
 
         [Test]
@@ -252,7 +388,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
         {
-            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+            var team = SaveTeamToDatabase(
+                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
 
             var response = _classUnderTest.GetTeamsByTeamId(team.Id);
 
@@ -262,12 +399,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetTeamByTeamIdAndGetAssociatedWorkers()
         {
-            var workerOne = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, email: "worker-one-test-email@example.com"));
-            var workerTwo = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2, email: "worker-two-test-email@example.com"));
+            var workerOne =
+                SaveWorkerToDatabase(
+                    DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1,
+                        email: "worker-one-test-email@example.com"));
+            var workerTwo =
+                SaveWorkerToDatabase(
+                    DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2,
+                        email: "worker-two-test-email@example.com"));
             var workerTeamOne =
-                SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: workerOne.Id, worker: workerOne));
+                SaveWorkerTeamToDatabase(
+                    DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: workerOne.Id,
+                        worker: workerOne));
             var workerTeamTwo =
-                SaveWorkerTeamToDatabase(DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id, worker: workerTwo));
+                SaveWorkerTeamToDatabase(
+                    DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id,
+                        worker: workerTwo));
             var workerTeams = new List<WorkerTeam> { workerTeamOne, workerTeamTwo };
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
 
@@ -277,8 +424,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             responseTeam?.WorkerTeams.Count.Should().Be(2);
 
             var responseWorkerTeams = responseTeam?.WorkerTeams.ToList();
-            var workerOneResponse = responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerOne.Id)?.Worker;
-            var workerTwoResponse = responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerTwo.Id)?.Worker;
+            var workerOneResponse =
+                responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerOne.Id)?.Worker;
+            var workerTwoResponse =
+                responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerTwo.Id)?.Worker;
 
             workerOneResponse.Should().BeEquivalentTo(workerOne);
             workerTwoResponse.Should().BeEquivalentTo(workerTwo);
@@ -335,7 +484,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>())).Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+                .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
             _classUnderTest.UpdateAllocation(request);
 
@@ -378,11 +528,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             OtherName otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
             OtherName otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
 
-            List<OtherName> otherNames = new List<OtherName>()
-            {
-                otherNameOne,
-                otherNameTwo
-            };
+            List<OtherName> otherNames = new List<OtherName>() { otherNameOne, otherNameTwo };
 
             DateTime dateOfBirth = DateTime.Now.AddYears(-70);
             DateTime dateOfDeath = DateTime.Now.AddDays(-10);
@@ -399,12 +545,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             string isDiplayAddress = "Y";
             string dataIsFromDmPersonsBackup = "N";
 
-            AddressDomain address = new AddressDomain()
-            {
-                Address = addressLine,
-                Postcode = postCode,
-                Uprn = uprn
-            };
+            AddressDomain address = new AddressDomain() { Address = addressLine, Postcode = postCode, Uprn = uprn };
 
             string phoneNumberOne = "07755555555";
             string phoneNumberTypeOne = "Mobile";
@@ -414,8 +555,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
             {
-                new PhoneNumber() { Number = phoneNumberOne, Type = phoneNumberTypeOne},
-                new PhoneNumber() { Number = phoneNumberTwo, Type = phoneNumberTypeTwo}
+                new PhoneNumber() {Number = phoneNumberOne, Type = phoneNumberTypeOne},
+                new PhoneNumber() {Number = phoneNumberTwo, Type = phoneNumberTypeTwo}
             };
 
             string emailAddress = _faker.Internet.Email();
@@ -539,6 +680,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         #region Warning Notes
+
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
@@ -547,8 +689,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
-                            .With(x => x.PersonId, stubbedPerson.Id)
-                            .Create();
+                .With(x => x.PersonId, stubbedPerson.Id)
+                .Create();
 
             var response = _classUnderTest.PostWarningNote(request);
 
@@ -597,7 +739,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Action act = () => _classUnderTest.PostWarningNote(request);
 
             act.Should().Throw<PostWarningNoteException>()
-                        .WithMessage($"Person with given id ({request.PersonId}) not found");
+                .WithMessage($"Person with given id ({request.PersonId}) not found");
         }
 
         [Test]
@@ -608,14 +750,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             var request = _fixture.Build<PostWarningNoteRequest>()
-                            .With(x => x.PersonId, stubbedPerson.Id)
-                            .Create();
+                .With(x => x.PersonId, stubbedPerson.Id)
+                .Create();
 
             _mockProcessDataGateway.Setup(
                     x => x.InsertCaseNoteDocument(
                         It.IsAny<CaseNotesDocument>()))
-                        .ReturnsAsync("CaseNoteId")
-                        .Verifiable();
+                .ReturnsAsync("CaseNoteId")
+                .Verifiable();
 
             var response = _classUnderTest.PostWarningNote(request);
 
@@ -725,7 +867,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteUpdatesAnExistingRecordInTheDatabase()
         {
-            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
+            var (request, person, worker, warningNote) =
+                TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
             //clone the stub to compare the values later
             WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
@@ -765,7 +908,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteDoesNotChangeTheStatusEndDateOrChangeNextReviewDateToNullIfRequestPropertyIsOpen()
         {
-            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "open");
+            var (request, person, worker, warningNote) =
+                TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "open");
 
             //clone the stub to compare the values later
             WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
@@ -789,7 +933,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteClosesTheWarningNoteIfRequestStatusIsClosed()
         {
-            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
+            var (request, person, worker, warningNote) =
+                TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
             //clone the stub to compare the values later
             WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
@@ -816,13 +961,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Action act = () => _classUnderTest.PatchWarningNote(request);
 
             act.Should().Throw<PatchWarningNoteException>()
-                        .WithMessage($"Warning Note with given id ({request.WarningNoteId}) not found");
+                .WithMessage($"Warning Note with given id ({request.WarningNoteId}) not found");
         }
 
         [Test]
         public void PatchWarningNoteThrowsAnExceptionWhenTheWarningNoteIsAlreadyClosed()
         {
-            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(startingStatus: "closed", requestStatus: "closed");
+            var (request, person, worker, warningNote) =
+                TestHelpers.CreatePatchWarningNoteRequest(startingStatus: "closed", requestStatus: "closed");
 
             //clone the stub to compare the values later
             WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
@@ -835,7 +981,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Action act = () => _classUnderTest.PatchWarningNote(request);
 
             act.Should().Throw<PatchWarningNoteException>()
-                        .WithMessage($"Warning Note with given id ({request.WarningNoteId}) has already been closed");
+                .WithMessage($"Warning Note with given id ({request.WarningNoteId}) has already been closed");
         }
 
         [Test]
@@ -846,13 +992,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .Create();
+                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                .Create();
 
             Action act = () => _classUnderTest.PatchWarningNote(request);
 
             act.Should().Throw<PatchWarningNoteException>()
-                        .WithMessage($"Person not found");
+                .WithMessage($"Person not found");
         }
 
         [Test]
@@ -866,13 +1012,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             PatchWarningNoteRequest request = _fixture.Build<PatchWarningNoteRequest>()
-                                                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
-                                                .Create();
+                .With(x => x.WarningNoteId, stubbedWarningNote.Id)
+                .Create();
 
             Action act = () => _classUnderTest.PatchWarningNote(request);
 
             act.Should().Throw<PatchWarningNoteException>()
-                        .WithMessage($"Worker ({request.ReviewedBy}) not found");
+                .WithMessage($"Worker ({request.ReviewedBy}) not found");
         }
 
         [Test]
@@ -892,7 +1038,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.PatchWarningNote(request);
             var query = DatabaseContext.WarningNoteReview;
             var insertedRecord = query.FirstOrDefault(
-                                    x => x.WarningNoteId == request.WarningNoteId);
+                x => x.WarningNoteId == request.WarningNoteId);
 
             insertedRecord.WarningNoteId.Should().Be(request.WarningNoteId);
             insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
@@ -1088,7 +1234,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+            dbAddress displayAddress =
+                SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
@@ -1106,7 +1253,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            dbAddress displayAddress = SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
+            dbAddress displayAddress =
+                SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
@@ -1146,7 +1294,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void UpdatePersonReplacesPhoneNumbers()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            PhoneNumberInfrastructure phoneNumber =
+                SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
 
@@ -1171,7 +1320,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void UpdatePersonRemovesPhoneNumbersIfNewOnesAreNotProvided()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            PhoneNumberInfrastructure phoneNumber = SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            PhoneNumberInfrastructure phoneNumber =
+                SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
 
             UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
             request.PhoneNumbers = null;
@@ -1277,19 +1427,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private static UpdatePersonRequest GetValidUpdatePersonRequest(long personId)
         {
             AddressDomain address = new Faker<AddressDomain>()
-               .RuleFor(a => a.Address, f => f.Address.StreetAddress())
-               .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
-               .RuleFor(a => a.Uprn, f => f.Random.Int());
+                .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+                .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Uprn, f => f.Random.Int());
 
             List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
             {
                 new Faker<PhoneNumber>()
-                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
-                     .RuleFor(p => p.Type, f => f.Random.Word()),
-
+                    .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                    .RuleFor(p => p.Type, f => f.Random.Word()),
                 new Faker<PhoneNumber>()
-                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
-                     .RuleFor(p => p.Type, f => f.Random.Word())
+                    .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                    .RuleFor(p => p.Type, f => f.Random.Word())
             };
 
             List<OtherName> otherNames = new List<OtherName>()
@@ -1297,33 +1446,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 new Faker<OtherName>()
                     .RuleFor(o => o.FirstName, f => f.Person.FirstName)
                     .RuleFor(o => o.LastName, f => f.Person.LastName),
-
                 new Faker<OtherName>()
                     .RuleFor(o => o.FirstName, f => f.Person.FirstName)
                     .RuleFor(o => o.LastName, f => f.Person.LastName)
             };
 
             return new Faker<UpdatePersonRequest>()
-               .RuleFor(p => p.Id, personId)
-               .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
-               .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
-               .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
-               .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
-               .RuleFor(p => p.Ethnicity, f => f.Random.Word())
-               .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
-               .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
-               .RuleFor(p => p.FirstName, f => f.Person.FirstName)
-               .RuleFor(p => p.LastName, f => f.Person.LastName)
-               .RuleFor(p => p.Title, f => f.Random.String2(2))
-               .RuleFor(p => p.Gender, f => f.Random.String2(1))
-               .RuleFor(p => p.NhsNumber, f => f.Random.Number())
-               .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
-               .RuleFor(p => p.Religion, f => f.Random.Word())
-               .RuleFor(p => p.Restricted, f => f.Random.String2(1))
-               .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
-               .RuleFor(p => p.Address, address)
-               .RuleFor(p => p.PhoneNumbers, phoneNumbers)
-               .RuleFor(p => p.OtherNames, otherNames);
+                .RuleFor(p => p.Id, personId)
+                .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
+                .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
+                .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
+                .RuleFor(p => p.Ethnicity, f => f.Random.Word())
+                .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+                .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => f.Person.LastName)
+                .RuleFor(p => p.Title, f => f.Random.String2(2))
+                .RuleFor(p => p.Gender, f => f.Random.String2(1))
+                .RuleFor(p => p.NhsNumber, f => f.Random.Number())
+                .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
+                .RuleFor(p => p.Religion, f => f.Random.Word())
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
+                .RuleFor(p => p.Address, address)
+                .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+                .RuleFor(p => p.OtherNames, otherNames);
         }
     }
 }

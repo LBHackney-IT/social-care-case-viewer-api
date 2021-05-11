@@ -71,5 +71,39 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return UnprocessableEntity(e.Message);
             }
         }
+
+        /// <summary>
+        /// Create a worker
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="204">Worker amended successfully</response>
+        /// <response code="400">Invalid UpdateWorkerRequest received</response>
+        /// <response code="422">Could not process request</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost]
+        public IActionResult EditWorker([FromBody] UpdateWorkerRequest request)
+        {
+            var validator = new UpdateWorkerRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _workersUseCase.ExecutePatch(request);
+                return NoContent();
+            }
+            catch (PatchWorkerException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+        }
     }
 }
