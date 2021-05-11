@@ -553,6 +553,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ToList();
         }
 
+        public Team CreateTeam(CreateTeamRequest request)
+        {
+            var team = new Team {Name = request.Name, Context = request.Context, WorkerTeams = new List<WorkerTeam>()};
+
+            _databaseContext.Teams.Add(team);
+            _databaseContext.SaveChanges();
+
+            return team;
+        }
+
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
         {

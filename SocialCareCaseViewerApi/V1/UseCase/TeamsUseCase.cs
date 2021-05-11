@@ -21,5 +21,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return new ListTeamsResponse() { Teams = EntityFactory.ToDomain(teams) };
         }
+
+        public TeamResponse ExecutePost(CreateTeamRequest request)
+        {
+
+            // todo check if team name already exists, if so throw an error
+
+            var team = _databaseGateway.CreateTeam(request);
+
+            return team.ToDomain().ToResponse();
+        }
     }
 }
