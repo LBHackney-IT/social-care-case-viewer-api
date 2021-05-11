@@ -65,7 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Failed to create team";
             var createTeamRequest = TestHelpers.CreateTeamRequest();
             _teamsUseCase.Setup(x => x.ExecutePost(createTeamRequest))
-                .Throws(new PostWorkerException(errorMessage));
+                .Throws(new PostTeamException(errorMessage));
 
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 

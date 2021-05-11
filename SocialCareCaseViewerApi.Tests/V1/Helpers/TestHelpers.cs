@@ -414,7 +414,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
         }
 
-        public static TeamResponse CreateTeamResponse(long? id = null, string? name = null, string? context = null)
+        public static TeamResponse CreateTeamResponse(int? id = null, string? name = null, string? context = null)
         {
             return new Faker<TeamResponse>()
                 .RuleFor(t => t.Id, f => id ?? f.UniqueIndex)

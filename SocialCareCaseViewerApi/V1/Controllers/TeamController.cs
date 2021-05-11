@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var createdTeam = new TeamResponse {Id = 1, Name = "placeholder", Context = "A"};
+                var createdTeam = _teamsUseCase.ExecutePost(request);
                 return CreatedAtAction("Team created successfully", createdTeam);
             }
             catch (PostTeamException e)
