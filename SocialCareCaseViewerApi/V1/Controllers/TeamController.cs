@@ -21,6 +21,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get a list of teams by context
+        /// </summary>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
+        {
+            return Ok(_teamsUseCase.ExecuteGet(request));
+        }
+
+        /// <summary>
         /// Create a team
         /// </summary>
         /// <param name="request"></param>
