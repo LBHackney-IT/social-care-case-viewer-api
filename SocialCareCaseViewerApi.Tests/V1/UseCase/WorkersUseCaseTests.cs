@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var fakeWorker = TestHelpers.CreateWorker();
             const int teamId = 1;
-            var request = new GetWorkersRequest { WorkerId = fakeWorker.Id, Email = fakeWorker.Email, TeamId = teamId};
+            var request = new GetWorkersRequest { WorkerId = fakeWorker.Id, Email = fakeWorker.Email, TeamId = teamId };
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
 
