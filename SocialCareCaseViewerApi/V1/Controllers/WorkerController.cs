@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid UpdateWorkerRequest received</response>
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPost]
+        [HttpPatch]
         public IActionResult EditWorker([FromBody] UpdateWorkerRequest request)
         {
             var validator = new UpdateWorkerRequestValidator();
