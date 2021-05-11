@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status201Created)]
         [HttpPost]
-        public IActionResult CreateWorker([FromBody] CreateTeamRequest request)
+        public IActionResult CreateTeam([FromBody] CreateTeamRequest request)
         {
             var validator = new CreateTeamRequestValidator();
             var validationResults = validator.Validate(request);

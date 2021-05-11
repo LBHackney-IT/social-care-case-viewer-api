@@ -406,5 +406,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.LastModifiedAt, f => f.Date.Recent())
                 .RuleFor(r => r.LastModifiedBy, f => f.Person.FullName);
         }
+
+        public static CreateTeamRequest CreateTeamRequest(string? name = null, string? context = null)
+        {
+            return new Faker<CreateTeamRequest>()
+                .RuleFor(t => t.Name, f => name ?? f.Random.String2(1, 200))
+                .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
+        }
+
+        public static TeamResponse CreateTeamResponse(long? id = null, string? name = null, string? context = null)
+        {
+            return new Faker<TeamResponse>()
+                .RuleFor(t => t.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(t => t.Name, f => name ?? f.Random.String2(1, 200))
+                .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
+        }
     }
 }
