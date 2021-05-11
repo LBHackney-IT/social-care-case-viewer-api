@@ -32,6 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 
+            _teamsUseCase.Verify(x => x.ExecutePost(createTeamRequest), Times.Once);
             if (response == null)
             {
                 throw new NullReferenceException();
