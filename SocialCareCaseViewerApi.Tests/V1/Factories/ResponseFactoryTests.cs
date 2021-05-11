@@ -412,5 +412,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             result.Should().BeEquivalentTo(expectedResponse);
         }
+
+        [Test]
+        public void CanMapTeamToTeamResponse()
+        {
+            var domainTeam = TestHelpers.CreateTeam().ToDomain();
+
+            var expectedResponse = new TeamResponse
+            {
+                Id = domainTeam.Id, Context = domainTeam.Context, Name = domainTeam.Name
+            };
+
+            domainTeam.ToResponse().Should().BeEquivalentTo(expectedResponse);
+        }
     }
 }

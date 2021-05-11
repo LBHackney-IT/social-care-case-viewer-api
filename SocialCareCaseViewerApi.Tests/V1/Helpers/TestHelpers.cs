@@ -300,7 +300,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<Team>()
                 .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
-                .RuleFor(t => t.Context, f => name ?? f.Random.String2(1))
+                .RuleFor(t => t.Context, f => name ?? f.Random.String2(1, "AC"))
                 .RuleFor(t => t.Name, f => context ?? f.Random.String2(1, 200));
         }
 
