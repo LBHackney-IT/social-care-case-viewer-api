@@ -168,6 +168,8 @@ Here is an example of a controller utilising the validator: [example](https://gi
 - **Renny Fadoju**, Software Engineer at Made Tech (renny.fadoju@hackney.gov.uk)
 - **Neil Kidd**, Lead Software Engineer at Made Tech (neil.kidd@hackney.gov.uk)
 - **Wen Ting Wang**, Software Engineer at Made Tech (wenting.wang@hackney.gov.uk)
+- **Chris Hutchinson**, Lead Software Engineer at Made Tech (chris.hutchinson@madetech.com)
+- **Jack Musajo**, Software Engineer at Made Tech (jack.musajo@madetech.com)
 
 ## License
 
