@@ -68,6 +68,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetTeamsReturns400WhenValidationResultsIsNotValid()
+        {
+
+            var getTeamsRequest = TestHelpers.CreateGetTeamsRequest(contextFlag: "invalid");
+
+            var response = _teamController.GetTeams(getTeamsRequest) as BadRequestObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Context flag must be 1 character\nContext flag must be 'A' or 'C'");
+        }
+
+        [Test]
         public void CreateTeamReturns201StatusAndTeamWhenSuccessful()
         {
             var createTeamRequest = TestHelpers.CreateTeamRequest();

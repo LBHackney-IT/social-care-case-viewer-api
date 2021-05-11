@@ -30,6 +30,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult GetTeams([FromQuery] GetTeamsRequest request)
         {
+            var validator = new GetTeamsRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             var teams = _teamsUseCase.ExecuteGet(request);
 
             if (teams.Teams.Count == 0)
