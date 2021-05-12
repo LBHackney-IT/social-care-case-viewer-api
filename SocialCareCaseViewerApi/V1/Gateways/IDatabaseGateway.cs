@@ -22,8 +22,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         Worker GetWorkerByEmail(string email);
         List<Team> GetTeamsByTeamId(int teamId);
         Team CreateTeam(CreateTeamRequest request);
+        List<Team> GetTeamsByTeamContext(string context);
+        Team GetTeamByName(string name);
+        Team GetTeamById(int id);
         List<dynamic> GetWorkerAllocations(List<Worker> workers);
-        List<Team> GetTeams(string context);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
         Worker CreateWorker(CreateWorkerRequest createWorkerRequest);
