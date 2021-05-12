@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bogus;
 using FluentAssertions;
@@ -36,11 +35,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             {
                 var validationResponse = validator.Validate(request);
 
-                if (validationResponse == null)
-                {
-                    throw new NullReferenceException();
-                }
-
                 validationResponse.Should().NotBeNull();
                 validationResponse.IsValid.Should().Be(false);
                 validationResponse.ToString().Should().Be(expectedErrorMessage);
@@ -54,11 +48,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var validator = new CreateTeamRequestValidator();
 
             var validationResponse = validator.Validate(createTeamRequest);
-
-            if (validationResponse == null)
-            {
-                throw new NullReferenceException();
-            }
 
             validationResponse.Should().NotBeNull();
             validationResponse.IsValid.Should().Be(true);
