@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 Teams = new List<Team>{TestHelpers.CreateTeam().ToDomain()}
             };
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
-            var response = _teamController.GetTeams(request) as ObjectResult;;
+            var response = _teamController.GetTeams(request) as ObjectResult;
 
             if (response == null)
             {

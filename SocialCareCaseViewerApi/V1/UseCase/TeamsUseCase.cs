@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -17,9 +19,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
-            var teams = _databaseGateway.GetTeams(request.ContextFlag);
+            if (request.Id != null)
+            {
 
-            return new ListTeamsResponse() { Teams = EntityFactory.ToDomain(teams) };
+            }
+
+            if (request.Name != null)
+            {
+
+            }
+
+            if (request.ContextFlag != null)
+            {
+                var teams = _databaseGateway.GetTeams(request.ContextFlag);
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList()};
+            }
+
+            return new ListTeamsResponse() {Teams = new List<TeamResponse>()};
         }
 
         public TeamResponse ExecutePost(CreateTeamRequest request)
