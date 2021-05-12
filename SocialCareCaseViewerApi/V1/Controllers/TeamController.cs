@@ -23,7 +23,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Get a list of teams by context
         /// </summary>
+        /// <response code="200">Successful request and teams returned</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="404">No teams found for request</response>
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -82,7 +81,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(400);
-            response.Value.Should().Be("Context flag must be 1 character\nContext flag must be 'A' or 'C'");
+            response.Value.Should().Be("Context flag must be 1 character in length\nContext flag must be 'A' or 'C'");
         }
 
         [Test]
