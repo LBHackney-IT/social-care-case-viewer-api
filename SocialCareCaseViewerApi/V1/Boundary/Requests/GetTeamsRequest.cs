@@ -26,9 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .MinimumLength(1).WithMessage("Team name must be at least 1 character")
                 .MaximumLength(200).WithMessage("Team name has a maximum length of 200 characters");
             RuleFor(t => t.ContextFlag)
-                .NotNull().WithMessage("Context flag must be provided")
-                .MinimumLength(1).WithMessage("Context flag must be provided")
-                .MaximumLength(1).WithMessage("Context flag must be 1 character")
+                .MaximumLength(1).WithMessage("Context flag must be 1 character in length")
                 .Matches("(?i:^A|C)").WithMessage("Context flag must be 'A' or 'C'");
         }
     }

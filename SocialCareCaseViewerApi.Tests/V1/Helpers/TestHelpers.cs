@@ -422,10 +422,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
         }
 
-        public static GetTeamsRequest CreateGetTeamsRequest(string? contextFlag = null)
+        public static GetTeamsRequest CreateGetTeamsRequest(bool setFieldsNull = false, int? id = null, string? name = null, string? contextFlag = null)
         {
+            if (setFieldsNull)
+            {
+                return new GetTeamsRequest {Id = null, Name = null, ContextFlag = null};
+            }
+
             return new Faker<GetTeamsRequest>()
-                .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"));
+                .RuleFor(t => t.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(t => t.Name, f => name ?? f.Random.String2(200))
+                .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
     }
 }
