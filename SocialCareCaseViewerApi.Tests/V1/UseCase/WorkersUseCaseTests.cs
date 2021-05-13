@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(fakeWorker.Id), Times.Once);
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(fakeWorker.Email), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamId(teamId), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(teamId), Times.Once);
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             {
                 TeamId = fakeTeamId
             };
-            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(fakeTeamId)).Returns(fakeTeam);
 
             var result = _workersUseCase.ExecuteGet(request);
             var worker = result.First();
@@ -161,7 +161,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             };
             _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorker.Email)).Returns(fakeWorker);
-            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(fakeTeamId)).Returns(fakeTeam);
 
             var result = _workersUseCase.ExecuteGet(request);
             result.Count.Should().Be(1);
@@ -209,7 +209,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorkerId.Id)).Returns(fakeWorkerId);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorkerEmail.Email)).Returns(fakeWorkerEmail);
-            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamId(fakeTeamId)).Returns(new List<Team> { fakeTeam });
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(fakeTeamId)).Returns(fakeTeam);
 
             var request = new GetWorkersRequest
             {

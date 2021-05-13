@@ -11,6 +11,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -33,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var request = TestHelpers.CreateGetTeamsRequest();
             var teamsList = new ListTeamsResponse()
             {
-                Teams = new List<Team>{TestHelpers.CreateTeam().ToDomain()}
+                Teams = new List<TeamResponse>{TestHelpers.CreateTeam().ToDomain().ToResponse()}
             };
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
             var response = _teamController.GetTeams(request) as ObjectResult;
@@ -53,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var request = TestHelpers.CreateGetTeamsRequest();
             var teamsList = new ListTeamsResponse()
             {
-                Teams = new List<Team>()
+                Teams = new List<TeamResponse>()
             };
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
             var response = _teamController.GetTeams(request) as NotFoundObjectResult;

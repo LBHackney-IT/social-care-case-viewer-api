@@ -29,14 +29,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetTeamsByContextReturnsListTeamsResponse()
         {
-            var request = new GetTeamsRequest();
+            var request = TestHelpers.CreateGetTeamsRequest(contextFlag: "a");
+            request.Id = null;
+            request.Name = null;
 
-            _mockDatabaseGateway.Setup(x => x.GetTeams(It.IsAny<string>())).Returns(new List<DbTeam>());
+            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(It.IsAny<string>())).Returns(new List<DbTeam>());
 
             var result = _teamsUseCase.ExecuteGet(request);
 
             Assert.IsInstanceOf<ListTeamsResponse>(result);
-            Assert.IsInstanceOf<List<Team>>(result.Teams);
+            Assert.IsInstanceOf<List<TeamResponse>>(result.Teams);
 
         }
 
