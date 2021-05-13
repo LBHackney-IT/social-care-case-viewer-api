@@ -403,7 +403,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 .Build<CreateCaseNoteRequest>()
                 .With(x => x.ContextFlag, _faker.Random.String2(1))
                 .With(x => x.CaseFormData, "{\"prop_one\": \"value one\",  \"prop_two\": \"value two\"}")
-                .Create();      
+                .Create();
 
             GenericCaseNote note = new GenericCaseNote()
             {
