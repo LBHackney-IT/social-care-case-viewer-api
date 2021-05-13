@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (_databaseGateway.GetTeamByTeamName(request.Name) != null)
             {
-                throw new PostWorkerException($"Team with name \"{request.Name}\" already exists");
+                throw new PostTeamException($"Team with name \"{request.Name}\" already exists");
             }
 
             var team = _databaseGateway.CreateTeam(request);
