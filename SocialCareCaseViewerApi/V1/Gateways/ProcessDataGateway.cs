@@ -247,6 +247,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     bool successForDataImportTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataImportTimestamp);
                     if (successForDataImportTimestampFormat) return dataImportTimestamp;
+
+                    bool successForNonISO24hrTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime nonISO24hrTimestamp);
+                    if (successForNonISO24hrTimestampFormat) return nonISO24hrTimestamp;
                 }
                 else
                 {
