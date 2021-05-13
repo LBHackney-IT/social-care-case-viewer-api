@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -5,8 +6,7 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -129,6 +129,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Once);
         }
 
+
         [Test]
         public void ExecutePostCallsDatabaseGateway()
         {
@@ -154,12 +155,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
 
-        // todo once we add GET team via team name
-        // [Test]
-        // public void ExecutePostThrowsPostTeamExceptionIfTeamNameAlreadyInUse()
-        // {
-        //     var createTeamRequest = TestHelpers.CreateTeamRequest();
-        //     var team = TestHelpers.CreateTeam(name: createTeamRequest.Name, context: createTeamRequest.Context);
-        // }
+        [Test]
+        public void ExecutePostThrowsPostTeamExceptionIfTeamNameAlreadyInUse()
+        {
+            var createTeamRequest = TestHelpers.CreateTeamRequest();
+            var team = TestHelpers.CreateTeam();
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamName(createTeamRequest.Name)).Returns(team);
+
+            Action act = () => _teamsUseCase.ExecutePost(createTeamRequest);
+
+            act.Should().Throw<PostTeamException>()
+                .WithMessage($"Team with name \"{createTeamRequest.Name}\" already exists");
+        }
     }
 }
