@@ -91,6 +91,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void GetTeamsBadRequestReturnsEmptyList()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest(setFieldsNull: true);
+
+            var result = _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
+
+            result.Teams.Should().BeEmpty();
+        }
+
+        [Test]
         public void GetTeamsPrioritisesIdOverNameAndContext()
         {
             var request = TestHelpers.CreateGetTeamsRequest();
