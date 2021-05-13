@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.V1.Factories
@@ -187,6 +188,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = warningNote.CreatedBy,
                 WarningNoteReviews = warningNote.WarningNoteReviews?.Select(x => x.ToResponse()).ToList()
             };
+        }
+
+        public static TeamResponse ToResponse(this Team team)
+        {
+            return new TeamResponse { Id = team.Id, Name = team.Name, Context = team.Context };
         }
 
         private static WarningNoteReviewResponse ToResponse(this WarningNoteReview review)

@@ -296,12 +296,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Name, f => teamName ?? f.Random.String2(200));
         }
 
-        public static Team CreateTeam(int? teamId = null)
+        public static Team CreateTeam(int? teamId = null, string? name = null, string? context = null)
         {
             return new Faker<Team>()
                 .RuleFor(t => t.Id, f => teamId ?? f.UniqueIndex + 1)
-                .RuleFor(t => t.Context, f => f.Random.String2(1))
-                .RuleFor(t => t.Name, f => f.Random.String2(1, 200));
+                .RuleFor(t => t.Context, f => name ?? f.Random.String2(1, "AC"))
+                .RuleFor(t => t.Name, f => context ?? f.Random.String2(1, 200));
         }
 
         public static WarningNote CreateWarningNote(long? personId = null, string? status = null)
@@ -405,6 +405,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.CreatedBy, f => f.Person.FullName)
                 .RuleFor(r => r.LastModifiedAt, f => f.Date.Recent())
                 .RuleFor(r => r.LastModifiedBy, f => f.Person.FullName);
+        }
+
+        public static CreateTeamRequest CreateTeamRequest(string? name = null, string? context = null)
+        {
+            return new Faker<CreateTeamRequest>()
+                .RuleFor(t => t.Name, f => name ?? f.Random.String2(1, 200))
+                .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
+        }
+
+        public static TeamResponse CreateTeamResponse(int? id = null, string? name = null, string? context = null)
+        {
+            return new Faker<TeamResponse>()
+                .RuleFor(t => t.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(t => t.Name, f => name ?? f.Random.String2(1, 200))
+                .RuleFor(t => t.Context, f => context ?? f.Random.String2(1, "AC"));
         }
     }
 }

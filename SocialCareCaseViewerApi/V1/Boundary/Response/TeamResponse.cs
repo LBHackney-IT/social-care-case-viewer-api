@@ -1,6 +1,6 @@
-namespace SocialCareCaseViewerApi.V1.Domain
+namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class Team
+    public class TeamResponse
     {
         public int Id { get; set; }
 
