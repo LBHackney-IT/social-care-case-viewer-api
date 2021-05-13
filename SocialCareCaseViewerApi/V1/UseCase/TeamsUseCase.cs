@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -58,7 +59,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public TeamResponse ExecutePost(CreateTeamRequest request)
         {
 
-            // todo check if team name already exists, if so throw an error
+            if (_databaseGateway.GetTeamByTeamName(request.Name) != null)
+            {
+                throw new PostWorkerException($"Team with name \"{request.Name}\" already exists");
+            }
 
             var team = _databaseGateway.CreateTeam(request);
 
