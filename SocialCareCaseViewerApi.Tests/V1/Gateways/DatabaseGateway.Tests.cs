@@ -397,7 +397,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
+        public void GetTeamByTeamIdReturnsTeamWithWorkers()
         {
             var team = SaveTeamToDatabase(
                 DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
@@ -405,6 +405,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.GetTeamByTeamId(team.Id);
 
             response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByTeamNameReturnsTeamWithWorkers()
+        {
+            var team = SaveTeamToDatabase(
+                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+
+            var response = _classUnderTest.GetTeamByTeamName(team.Name);
+
+            response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByContextReturnsListOfTeamsWithWorkers()
+        {
+            var team = SaveTeamToDatabase(
+                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+
+            var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
+
+            response.Should().BeEquivalentTo(new List<Team>{team});
         }
 
         [Test]
