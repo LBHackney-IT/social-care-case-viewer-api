@@ -426,7 +426,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             if (setFieldsNull)
             {
-                return new GetTeamsRequest {Id = null, Name = null, ContextFlag = null};
+                return new GetTeamsRequest { Id = null, Name = null, ContextFlag = null };
             }
 
             return new Faker<GetTeamsRequest>()

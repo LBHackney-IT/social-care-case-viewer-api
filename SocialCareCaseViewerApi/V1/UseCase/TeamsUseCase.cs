@@ -27,11 +27,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
                 if (teamFoundWithId == null)
                 {
-                    return new ListTeamsResponse() {Teams = new List<TeamResponse>()};
+                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
                 }
 
-                var teams = new List<Team> {teamFoundWithId};
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList()};
+                var teams = new List<Team> { teamFoundWithId };
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
             }
 
             if (request.Name != null)
@@ -40,20 +40,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
                 if (teamFoundWithName == null)
                 {
-                    return new ListTeamsResponse() {Teams = new List<TeamResponse>()};
+                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
                 }
 
-                var teams = new List<Team> {teamFoundWithName};
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList()};
+                var teams = new List<Team> { teamFoundWithName };
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
             }
 
             if (request.ContextFlag != null)
             {
                 var teams = _databaseGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList()};
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
             }
 
-            return new ListTeamsResponse() {Teams = new List<TeamResponse>()};
+            return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
         }
 
         public TeamResponse ExecutePost(CreateTeamRequest request)

@@ -426,7 +426,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
 
-            response.Should().BeEquivalentTo(new List<Team>{team});
+            response.Should().BeEquivalentTo(new List<Team> { team });
         }
 
         [Test]

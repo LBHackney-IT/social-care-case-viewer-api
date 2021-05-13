@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             request.Id = null;
             request.Name = null;
 
-            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam>{team});
+            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam> { team });
 
             var result = _teamsUseCase.ExecuteGet(request);
 
