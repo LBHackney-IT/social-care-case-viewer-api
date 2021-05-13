@@ -20,11 +20,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         string GetNCReferenceByPersonId(string personId);
         Worker GetWorkerByWorkerId(int workerId);
         Worker GetWorkerByEmail(string email);
-        List<Team> GetTeamsByTeamId(int teamId);
         Team CreateTeam(CreateTeamRequest request);
-        List<Team> GetTeamsByTeamContext(string context);
-        Team GetTeamByName(string name);
-        Team GetTeamById(int id);
+        IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
+        Team GetTeamByTeamName(string name);
+        Team GetTeamByTeamId(int id);
         List<dynamic> GetWorkerAllocations(List<Worker> workers);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
