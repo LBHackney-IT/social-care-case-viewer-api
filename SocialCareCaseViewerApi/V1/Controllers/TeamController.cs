@@ -21,6 +21,35 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get a list of teams by context
+        /// </summary>
+        /// <response code="200">Successful request and teams returned</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="404">No teams found for request</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        public IActionResult GetTeams([FromQuery] GetTeamsRequest request)
+        {
+            var validator = new GetTeamsRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            var teams = _teamsUseCase.ExecuteGet(request);
+
+            if (teams.Teams.Count == 0)
+            {
+                return NotFound("No team found");
+            }
+            return Ok(teams);
+        }
+
+        /// <summary>
         /// Create a team
         /// </summary>
         /// <param name="request"></param>

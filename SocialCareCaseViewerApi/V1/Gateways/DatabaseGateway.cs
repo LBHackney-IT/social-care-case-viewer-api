@@ -531,26 +531,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var teamsWorkerBelongsIn = new List<Team>();
             foreach (var requestTeam in request)
             {
-                var teams = GetTeamsByTeamId(requestTeam.Id);
-                if (teams.Count == 0)
+                var team = GetTeamByTeamId(requestTeam.Id);
+                if (team == null)
                 {
                     throw new GetTeamException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
                 }
 
-                teamsWorkerBelongsIn.AddRange(teams);
+                teamsWorkerBelongsIn.Add(team);
             }
 
             return teamsWorkerBelongsIn;
-        }
-
-        public List<Team> GetTeamsByTeamId(int teamId)
-        {
-            return _databaseContext.Teams
-                .Where(x => x.Id == teamId)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(x => x.Worker)
-                .ThenInclude(x => x.Allocations)
-                .ToList();
         }
 
         public Team CreateTeam(CreateTeamRequest request)
@@ -561,6 +551,31 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
 
             return team;
+        }
+
+        public Team GetTeamByTeamId(int teamId)
+        {
+            return _databaseContext.Teams
+                .Where(x => x.Id == teamId)
+                .Include(x => x.WorkerTeams)
+                .ThenInclude(x => x.Worker)
+                .ThenInclude(x => x.Allocations)
+                .FirstOrDefault();
+        }
+
+        public Team GetTeamByTeamName(string teamName)
+        {
+            return _databaseContext.Teams
+                .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
+                .Include(x => x.WorkerTeams)
+                .ThenInclude(x => x.Worker)
+                .ThenInclude(x => x.Allocations)
+                .FirstOrDefault();
+        }
+
+        public IEnumerable<Team> GetTeamsByTeamContextFlag(string context)
+        {
+            return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper()));
         }
 
         //TODO: use db views or queries
@@ -578,15 +593,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             return allocationsPerWorker;
-        }
-
-        public List<Team> GetTeams(string context)
-        {
-            return (context.ToUpper()) switch
-            {
-                "B" => _databaseContext.Teams.ToList(),
-                _ => _databaseContext.Teams.Where(x => x.Context.ToUpper() == context.ToUpper()).ToList(),
-            };
         }
 
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)

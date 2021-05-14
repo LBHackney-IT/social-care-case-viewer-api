@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -21,6 +26,63 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _teamsUseCase = new Mock<ITeamsUseCase>();
             _teamController = new TeamController(_teamsUseCase.Object);
+        }
+
+        [Test]
+        public void GetTeamsReturns200AndTeamsWhenSuccessful()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+            var teamsList = new ListTeamsResponse()
+            {
+                Teams = new List<TeamResponse> { TestHelpers.CreateTeam().ToDomain().ToResponse() }
+            };
+            _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
+            var response = _teamController.GetTeams(request) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(teamsList);
+        }
+
+        [Test]
+        public void GetTeamsReturns404WhenNoTeamsFound()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+            var teamsList = new ListTeamsResponse()
+            {
+                Teams = new List<TeamResponse>()
+            };
+            _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
+            var response = _teamController.GetTeams(request) as NotFoundObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be("No team found");
+        }
+
+        [Test]
+        public void GetTeamsReturns400WhenValidationResultsIsNotValid()
+        {
+
+            var getTeamsRequest = TestHelpers.CreateGetTeamsRequest(contextFlag: "invalid");
+
+            var response = _teamController.GetTeams(getTeamsRequest) as BadRequestObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Context flag must be 1 character in length\nContext flag must be 'A' or 'C'");
         }
 
         [Test]

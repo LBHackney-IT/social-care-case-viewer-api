@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -29,16 +30,105 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetTeamsByContextReturnsListTeamsResponse()
         {
-            var request = new ListTeamsRequest();
+            var request = TestHelpers.CreateGetTeamsRequest();
+            var team = TestHelpers.CreateTeam();
+            request.Id = null;
+            request.Name = null;
 
-            _mockDatabaseGateway.Setup(x => x.GetTeams(It.IsAny<string>())).Returns(new List<DbTeam>());
+            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam> { team });
 
             var result = _teamsUseCase.ExecuteGet(request);
 
-            Assert.IsInstanceOf<ListTeamsResponse>(result);
-            Assert.IsInstanceOf<List<Team>>(result.Teams);
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
 
+            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
+            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
+            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
         }
+
+        [Test]
+        public void GetTeamsByIdReturnsListTeamsResponse()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+            var team = TestHelpers.CreateTeam();
+            request.ContextFlag = null;
+            request.Name = null;
+
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(request.Id ?? 0)).Returns(team);
+
+            var result = _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
+
+            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
+            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
+            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
+        }
+
+        [Test]
+        public void GetTeamsByTeamNameReturnsListTeamsResponse()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+            var team = TestHelpers.CreateTeam();
+            request.Id = null;
+            request.ContextFlag = null;
+
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamName(request.Name)).Returns(team);
+
+            var result = _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Once);
+
+            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
+            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
+            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
+        }
+
+        [Test]
+        public void GetTeamsBadRequestReturnsEmptyList()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest(setFieldsNull: true);
+
+            var result = _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
+
+            result.Teams.Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetTeamsPrioritisesIdOverNameAndContext()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+
+            _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
+        }
+
+        [Test]
+        public void GetTeamsPrioritisesNameOverContext()
+        {
+            var request = TestHelpers.CreateGetTeamsRequest();
+            request.Id = null;
+
+            _teamsUseCase.ExecuteGet(request);
+
+            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Once);
+        }
+
 
         [Test]
         public void ExecutePostCallsDatabaseGateway()
@@ -65,12 +155,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
 
-        // todo once we add GET team via team name
-        // [Test]
-        // public void ExecutePostThrowsPostTeamExceptionIfTeamNameAlreadyInUse()
-        // {
-        //     var createTeamRequest = TestHelpers.CreateTeamRequest();
-        //     var team = TestHelpers.CreateTeam(name: createTeamRequest.Name, context: createTeamRequest.Context);
-        // }
+        [Test]
+        public void ExecutePostThrowsPostTeamExceptionIfTeamNameAlreadyInUse()
+        {
+            var createTeamRequest = TestHelpers.CreateTeamRequest();
+            var team = TestHelpers.CreateTeam();
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamName(createTeamRequest.Name)).Returns(team);
+
+            Action act = () => _teamsUseCase.ExecutePost(createTeamRequest);
+
+            act.Should().Throw<PostTeamException>()
+                .WithMessage($"Team with name \"{createTeamRequest.Name}\" already exists");
+        }
     }
 }

@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
@@ -15,17 +19,50 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListTeamsResponse ExecuteGet(ListTeamsRequest request)
+        public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
-            var teams = _databaseGateway.GetTeams(request.ContextFlag);
+            if (request.Id != null)
+            {
+                var teamFoundWithId = _databaseGateway.GetTeamByTeamId(request.Id ?? 0);
 
-            return new ListTeamsResponse() { Teams = EntityFactory.ToDomain(teams) };
+                if (teamFoundWithId == null)
+                {
+                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
+                }
+
+                var teams = new List<Team> { teamFoundWithId };
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
+            }
+
+            if (request.Name != null)
+            {
+                var teamFoundWithName = _databaseGateway.GetTeamByTeamName(request.Name);
+
+                if (teamFoundWithName == null)
+                {
+                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
+                }
+
+                var teams = new List<Team> { teamFoundWithName };
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
+            }
+
+            if (request.ContextFlag != null)
+            {
+                var teams = _databaseGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
+                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
+            }
+
+            return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
         }
 
         public TeamResponse ExecutePost(CreateTeamRequest request)
         {
 
-            // todo check if team name already exists, if so throw an error
+            if (_databaseGateway.GetTeamByTeamName(request.Name) != null)
+            {
+                throw new PostTeamException($"Team with name \"{request.Name}\" already exists");
+            }
 
             var team = _databaseGateway.CreateTeam(request);
 

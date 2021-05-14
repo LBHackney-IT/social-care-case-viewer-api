@@ -172,7 +172,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
             var workerGetByTeamId =
-                _classUnderTest.GetTeamsByTeamId(createdTeams[0].Id)[0].WorkerTeams.ToList()[0].Worker;
+                _classUnderTest.GetTeamByTeamId(createdTeams[0].Id).WorkerTeams.ToList()[0].Worker;
 
             var expectedResponse = new Worker
             {
@@ -397,12 +397,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetTeamByTeamIdReturnsListOfTeamsWithWorkers()
+        public void GetTeamByTeamIdReturnsTeamWithWorkers()
         {
             var team = SaveTeamToDatabase(
                 DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
 
-            var response = _classUnderTest.GetTeamsByTeamId(team.Id);
+            var response = _classUnderTest.GetTeamByTeamId(team.Id);
+
+            response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByTeamNameReturnsTeamWithWorkers()
+        {
+            var team = SaveTeamToDatabase(
+                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+
+            var response = _classUnderTest.GetTeamByTeamName(team.Name);
+
+            response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByContextReturnsListOfTeamsWithWorkers()
+        {
+            var team = SaveTeamToDatabase(
+                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+
+            var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
 
             response.Should().BeEquivalentTo(new List<Team> { team });
         }
@@ -429,8 +451,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var workerTeams = new List<WorkerTeam> { workerTeamOne, workerTeamTwo };
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
 
-            var responseTeams = _classUnderTest.GetTeamsByTeamId(team.Id);
-            var responseTeam = responseTeams.Find(rTeam => rTeam.Id == team.Id);
+            var responseTeam = _classUnderTest.GetTeamByTeamId(team.Id);
 
             responseTeam?.WorkerTeams.Count.Should().Be(2);
 

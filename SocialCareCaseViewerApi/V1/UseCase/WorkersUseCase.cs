@@ -95,19 +95,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 return null;
             }
 
-            var dbTeams = _databaseGateway.GetTeamsByTeamId(teamId);
-            var dbWorkerTeams = dbTeams?.Select(team => team.WorkerTeams);
+            var dbTeam = _databaseGateway.GetTeamByTeamId(teamId);
+            var dbWorkerTeams = dbTeam?.WorkerTeams;
 
 
             List<Worker> domainWorkers = new List<Worker>();
             if (dbWorkerTeams != null)
             {
-                foreach (var workerTeams in dbWorkerTeams)
+                foreach (var workerTeam in dbWorkerTeams)
                 {
-                    foreach (var workerTeam in workerTeams)
-                    {
-                        domainWorkers.Add(workerTeam.Worker.ToDomain(true));
-                    }
+                    domainWorkers.Add(workerTeam.Worker.ToDomain(true));
                 }
             }
 
