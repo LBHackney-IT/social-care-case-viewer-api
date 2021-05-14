@@ -367,7 +367,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? teamName = null,
             int? workerId = null,
             string? modifiedBy = null,
-            string? email = null,
             string? firstName = null,
             string? lastName = null,
             string? contextFlag = null,
@@ -383,7 +382,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.ModifiedBy, f => modifiedBy ?? f.Person.Email)
                 .RuleFor(w => w.FirstName, f => firstName ?? f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => lastName ?? f.Person.LastName)
-                .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
                 .RuleFor(w => w.ContextFlag, f => contextFlag ?? f.Random.String2(1, "AC"))
                 .RuleFor(w => w.Teams, teams)
                 .RuleFor(w => w.Role, f => role ?? f.Random.String2(200))

@@ -29,8 +29,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateUpdateWorkersRequest(workerId: 0), "Worker id must be grater than 0"),
                 (TestHelpers.CreateUpdateWorkersRequest(modifiedBy: ""), "Modified by email address must be valid"),
                 (TestHelpers.CreateUpdateWorkersRequest(modifiedBy: longEmail), "Modified by email address must be no longer than 62 characters"),
-                (TestHelpers.CreateUpdateWorkersRequest(email: ""), "Email address must be valid"),
-                (TestHelpers.CreateUpdateWorkersRequest(email: longEmail), "Email address must be no longer than 62 characters"),
                 (TestHelpers.CreateUpdateWorkersRequest(firstName: ""), "First name must be provided"),
                 (TestHelpers.CreateUpdateWorkersRequest(firstName: _faker.Random.String2(101)), "First name must be no longer than 100 characters"),
                 (TestHelpers.CreateUpdateWorkersRequest(lastName: ""), "Last name must be provided"),

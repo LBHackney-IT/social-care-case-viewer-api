@@ -11,9 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("workerId")]
         public int WorkerId { get; set; }
 
-        [JsonPropertyName("email")]
-        public string EmailAddress { get; set; } = null!;
-
         [JsonPropertyName("modifiedBy")]
         public string ModifiedBy { get; set; } = null!;
 
@@ -51,10 +48,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .NotNull().WithMessage("Modified by email address must be provided")
                 .MaximumLength(62).WithMessage("Modified by email address must be no longer than 62 characters")
                 .EmailAddress().WithMessage("Modified by email address must be valid");
-            RuleFor(w => w.EmailAddress)
-                .NotNull().WithMessage("Email address must be provided")
-                .MaximumLength(62).WithMessage("Email address must be no longer than 62 characters")
-                .EmailAddress().WithMessage("Email address must be valid");
             RuleFor(w => w.FirstName)
                 .NotNull().WithMessage("First name must be provided")
                 .MinimumLength(1).WithMessage("First name must be provided")
