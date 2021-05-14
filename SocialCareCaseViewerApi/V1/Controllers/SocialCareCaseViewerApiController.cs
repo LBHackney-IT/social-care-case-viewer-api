@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -26,7 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
-        private readonly ITeamsUseCase _teamsUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
@@ -34,15 +32,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IPersonUseCase _personUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase,
-            ITeamsUseCase teamsUseCase, ICaseNotesUseCase caseNotesUseCase, IVisitsUseCase visitsUseCase,
-            IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
+            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
+            IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
-            _teamsUseCase = teamsUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
@@ -295,20 +292,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
-        }
-
-        /// <summary>
-        /// Get a list of teams by context
-        /// </summary>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(ListTeamsResponse), StatusCodes.Status200OK)]
-        [Produces("application/json")]
-        [HttpGet]
-        [Route("teams")]
-        public IActionResult ListTeams([FromQuery] ListTeamsRequest request)
-        {
-            return Ok(_teamsUseCase.ExecuteGet(request));
         }
 
         /// <summary>

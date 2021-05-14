@@ -19,12 +19,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static Team CreateTeamDatabaseEntity(
             List<WorkerTeam> workerTeams,
-            string content = "t",
+            string context = "a",
             int id = 1,
             string name = "test-name"
         )
         {
-            return new Team { Context = content, Id = id, Name = name, WorkerTeams = workerTeams };
+            return new Team { Context = context, Id = id, Name = name, WorkerTeams = workerTeams };
         }
 
         public static WorkerTeam CreateWorkerTeamDatabaseEntity(

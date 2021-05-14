@@ -19,15 +19,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private WorkerController _workerController;
         private Mock<IWorkersUseCase> _workerUseCase;
-        private Mock<IGetWorkersUseCase> _getWorkersUseCase;
         private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _workerUseCase = new Mock<IWorkersUseCase>();
-            _getWorkersUseCase = new Mock<IGetWorkersUseCase>();
-            _workerController = new WorkerController(_workerUseCase.Object, _getWorkersUseCase.Object);
+            _workerController = new WorkerController(_workerUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -87,11 +85,62 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void UpdateWorkerReturns204StatusAndWorkerWhenSuccessful()
+        {
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest));
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
+
+            _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void UpdateWorkerReturns400WhenValidationResultsIsNotValid()
+        {
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(firstName: "");
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public void UpdateWorkerReturns422StatusWhenUpdateWorkerExceptionThrown()
+        {
+            const string errorMessage = "Failed to update worker";
+            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
+            _workerUseCase.Setup(x => x.ExecutePatch(updateWorkerRequest))
+                .Throws(new PatchWorkerException(errorMessage));
+
+            var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(422);
+            response.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
         public void GetWorkersReturns200WhenMatchingWorker()
         {
             var request = new GetWorkersRequest() { TeamId = 5 };
             var workersList = _fixture.Create<List<WorkerResponse>>();
-            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workersList);
+            _workerUseCase.Setup(x => x.ExecuteGet(request)).Returns(workersList);
 
             var response = _workerController.GetWorkers(request) as OkObjectResult;
 
@@ -109,12 +158,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var workers = new List<WorkerResponse>();
             var request = new GetWorkersRequest() { TeamId = 5 };
-            _getWorkersUseCase.Setup(x => x.Execute(request)).Returns(workers);
+            _workerUseCase.Setup(x => x.ExecuteGet(request)).Returns(workers);
 
             var response = _workerController.GetWorkers(request) as NotFoundResult;
 
             response.StatusCode.Should().Be(404);
         }
-
     }
 }

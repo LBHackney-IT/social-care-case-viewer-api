@@ -5,6 +5,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface ITeamsUseCase
     {
-        ListTeamsResponse ExecuteGet(ListTeamsRequest request);
+        ListTeamsResponse ExecuteGet(GetTeamsRequest request);
+
+        TeamResponse ExecutePost(CreateTeamRequest request);
     }
 }

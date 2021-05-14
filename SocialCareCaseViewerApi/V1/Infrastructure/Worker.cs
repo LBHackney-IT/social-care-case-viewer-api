@@ -9,10 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("sccv_worker", Schema = "dbo")]
     public class Worker : IAuditEntity
     {
-        [Column("id")]
-        [MaxLength(16)]
-        [Key]
-        public int Id { get; set; }
+        [Column("id")] [MaxLength(16)] [Key] public int Id { get; set; }
 
         [Column("email")]
         [MaxLength(62)]
@@ -40,30 +37,30 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         public string? ContextFlag { get; set; }
 
-        [Column("created_by")]
-        [MaxLength(62)]
-        public string? CreatedBy { get; set; }
+        [Column("created_by")] [MaxLength(62)] public string? CreatedBy { get; set; }
 
-        [Column("date_start")]
-        public DateTime? DateStart { get; set; }
+        [Column("date_start")] public DateTime? DateStart { get; set; }
 
-        [Column("date_end")]
-        public DateTime? DateEnd { get; set; }
+        [Column("date_end")] public DateTime? DateEnd { get; set; }
+
 
         [Column("last_modified_by")]
         public string? LastModifiedBy { get; set; }
 
         // save changes override populates created at and lost modified at
 
-        [Column("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        [Column("created_at")] public DateTime? CreatedAt { get; set; }
 
-        [Column("last_modified_at")]
-        public DateTime? LastModifiedAt { get; set; }
+        [Column("last_modified_at")] public DateTime? LastModifiedAt { get; set; }
 
         //nav props
         public ICollection<WorkerTeam> WorkerTeams { get; set; } = null!;
 
         public ICollection<AllocationSet> Allocations { get; set; } = null!;
+
+        public Worker ShallowCopy()
+        {
+            return (Worker) this.MemberwiseClone();
+        }
     }
 }

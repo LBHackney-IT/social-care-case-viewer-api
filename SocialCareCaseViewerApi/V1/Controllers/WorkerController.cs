@@ -15,12 +15,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class WorkerController : BaseController
     {
         private readonly IWorkersUseCase _workersUseCase;
-        private readonly IGetWorkersUseCase _getWorkersUseCase;
 
-        public WorkerController(IWorkersUseCase workersUseCase, IGetWorkersUseCase getWorkersUseCase)
+        public WorkerController(IWorkersUseCase workersUseCase)
         {
             _workersUseCase = workersUseCase;
-            _getWorkersUseCase = getWorkersUseCase;
         }
 
         /// <summary>
@@ -33,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
-            var workers = _getWorkersUseCase.Execute(request);
+            var workers = _workersUseCase.ExecuteGet(request);
 
             if (workers.Count == 0)
             {
@@ -67,6 +65,40 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return CreatedAtAction("Worker created successfully", createdWorker);
             }
             catch (PostWorkerException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Create a worker
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="204">Worker amended successfully</response>
+        /// <response code="400">Invalid UpdateWorkerRequest received</response>
+        /// <response code="422">Could not process request</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        public IActionResult EditWorker([FromBody] UpdateWorkerRequest request)
+        {
+            var validator = new UpdateWorkerRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _workersUseCase.ExecutePatch(request);
+                return NoContent();
+            }
+            catch (PatchWorkerException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (WorkerNotFoundException e)
             {
                 return UnprocessableEntity(e.Message);
             }

@@ -122,6 +122,8 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<UpdateAllocationRequest>, UpdateAllocationRequestValidator>();
             services.AddTransient<IValidator<CreateWorkerRequest>, CreateWorkerRequestValidator>();
             services.AddTransient<IValidator<PatchWarningNoteRequest>, PatchWarningNoteRequestValidator>();
+            services.AddTransient<IValidator<CreateTeamRequest>, CreateTeamRequestValidator>();
+            services.AddTransient<IValidator<GetTeamsRequest>, GetTeamsRequestValidator>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -148,7 +150,6 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
             services.AddScoped<IProcessDataUseCase, ProcessDataUseCase>();
             services.AddScoped<IAllocationsUseCase, AllocationsUseCase>();
-            services.AddScoped<IGetWorkersUseCase, GetWorkersUseCase>();
             services.AddScoped<ITeamsUseCase, TeamsUseCase>();
             services.AddScoped<ICaseNotesUseCase, CaseNotesUseCase>();
             services.AddScoped<IVisitsUseCase, VisitsUseCase>();

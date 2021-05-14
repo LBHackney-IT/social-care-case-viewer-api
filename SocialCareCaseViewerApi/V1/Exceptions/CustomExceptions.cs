@@ -48,6 +48,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public PostWorkerException(string message) : base(message) { }
     }
 
+    public class PatchWorkerException : Exception
+    {
+        public PatchWorkerException(string message) : base(message) { }
+    }
+
     public class PatchWarningNoteException : Exception
     {
         public PatchWarningNoteException(string message) : base(message) { }
@@ -56,5 +61,15 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class UpdatePersonException : Exception
     {
         public UpdatePersonException(string message) : base(message) { }
+    }
+
+    public class GetTeamException : Exception
+    {
+        public GetTeamException(string message) : base(message) { }
+    }
+
+    public class PostTeamException : Exception
+    {
+        public PostTeamException(string message) : base(message) { }
     }
 }

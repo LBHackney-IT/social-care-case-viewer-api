@@ -19,6 +19,9 @@ using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using AutoFixture;
+using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -26,11 +29,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
     public class EntityFactoryTests
     {
         private Faker _faker;
+        private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _faker = new Faker();
+            _fixture = new Fixture();
         }
 
         #region ToDomain
@@ -127,8 +132,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DateStart = dateStart,
                 Teams = new List<Team>()
                 {
-                    new Team() { Id = 1, Name = "Team 1"},
-                    new Team() { Id = 2, Name = "Team 2"}
+                    new Team() { Id = 1, Name = "Team 1", Context = "C"},
+                    new Team() { Id = 2, Name = "Team 2", Context = "C"}
                 }
             };
 
@@ -136,7 +141,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapTeamFromInfrastrcutureToDomain()
+        public void CanMapTeamFromInfrastructureToDomain()
         {
             var id = _faker.Random.Number();
             var name = _faker.Name.ToString();
@@ -149,13 +154,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Context = context
             };
 
-            var exptectedResponse = new Team()
+            var expectedResponse = new Team()
             {
                 Id = id,
-                Name = name
+                Name = name,
+                Context = context
             };
 
-            dbTeam.ToDomain().Should().BeEquivalentTo(exptectedResponse);
+            dbTeam.ToDomain().Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
@@ -391,6 +397,65 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
         }
 
+        [Test]
+        public void CanMapCreateCaseNoteRequestToCaseNotesDocument()
+        {
+            CreateCaseNoteRequest request = _fixture
+                .Build<CreateCaseNoteRequest>()
+                .With(x => x.ContextFlag, _faker.Random.String2(1))
+                .With(x => x.CaseFormData, "{\"prop_one\": \"value one\",  \"prop_two\": \"value two\"}")
+                .Create();
+
+            GenericCaseNote note = new GenericCaseNote()
+            {
+                DateOfBirth = request.DateOfBirth?.ToString("dd/MM/yyy"),
+                DateOfEvent = request.DateOfEvent?.ToString(),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                FormName = request.FormName,
+                FormNameOverall = request.FormNameOverall,
+                WorkerEmail = request.WorkerEmail,
+                MosaicId = request.PersonId.ToString()
+            };
+
+            var result = request.ToEntity();
+
+            dynamic formData = JsonConvert.DeserializeObject(result.CaseFormData);
+
+            //take the generated timestamp value and use it in the expected result
+            note.Timestamp = formData["timestamp"];
+
+            JObject coreProperties = JObject.Parse(JsonConvert.SerializeObject(note));
+
+            coreProperties.Merge(JObject.Parse(request.CaseFormData));
+
+            var expectedResult = new CaseNotesDocument()
+            {
+                CaseFormData = coreProperties.ToString()
+            };
+
+            result.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void CreateCaseNoteRequestToCaseNotesDocumentUsesCorrectDateTimeFormatForTimestamp()
+        {
+            CreateCaseNoteRequest request = _fixture
+               .Build<CreateCaseNoteRequest>()
+               .With(x => x.ContextFlag, _faker.Random.String2(1))
+               .With(x => x.CaseFormData, "{\"prop_one\": \"value one\",  \"prop_two\": \"value two\"}")
+               .Create();
+
+            var result = request.ToEntity();
+
+            dynamic formData = JsonConvert.DeserializeObject(result.CaseFormData);
+
+            string timestamp = formData["timestamp"];
+
+            (DateTime.TryParseExact(timestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)).Should().BeTrue();
+        }
+
         #endregion
     }
 }
+
