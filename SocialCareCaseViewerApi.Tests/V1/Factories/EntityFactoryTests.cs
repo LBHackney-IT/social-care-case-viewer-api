@@ -132,8 +132,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DateStart = dateStart,
                 Teams = new List<Team>()
                 {
-                    new Team() { Id = 1, Name = "Team 1"},
-                    new Team() { Id = 2, Name = "Team 2"}
+                    new Team() { Id = 1, Name = "Team 1", Context = "C"},
+                    new Team() { Id = 2, Name = "Team 2", Context = "C"}
                 }
             };
 

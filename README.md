@@ -13,9 +13,12 @@ It is a part of the Social Care system (see [Social Care System Architecture](ht
     - [Dockerised dependencies](#dockerised-dependencies)
     - [Installation](#installation)
   - [Contributing](#contributing)
-  - [Usage](#usage)
+  - [Common Processes](#common-processes)
     - [Running the application](#running-the-application)
     - [Running the tests](#running-the-tests)
+      - [Using the terminal](#using-the-terminal)
+      - [Using an IDE](#using-an-ide)
+    - [Updating the Schema](#updating-the-schema)
   - [Active Contributors](#active-contributors)
   - [License](#license)
 
@@ -60,7 +63,7 @@ $ git clone git@github.com:LBHackney-IT/social-care-case-viewer-api.git
 - `development` branch is responsible for staging. When code is merged to the `staging` branch, the staging environment is automatically rebuilt and deployed.
 - When changes are verified in staging, changes can be merged into `master`
 
-## Usage
+## Common Processes
 
 ### Running the application
 
@@ -117,6 +120,21 @@ $ make start-test-dbs
 ```
 
 This will allow you to run the tests as normal in your IDE.
+
+### Updating the Schema
+
+- In the database repository update the [schema.sql](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/database/schema.sql) file
+- In SocialCareCaseViewerAPI/Infrastructure either update an existing class or create a new class for the schema changes
+- To test locally run `make restart-db`
+- To deploy changes to AWS:
+    - Go to AWS account (staging or prod)
+    - Go to Systems Manager
+    - Go to Session Manager
+    - Choose `RDS jump box-Platform APIs (new)` and click `Start Session`, this allows us to have a CLI into the instance hosting our database
+    - Connect to PostgreSQL `psql --host=<hostname> --port=5600 --username=<username> --password=<password> --dbname=social_care`
+    - Backup the table you are going to apply changes to `create table_backup as table_copied`, it can be useful use the same table name for the backup but to append the date to the table name
+    - If we later make breaking changes to the table in use we rename the backup table to make it our `active` version of the table
+    - Manually apply schema changes to the table we are interested in
 
 ## Active Contributors
 

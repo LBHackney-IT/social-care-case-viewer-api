@@ -386,7 +386,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreateTeamInsertsTeamIntoDatabaseAndReturnsCreatedWorker()
+        public void CreateTeamInsertsTeamIntoDatabaseAndReturnsCreatedTeam()
         {
             var createTeamRequest = TestHelpers.CreateTeamRequest();
 
