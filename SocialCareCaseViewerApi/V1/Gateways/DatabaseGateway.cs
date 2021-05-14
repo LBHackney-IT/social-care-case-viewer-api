@@ -745,7 +745,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Note = $"{dt.ToShortDateString()} | Warning Note | Warning note created against this person",
                 FormNameOverall = "API_WarningNote",
                 FormName = "Warning Note Created",
-                WarningNoteId = warningNote.Id.ToString()
+                WarningNoteId = warningNote.Id.ToString(),
+                WorkerEmail = request.CreatedBy
             };
 
             var caseNotesDocument = new CaseNotesDocument
