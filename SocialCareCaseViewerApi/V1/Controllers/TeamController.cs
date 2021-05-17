@@ -21,6 +21,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get a team by team id
+        /// </summary>
+        /// <response code="200">Successful request and team returned</response>
+        /// <response code="404">No team found for request</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("id/{id:int}")]
+        public IActionResult GetTeamById(int id)
+        {
+            var team = _teamsUseCase.ExecuteGetById(id);
+
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(team);
+        }
+
+        /// <summary>
         /// Get a list of teams by context
         /// </summary>
         /// <response code="200">Successful request and teams returned</response>

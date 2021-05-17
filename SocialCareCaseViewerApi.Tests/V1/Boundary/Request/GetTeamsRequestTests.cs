@@ -25,7 +25,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var badGetTeamsRequests = new List<(GetTeamsRequest, string)>()
             {
-                (TestHelpers.CreateGetTeamsRequest(true), "Must provide either a team ID, team name or context flag"),
                 (TestHelpers.CreateGetTeamsRequest(contextFlag: "d"), "Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateGetTeamsRequest(contextFlag: ""), "Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateGetTeamsRequest(contextFlag: "aa"), "Context flag must be 1 character in length"),

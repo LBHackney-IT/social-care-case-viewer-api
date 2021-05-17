@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -19,21 +20,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+        public TeamResponse ExecuteGetById(int id)
+        {
+            Console.WriteLine(id);
+            var team = _databaseGateway.GetTeamByTeamId(id);
+            return team?.ToDomain().ToResponse();
+        }
+
         public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
-            if (request.Id != null)
-            {
-                var teamFoundWithId = _databaseGateway.GetTeamByTeamId(request.Id ?? 0);
-
-                if (teamFoundWithId == null)
-                {
-                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
-                }
-
-                var teams = new List<Team> { teamFoundWithId };
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
-            }
-
             if (request.Name != null)
             {
                 var teamFoundWithName = _databaseGateway.GetTeamByTeamName(request.Name);
