@@ -43,6 +43,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get a team by team name
+        /// </summary>
+        /// <response code="200">Successful request and team returned</response>
+        /// <response code="404">No team found for request</response>
+        /// <response code="500">Server error</response>
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        [HttpGet]
+        [Route("name/{name}")]
+        public IActionResult GetTeamByName(string name)
+        {
+            var team = _teamsUseCase.ExecuteGetByName(name);
+
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(team);
+        }
+
+        /// <summary>
         /// Get a list of teams by context
         /// </summary>
         /// <response code="200">Successful request and teams returned</response>
@@ -64,10 +86,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             var teams = _teamsUseCase.ExecuteGet(request);
 
-            if (teams.Teams.Count == 0)
-            {
-                return NotFound("No team found");
-            }
             return Ok(teams);
         }
 

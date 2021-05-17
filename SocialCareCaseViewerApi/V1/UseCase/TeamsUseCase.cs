@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -9,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class TeamsUseCase : ITeamsUseCase
@@ -20,34 +20,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public TeamResponse ExecuteGetById(int id)
+        public TeamResponse? ExecuteGetById(int id)
         {
             var team = _databaseGateway.GetTeamByTeamId(id);
             return team?.ToDomain().ToResponse();
         }
 
+        public TeamResponse? ExecuteGetByName(string name)
+        {
+            var team = _databaseGateway.GetTeamByTeamName(name);
+            return team?.ToDomain().ToResponse();
+        }
+
         public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
-            if (request.Name != null)
-            {
-                var teamFoundWithName = _databaseGateway.GetTeamByTeamName(request.Name);
-
-                if (teamFoundWithName == null)
-                {
-                    return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
-                }
-
-                var teams = new List<Team> { teamFoundWithName };
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
-            }
-
-            if (request.ContextFlag != null)
-            {
-                var teams = _databaseGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
-                return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
-            }
-
-            return new ListTeamsResponse() { Teams = new List<TeamResponse>() };
+            var teams = _databaseGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
+            return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
         }
 
         public TeamResponse ExecutePost(CreateTeamRequest request)

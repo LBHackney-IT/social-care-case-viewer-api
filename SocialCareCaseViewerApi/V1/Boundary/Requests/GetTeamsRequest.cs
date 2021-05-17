@@ -6,20 +6,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class GetTeamsRequest
     {
-        [FromQuery(Name = "name")]
-        public string? Name { get; set; }
-
         [FromQuery(Name = "context_flag")]
-        public string? ContextFlag { get; set; }
+        public string ContextFlag { get; set; } = null!;
     }
 
     public class GetTeamsRequestValidator : AbstractValidator<GetTeamsRequest>
     {
         public GetTeamsRequestValidator()
         {
-            RuleFor(t => t.Name)
-                .MinimumLength(1).WithMessage("Team name must be at least 1 character")
-                .MaximumLength(200).WithMessage("Team name has a maximum length of 200 characters");
             RuleFor(t => t.ContextFlag)
                 .MaximumLength(1).WithMessage("Context flag must be 1 character in length")
                 .Matches("(?i:^A|C)").WithMessage("Context flag must be 'A' or 'C'");
