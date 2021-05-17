@@ -29,6 +29,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetTeamByTeamIdReturns200AndTeamWhenSuccessful()
+        {
+            var team = TestHelpers.CreateTeam();
+            _teamsUseCase.Setup(x => x.ExecuteGetById(team.Id)).Returns(team.ToDomain().ToResponse());
+
+            var response = _teamController.GetTeamById(team.Id) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamByTeamIdReturns404WhenTeamNotFound()
+        {
+            var response = _teamController.GetTeamById(1) as NotFoundResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
         public void GetTeamsReturns200AndTeamsWhenSuccessful()
         {
             var request = TestHelpers.CreateGetTeamsRequest();

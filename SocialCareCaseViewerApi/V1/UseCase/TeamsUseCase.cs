@@ -22,7 +22,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public TeamResponse ExecuteGetById(int id)
         {
-            Console.WriteLine(id);
             var team = _databaseGateway.GetTeamByTeamId(id);
             return team?.ToDomain().ToResponse();
         }

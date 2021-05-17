@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -25,6 +26,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _teamsUseCase = new TeamsUseCase(_mockDatabaseGateway.Object);
+        }
+
+        [Test]
+        public void GetTeamsByTeamIdReturnsTeamResponseWhenTeamExists()
+        {
+            var team = TestHelpers.CreateTeam();
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(team.Id)).Returns(team);
+
+            var response = _teamsUseCase.ExecuteGetById(team.Id);
+
+            response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamsByTeamIdReturnsNullWhenTeamDoesNotExists()
+        {
+            var response = _teamsUseCase.ExecuteGetById(1);
+
+            response.Should().BeNull();
         }
 
         [Test]
