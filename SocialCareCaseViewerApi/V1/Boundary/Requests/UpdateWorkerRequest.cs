@@ -31,9 +31,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("dateDetailsChanged")]
         public DateTime? DateStart { get; set; }
-
-        [JsonPropertyName("isActive")]
-        public bool IsActive { get; set; }
     }
 
     public class UpdateWorkerRequestValidator : AbstractValidator<UpdateWorkerRequest>
@@ -78,8 +75,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(w => w.DateStart)
                 .NotNull().WithMessage("Start date must be provided")
                 .LessThan(DateTime.Now).WithMessage("Date cannot be set in the future");
-            RuleFor(w => w.IsActive)
-                .NotNull().WithMessage("Worker active status must be provided");
         }
     }
 }

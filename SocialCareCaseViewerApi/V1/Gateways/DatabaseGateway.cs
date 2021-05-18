@@ -505,9 +505,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.LastName = request.LastName;
             worker.ContextFlag = request.ContextFlag;
             worker.Role = request.Role;
-            worker.DateStart = request.IsActive ? request.DateStart : null;
-            worker.DateEnd = request.IsActive ? null : request.DateStart;
-            worker.IsActive = request.IsActive;
+            worker.DateStart = request.DateStart;
+            worker.IsActive = true;
 
             var workerTeams = GetTeams(request.Teams);
 
