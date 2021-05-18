@@ -28,105 +28,65 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void GetTeamsByTeamIdReturnsTeamResponseWhenTeamExists()
+        {
+            var team = TestHelpers.CreateTeam();
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(team.Id)).Returns(team);
+
+            var response = _teamsUseCase.ExecuteGetById(team.Id);
+
+            response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamsByTeamIdReturnsNullWhenTeamDoesNotExists()
+        {
+            var response = _teamsUseCase.ExecuteGetById(1);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetTeamsByTeamNameReturnsTeamResponseWhenTeamExists()
+        {
+            var team = TestHelpers.CreateTeam();
+            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamName(team.Name)).Returns(team);
+
+            var response = _teamsUseCase.ExecuteGetByName(team.Name);
+
+            response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamsByTeamNameReturnsNullWhenTeamDoesNotExists()
+        {
+            var response = _teamsUseCase.ExecuteGetByName("fake name");
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public void GetTeamsByContextReturnsListTeamsResponse()
         {
             var request = TestHelpers.CreateGetTeamsRequest();
             var team = TestHelpers.CreateTeam();
-            request.Id = null;
-            request.Name = null;
 
             _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam> { team });
 
             var result = _teamsUseCase.ExecuteGet(request);
 
             _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
 
-            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
-            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
-            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
-        }
+            var firstTeamResponse = result.Teams.FirstOrDefault();
 
-        [Test]
-        public void GetTeamsByIdReturnsListTeamsResponse()
-        {
-            var request = TestHelpers.CreateGetTeamsRequest();
-            var team = TestHelpers.CreateTeam();
-            request.ContextFlag = null;
-            request.Name = null;
+            if (firstTeamResponse == null)
+            {
+                throw new NullReferenceException();
+            }
 
-            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(request.Id ?? 0)).Returns(team);
-
-            var result = _teamsUseCase.ExecuteGet(request);
-
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
-
-            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
-            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
-            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
-        }
-
-        [Test]
-        public void GetTeamsByTeamNameReturnsListTeamsResponse()
-        {
-            var request = TestHelpers.CreateGetTeamsRequest();
-            var team = TestHelpers.CreateTeam();
-            request.Id = null;
-            request.ContextFlag = null;
-
-            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamName(request.Name)).Returns(team);
-
-            var result = _teamsUseCase.ExecuteGet(request);
-
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Once);
-
-            result.Teams.FirstOrDefault().Id.Should().Be(team.Id);
-            result.Teams.FirstOrDefault().Context.Should().BeEquivalentTo(team.Context);
-            result.Teams.FirstOrDefault().Name.Should().BeEquivalentTo(team.Name);
-        }
-
-        [Test]
-        public void GetTeamsBadRequestReturnsEmptyList()
-        {
-            var request = TestHelpers.CreateGetTeamsRequest(setFieldsNull: true);
-
-            var result = _teamsUseCase.ExecuteGet(request);
-
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
-
-            result.Teams.Should().BeEmpty();
-        }
-
-        [Test]
-        public void GetTeamsPrioritisesIdOverNameAndContext()
-        {
-            var request = TestHelpers.CreateGetTeamsRequest();
-
-            _teamsUseCase.ExecuteGet(request);
-
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Never);
-        }
-
-        [Test]
-        public void GetTeamsPrioritisesNameOverContext()
-        {
-            var request = TestHelpers.CreateGetTeamsRequest();
-            request.Id = null;
-
-            _teamsUseCase.ExecuteGet(request);
-
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(request.Id ?? 0), Times.Never);
-            _mockDatabaseGateway.Verify(x => x.GetTeamByTeamName(request.Name), Times.Once);
+            firstTeamResponse.Id.Should().Be(team.Id);
+            firstTeamResponse.Context.Should().BeEquivalentTo(team.Context);
+            firstTeamResponse.Name.Should().BeEquivalentTo(team.Name);
         }
 
 
