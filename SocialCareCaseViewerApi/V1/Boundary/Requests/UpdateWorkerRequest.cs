@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("workerId")]
         public int WorkerId { get; set; }
 
-        [JsonPropertyName("modifiedBy")]
+        [JsonPropertyName("createdBy")]
         public string ModifiedBy { get; set; } = null!;
 
         [JsonPropertyName("firstName")]
@@ -29,11 +29,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("role")]
         public string Role { get; set; } = null!;
 
-        [JsonPropertyName("dateDetailsChanged")]
+        [JsonPropertyName("dateStart")]
         public DateTime? DateStart { get; set; }
-
-        [JsonPropertyName("isActive")]
-        public bool IsActive { get; set; }
     }
 
     public class UpdateWorkerRequestValidator : AbstractValidator<UpdateWorkerRequest>
@@ -45,9 +42,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .GreaterThan(0).WithMessage("Worker id must be grater than 0")
                 .LessThan(int.MaxValue).WithMessage($"Worker id must be less than {int.MaxValue}");
             RuleFor(w => w.ModifiedBy)
-                .NotNull().WithMessage("Modified by email address must be provided")
-                .MaximumLength(62).WithMessage("Modified by email address must be no longer than 62 characters")
-                .EmailAddress().WithMessage("Modified by email address must be valid");
+                .NotNull().WithMessage("Created by email address must be provided")
+                .MaximumLength(62).WithMessage("Created by email address must be no longer than 62 characters")
+                .EmailAddress().WithMessage("Created by email address must be valid");
             RuleFor(w => w.FirstName)
                 .NotNull().WithMessage("First name must be provided")
                 .MinimumLength(1).WithMessage("First name must be provided")
@@ -78,8 +75,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(w => w.DateStart)
                 .NotNull().WithMessage("Start date must be provided")
                 .LessThan(DateTime.Now).WithMessage("Date cannot be set in the future");
-            RuleFor(w => w.IsActive)
-                .NotNull().WithMessage("Worker active status must be provided");
         }
     }
 }

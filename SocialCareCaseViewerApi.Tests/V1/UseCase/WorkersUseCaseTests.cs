@@ -264,32 +264,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Verify(x => x.UpdateWorker(updateWorkerRequest));
             _mockDatabaseGateway.Verify(x => x.UpdateWorker(It.Is<UpdateWorkerRequest>(w => w == updateWorkerRequest)), Times.Once());
-
-            _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId));
-            _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(It.Is<int>(w => w == updateWorkerRequest.WorkerId)), Times.Once());
-        }
-
-        [Test]
-        public void ExecutePatchThrowsPatchWorkerExceptionIfWorkerHasAllocationsAndTryingToDeactivate()
-        {
-            var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest(isActive: false);
-            _mockDatabaseGateway
-                .Setup(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId))
-                .Returns(new Worker()
-                {
-                    Allocations = new List<AllocationSet>
-                    {
-                        new AllocationSet
-                        {
-                            CaseStatus = "OPEN"
-                        }
-                    }
-                });
-
-            Action act = () => _workersUseCase.ExecutePatch(updateWorkerRequest);
-
-            act.Should().Throw<PatchWorkerException>()
-                .WithMessage("Worker still has allocations");
         }
     }
 }
