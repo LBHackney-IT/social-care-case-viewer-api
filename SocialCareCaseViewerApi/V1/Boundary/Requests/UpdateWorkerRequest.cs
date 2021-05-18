@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("workerId")]
         public int WorkerId { get; set; }
 
-        [JsonPropertyName("cratedBy")]
+        [JsonPropertyName("createdBy")]
         public string ModifiedBy { get; set; } = null!;
 
         [JsonPropertyName("firstName")]
