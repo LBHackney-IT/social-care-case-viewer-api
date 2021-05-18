@@ -7,11 +7,9 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -26,6 +24,66 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _teamsUseCase = new Mock<ITeamsUseCase>();
             _teamController = new TeamController(_teamsUseCase.Object);
+        }
+
+        [Test]
+        public void GetTeamByTeamIdReturns200AndTeamWhenSuccessful()
+        {
+            var team = TestHelpers.CreateTeam();
+            _teamsUseCase.Setup(x => x.ExecuteGetById(team.Id)).Returns(team.ToDomain().ToResponse());
+
+            var response = _teamController.GetTeamById(team.Id) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamByTeamIdReturns404WhenTeamNotFound()
+        {
+            var response = _teamController.GetTeamById(1) as NotFoundResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void GetTeamByTeamNameReturns200AndTeamWhenSuccessful()
+        {
+            var team = TestHelpers.CreateTeam();
+            _teamsUseCase.Setup(x => x.ExecuteGetByName(team.Name)).Returns(team.ToDomain().ToResponse());
+
+            var response = _teamController.GetTeamByName(team.Name) as ObjectResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void GetTeamByTeamNameReturns404WhenTeamNotFound()
+        {
+            var response = _teamController.GetTeamByName("fake team name") as NotFoundResult;
+
+            if (response == null)
+            {
+                throw new NullReferenceException();
+            }
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(404);
         }
 
         [Test]
@@ -49,7 +107,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetTeamsReturns404WhenNoTeamsFound()
+        public void GetTeamsReturns200AndEmptyListWhenNoTeamsFound()
         {
             var request = TestHelpers.CreateGetTeamsRequest();
             var teamsList = new ListTeamsResponse()
@@ -57,14 +115,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 Teams = new List<TeamResponse>()
             };
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
-            var response = _teamController.GetTeams(request) as NotFoundObjectResult;
+            var response = _teamController.GetTeams(request) as OkObjectResult;
 
             if (response == null)
             {
                 throw new NullReferenceException();
             }
-            response.StatusCode.Should().Be(404);
-            response.Value.Should().Be("No team found");
+            response.StatusCode.Should().Be(200);
+            ((ListTeamsResponse) response.Value).Teams.Should().BeEmpty();
         }
 
         [Test]
