@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
+using AutoFixture;
 using Bogus;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -17,11 +22,6 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
-using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using AutoFixture;
-using Newtonsoft.Json.Linq;
-using System.Globalization;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
