@@ -1,7 +1,7 @@
-using SocialCareCaseViewerApi.V1.Domain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {

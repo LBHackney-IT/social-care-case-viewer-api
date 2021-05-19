@@ -824,6 +824,28 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var review = PostWarningNoteReview(request);
             _databaseContext.WarningNoteReview.Add(review);
             _databaseContext.SaveChanges();
+
+            var dt = DateTime.Now;
+
+            var note = new WarningNoteCaseNote
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MosaicId = person.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"),
+                Note = $"{dt.ToShortDateString()} | Warning Note | {((request.Status == "closed") ? "Warning note against this person ended" : "Warning note against this person reviewed")}",
+                FormNameOverall = "API_WarningNote",
+                FormName = (request.Status == "closed") ? "Warning Note Ended" : "Warning Note Reviewed",
+                WarningNoteId = warningNote.Id.ToString(),
+                WorkerEmail = request.ReviewedBy
+            };
+
+            var caseNotesDocument = new CaseNotesDocument
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            _ = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
         }
 
         private static WarningNoteReview PostWarningNoteReview(PatchWarningNoteRequest request)

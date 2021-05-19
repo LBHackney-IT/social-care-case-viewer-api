@@ -1,9 +1,9 @@
+using System.Linq;
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {

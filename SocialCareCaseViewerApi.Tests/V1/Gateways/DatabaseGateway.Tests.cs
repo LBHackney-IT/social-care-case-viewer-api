@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -13,10 +17,6 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -1005,6 +1005,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
             insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
             insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+        }
+
+        [Test]
+        public void PatchWarningNotesCreatesReviewedCaseHistoryNoteByCallingProcessDataGatewayWhenRequestStatusNotClosed()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTestWithProcessDataGateway.PatchWarningNote(request);
+
+            var filter = Builders<BsonDocument>.Filter.Eq("mosaic_id", person.Id.ToString());
+
+            var result = MongoDbTestContext.getCollection().Find(filter).First();
+
+            string note = $"Warning note against this person reviewed";
+
+            result["first_name"].Should().Be(person.FirstName);
+            result["last_name"].Should().Be(person.LastName);
+            result["mosaic_id"].Should().Be(person.Id.ToString());
+            result["note"].ToString().Should().Contain(note);
+            result["form_name_overall"].Should().Be("API_WarningNote");
+            result["form_name"].Should().Be("Warning Note Reviewed");
+            result["worker_email"].Should().Be(request.ReviewedBy);
+
+        }
+
+        [Test]
+        public void PatchWarningNotesCreatesClosedCaseHistoryNoteByCallingProcessDataGatewayWhenRequestStatusIsClosed()
+        {
+            var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WarningNotes.Add(warningNote);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTestWithProcessDataGateway.PatchWarningNote(request);
+
+            var filter = Builders<BsonDocument>.Filter.Eq("mosaic_id", person.Id.ToString());
+
+            var result = MongoDbTestContext.getCollection().Find(filter).First();
+
+            string note = $"Warning note against this person ended";
+
+            result["first_name"].Should().Be(person.FirstName);
+            result["last_name"].Should().Be(person.LastName);
+            result["mosaic_id"].Should().Be(person.Id.ToString());
+            result["note"].ToString().Should().Contain(note);
+            result["form_name_overall"].Should().Be("API_WarningNote");
+            result["form_name"].Should().Be("Warning Note Ended");
+            result["worker_email"].Should().Be(request.ReviewedBy);
+
         }
 
         [Test]

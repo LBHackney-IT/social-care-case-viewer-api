@@ -1,8 +1,8 @@
+using System;
+using System.Security.Cryptography.X509Certificates;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SocialCareCaseViewerApi.Tests
 {
