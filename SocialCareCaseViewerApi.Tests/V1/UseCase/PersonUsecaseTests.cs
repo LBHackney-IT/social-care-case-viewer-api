@@ -1,3 +1,4 @@
+using System;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -8,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System;
 using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase

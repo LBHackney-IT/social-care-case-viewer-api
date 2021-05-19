@@ -1,8 +1,8 @@
-using MongoDB.Bson;
-using MongoDB.Driver;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
