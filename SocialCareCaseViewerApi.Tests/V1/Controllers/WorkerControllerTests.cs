@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AutoFixture;
 using FluentAssertions;
@@ -39,30 +38,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(worker);
+            response?.StatusCode.Should().Be(201);
+            response?.Value.Should().BeEquivalentTo(worker);
         }
 
         [Test]
         public void CreateWorkerReturns400WhenValidationResultsIsNotValid()
         {
-
             var createWorkerRequest = TestHelpers.CreateWorkerRequest(firstName: "");
 
             var response = _workerController.CreateWorker(createWorkerRequest) as BadRequestObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(400);
-            response.Value.Should().Be("First name must be provided");
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("First name must be provided");
         }
 
         [Test]
@@ -75,13 +65,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(422);
-            response.Value.Should().Be(errorMessage);
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
         }
 
         [Test]
@@ -93,12 +79,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
 
             _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(204);
+            response?.StatusCode.Should().Be(204);
         }
 
         [Test]
@@ -108,12 +90,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(400);
+            response?.StatusCode.Should().Be(400);
         }
 
         [Test]
@@ -126,13 +104,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(422);
-            response.Value.Should().Be(errorMessage);
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
         }
 
         [Test]
@@ -145,12 +119,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _workerController.GetWorkers(request) as OkObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
+            response?.StatusCode.Should().Be(200);
 
-            var responseValue = response.Value as List<WorkerResponse>;
+            var responseValue = response?.Value as List<WorkerResponse>;
 
             responseValue.Should().BeOfType<List<WorkerResponse>>();
-            responseValue.Count.Should().Be(workersList.Count);
+            responseValue?.Count.Should().Be(workersList.Count);
         }
 
         [Test]
@@ -162,7 +136,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.GetWorkers(request) as NotFoundResult;
 
-            response.StatusCode.Should().Be(404);
+            response?.StatusCode.Should().Be(404);
         }
     }
 }

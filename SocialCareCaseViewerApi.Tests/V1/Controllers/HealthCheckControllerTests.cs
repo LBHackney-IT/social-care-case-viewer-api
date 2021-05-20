@@ -12,7 +12,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private HealthCheckController _classUnderTest;
 
-
         [SetUp]
         public void SetUp()
         {
@@ -26,8 +25,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.HealthCheck() as OkObjectResult;
 
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(expected);
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(expected);
         }
 
         [Test]
