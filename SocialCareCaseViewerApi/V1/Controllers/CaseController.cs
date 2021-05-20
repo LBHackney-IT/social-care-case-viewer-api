@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find specific case by unique Record ID produced by MongoDB
+        /// Find a case by unique Record ID
         /// </summary>
         /// <response code="200">Success. Returns case related to the specified ID</response>
         /// <response code="404">No cases found for the specified ID or officer email</response>
@@ -83,10 +83,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="201">Record successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem generating a token.</response>
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [HttpPost]
-        public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request)
+        public async Task<IActionResult> CreateCaseRecord([FromBody] CreateCaseNoteRequest request)
         {
             var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
