@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bogus;
 using FluentAssertions;
@@ -25,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             {
                 (TestHelpers.CreateTeamRequest(name: ""), "Team name must be provided"),
                 (TestHelpers.CreateTeamRequest(name: _faker.Random.String2(201)), "Team name has a maximum length of 200 characters"),
-                (TestHelpers.CreateTeamRequest(context: ""), "Context flag must be provided\nContext flag must be 'A' or 'C'"),
+                (TestHelpers.CreateTeamRequest(context: ""), $"Context flag must be provided{Environment.NewLine}Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateTeamRequest(context: "B"), "Context flag must be 'A' or 'C'"),
             };
 
