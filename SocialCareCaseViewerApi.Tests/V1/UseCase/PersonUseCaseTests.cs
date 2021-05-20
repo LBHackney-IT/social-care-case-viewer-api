@@ -78,8 +78,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeOfType<GetPersonResponse>();
         }
 
-
-
         [Test]
         public void ExecutePatchCallsDatabaseGateway()
         {

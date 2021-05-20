@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private AllocationsUseCase _allocationsUseCase;
-        private Fixture _fixture = new Fixture();
+        private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -60,8 +60,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteReturnsTheResponse()
         {
-            var stubbedRequest = _fixture.Create<CreateAllocationRequest>();
-
             var responseObject = new CreateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
 
 
