@@ -637,8 +637,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Restricted.Should().Be("N");
         }
 
-        #region Warning Notes
-
         [Test]
         public void PostWarningNoteShouldInsertIntoTheDatabase()
         {
@@ -658,35 +656,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             insertedRecord.Should().NotBeNull();
 
-            insertedRecord.PersonId.Should().Be(request.PersonId);
-            insertedRecord.Status.Should().Be("open");
+            insertedRecord?.PersonId.Should().Be(request.PersonId);
+            insertedRecord?.Status.Should().Be("open");
 
-            insertedRecord.StartDate.Should().Be(request.StartDate);
-            insertedRecord.EndDate.Should().Be(request.EndDate);
+            insertedRecord?.StartDate.Should().Be(request.StartDate);
+            insertedRecord?.EndDate.Should().Be(request.EndDate);
 
-            insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
-            insertedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
+            insertedRecord?.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord?.NextReviewDate.Should().Be(request.NextReviewDate);
 
-            insertedRecord.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
-            insertedRecord.DisclosedDetails.Should().Be(request.DisclosedDetails);
-            insertedRecord.DisclosedDate.Should().Be(request.DisclosedDate);
-            insertedRecord.DisclosedHow.Should().Be(request.DisclosedHow);
+            insertedRecord?.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
+            insertedRecord?.DisclosedDetails.Should().Be(request.DisclosedDetails);
+            insertedRecord?.DisclosedDate.Should().Be(request.DisclosedDate);
+            insertedRecord?.DisclosedHow.Should().Be(request.DisclosedHow);
 
-            insertedRecord.Notes.Should().Be(request.Notes);
-            insertedRecord.NoteType.Should().Be(request.NoteType);
-            insertedRecord.WarningNarrative.Should().Be(request.WarningNarrative);
+            insertedRecord?.Notes.Should().Be(request.Notes);
+            insertedRecord?.NoteType.Should().Be(request.NoteType);
+            insertedRecord?.WarningNarrative.Should().Be(request.WarningNarrative);
 
-            insertedRecord.ManagerName.Should().Be(request.ManagerName);
-            insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+            insertedRecord?.ManagerName.Should().Be(request.ManagerName);
+            insertedRecord?.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
 
-            insertedRecord.CreatedBy.Should().Be(request.CreatedBy);
+            insertedRecord?.CreatedBy.Should().Be(request.CreatedBy);
 
             //audit properties
-            insertedRecord.CreatedAt.Should().NotBeNull();
-            insertedRecord.CreatedAt.Should().NotBe(DateTime.MinValue);
+            insertedRecord?.CreatedAt.Should().NotBeNull();
+            insertedRecord?.CreatedAt.Should().NotBe(DateTime.MinValue);
 
-            insertedRecord.LastModifiedAt.Should().BeNull();
-            insertedRecord.LastModifiedBy.Should().BeNull();
+            insertedRecord?.LastModifiedAt.Should().BeNull();
+            insertedRecord?.LastModifiedBy.Should().BeNull();
         }
 
         [Test]
@@ -759,36 +757,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.SaveChanges();
 
-            var response = _classUnderTest.GetWarningNotes(testPersonId);
+            var response = _classUnderTest.GetWarningNotes(testPersonId).ToList();
             var retrievedWarningNote = response.FirstOrDefault();
 
             response.Should().ContainSingle();
 
-            retrievedWarningNote.Id.Should().Be(warningNote.Id);
-            retrievedWarningNote.Status.Should().Be("open");
+            retrievedWarningNote?.Id.Should().Be(warningNote.Id);
+            retrievedWarningNote?.Status.Should().Be("open");
 
-            retrievedWarningNote.PersonId.Should().Be(warningNote.PersonId);
+            retrievedWarningNote?.PersonId.Should().Be(warningNote.PersonId);
 
-            retrievedWarningNote.WarningNarrative.Should().Be(warningNote.WarningNarrative);
+            retrievedWarningNote?.WarningNarrative.Should().Be(warningNote.WarningNarrative);
 
-            retrievedWarningNote.StartDate.Should().Be(warningNote.StartDate);
-            retrievedWarningNote.EndDate.Should().Be(warningNote.EndDate);
+            retrievedWarningNote?.StartDate.Should().Be(warningNote.StartDate);
+            retrievedWarningNote?.EndDate.Should().Be(warningNote.EndDate);
 
-            retrievedWarningNote.ReviewDate.Should().Be(warningNote.ReviewDate);
-            retrievedWarningNote.NextReviewDate.Should().Be(warningNote.NextReviewDate);
+            retrievedWarningNote?.ReviewDate.Should().Be(warningNote.ReviewDate);
+            retrievedWarningNote?.NextReviewDate.Should().Be(warningNote.NextReviewDate);
 
-            retrievedWarningNote.DisclosedWithIndividual.Should().Be(warningNote.DisclosedWithIndividual);
-            retrievedWarningNote.DisclosedDetails.Should().Be(warningNote.DisclosedDetails);
-            retrievedWarningNote.DisclosedDate.Should().Be(warningNote.DisclosedDate);
-            retrievedWarningNote.DisclosedHow.Should().Be(warningNote.DisclosedHow);
+            retrievedWarningNote?.DisclosedWithIndividual.Should().Be(warningNote.DisclosedWithIndividual);
+            retrievedWarningNote?.DisclosedDetails.Should().Be(warningNote.DisclosedDetails);
+            retrievedWarningNote?.DisclosedDate.Should().Be(warningNote.DisclosedDate);
+            retrievedWarningNote?.DisclosedHow.Should().Be(warningNote.DisclosedHow);
 
-            retrievedWarningNote.Notes.Should().Be(warningNote.Notes);
-            retrievedWarningNote.NoteType.Should().Be(warningNote.NoteType);
+            retrievedWarningNote?.Notes.Should().Be(warningNote.Notes);
+            retrievedWarningNote?.NoteType.Should().Be(warningNote.NoteType);
 
-            retrievedWarningNote.ManagerName.Should().Be(warningNote.ManagerName);
-            retrievedWarningNote.DiscussedWithManagerDate.Should().Be(warningNote.DiscussedWithManagerDate);
+            retrievedWarningNote?.ManagerName.Should().Be(warningNote.ManagerName);
+            retrievedWarningNote?.DiscussedWithManagerDate.Should().Be(warningNote.DiscussedWithManagerDate);
 
-            retrievedWarningNote.CreatedBy.Should().Be(warningNote.CreatedBy);
+            retrievedWarningNote?.CreatedBy.Should().Be(warningNote.CreatedBy);
         }
 
         [Test]
@@ -806,9 +804,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.WarningNotes.Add(differentWarningNote);
             DatabaseContext.SaveChanges();
 
-            var response = _classUnderTest.GetWarningNotes(testPersonId);
+            var response = _classUnderTest.GetWarningNotes(testPersonId).ToList();
 
-            response.Count().Should().Be(2);
+            response.Count.Should().Be(2);
             response.Should().ContainEquivalentOf(firstWarningNote);
             response.Should().ContainEquivalentOf(secondWarningNote);
             response.Should().NotContain(differentWarningNote);
@@ -894,9 +892,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var (request, person, worker, warningNote) =
                 TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
-            //clone the stub to compare the values later
-            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
-
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WarningNotes.Add(warningNote);
@@ -927,9 +922,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var (request, person, worker, warningNote) =
                 TestHelpers.CreatePatchWarningNoteRequest(startingStatus: "closed", requestStatus: "closed");
-
-            //clone the stub to compare the values later
-            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
 
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
@@ -984,9 +976,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var (request, person, worker, warningNote) = TestHelpers.CreatePatchWarningNoteRequest();
 
-            //clone the stub to compare the values later
-            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
-
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WarningNotes.Add(warningNote);
@@ -998,13 +987,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var insertedRecord = query.FirstOrDefault(
                 x => x.WarningNoteId == request.WarningNoteId);
 
-            insertedRecord.WarningNoteId.Should().Be(request.WarningNoteId);
-            insertedRecord.ReviewDate.Should().Be(request.ReviewDate);
-            insertedRecord.Notes.Should().Be(request.ReviewNotes);
-            insertedRecord.ManagerName.Should().Be(request.ManagerName);
-            insertedRecord.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
-            insertedRecord.CreatedBy.Should().Be(request.ReviewedBy);
-            insertedRecord.LastModifiedBy.Should().Be(request.ReviewedBy);
+            insertedRecord?.WarningNoteId.Should().Be(request.WarningNoteId);
+            insertedRecord?.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord?.Notes.Should().Be(request.ReviewNotes);
+            insertedRecord?.ManagerName.Should().Be(request.ManagerName);
+            insertedRecord?.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
+            insertedRecord?.CreatedBy.Should().Be(request.ReviewedBy);
+            insertedRecord?.LastModifiedBy.Should().Be(request.ReviewedBy);
         }
 
         [Test]
@@ -1031,7 +1020,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result["form_name_overall"].Should().Be("API_WarningNote");
             result["form_name"].Should().Be("Warning Note Reviewed");
             result["worker_email"].Should().Be(request.ReviewedBy);
-
         }
 
         [Test]
@@ -1058,7 +1046,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result["form_name_overall"].Should().Be("API_WarningNote");
             result["form_name"].Should().Be("Warning Note Ended");
             result["worker_email"].Should().Be(request.ReviewedBy);
-
         }
 
         [Test]
@@ -1148,7 +1135,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.WarningNoteReviews.Should().ContainEquivalentOf(review);
             response.WarningNoteReviews.Should().NotContain(differentReview);
         }
-        #endregion
 
         private Worker SaveWorkerToDatabase(Worker worker)
         {
@@ -1242,7 +1228,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdatePersonUpdatesTheCurrentDisplayAddressToBeHistrocalAddress()
+        public void UpdatePersonUpdatesTheCurrentDisplayAddressToBeHistoricalAddress()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
@@ -1261,7 +1247,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdatePersonDoesntUpdateCurrentDisplayAddressIfAddressHasntChanged()
+        public void UpdatePersonDoesntUpdateCurrentDisplayAddressIfAddressHasNotChanged()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
