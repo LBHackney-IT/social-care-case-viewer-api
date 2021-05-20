@@ -7,7 +7,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.UseCase;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -16,7 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private CaseController _caseController;
         private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
-
         private Fixture _fixture;
 
         [SetUp]
@@ -24,7 +23,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _caseController = new CaseController(_mockProcessDataUseCase.Object);
-
             _fixture = new Fixture();
         }
 
