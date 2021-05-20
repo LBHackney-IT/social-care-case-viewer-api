@@ -9,22 +9,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     public class ListCaseNotesRequestTests
     {
         private ListCaseNotesRequest _request;
-        private Faker _faker;
 
         [SetUp]
         public void SetUp()
         {
             _request = new ListCaseNotesRequest();
-            _faker = new Faker();
         }
 
-        [Test]
-        public void RequestHasPersonId()
-        {
-            Assert.IsNull(_request.Id);
-        }
-
-        #region Model validation
         [Test]
         public void ValidationFailsIfPersonIdIsNotProvided()
         {
@@ -34,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationSucceeedsWhenValidPersonIdIsProvided()
+        public void ValidationSucceedsWhenValidPersonIdIsProvided()
         {
             _request.Id = "Id123";
 
@@ -42,6 +33,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             Assert.AreEqual(0, errors.Count);
         }
-        #endregion
     }
 }

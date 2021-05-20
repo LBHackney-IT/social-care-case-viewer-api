@@ -18,17 +18,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasRecordId()
-        {
-            _getCaseByIdRequest.Id.Should().Be(null);
-        }
-
-        #region Model validation
-        [Test]
         public void ModelValidationFailsIfRecordIdIsNotProvided()
         {
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
-            errors.FirstOrDefault().ToString().Should().Be("The Id field is required.");
+            errors.FirstOrDefault()?.ToString().Should().Be("The Id field is required.");
             errors.Should().Contain(x => x.ErrorMessage.Contains("The Id field is required."));
         }
 
@@ -55,6 +48,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var errors = ValidationHelper.ValidateModel(_getCaseByIdRequest);
             errors.Should().BeEmpty();
         }
-        #endregion
     }
 }

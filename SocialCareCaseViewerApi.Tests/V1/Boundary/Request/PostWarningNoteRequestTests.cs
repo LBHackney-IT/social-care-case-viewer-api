@@ -11,7 +11,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class PostWarningNoteRequestTests
     {
-        private PostWarningNoteRequest _classUnderTest;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -19,96 +18,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [SetUp]
         public void SetUp()
         {
-            _classUnderTest = new PostWarningNoteRequest();
             _fixture = new Fixture();
             _faker = new Faker();
         }
 
-        [Test]
-        public void RequestHasPersonId()
-        {
-            _classUnderTest.PersonId.Should().Be(0);
-        }
-
-        [Test]
-        public void RequestHasStartDate()
-        {
-            _classUnderTest.StartDate.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasReviewDate()
-        {
-            _classUnderTest.ReviewDate.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasEndDate()
-        {
-            _classUnderTest.EndDate.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasDisclosedWithIndividual()
-        {
-            _classUnderTest.DisclosedWithIndividual.Should().Be(false);
-        }
-
-        [Test]
-        public void RequestHasDisclosedDetails()
-        {
-            _classUnderTest.DisclosedDetails.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasNotes()
-        {
-            _classUnderTest.Notes.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasNoteType()
-        {
-            _classUnderTest.NoteType.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasDisclosedDate()
-        {
-            _classUnderTest.DisclosedDate.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasDisclosedHow()
-        {
-            _classUnderTest.DisclosedHow.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasWarningNarrative()
-        {
-            _classUnderTest.WarningNarrative.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasManagerName()
-        {
-            _classUnderTest.ManagerName.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasDiscussedWithManagerDate()
-        {
-            _classUnderTest.DiscussedWithManagerDate.Should().Be(null);
-        }
-
-        [Test]
-        public void RequestHasCreatedBy()
-        {
-            _classUnderTest.CreatedBy.Should().Be(null);
-        }
-
-        #region Model validation
         [Test]
         public void ValidationFailsIfPersonIdIsNotBiggerThan0()
         {
@@ -283,7 +196,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             error.Should().Contain(x => x.ErrorMessage.Contains("The CreatedBy field is not a valid e-mail address"));
 
         }
-        #endregion
 
         private PostWarningNoteRequest GetValidPostWarningNoteRequest()
         {
