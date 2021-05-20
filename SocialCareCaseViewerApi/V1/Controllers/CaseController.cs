@@ -17,11 +17,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class CaseController : BaseController
     {
-        private readonly IProcessDataUseCase _processDataUseCase;
+        private readonly ICaseRecordsUseCase _caseRecordsUseCase;
 
-        public CaseController(IProcessDataUseCase processDataUseCase)
+        public CaseController(ICaseRecordsUseCase caseRecordsUseCase)
         {
-            _processDataUseCase = processDataUseCase;
+            _caseRecordsUseCase = caseRecordsUseCase;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                     dateValidationError += " Invalid end date";
                 }
 
-                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
+                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_caseRecordsUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_processDataUseCase.Execute(request.Id));
+                return Ok(_caseRecordsUseCase.Execute(request.Id));
             }
             catch (DocumentNotFoundException e)
             {
@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCaseRecord([FromBody] CreateCaseNoteRequest request)
         {
-            var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
+            var id = await _caseRecordsUseCase.Execute(request).ConfigureAwait(false);
             return StatusCode(201, new { _id = id });
         }
     }

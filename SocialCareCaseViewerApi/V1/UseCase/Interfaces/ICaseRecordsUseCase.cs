@@ -5,7 +5,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IProcessDataUseCase
+    public interface ICaseRecordsUseCase
     {
         CareCaseDataList Execute(ListCasesRequest? request);
 

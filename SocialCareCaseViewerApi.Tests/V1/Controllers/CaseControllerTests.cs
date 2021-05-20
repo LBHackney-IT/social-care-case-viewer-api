@@ -15,13 +15,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     public class CaseControllerTests
     {
         private CaseController _caseController;
-        private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
+        private Mock<ICaseRecordsUseCase> _mockProcessDataUseCase;
         private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
-            _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
+            _mockProcessDataUseCase = new Mock<ICaseRecordsUseCase>();
             _caseController = new CaseController(_mockProcessDataUseCase.Object);
             _fixture = new Fixture();
         }

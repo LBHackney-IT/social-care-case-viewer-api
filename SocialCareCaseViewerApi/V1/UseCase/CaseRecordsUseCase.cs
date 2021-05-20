@@ -9,12 +9,12 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class ProcessDataUseCase : IProcessDataUseCase
+    public class CaseRecordsUseCase : ICaseRecordsUseCase
     {
         private readonly IProcessDataGateway _processDataGateway;
         private readonly IDatabaseGateway _databaseGateway;
 
-        public ProcessDataUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway)
+        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway)
         {
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
