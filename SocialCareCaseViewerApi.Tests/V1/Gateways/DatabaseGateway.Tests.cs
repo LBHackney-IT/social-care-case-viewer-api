@@ -722,31 +722,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.CaseNoteId.Should().Be("CaseNoteId");
         }
 
-        // [Test]
-        // public void PostWarningNoteThrowAnExceptionIfTheCaseNoteIsNotInserted()
-        // {
-        //     Person person = new Person()
-        //     {
-        //         FullName = "full name"
-        //     };
-        //     DatabaseContext.Persons.Add(person);
-        //     DatabaseContext.SaveChanges();
-
-        //     var request = _fixture.Build<PostWarningNoteRequest>()
-        //                     .With(x => x.PersonId, person.Id)
-        //                     .Create();
-
-        //     _mockProcessDataGateway.Setup(
-        //             x => x.InsertCaseNoteDocument(
-        //                 It.IsAny<CaseNotesDocument>()))
-        //                 .Throws(new Exception("error message"));
-
-        //     Action act = () => _classUnderTest.PostWarningNote(request);
-
-        //     act.Should().Throw<PostWarningNoteException>()
-        //                 .WithMessage("Unable to create a case note. Allocation not created: error message");
-        // }
-
         [Test]
         public void GetWarningNotesReturnsTheExpectedWarningNote()
         {
