@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;

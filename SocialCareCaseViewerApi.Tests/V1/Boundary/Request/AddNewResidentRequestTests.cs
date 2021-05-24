@@ -13,7 +13,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class AddNewResidentRequestTests
     {
-        private AddNewResidentRequest _request;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -22,7 +21,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             _fixture = new Fixture();
             _faker = new Faker();
-            _request = new AddNewResidentRequest();
         }
 
         private AddNewResidentRequest GetValidRequest()

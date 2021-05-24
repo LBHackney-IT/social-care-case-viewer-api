@@ -16,19 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
         }
 
         [Test]
-        public void PhoneNumberHasNumber()
-        {
-            Assert.IsNull(_phoneNumber.Number);
-        }
-
-        [Test]
-        public void PhoneNumberHasType()
-        {
-            Assert.IsNull(_phoneNumber.Type);
-        }
-
-        #region model validation
-        [Test]
         [TestCase("077 1234 5678")]
         [TestCase("string")]
         public void ValidationFailsIfPhoneNumberContainsSpacesOrCharactersOtherThanNumbers(string testNumber)
@@ -50,6 +37,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Domain
 
             Assert.AreEqual(0, errors.Count);
         }
-        #endregion
     }
 }

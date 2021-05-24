@@ -10,13 +10,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class CreateCaseNoteRequestTests
     {
-        private CreateCaseNoteRequest _request;
         private Faker _faker;
 
         [SetUp]
         public void SetUp()
         {
-            _request = new CreateCaseNoteRequest();
             _faker = new Faker();
         }
 
@@ -25,7 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             return new CreateCaseNoteRequest()
             {
                 FormName = "Form name",
-                FormNameOverall = "Form name overal",
+                FormNameOverall = "Form name overall",
                 FirstName = _faker.Person.FirstName,
                 LastName = _faker.Person.LastName,
                 WorkerEmail = _faker.Internet.Email(),
@@ -36,56 +34,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 CaseFormData = _faker.Random.String()
             };
         }
-
-        [Test]
-        public void RequestHasFormName()
-        {
-            Assert.IsNull(_request.FormName);
-        }
-
-        [Test]
-        public void RequestHasFormNameOverall()
-        {
-            Assert.IsNull(_request.FormNameOverall);
-        }
-        [Test]
-        public void RequestHasFirstName()
-        {
-            Assert.IsNull(_request.FirstName);
-        }
-        [Test]
-        public void RequestHasLastName()
-        {
-            Assert.IsNull(_request.LastName);
-        }
-        [Test]
-        public void RequestHasWorkerEmail()
-        {
-            Assert.IsNull(_request.WorkerEmail);
-        }
-        [Test]
-        public void RequestHasDateOfBirth()
-        {
-            Assert.IsNull(_request.DateOfBirth);
-        }
-        [Test]
-        public void RequestHasMosaicId()
-        {
-            Assert.AreEqual(0, _request.PersonId);
-        }
-        [Test]
-        public void RequestHasContextFlag()
-        {
-            Assert.IsNull(_request.ContextFlag);
-        }
-
-        [Test]
-        public void RequestHasCaseFormData()
-        {
-            Assert.IsNull(_request.CaseFormData);
-        }
-
-        #region model validation
 
         [Test]
         public void ValidationFailsIfFormNameIsNotProvided()
@@ -99,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfFormNameOveralIsNotProvided()
+        public void ValidationFailsIfFormNameOverallIsNotProvided()
         {
             var request = GetValidRequest();
             request.FormNameOverall = null;
@@ -219,7 +167,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             Assert.AreEqual(1, errors.Count);
         }
-
-        #endregion
     }
 }

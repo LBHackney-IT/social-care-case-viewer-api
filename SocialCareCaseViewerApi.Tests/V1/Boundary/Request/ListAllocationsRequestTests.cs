@@ -17,19 +17,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             _request = new ListAllocationsRequest();
         }
 
-        [Test]
-        public void RequestHasMosaicId()
-        {
-            Assert.AreEqual(0, _request.MosaicId);
-        }
 
-        [Test]
-        public void RequestHasWorkerId()
-        {
-            Assert.AreEqual(0, _request.WorkerId);
-        }
-
-        #region Model validation
         [Test]
         public void ValidationFailsWhenMosaicIdAndWorkerIdAreNotProvided()
         {
@@ -50,6 +38,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             Assert.AreEqual(errors.Count, 1);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide only mosaic_id or worker_id, but not both")));
         }
-        #endregion
     }
 }

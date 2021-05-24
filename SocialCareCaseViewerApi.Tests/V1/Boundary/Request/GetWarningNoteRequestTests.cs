@@ -17,13 +17,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void GetWarningNoteRequestShouldHavePersonId()
-        {
-            _classUnderTest.PersonId.Should().Be(0);
-        }
-
-        #region Model validation
-        [Test]
         public void ValidationFailsWhenPersonIdIsNotProvided()
         {
             var errors = ValidationHelper.ValidateModel(_classUnderTest);
@@ -40,6 +33,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             errors.Count.Should().Be(0);
         }
-        #endregion
     }
 }

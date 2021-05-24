@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
@@ -16,7 +15,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {

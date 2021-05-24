@@ -79,14 +79,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var firstTeamResponse = result.Teams.FirstOrDefault();
 
-            if (firstTeamResponse == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            firstTeamResponse.Id.Should().Be(team.Id);
-            firstTeamResponse.Context.Should().BeEquivalentTo(team.Context);
-            firstTeamResponse.Name.Should().BeEquivalentTo(team.Name);
+            firstTeamResponse?.Id.Should().Be(team.Id);
+            firstTeamResponse?.Context.Should().BeEquivalentTo(team.Context);
+            firstTeamResponse?.Name.Should().BeEquivalentTo(team.Name);
         }
 
 

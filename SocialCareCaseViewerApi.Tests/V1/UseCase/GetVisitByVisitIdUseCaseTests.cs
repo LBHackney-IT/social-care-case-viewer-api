@@ -1,4 +1,3 @@
-using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;

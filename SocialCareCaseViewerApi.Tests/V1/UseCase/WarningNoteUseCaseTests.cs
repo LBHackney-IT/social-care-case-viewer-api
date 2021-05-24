@@ -34,8 +34,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecutePostReturnsTheResponse()
         {
-            var request = _fixture.Create<PostWarningNoteRequest>();
-
             var responseObject = _fixture.Create<PostWarningNoteResponse>();
 
             _mockDatabaseGateway
@@ -69,7 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway
                 .Setup(x => x.PostWarningNote(
-                    It.Is<PostWarningNoteRequest>(x => x == request)))
+                    It.Is<PostWarningNoteRequest>(r => r == request)))
                 .Returns(expectedResponse);
 
             var response = _classUnderTest.ExecutePost(request);

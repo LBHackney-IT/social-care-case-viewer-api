@@ -16,13 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void RequestHasId()
-        {
-            Assert.IsNull(_request.Id);
-        }
-
-        #region Model validation
-        [Test]
         public void ValidationFailsIfIdIsNotProvided()
         {
             var errors = ValidationHelper.ValidateModel(_request);
@@ -31,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationSucceeedsWhenValidPersonIdIsProvided()
+        public void ValidationSucceedsWhenValidPersonIdIsProvided()
         {
             _request.Id = "Id123";
 
@@ -39,6 +32,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             Assert.AreEqual(0, errors.Count);
         }
-        #endregion
     }
 }

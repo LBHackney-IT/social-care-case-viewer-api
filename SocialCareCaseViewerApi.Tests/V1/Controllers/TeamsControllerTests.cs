@@ -34,13 +34,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.GetTeamById(team.Id) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
 
         [Test]
@@ -48,12 +44,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _teamController.GetTeamById(1) as NotFoundResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
+            response?.StatusCode.Should().Be(404);
         }
 
         [Test]
@@ -64,13 +56,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.GetTeamByName(team.Name) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
 
         [Test]
@@ -78,12 +66,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _teamController.GetTeamByName("fake team name") as NotFoundResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
+            response?.StatusCode.Should().Be(404);
         }
 
         [Test]
@@ -97,13 +81,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
             var response = _teamController.GetTeams(request) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(teamsList);
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(teamsList);
         }
 
         [Test]
@@ -115,32 +95,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 Teams = new List<TeamResponse>()
             };
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
-            var response = _teamController.GetTeams(request) as OkObjectResult;
+            var response = _teamController.GetTeams(request) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-            response.StatusCode.Should().Be(200);
-            ((ListTeamsResponse) response.Value).Teams.Should().BeEmpty();
+            response?.StatusCode.Should().Be(200);
+            ((ListTeamsResponse) response?.Value)?.Teams.Should().BeEmpty();
         }
 
         [Test]
         public void GetTeamsReturns400WhenValidationResultsIsNotValid()
         {
-
             var getTeamsRequest = TestHelpers.CreateGetTeamsRequest(contextFlag: "invalid");
 
             var response = _teamController.GetTeams(getTeamsRequest) as BadRequestObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(400);
-            response.Value.Should().Be($"Context flag must be 1 character in length{Environment.NewLine}Context flag must be 'A' or 'C'");
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be($"Context flag must be 1 character in length{Environment.NewLine}Context flag must be 'A' or 'C'");
         }
 
         [Test]
@@ -153,31 +124,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 
             _teamsUseCase.Verify(x => x.ExecutePost(createTeamRequest), Times.Once);
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(201);
-            response.Value.Should().BeEquivalentTo(team);
+            response?.StatusCode.Should().Be(201);
+            response?.Value.Should().BeEquivalentTo(team);
         }
 
         [Test]
         public void CreateTeamReturns400WhenValidationResultsIsNotValid()
         {
-
             var createTeamRequest = TestHelpers.CreateTeamRequest(name: "");
 
             var response = _teamController.CreateTeam(createTeamRequest) as BadRequestObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
-
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(400);
-            response.Value.Should().Be("Team name must be provided");
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Team name must be provided");
         }
 
         [Test]
@@ -190,13 +151,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 
-            if (response == null)
-            {
-                throw new NullReferenceException();
-            }
             response.Should().NotBeNull();
-            response.StatusCode.Should().Be(422);
-            response.Value.Should().Be(errorMessage);
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
         }
     }
 }
