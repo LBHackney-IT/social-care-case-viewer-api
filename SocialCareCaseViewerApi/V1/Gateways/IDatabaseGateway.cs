@@ -34,5 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         Domain.WarningNote GetWarningNoteById(long warningNoteId);
         Person GetPersonDetailsById(long id);
         void UpdatePerson(UpdatePersonRequest request);
+        List<Person> GetPersonsByListOfIds(List<long> ids);
+        Person GetPersonByMosaicId(long mosaicId);
     }
 }
