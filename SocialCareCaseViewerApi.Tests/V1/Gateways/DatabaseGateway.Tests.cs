@@ -1423,6 +1423,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetPersonsByListOfIdsReturnsEmptyListWhenNoMatchingPersonsFound()
+        {
+            List<long> personIds = _fixture.Create<List<long>>();
+
+            var result = _classUnderTest.GetPersonsByListOfIds(personIds);
+
+            result.Should().BeEmpty();
+        }
+
+        [Test]
         public void GetPersonByMosaicIdReturnsCorrectPersonRecord()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
