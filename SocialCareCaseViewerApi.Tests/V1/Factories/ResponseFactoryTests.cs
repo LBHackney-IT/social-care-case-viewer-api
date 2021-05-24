@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -426,6 +427,75 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             domainTeam.ToResponse().Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapPersonRecordsAndRelationshipsToRelatedPersonsList()
+        {
+            var relatedPersonOne = TestHelpers.CreatePerson();
+            var relatedPersonTwo = TestHelpers.CreatePerson();
+
+            var personList = new List<Person>() {
+                TestHelpers.CreatePerson((int)relatedPersonOne.Id),
+                TestHelpers.CreatePerson((int)relatedPersonTwo.Id),
+                TestHelpers.CreatePerson(),
+                TestHelpers.CreatePerson()
+            };
+
+            var relationshipIds = new List<long>() { relatedPersonOne.Id, relatedPersonTwo.Id };
+
+            var expectedResult = personList
+                .Where(p => relationshipIds.Contains(p.Id))
+                .Select(x => new RelatedPerson()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName
+                }
+                ).ToList();
+
+            ResponseFactory.PersonsToRelatedPersonsList(personList, relationshipIds).Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void CanMapRelationshipsAndPersonRecordsToListRelationshipsResponse()
+        {
+            var person = TestHelpers.CreatePerson();
+
+            List<Person> children, others, parents, siblings;
+            Relationships relationships;
+
+            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationships(person.Id);
+
+            var expectedResult = new ListRelationshipsResponse()
+            {
+                PersonId = person.Id,
+                PersonalRelationships = new PersonalRelationships<RelatedPerson>()
+                {
+                    Children = AddRelatedPerson(children),
+                    Other = AddRelatedPerson(others),
+                    Parents = AddRelatedPerson(parents),
+                    Siblings = AddRelatedPerson(siblings)
+                }
+            };
+
+            List<Person> personRecords = new List<Person>();
+
+            personRecords.AddRange(children);
+            personRecords.AddRange(others);
+            personRecords.AddRange(parents);
+            personRecords.AddRange(siblings);
+
+            ResponseFactory.ToResponse(personRecords, relationships, personRecords.Select(x => x.Id).ToList(), person.Id).Should().BeEquivalentTo(expectedResult);
+        }
+        private static List<RelatedPerson> AddRelatedPerson(List<Person> persons)
+        {
+            return persons.Select(x => new RelatedPerson()
+            {
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName
+            }).ToList();
         }
     }
 }
