@@ -13,8 +13,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Infrastructure;
-using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
@@ -26,7 +24,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private SocialCareCaseViewerApiController _classUnderTest;
         private Mock<IGetAllUseCase> _mockGetAllUseCase;
         private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
-        private Mock<IProcessDataUseCase> _mockProcessDataUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
@@ -34,7 +31,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
         private Mock<IPersonUseCase> _mockPersonUseCase;
         private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
-
 
         private Fixture _fixture;
         private Faker _faker;
@@ -44,7 +40,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockGetAllUseCase = new Mock<IGetAllUseCase>();
             _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
-            _mockProcessDataUseCase = new Mock<IProcessDataUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
@@ -54,8 +49,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-            _mockProcessDataUseCase.Object, _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
+                    _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
             _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object, _mockRelationshipsUseCase.Object);
+
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -176,33 +172,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             result.Should().NotBeNull();
             result.StatusCode.Should().Be(404);
             result.Value.Should().Be("Person not found");
-        }
-
-        [Test]
-        public void ListCasesReturns200WhenSuccessful()
-        {
-            var careCaseDataList = _fixture.Create<CareCaseDataList>();
-            var listCasesRequest = new ListCasesRequest();
-
-            _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
-            var response = _classUnderTest.ListCases(listCasesRequest) as OkObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(careCaseDataList);
-        }
-
-        [Test]
-        public void ListCasesReturns404WhenNoCasesAreFound()
-        {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<ListCasesRequest>()))
-                .Throws(new DocumentNotFoundException("Document Not Found"));
-
-            var response = _classUnderTest.ListCases(new ListCasesRequest()) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
-            response.Value.Should().Be("Document Not Found");
         }
 
         #region Allocations
@@ -515,46 +484,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
         #endregion
 
-        #region case
-        [Test]
-        public void GetCaseByIdReturns200WhenSuccessful()
-        {
-            var stubbedCaseData = _fixture.Create<CareCaseData>();
-            var testRequest = _fixture.Create<GetCaseByIdRequest>();
 
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
-            var response = _classUnderTest.GetCaseByRecordId(testRequest) as OkObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(200);
-        }
-
-        [Test]
-        public void GetCaseByIdReturnsCareCaseDataWhenSuccessful()
-        {
-            var stubbedCaseData = _fixture.Create<CareCaseData>();
-            var testRequest = _fixture.Create<GetCaseByIdRequest>();
-
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
-            var response = _classUnderTest.GetCaseByRecordId(testRequest) as OkObjectResult;
-
-            response.Value.Should().BeEquivalentTo(stubbedCaseData);
-        }
-
-        [Test]
-        public void GetCaseByIdReturns404WhenNoCaseisFound()
-        {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()))
-                .Throws(new DocumentNotFoundException("Document Not Found"));
-            var testRequest = _fixture.Create<GetCaseByIdRequest>();
-
-            var response = _classUnderTest.GetCaseByRecordId(testRequest) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response.StatusCode.Should().Be(404);
-            response.Value.Should().Be("Document Not Found");
-        }
-        #endregion
 
         #region Visits
 

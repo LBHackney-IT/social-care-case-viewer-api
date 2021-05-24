@@ -1,14 +1,10 @@
-using System;
-using System.Globalization;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -23,7 +19,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     {
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;
-        private readonly IProcessDataUseCase _processDataUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
@@ -33,12 +28,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IRelationshipsUseCase _relationshipsUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
+            IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
             IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsUseCase relationshipsUseCase)
         {
             _getAllUseCase = getAllUseCase;
-            _processDataUseCase = processDataUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
             _caseNotesUseCase = caseNotesUseCase;
@@ -148,62 +142,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find cases by Mosaic ID or officer email
-        /// </summary>
-        /// <response code="200">Success. Returns cases related to the specified ID or officer email</response>
-        /// <response code="400">One or more dates are invalid or missing</response>
-        /// <response code="404">No cases found for the specified ID or officer email</response>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("cases")]
-        public IActionResult ListCases([FromQuery] ListCasesRequest request)
-        {
-            try
-            {
-                string dateValidationError = null;
-
-                if (!string.IsNullOrWhiteSpace(request.StartDate) && !DateTime.TryParseExact(request.StartDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
-                {
-                    dateValidationError += "Invalid start date";
-                }
-
-                if (!string.IsNullOrWhiteSpace(request.EndDate) && !DateTime.TryParseExact(request.EndDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
-                {
-                    dateValidationError += " Invalid end date";
-                }
-
-                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_processDataUseCase.Execute(request));
-            }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
-
-        /// <summary>
-        /// Find specific case by unique Record ID produced by MongoDB
-        /// </summary>
-        /// <response code="200">Success. Returns case related to the specified ID</response>
-        /// <response code="404">No cases found for the specified ID or officer email</response>
-        [ProducesResponseType(typeof(CareCaseData), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("cases/{id}")]
-        public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)
-        {
-            try
-            {
-                return Ok(_processDataUseCase.Execute(request.Id));
-            }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
-
-        /// <summary>
         /// Find allocations by Mosaic ID or officer email
         /// </summary>
         /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
@@ -279,21 +217,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-        }
-
-        /// <summary>
-        /// Create new case note record for mosaic client
-        /// </summary>
-        /// <response code="201">Record successfully inserted</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem generating a token.</response>
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-        [HttpPost]
-        [Route("cases")]
-        public async Task<IActionResult> CreateCaseNote([FromBody] CreateCaseNoteRequest request)
-        {
-            var id = await _processDataUseCase.Execute(request).ConfigureAwait(false);
-            return StatusCode(201, new { _id = id });
         }
 
         /// <summary>
