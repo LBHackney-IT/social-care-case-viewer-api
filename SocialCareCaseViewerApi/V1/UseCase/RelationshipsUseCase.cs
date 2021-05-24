@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
 
-            if(person == null)
+            if (person == null)
                 throw new GetRelationshipsException("Person not found");
 
             var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(request.PersonId);
@@ -33,13 +33,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             List<Person> personRecords = new List<Person>();
 
             if (relationships != null)
-            {          
+            {
                 if (relationships.PersonalRelationships?.Children?.Count > 0) personIds.AddRange(relationships.PersonalRelationships.Children);
                 if (relationships.PersonalRelationships?.Other?.Count > 0) personIds.AddRange(relationships.PersonalRelationships.Other);
                 if (relationships.PersonalRelationships?.Parents?.Count > 0) personIds.AddRange(relationships.PersonalRelationships.Parents);
                 if (relationships.PersonalRelationships?.Siblings?.Count > 0) personIds.AddRange(relationships.PersonalRelationships.Siblings);
 
-                if(personIds.Count > 0)
+                if (personIds.Count > 0)
                     personRecords = _databaseGateway.GetPersonsByListOfIds(personIds);
             }
 

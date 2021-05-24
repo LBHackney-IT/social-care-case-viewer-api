@@ -211,7 +211,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastModifiedAt = review.LastModifiedAt?.ToString("s"),
                 LastModifiedBy = review.LastModifiedBy
             };
-        }        
+        }
 
         public static ListRelationshipsResponse ToResponse(List<Person> personRecords, Relationships relationships, List<long> personIds, long personId)
         {

@@ -76,5 +76,5 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class GetRelationshipsException : Exception
     {
         public GetRelationshipsException(string message) : base(message) { }
-    } 
+    }
 }

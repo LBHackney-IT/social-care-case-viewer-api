@@ -170,7 +170,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             result.PersonalRelationships.Siblings.Count.Should().Be(2);
             result.PersonalRelationships.Siblings.Should().BeEquivalentTo(expectedResult.PersonalRelationships.Siblings);
-        }              
+        }
 
         [Test]
         public void ExecuteGetReturnsListRelationshipResponseWithEmptyListForRelationshipTypesThatDontHaveValues()

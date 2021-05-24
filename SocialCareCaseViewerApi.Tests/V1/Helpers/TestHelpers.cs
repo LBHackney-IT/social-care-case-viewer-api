@@ -107,7 +107,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
-        
+
         public static Worker CreateWorker(
             int? id = null,
             string? firstName = null,

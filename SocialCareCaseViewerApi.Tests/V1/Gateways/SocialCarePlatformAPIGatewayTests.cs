@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             const long personId = 123;
 
-            var relationships = TestHelpers.CreateRelationships(personId);                      
+            var relationships = TestHelpers.CreateRelationships(personId);
 
             var httpClient = CreateHttpClient(relationships);
 
@@ -147,7 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.PersonalRelationships.Parents.Count.Should().Be(relationships.PersonalRelationships.Parents.Count);
             response.PersonalRelationships.Parents.Should().BeEquivalentTo(relationships.PersonalRelationships.Parents);
             response.PersonalRelationships.Children.Should().NotBeNull();
-            response.PersonalRelationships.Children.Count.Should().Be(relationships.PersonalRelationships.Children  .Count);
+            response.PersonalRelationships.Children.Count.Should().Be(relationships.PersonalRelationships.Children.Count);
             response.PersonalRelationships.Children.Should().BeEquivalentTo(relationships.PersonalRelationships.Children);
             response.PersonalRelationships.Siblings.Should().NotBeNull();
             response.PersonalRelationships.Siblings.Count.Should().Be(relationships.PersonalRelationships.Siblings.Count);

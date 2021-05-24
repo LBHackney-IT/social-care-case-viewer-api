@@ -474,7 +474,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return Ok(_relationshipsUseCase.ExecuteGet(request));
             }
-            catch(GetRelationshipsException ex)
+            catch (GetRelationshipsException ex)
             {
                 return NotFound(ex.Message);
             }

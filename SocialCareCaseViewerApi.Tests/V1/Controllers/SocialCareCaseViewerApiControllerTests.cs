@@ -863,7 +863,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListRelationshipsReturn200WhenPersonIsFound()
         {
-            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() } ;
+            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() };
 
             _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsRequest>())).Returns(new ListRelationshipsResponse());
 
