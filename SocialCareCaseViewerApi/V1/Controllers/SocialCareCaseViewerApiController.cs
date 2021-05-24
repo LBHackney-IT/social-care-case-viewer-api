@@ -30,11 +30,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
         private readonly IPersonUseCase _personUseCase;
+        private readonly IRelationshipsUseCase _relationshipsUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IProcessDataUseCase processDataUseCase, IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsUseCase relationshipsUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _processDataUseCase = processDataUseCase;
@@ -45,6 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
             _personUseCase = personUseCase;
+            _relationshipsUseCase = relationshipsUseCase;
         }
 
         /// <summary>
@@ -453,6 +455,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (PatchWarningNoteException e)
             {
                 return NotFound(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get a list of relationships by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Successful request. Relationships returned</response>
+        /// <response code="404">Person not fouund</response>
+        /// <response code="500">There was a problem getting the relationships</response>
+        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("residents/{personId}/relationships")]
+        public IActionResult ListRelationships([FromQuery] ListRelationshipsRequest request)
+        {
+            try
+            {
+                return Ok(_relationshipsUseCase.ExecuteGet(request));
+            }
+            catch(GetRelationshipsException ex)
+            {
+                return NotFound(ex.Message);
             }
         }
     }
