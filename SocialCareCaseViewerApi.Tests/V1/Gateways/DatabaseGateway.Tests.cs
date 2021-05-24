@@ -1369,6 +1369,48 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result["is_imported"].Should().Be(false);
         }
 
+        [Test]
+        public void GetPersonsByListOfIdsReturnsCorrectPersonRecordsBasedOnGivenIds()
+        {
+            Person personOne = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            Person personTwo = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            Person personThree = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            var listOfPersonRecords = new List<Person>() { personOne, personTwo };
+
+            var result = _classUnderTest.GetPersonsByListOfIds(listOfPersonRecords.Select(x => x.Id).ToList());
+
+            result.Should().BeEquivalentTo(listOfPersonRecords);
+        }
+
+        [Test]
+        public void GetPersonsByListOfIdsReturnsEmptyListWhenNoMatchingPersonsFound()
+        {
+            List<long> personIds = _fixture.Create<List<long>>();
+
+            var result = _classUnderTest.GetPersonsByListOfIds(personIds);
+
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetPersonByMosaicIdReturnsCorrectPersonRecord()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+
+            var result = _classUnderTest.GetPersonByMosaicId(person.Id);
+
+            result.Should().BeEquivalentTo(person);
+        }
+
+        [Test]
+        public void GetPersonByMosaicIdReturnsNullWhenPersonNotFound()
+        {
+            var result = _classUnderTest.GetPersonByMosaicId(0L);
+
+            result.Should().BeNull();
+        }
+
         private Person SavePersonToDatabase(Person person)
         {
             DatabaseContext.Persons.Add(person);

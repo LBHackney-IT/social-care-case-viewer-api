@@ -109,8 +109,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _teamController.GetTeams(getTeamsRequest) as BadRequestObjectResult;
 
             response.Should().NotBeNull();
+
             response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be("Context flag must be 1 character in length\nContext flag must be 'A' or 'C'");
+            response?.Value.Should().Be($"Context flag must be 1 character in length{Environment.NewLine}Context flag must be 'A' or 'C'");
         }
 
         [Test]

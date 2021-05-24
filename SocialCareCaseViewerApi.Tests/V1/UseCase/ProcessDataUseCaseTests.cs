@@ -12,15 +12,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     {
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private ProcessDataUseCase _classUnderTest;
-        private readonly Fixture _fixture = new Fixture();
+        private CaseRecordsUseCase _classUnderTest;
+        private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _classUnderTest = new ProcessDataUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
+            _classUnderTest = new CaseRecordsUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateway.Object);
         }
 
         [Test]

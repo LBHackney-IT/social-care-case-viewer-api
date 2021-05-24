@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -422,6 +423,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<GetTeamsRequest>()
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
+        }
+
+        public static Relationships CreateRelationships(
+            long personId,
+            List<long>? childrenIds = null,
+            List<long>? parentsIds = null,
+            List<long>? siblingsIds = null,
+            List<long>? othersIds = null
+        )
+        {
+            return new Relationships()
+            {
+                PersonId = personId,
+                PersonalRelationships = new PersonalRelationships<long>()
+                {
+                    Children = childrenIds ?? new List<long>() { 1, 2 },
+                    Parents = parentsIds ?? new List<long>() { 3, 4 },
+                    Siblings = siblingsIds ?? new List<long>() { 5, 6 },
+                    Other = othersIds ?? new List<long>() { 7, 8 }
+                }
+            };
+        }
+
+        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, Relationships) CreatePersonsWithRelationships(long personId)
+        {
+            List<InfrastructurePerson> children = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
+            List<InfrastructurePerson> others = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
+            List<InfrastructurePerson> parents = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
+            List<InfrastructurePerson> siblings = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
+
+            Relationships relationships = CreateRelationships(
+                    personId: personId,
+                    childrenIds: children.Select(x => x.Id).ToList(),
+                    othersIds: others.Select(x => x.Id).ToList(),
+                    parentsIds: parents.Select(x => x.Id).ToList(),
+                    siblingsIds: siblings.Select(x => x.Id).ToList()
+                );
+
+            return (children, others, parents, siblings, relationships);
         }
     }
 }

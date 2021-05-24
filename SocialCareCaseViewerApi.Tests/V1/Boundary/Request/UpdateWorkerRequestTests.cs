@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateUpdateWorkersRequest(firstName: _faker.Random.String2(101)), "First name must be no longer than 100 characters"),
                 (TestHelpers.CreateUpdateWorkersRequest(lastName: ""), "Last name must be provided"),
                 (TestHelpers.CreateUpdateWorkersRequest(lastName: _faker.Random.String2(101)), "Last name must be no longer than 100 characters"),
-                (TestHelpers.CreateUpdateWorkersRequest(contextFlag: ""), "Context flag must be provided\nContext flag must be 'A' or 'C'"),
+                (TestHelpers.CreateUpdateWorkersRequest(contextFlag: ""), $"Context flag must be provided{Environment.NewLine}Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateUpdateWorkersRequest(contextFlag: _faker.Random.String2(2, "AC")), "Context flag must be no longer than 1 character"),
                 (TestHelpers.CreateUpdateWorkersRequest(contextFlag: "B"), "Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateUpdateWorkersRequest(role: ""), "Role must be provided"),

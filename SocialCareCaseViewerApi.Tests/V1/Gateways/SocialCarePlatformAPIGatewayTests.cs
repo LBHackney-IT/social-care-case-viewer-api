@@ -111,6 +111,48 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GivenHttpClientReturns404ThenGatewayReturnsNoRelationships()
+        {
+            const long personId = 123;
+            var httpClient = CreateHttpClient(HttpStatusCode.NotFound);
+
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId); });
+
+            exception.Message.Should().Be("404");
+        }
+
+        [Test]
+        public void GivenHttpClientReturnsValidResponseThenGatewayReturnsRelationships()
+        {
+            const long personId = 123;
+
+            var relationships = TestHelpers.CreateRelationships(personId);
+
+            var httpClient = CreateHttpClient(relationships);
+
+            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
+
+            var response = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId);
+
+            response.Should().NotBeNull();
+            response.PersonalRelationships.Should().NotBeNull();
+            response.PersonalRelationships.Other.Should().NotBeNull();
+            response.PersonalRelationships.Other.Count.Should().Be(relationships.PersonalRelationships.Other.Count);
+            response.PersonalRelationships.Other.Should().BeEquivalentTo(relationships.PersonalRelationships.Other);
+            response.PersonalRelationships.Parents.Should().NotBeNull();
+            response.PersonalRelationships.Parents.Count.Should().Be(relationships.PersonalRelationships.Parents.Count);
+            response.PersonalRelationships.Parents.Should().BeEquivalentTo(relationships.PersonalRelationships.Parents);
+            response.PersonalRelationships.Children.Should().NotBeNull();
+            response.PersonalRelationships.Children.Count.Should().Be(relationships.PersonalRelationships.Children.Count);
+            response.PersonalRelationships.Children.Should().BeEquivalentTo(relationships.PersonalRelationships.Children);
+            response.PersonalRelationships.Siblings.Should().NotBeNull();
+            response.PersonalRelationships.Siblings.Count.Should().Be(relationships.PersonalRelationships.Siblings.Count);
+            response.PersonalRelationships.Siblings.Should().BeEquivalentTo(relationships.PersonalRelationships.Siblings);
+        }
+
+        [Test]
         public void GivenHttpClientReturnsValidResponseButDeserialisationFailsThenGatewayThrowsSocialCarePlatformApiExceptionWithCorrectMessage()
         {
             const string invalidJson = "(^(^^*(^*__INVALID_JSON__(^*^(^*((*";
