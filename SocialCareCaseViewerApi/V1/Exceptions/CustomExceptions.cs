@@ -77,4 +77,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public DocumentNotFoundException(string message) : base(message) { }
     }
+
+    public class GetRelationshipsException : Exception
+    {
+        public GetRelationshipsException(string message) : base(message) { }
+    }
 }

@@ -425,9 +425,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.MosaicId;
         }
 
-        public Person GetPersonByMosaicId(int mosaicId)
+        public Person GetPersonByMosaicId(long mosaicId)
         {
-            return _databaseContext.Persons.Where(x => x.Id == mosaicId).FirstOrDefault();
+            return _databaseContext.Persons.FirstOrDefault(x => x.Id == mosaicId);
         }
 
         public string GetNCReferenceByPersonId(string personId)
@@ -873,6 +873,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
                 .FirstOrDefault(x => x.Id == id);
+        }
+        public List<Person> GetPersonsByListOfIds(List<long> ids)
+        {
+            return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
