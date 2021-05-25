@@ -65,12 +65,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No cases found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CareCaseData), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("id")]
-        public IActionResult GetCaseByRecordId([FromQuery] GetCaseByIdRequest request)
+        [Route("{caseId}")]
+        public IActionResult GetCaseByRecordId(string caseId)
         {
             try
             {
-                return Ok(_caseRecordsUseCase.Execute(request.Id));
+                return Ok(_caseRecordsUseCase.Execute(caseId));
             }
             catch (DocumentNotFoundException e)
             {
