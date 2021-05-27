@@ -44,7 +44,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 },
                 Property3 = new TestObjectForMongo
                 {
-                    Id = new Guid(), Property1 = "test-property-embedded", Property2 = null, Property3 = null
+                    Id = new Guid(),
+                    Property1 = "test-property-embedded",
+                    Property2 = null,
+                    Property3 = null
                 }
             };
         }
@@ -141,7 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
             if (_testObjectForMongo != null)
             {
-                _mongoGateway.InsertRecord("test-collection-name", new TestObjectForMongo {Property1 = _testObjectForMongo.Property1});
+                _mongoGateway.InsertRecord("test-collection-name", new TestObjectForMongo { Property1 = _testObjectForMongo.Property1 });
             }
 
             List<TestObjectForMongo>? retrievedObject = null;
@@ -201,7 +204,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             if (_testObjectForMongo != null)
             {
-                _mongoGateway.UpsertRecord("test-collection-name", _testObjectForMongo.Id,_testObjectForMongo);
+                _mongoGateway.UpsertRecord("test-collection-name", _testObjectForMongo.Id, _testObjectForMongo);
                 retrievedObject =
                     _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
             }
