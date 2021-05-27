@@ -10,10 +10,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly IMongoDatabase _mongoDatabase;
 
-        public MongoGateway()
+        public MongoGateway(string? connectionString = null, string? databaseName = null)
         {
-            var mongoClient = new MongoClient(new MongoUrl(Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
-            _mongoDatabase = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
+            var mongoClient = new MongoClient(new MongoUrl(connectionString ?? Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
+            _mongoDatabase = mongoClient.GetDatabase(databaseName ?? Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
+        }
+
+        public void DropCollection(string collectionName)
+        {
+            _mongoDatabase.DropCollection(collectionName);
         }
 
         public void InsertRecord<T>(string collectionName, T objToAdd)
@@ -29,10 +34,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             collection.ReplaceOne(filter, record, new ReplaceOptions { IsUpsert = true });
         }
 
-        public void DeleteRecord<T>(string collectionName, Guid id)
+        public void DeleteRecordById<T>(string collectionName, Guid id)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("Id", id);
+            var filter = Builders<T>.Filter.Eq("_id", id);
             collection.DeleteOne(filter);
         }
 
@@ -47,6 +52,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
             var filter = Builders<T>.Filter.Eq("Id", id);
             return collection.Find(filter).FirstOrDefault();
+        }
+
+        public IEnumerable<T1> LoadMultipleRecordsByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue)
+        {
+            var collection = _mongoDatabase.GetCollection<T1>(collectionName);
+            var filter = Builders<T1>.Filter.Eq(propertyName, propertyValue);
+            return collection.Find(filter).ToList();
         }
 
         public T1 LoadRecordByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue)
