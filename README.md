@@ -1,40 +1,29 @@
 # Social Care Case Viewer API
 
-The Social Care Service API provides the backend service for the [Social Care Front end](https://github.com/LBHackney-IT/lbh-social-care)
+The Social Care Service API provides [service API](http://playbook.hackney.gov.uk/API-Playbook/platform_api_vs_service_api#a-service-apis) capabilities for the [Social Care Frontend](https://github.com/LBHackney-IT/lbh-social-care) which is part of the Social Care system (see [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/tree/main) for more details).
 
-It is a part of the Social Care system (see [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/tree/main) for more details).
+![C4 Component Diagram](docs/component-diagram.svg)
 
-- [Social Care Case Viewer API](#social-care-case-viewer-api)
-  - [Documentation](#documentation)
-    - [C4 Component Diagram](#c4-component-diagram)
-    - [Swagger API](#swagger-api)
+## Table of contents
+
   - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Dockerised dependencies](#dockerised-dependencies)
     - [Installation](#installation)
-  - [Contributing](#contributing)
-  - [Common Processes](#common-processes)
+  - [Usage](#usage)
     - [Running the application](#running-the-application)
     - [Running the tests](#running-the-tests)
       - [Using the terminal](#using-the-terminal)
       - [Using an IDE](#using-an-ide)
-    - [Updating the Schema](#updating-the-schema)
-  - [Active Contributors](#active-contributors)
+  - [Documentation](#documentation)
+    - [Architecture](#architecture)
+    - [API design](#api-design)
+    - [Databases](#databases)
+      - [Updating the database schema](#updating-the-database-schema)
+    - [Deployment](#deployment)
+  - [Related repositories](#related-repositories)
+  - [Active contributors](#active-contributors)
   - [License](#license)
-
-## Documentation
-
-Higher level Architecture diagrams can be found in the  [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/) repository.
-
-The process and tooling for diagram creation is found [here](https://github.com/LBHackney-IT/social-care-architecture/process.md).
-
-### C4 Component Diagram
-
-![C4 Component Diagram](docs/component-diagram.svg)
-
-### Swagger API
-
-- [Staging Environment](https://dr03nduqxh.execute-api.eu-west-2.amazonaws.com/staging/swagger/index.html)
 
 ## Getting started
 
@@ -56,14 +45,7 @@ The process and tooling for diagram creation is found [here](https://github.com/
 $ git clone git@github.com:LBHackney-IT/social-care-case-viewer-api.git
 ```
 
-## Contributing
-
-- `master` branch is responsible for the code running in production
-- Changes to the codebase are first merged into the `development` branch to be verified for correctness in staging
-- `development` branch is responsible for staging. When code is merged to the `staging` branch, the staging environment is automatically rebuilt and deployed.
-- When changes are verified in staging, changes can be merged into `master`
-
-## Common Processes
+## Usage
 
 ### Running the application
 
@@ -121,22 +103,61 @@ $ make start-test-dbs
 
 This will allow you to run the tests as normal in your IDE.
 
-### Updating the Schema
+## Documentation
 
-- In the database repository update the [schema.sql](https://github.com/LBHackney-IT/social-care-case-viewer-api/blob/master/database/schema.sql) file
-- In SocialCareCaseViewerAPI/Infrastructure either update an existing class or create a new class for the schema changes
-- To test locally run `make restart-db`
-- To deploy changes to AWS:
-    - Go to AWS account (staging or prod)
-    - Go to Systems Manager
-    - Go to Session Manager
-    - Choose `RDS jump box-Platform APIs (new)` and click `Start Session`, this allows us to have a CLI into the instance hosting our database
-    - Connect to PostgreSQL `psql --host=<hostname> --port=5600 --username=<username> --password=<password> --dbname=social_care`
-    - Backup the table you are going to apply changes to `create table_backup as table_copied`, it can be useful use the same table name for the backup but to append the date to the table name
-    - If we later make breaking changes to the table in use we rename the backup table to make it our `active` version of the table
-    - Manually apply schema changes to the table we are interested in
+### Architecture
 
-## Active Contributors
+As this service API is a part of the Social Care System, higher level documentation lives in a separate repository called [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/).
+
+To find out more about the process and tooling for our diagrams, see [Process documentation in Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/blob/main/process.md).
+
+### API design
+
+We use [SwaggerHub](https://swagger.io/tools/swaggerhub/) to document the API design, of which we have two versions:
+
+- [Hosted by SwaggerHub](https://app.swaggerhub.com/apis-docs/Hackney/social-care-case-viewer-api/1.0.0) - for designing endpoints as a contract before we create a new feature
+- [Self-hosted](https://dr03nduqxh.execute-api.eu-west-2.amazonaws.com/staging/swagger/index.html) - for actual endpoint design which is auto-generated using comments
+
+### Databases
+
+The service API has two databases (as seen in the [C4 component diagram](./docs/component-diagram.svg)):
+
+- [MongoDB](https://www.mongodb.com) (DocumentDB in AWS)
+- [PostgreSQL](https://www.postgresql.org) (RDS PostgreSQL in AWS)
+
+#### Updating the database schema
+
+We currently don't have database migrations set up for the databases which means changes to the schema are documented in the repository and done manually via the AWS console.
+
+If you need to make changes e.g. add a new table to the PostgreSQL database, then see [Updating the database schema](./docs/updating-database-schema.md) for how we manage this and do this via the AWS console.
+
+### Deployment
+
+We have two environments:
+
+- Staging (StagingAPIs AWS account)
+- Production (Mosaic-Production AWS account)
+
+and two deployment branches:
+
+- `master` which deploys to Staging and Production
+- `development` which deploys to Staging
+
+This means pull request merges into `master` and `development` both trigger a deployment to Staging, but only `master` can trigger a deployment for Production.
+
+To deploy to Production, we first ensure that changes are verified in Staging and then we merge `development` into `master`.
+
+## Related repositories
+
+| Name | Purpose |
+|-|-|
+| [LBH Social Care Frontend](https://github.com/LBHackney-IT/lbh-social-care-frontend) | Provides the UI/UX of the Social Care System. |
+| [Residents Social Care Platform API](https://github.com/LBHackney-IT/residents-social-care-platform-api) | Provides [platform API](http://playbook.hackney.gov.uk/API-Playbook/platform_api_vs_service_api#b-platform-apis) capabilities by providing historic social care data from Mosaic to the Social Care System. |
+| [Mosaic Resident Information API](https://github.com/LBHackney-IT/mosaic-resident-information-api) | Provides [platform API](http://playbook.hackney.gov.uk/API-Playbook/platform_api_vs_service_api#b-platform-apis) capabilities by providing information about residents from Mosaic to the Social Care System. |
+| [Infrastructure](https://github.com/LBHackney-IT/infrastructure) | Provides a single place for AWS infrastructure defined using [Terraform](https://www.terraform.io) as [infrastructure as code](https://en.wikipedia.org/wiki/Infrastructure_as_code) as part of Hackney's new AWS account strategy. NB: Due to its recent introduction, the Social Care System has infrastructure across multiple places. |
+| [API Playbook](http://playbook.hackney.gov.uk/API-Playbook/) | Provides guidance to the standards of APIs within Hackney. |
+
+## Active contributors
 
 - **Tuomo Karki**, Lead Developer at Hackney (tuomo.karki@hackney.gov.uk)
 - **Ben Reynolds-Carr**, Junior Developer at Hackney (ben.reynolds-carr@hackney.gov.uk)
