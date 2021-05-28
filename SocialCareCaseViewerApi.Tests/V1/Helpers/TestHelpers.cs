@@ -145,15 +145,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DateStart, start)
                 .RuleFor(w => w.DateEnd, end)
                 .RuleFor(w => w.IsActive, f => isActive)
-                .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> {CreateAllocation(), CreateAllocation(), CreateAllocation()} : null)
-                .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> {CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam()} : null)
+                .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> { CreateAllocation(), CreateAllocation(), CreateAllocation() } : null)
+                .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> { CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam() } : null)
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
         }
 
         private static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
         {
 
-            var caseStatusChoices = new List<string> {"open", "closed"};
+            var caseStatusChoices = new List<string> { "open", "closed" };
 
             return new Faker<AllocationSet>()
                 .RuleFor(a => a.Id, f => id ?? f.UniqueIndex + 1)
