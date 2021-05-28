@@ -117,7 +117,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? contextFlag = null,
             string? createdBy = null,
             DateTime? createdAt = null,
-            bool isActive = true)
+            bool isActive = true,
+            bool hasAllocations = true,
+            bool hasWorkerTeams = true)
         {
             DateTime? start = null;
             if (isActive)
@@ -143,7 +145,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DateStart, start)
                 .RuleFor(w => w.DateEnd, end)
                 .RuleFor(w => w.IsActive, f => isActive)
+                .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> {CreateAllocation(), CreateAllocation(), CreateAllocation()} : null)
+                .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> {CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam()} : null)
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
+        }
+
+        private static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
+        {
+
+            var caseStatusChoices = new List<string> {"open", "closed"};
+
+            return new Faker<AllocationSet>()
+                .RuleFor(a => a.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(a => a.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(a => a.WorkerId, f => workerId ?? f.UniqueIndex + 1)
+                .RuleFor(a => a.TeamId, f => teamId ?? f.UniqueIndex + 1)
+                .RuleFor(a => a.AllocationStartDate, f => f.Date.Past())
+                .RuleFor(a => a.AllocationEndDate, f => f.Date.Past())
+                .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
+                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past());
+
+
         }
 
         public static InfrastructurePerson CreatePerson(int? personId = null)
@@ -281,10 +303,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int? workerId = null
         )
         {
+            var team = CreateTeam();
+
             return new Faker<WorkerTeam>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex)
                 .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex)
-                .RuleFor(t => t.TeamId, f => f.UniqueIndex);
+                .RuleFor(t => t.TeamId, f => f.UniqueIndex)
+                .RuleFor(t => t.Team, team);
         }
 
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(

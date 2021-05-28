@@ -236,7 +236,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var worker = TestHelpers.CreateWorker();
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
-            var team = TestHelpers.CreateTeam(teamId: workerTeam.TeamId);
+            var team = TestHelpers.CreateTeam();
             worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
