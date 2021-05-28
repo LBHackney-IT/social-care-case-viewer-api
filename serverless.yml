@@ -146,12 +146,6 @@ custom:
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
-    production:
-      securityGroupIds:
-        - sg-00a35603faf7971ad
-      subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
     mosaic-prod:
       securityGroupIds:
         - sg-0d8739383f0960389
@@ -161,5 +155,4 @@ custom:
         - subnet-04c42d0aafb3738ad
   mongoDBImportBucket:
     staging: qlik-bucket-csv-to-postgres-staging
-    production: mosaic-social-care-csv-prod
     mosaic-prod: social-care-case-viewer-api-qlik-bucket-prod

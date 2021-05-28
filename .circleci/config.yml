@@ -132,11 +132,6 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_STAGING
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRODUCTION
   assume-role-mosaic-production:
     executor: docker-python
     steps:
@@ -152,11 +147,6 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "staging"
-  # terraform-init-and-apply-to-production:
-    # executor: docker-terraform
-    # steps:
-      # - terraform-init-then-apply:
-          # environment: "production"
   # deploy-to-development:
     # executor: docker-dotnet
     # steps:
@@ -167,11 +157,6 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "staging"
-  deploy-to-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "production"
   deploy-to-mosaic-production:
     executor: docker-dotnet
     steps:
@@ -204,7 +189,7 @@ workflows:
           # filters:
             # branches:
               # only: development
-  check-and-deploy-staging-and-production:
+  check-and-deploy-staging-and-mosaic-production:
       jobs:
       - build-and-test:
           filters:
@@ -237,38 +222,10 @@ workflows:
               only:
                 - master
                 - development
-      - permit-production-release:
-          type: approval
-          requires:
-            - deploy-to-staging
-          filters:
-            branches:
-              only: master
-      - assume-role-production:
-          context: api-assume-role-production-context
-          requires:
-            - permit-production-release
-          filters:
-            branches:
-              only: master
-      - deploy-to-production:
-          requires:
-            - assume-role-production
-          filters:
-            branches:
-              only: master
-  check-and-deploy-mosaic-production:
-      jobs:
-      - build-and-test:
-          filters:
-            branches:
-              only:
-                - master
-                - development
       - permit-mosaic-production-release:
           type: approval
           requires:
-            - build-and-test
+            - deploy-to-staging
           filters:
             branches:
               only: master
