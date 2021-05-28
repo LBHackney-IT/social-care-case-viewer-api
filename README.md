@@ -1,3 +1,5 @@
+[![LBHackney-IT](https://circleci.com/gh/LBHackney-IT/social-care-case-viewer-api.svg?style=svg)](https://circleci.com/gh/LBHackney-IT/social-care-case-viewer-api)
+
 # Social Care Case Viewer API
 
 The Social Care Service API provides [service API](http://playbook.hackney.gov.uk/API-Playbook/platform_api_vs_service_api#a-service-apis) capabilities for the [Social Care Frontend](https://github.com/LBHackney-IT/lbh-social-care) which is part of the Social Care system (see [Social Care System Architecture](https://github.com/LBHackney-IT/social-care-architecture/tree/main) for more details).
@@ -146,6 +148,8 @@ and two deployment branches:
 This means pull request merges into `master` and `development` both trigger a deployment to Staging, but only `master` can trigger a deployment for Production.
 
 To deploy to Production, we first ensure that changes are verified in Staging and then we merge `development` into `master`.
+
+We use CircleCI to handle deployment, see [CircleCI config](./.circleci/config.yml).
 
 ## Related repositories
 
