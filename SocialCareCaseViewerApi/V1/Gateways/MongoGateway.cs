@@ -10,10 +10,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly IMongoDatabase _mongoDatabase;
 
-        public MongoGateway(string? connectionString = null, string? databaseName = null)
+        public MongoGateway()
         {
-            var mongoClient = new MongoClient(new MongoUrl(connectionString ?? Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING")));
-            _mongoDatabase = mongoClient.GetDatabase(databaseName ?? Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME"));
+            string mongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
+                                           @"mongodb://localhost:1433/";
+
+            string databaseName = Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME") ?? "social_care_db_name";
+
+            var mongoClient = new MongoClient(new MongoUrl(mongoConnectionString));
+            _mongoDatabase = mongoClient.GetDatabase(databaseName);
         }
 
         public void DropCollection(string collectionName)

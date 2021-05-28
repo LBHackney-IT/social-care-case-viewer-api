@@ -21,13 +21,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     [TestFixture]
     public class MongoGatewayTests
     {
-        private readonly IMongoGateway _mongoGateway = new MongoGateway("mongodb://localhost:1433/", "social_care_db");
+        private readonly IMongoGateway _mongoGateway = new MongoGateway();
 
         private TestObjectForMongo? _testObjectForMongo;
 
         [SetUp]
         public void Setup()
         {
+
             _testObjectForMongo = new TestObjectForMongo
             {
                 Id = new Guid(),
