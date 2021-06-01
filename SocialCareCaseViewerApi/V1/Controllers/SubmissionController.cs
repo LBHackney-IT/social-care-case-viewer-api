@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status201Created)]
         [HttpPost]
-        public IActionResult CreateWorker([FromBody] CreateCaseSubmissionRequest request)
+        public IActionResult CreateSubmission([FromBody] CreateCaseSubmissionRequest request)
         {
             var validator = new CreateCaseSubmissionRequestValidator();
             var validationResults = validator.Validate(request);
@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdSubmission = _submissionsUseCase.ExecutePost(request);
-                return CreatedAtAction(nameof(CreateWorker), createdSubmission);
+                return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (CreateSubmissionException e)
             {
