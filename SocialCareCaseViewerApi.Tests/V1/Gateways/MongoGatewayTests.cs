@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using MongoDB.Bson.Serialization.Attributes;
 using NUnit.Framework;
@@ -154,8 +153,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             {
                 retrievedObject =
                     _mongoGateway.LoadMultipleRecordsByProperty<TestObjectForMongo, string>(
-                        "test-collection-name", "Property1", _testObjectForMongo.Property1)
-                        .ToList();
+                        "test-collection-name", "Property1", _testObjectForMongo.Property1);
             }
             retrievedObject?.Count.Should().Be(2);
         }
@@ -169,8 +167,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             {
                 retrievedObject =
                     _mongoGateway.LoadMultipleRecordsByProperty<TestObjectForMongo, string>(
-                            "test-collection-name", "Property1", _testObjectForMongo.Property1)
-                        .ToList();
+                            "test-collection-name", "Property1", _testObjectForMongo.Property1);
             }
             retrievedObject?.Should().BeEmpty();
         }

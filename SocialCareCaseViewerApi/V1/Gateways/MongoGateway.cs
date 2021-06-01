@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return collection.Find(filter).FirstOrDefault();
         }
 
-        public IEnumerable<T1> LoadMultipleRecordsByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue)
+        public List<T1> LoadMultipleRecordsByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue)
         {
             var collection = _mongoDatabase.GetCollection<T1>(collectionName);
             var filter = Builders<T1>.Filter.Eq(propertyName, propertyValue);
