@@ -249,9 +249,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToResponse(),
                 EditHistory = caseSubmission.EditHistory.Select(e => (e.Item1.ToResponse(), e.Item2)).ToList(),
-                FormAnswers = caseSubmission.FormAnswers,
-                IsEditable = caseSubmission.IsEditable,
-                IsSubmitted = caseSubmission.IsSubmitted
+                SubmissionState = caseSubmission.SubmissionState,
+                FormAnswers = caseSubmission.FormAnswers
             };
         }
 

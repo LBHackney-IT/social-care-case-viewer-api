@@ -46,8 +46,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Workers = new List<Worker> {worker},
                 CreatedAt = dateTimeNow,
                 CreatedBy = worker,
-                IsEditable = dateTimeNow,
-                IsSubmitted = null,
+                SubmissionState = SubmissionState.InProgress,
                 EditHistory = new List<(Worker, DateTime)> {(worker, dateTimeNow)},
                 FormAnswers = new Dictionary<int, Dictionary<int, string>>()
             };

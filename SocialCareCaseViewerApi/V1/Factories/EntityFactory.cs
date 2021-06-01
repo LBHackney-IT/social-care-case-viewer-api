@@ -152,9 +152,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
                 EditHistory = caseSubmission.EditHistory.Select(e => (e.Item1.ToDomain(false), e.Item2)).ToList(),
+                SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers,
-                IsEditable = caseSubmission.IsEditable,
-                IsSubmitted = caseSubmission.IsSubmitted
+
             };
         }
 
