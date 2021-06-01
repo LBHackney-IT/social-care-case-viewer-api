@@ -58,6 +58,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public PatchWarningNoteException(string message) : base(message) { }
     }
 
+    public class PersonNotFoundException : Exception
+    {
+        public PersonNotFoundException(string message) : base(message) { }
+    }
+
     public class UpdatePersonException : Exception
     {
         public UpdatePersonException(string message) : base(message) { }
@@ -86,10 +91,5 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class GetSubmissionException : Exception
     {
         public GetSubmissionException(string message) : base(message) { }
-    }
-
-    public class CreateSubmissionException : Exception
-    {
-        public CreateSubmissionException(string message) : base(message) { }
     }
 }
