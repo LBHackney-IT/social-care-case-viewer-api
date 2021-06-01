@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     public class CreateCaseSubmissionRequestTests
     {
         [Test]
-        public void CreateTeamValidationReturnsErrorsWithInvalidProperties()
+        public void CreateCaseSubmissionRequestValidationReturnsErrorsWithInvalidProperties()
         {
             var badCreateCaseSubmissionRequest = new List<(CreateCaseSubmissionRequest, string)>
             {
@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidCreateTeamRequestReturnsNoErrorsOnValidation()
+        public void ValidCreateCaseSubmissionRequestReturnsNoErrorsOnValidation()
         {
             var createTeamRequest = TestHelpers.CreateCaseSubmissionRequest();
             var validator = new CreateCaseSubmissionRequestValidator();
