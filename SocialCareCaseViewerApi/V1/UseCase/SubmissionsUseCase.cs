@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var caseSubmission = new CaseSubmission
             {
-                FormId = new Guid(),
+                FormId = Guid.NewGuid(),
                 Residents = new List<Person> {resident},
                 Workers = new List<Worker> {worker},
                 CreatedAt = dateTimeNow,

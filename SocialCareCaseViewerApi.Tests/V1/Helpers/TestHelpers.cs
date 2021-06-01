@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
@@ -473,6 +475,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.FormId, f => formId ?? f.UniqueIndex + 1)
                 .RuleFor(s => s.ResidentId, f => residentId ?? f.UniqueIndex + 1)
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+        }
+
+        public static CaseSubmission CreateCaseSubmission()
+        {
+            var guid = Guid.NewGuid();
+            var resident = CreatePerson();
+            var worker = CreateWorker();
+
+            var submissionStates = new List<SubmissionState> {SubmissionState.InProgress, SubmissionState.Submitted};
+
+            return new Faker<CaseSubmission>()
+                .RuleFor(s => s.FormId, guid)
+                .RuleFor(s => s.Residents, new List<InfrastructurePerson> {resident})
+                .RuleFor(s => s.Workers, new List<Worker> {worker})
+                .RuleFor(s => s.CreatedAt, f => f.Date.Recent())
+                .RuleFor(s => s.CreatedBy, worker)
+                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> {(worker, f.Date.Recent())})
+                .RuleFor(s => s.SubmissionState, f => f.PickRandom(submissionStates))
+                .RuleFor(s => s.FormAnswers, new Dictionary<int, Dictionary<int, string>>());
         }
     }
 }
