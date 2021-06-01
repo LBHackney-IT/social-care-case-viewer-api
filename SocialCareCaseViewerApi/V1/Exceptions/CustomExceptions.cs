@@ -82,4 +82,14 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public GetRelationshipsException(string message) : base(message) { }
     }
+
+    public class GetSubmissionException : Exception
+    {
+        public GetSubmissionException(string message) : base(message) { }
+    }
+
+    public class CreateSubmissionException : Exception
+    {
+        public CreateSubmissionException(string message) : base(message) { }
+    }
 }
