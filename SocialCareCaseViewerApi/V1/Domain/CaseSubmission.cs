@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
+namespace SocialCareCaseViewerApi.V1.Domain
 #nullable enable
-namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class CaseSubmissionResponse
+    public class CaseSubmission
     {
         public Guid FormId { get; set; }
-        public WorkerResponse CreatedBy { get; set; } = null!;
+        public Domain.Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;
-        public List<WorkerResponse> Workers { get; set; } = null!;
-        public List<(WorkerResponse, DateTime)> EditHistory { get; set; } = null!;
+        public List<Worker> Workers { get; set; } = null!;
+        public List<(Worker, DateTime)> EditHistory { get; set; } = null!;
         public DateTime? IsEditable { get; set; }
         public DateTime? IsSubmitted { get; set; }
 
@@ -20,3 +20,4 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public Dictionary<int, Dictionary<int, string>> FormAnswers { get; set; } = null!;
     }
 }
+

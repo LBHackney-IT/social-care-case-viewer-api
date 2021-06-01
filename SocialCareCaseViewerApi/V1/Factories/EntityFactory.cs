@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
@@ -21,7 +22,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
     {
-        #region ToDomain
         public static ResidentInformation ToDomain(this Person databaseEntity)
         {
             return new ResidentInformation
@@ -142,8 +142,22 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        #endregion
-        #region ToEntity
+        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
+        {
+            return new Domain.CaseSubmission
+            {
+                FormId = caseSubmission.FormId,
+                Residents = caseSubmission.Residents,
+                Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
+                CreatedAt = caseSubmission.CreatedAt,
+                CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
+                EditHistory = caseSubmission.EditHistory.Select(e => (e.Item1.ToDomain(false), e.Item2)).ToList(),
+                FormAnswers = caseSubmission.FormAnswers,
+                IsEditable = caseSubmission.IsEditable,
+                IsSubmitted = caseSubmission.IsSubmitted
+            };
+        }
+
         public static AllocationSet ToEntity(this CreateAllocationRequest request, int workerId, DateTime allocationStartDate, string caseStatus)
         {
             return new AllocationSet
@@ -229,6 +243,5 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = request.CreatedBy
             };
         }
-        #endregion
     }
 }
