@@ -34,7 +34,12 @@ SELECT aws_s3.table_import_from_s3('dbo.sccv_gender_values_import','','(format c
 
 -- Replace <yyyy_mm_dd> with current date
 CREATE TABLE dbo.dm_persons_<yyyy_mm_dd> as table dbo.dm_persons;
+```
+### Updating person records
 
+**Timestamp:** <yyyy_mm_dd_hh_mm>
+
+```sql
 UPDATE dbo.dm_persons p
 set gender = gi.gender
 from dbo.sccv_gender_values_import gi
