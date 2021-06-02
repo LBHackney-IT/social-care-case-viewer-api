@@ -23,7 +23,7 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Databases](#databases)
       - [Updating the database schema](#updating-the-database-schema)
     - [Deployment](#deployment)
-  - [Related repositories](#related-repositories)
+    - [Related repositories](#related-repositories)
   - [Active contributors](#active-contributors)
   - [License](#license)
 
@@ -151,7 +151,7 @@ To deploy to Production, we first ensure that changes are verified in Staging an
 
 We use CircleCI to handle deployment, see [CircleCI config](./.circleci/config.yml).
 
-## Related repositories
+### Related repositories
 
 | Name | Purpose |
 |-|-|
