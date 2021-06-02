@@ -501,8 +501,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Workers = domainCaseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
                 CreatedAt = domainCaseSubmission.CreatedAt,
                 CreatedBy = domainCaseSubmission.CreatedBy.ToResponse(),
-                EditHistory =
-                    domainCaseSubmission.EditHistory.Select(e => (e.Item1.ToResponse(), e.Item2)).ToList(),
+                EditHistory = domainCaseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToResponse()
+                }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
                 FormAnswers = domainCaseSubmission.FormAnswers
             };

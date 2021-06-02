@@ -26,11 +26,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public CaseSubmissionResponse ExecutePost(CreateCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
-            worker.WorkerTeams = new List<WorkerTeam>();
             if (worker == null)
             {
                 throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
             }
+            worker.WorkerTeams = new List<WorkerTeam>();
 
             var resident = _databaseGateway.GetPersonByMosaicId(request.ResidentId);
             if (resident == null)

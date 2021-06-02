@@ -492,9 +492,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
-                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> { (worker, dateTime ?? f.Date.Recent()) })
+                .RuleFor(s => s.EditHistory, f => new List<EditHistory<Worker>>
+                {
+                    new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
+                })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<int, Dictionary<int, string[]>>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, string[]>>());
         }
     }
 }

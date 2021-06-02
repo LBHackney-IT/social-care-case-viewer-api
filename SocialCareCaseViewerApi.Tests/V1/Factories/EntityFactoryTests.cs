@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -312,8 +313,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Workers = databaseCaseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = databaseCaseSubmission.CreatedAt,
                 CreatedBy = databaseCaseSubmission.CreatedBy.ToDomain(false),
-                EditHistory =
-                    databaseCaseSubmission.EditHistory.Select(e => (e.Item1.ToDomain(false), e.Item2)).ToList(),
+                EditHistory = databaseCaseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToDomain(false)
+                }).ToList(),
                 SubmissionState = databaseCaseSubmission.SubmissionState,
                 FormAnswers = databaseCaseSubmission.FormAnswers,
             };
