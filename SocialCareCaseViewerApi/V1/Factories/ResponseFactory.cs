@@ -248,7 +248,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Workers = caseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToResponse(),
-                EditHistory = caseSubmission.EditHistory.Select(e => (e.Item1.ToResponse(), e.Item2)).ToList(),
+                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>{
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToResponse()
+                }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers
             };
