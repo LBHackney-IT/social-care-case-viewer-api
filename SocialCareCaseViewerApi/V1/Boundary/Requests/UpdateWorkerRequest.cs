@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public List<WorkerTeamRequest> Teams { get; set; } = null!;
 
         [JsonPropertyName("role")]
-        public string Role { get; set; } = null!;
+        public string? Role { get; set; }
 
         [JsonPropertyName("dateStart")]
         public DateTime? DateStart { get; set; }
@@ -58,7 +58,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .MinimumLength(1).WithMessage("Context flag must be provided")
                 .MaximumLength(1).WithMessage("Context flag must be no longer than 1 character")
                 .Matches("(?i:^A|C)").WithMessage("Context flag must be 'A' or 'C'");
-            RuleFor(w => w.Teams.Count).GreaterThan(0).WithMessage("A team must be provided");
             RuleForEach(w => w.Teams)
                 .ChildRules(team =>
                 {
@@ -69,8 +68,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                     team.RuleFor(t => t.Name).MaximumLength(200).WithMessage("Team name must be no more than 200 characters");
                 });
             RuleFor(w => w.Role)
-                .NotNull().WithMessage("Role must be provided")
-                .MinimumLength(1).WithMessage("Role must be provided")
                 .MaximumLength(200).WithMessage("Role provided is too long (more than 200 characters)");
             RuleFor(w => w.DateStart)
                 .NotNull().WithMessage("Start date must be provided")

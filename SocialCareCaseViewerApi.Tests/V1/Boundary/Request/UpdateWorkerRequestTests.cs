@@ -36,10 +36,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateUpdateWorkersRequest(contextFlag: ""), $"Context flag must be provided{Environment.NewLine}Context flag must be 'A' or 'C'"),
                 (TestHelpers.CreateUpdateWorkersRequest(contextFlag: _faker.Random.String2(2, "AC")), "Context flag must be no longer than 1 character"),
                 (TestHelpers.CreateUpdateWorkersRequest(contextFlag: "B"), "Context flag must be 'A' or 'C'"),
-                (TestHelpers.CreateUpdateWorkersRequest(role: ""), "Role must be provided"),
                 (TestHelpers.CreateUpdateWorkersRequest(role: _faker.Random.String2(201)), "Role provided is too long (more than 200 characters)"),
                 (TestHelpers.CreateUpdateWorkersRequest(dateStart: DateTime.Now.AddMinutes(1)), "Date cannot be set in the future"),
-                (TestHelpers.CreateUpdateWorkersRequest(createATeam: false), "A team must be provided"),
                 (TestHelpers.CreateUpdateWorkersRequest(teamName: _faker.Random.String2(201)), "Team name must be no more than 200 characters"),
                 (TestHelpers.CreateUpdateWorkersRequest(teamId: 0), "Team ID must be greater than 0")
             };
