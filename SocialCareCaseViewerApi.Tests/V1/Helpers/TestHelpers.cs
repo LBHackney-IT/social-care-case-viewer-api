@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
+using Person = Bogus.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -477,23 +478,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static CaseSubmission CreateCaseSubmission()
+        public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null, DateTime? dateTime = null, Worker? worker = null, InfrastructurePerson? resident = null, Guid? id = null)
         {
-            var guid = Guid.NewGuid();
-            var resident = CreatePerson();
-            var worker = CreateWorker();
+            id ??= Guid.NewGuid();
+            worker ??= CreateWorker();
+            resident ??= CreatePerson();
 
             var submissionStates = new List<SubmissionState> {SubmissionState.InProgress, SubmissionState.Submitted};
 
             return new Faker<CaseSubmission>()
-                .RuleFor(s => s.FormId, guid)
+                .RuleFor(s => s.FormId, id)
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> {resident})
                 .RuleFor(s => s.Workers, new List<Worker> {worker})
-                .RuleFor(s => s.CreatedAt, f => f.Date.Recent())
+                .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
-                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> {(worker, f.Date.Recent())})
-                .RuleFor(s => s.SubmissionState, f => f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<int, Dictionary<int, string>>());
+                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> {(worker, dateTime ?? f.Date.Recent())})
+                .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
+                .RuleFor(s => s.FormAnswers, new Dictionary<int, Dictionary<int, string[]>>());
         }
     }
 }

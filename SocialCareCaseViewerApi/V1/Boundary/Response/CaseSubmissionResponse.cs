@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public List<(WorkerResponse, DateTime)> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
 
-        // outer hashset int represents step id for form, inner hashset int represents questionId, answer value stored as string
-        public Dictionary<int, Dictionary<int, string>> FormAnswers { get; set; } = null!;
+        // outer hashset int represents step id for form, inner hashset int represents questionId, answer values stored as string[]
+        public Dictionary<int, Dictionary<int, string[]>> FormAnswers { get; set; } = null!;
     }
 }
