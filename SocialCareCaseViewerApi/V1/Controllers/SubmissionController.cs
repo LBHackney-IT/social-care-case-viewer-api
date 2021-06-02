@@ -21,11 +21,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Create a worker
+        /// Create a submission
         /// </summary>
         /// <param name="request"></param>
-        /// <response code="201">Worker created successfully</response>
-        /// <response code="400">Invalid CreateWorkerRequest received</response>
+        /// <response code="201">Case submission created successfully</response>
+        /// <response code="400">Invalid CreateCaseSubmissionRequest received</response>
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status201Created)]
         [HttpPost]
