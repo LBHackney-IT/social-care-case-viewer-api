@@ -153,10 +153,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
-                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>{
+                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                {
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
-                        }).ToList(),
+                }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers
             };

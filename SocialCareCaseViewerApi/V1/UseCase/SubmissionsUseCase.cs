@@ -43,12 +43,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var caseSubmission = new CaseSubmission
             {
                 FormId = Guid.NewGuid(),
-                Residents = new List<Person> {resident},
-                Workers = new List<Worker> {worker},
+                Residents = new List<Person> { resident },
+                Workers = new List<Worker> { worker },
                 CreatedAt = dateTimeNow,
                 CreatedBy = worker,
                 SubmissionState = SubmissionState.InProgress,
-                EditHistory = new List<EditHistory<Worker>> {new EditHistory<Worker> {Worker = worker, EditTime = dateTimeNow}},
+                EditHistory = new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = worker, EditTime = dateTimeNow } },
                 FormAnswers = new Dictionary<string, Dictionary<string, string[]>>()
             };
 

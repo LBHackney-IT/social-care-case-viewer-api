@@ -484,15 +484,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             worker ??= CreateWorker();
             resident ??= CreatePerson();
 
-            var submissionStates = new List<SubmissionState> {SubmissionState.InProgress, SubmissionState.Submitted};
+            var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.FormId, id)
-                .RuleFor(s => s.Residents, new List<InfrastructurePerson> {resident})
-                .RuleFor(s => s.Workers, new List<Worker> {worker})
+                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
+                .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
-                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> {(worker, dateTime ?? f.Date.Recent())})
+                .RuleFor(s => s.EditHistory, f => new List<(Worker, DateTime)> { (worker, dateTime ?? f.Date.Recent()) })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
                 .RuleFor(s => s.FormAnswers, new Dictionary<int, Dictionary<int, string[]>>());
         }
