@@ -27,15 +27,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void PostSubmissionWithValidRequestReturns201StatusAndCreatedObject()
         {
             var request = TestHelpers.CreateCaseSubmissionRequest();
-            var cratedSubmission = TestHelpers.CreateCaseSubmission();
-            var cratedSubmissionResponse = cratedSubmission.ToDomain().ToResponse();
-            _submissionsUseCaseMock.Setup(x => x.ExecutePost(request)).Returns((cratedSubmissionResponse, cratedSubmission));
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var createdSubmissionResponse = createdSubmission.ToDomain().ToResponse();
+            _submissionsUseCaseMock.Setup(x => x.ExecutePost(request)).Returns((createdSubmissionResponse, createdSubmission));
 
             var response = _submissionController.CreateSubmission(request) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
-            response?.Value.Should().BeEquivalentTo(cratedSubmissionResponse);
+            response?.Value.Should().BeEquivalentTo(createdSubmissionResponse);
         }
 
         [Test]
