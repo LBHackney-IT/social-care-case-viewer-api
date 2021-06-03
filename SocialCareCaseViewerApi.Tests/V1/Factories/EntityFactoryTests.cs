@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
+using System.Linq;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
@@ -42,44 +42,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapWorkerFromInfrastructureToDomainWithoutTeamDetails()
         {
-            var email = _faker.Internet.Email();
-            var firstName = _faker.Name.FirstName();
-            var lastName = _faker.Name.LastName();
-            var id = 1;
-            var role = _faker.Random.Word();
-            int allocationCount = 1;
-            var contextFlag = "A";
-            var createdBy = _faker.Internet.Email();
-            var dateStart = DateTime.Now;
-
-            var dbWorker = new dbWorker()
-            {
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName,
-                Id = id,
-                Role = role,
-                ContextFlag = contextFlag,
-                CreatedBy = createdBy,
-                DateStart = dateStart,
-                Allocations = new List<AllocationSet>() {
-                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Open" },
-                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Closed" }
-                }
-            };
+            var dbWorker = TestHelpers.CreateWorker();
 
             var expectedResponse = new Worker()
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Id = id,
-                AllocationCount = allocationCount,
-                Email = email,
-                Role = role,
-                ContextFlag = contextFlag,
-                CreatedBy = createdBy,
-                DateStart = dateStart,
-                Teams = null
+                FirstName = dbWorker.FirstName,
+                LastName = dbWorker.LastName,
+                Id = dbWorker.Id,
+                AllocationCount = dbWorker.Allocations?.Count(allocation => allocation.CaseStatus.ToUpper() == "OPEN") ?? 0,
+                Email = dbWorker.Email,
+                Role = dbWorker.Role,
+                ContextFlag = dbWorker.ContextFlag,
+                CreatedBy = dbWorker.CreatedBy,
+                DateStart = dbWorker.DateStart,
+                Teams = new List<Team>()
             };
 
             dbWorker.ToDomain(false).Should().BeEquivalentTo(expectedResponse);
@@ -88,56 +64,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapWorkerFromInfrastructureToDomainWithTeamDetails()
         {
-            var email = _faker.Internet.Email();
-            var firstName = _faker.Name.FirstName();
-            var lastName = _faker.Name.LastName();
-            var id = 1;
-            var role = _faker.Random.Word();
-            int allocationCount = 1; //open allocations
-            var contextFlag = "A";
-            var createdBy = _faker.Internet.Email();
-            var dateStart = DateTime.Now;
-
-            var dbWorker = new dbWorker()
+            var workers = new List<dbWorker>
             {
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName,
-                Id = id,
-                Role = role,
-                ContextFlag = contextFlag,
-                CreatedBy = createdBy,
-                DateStart = dateStart,
-                Allocations = new List<AllocationSet>() {
-                    new AllocationSet() { Id = 1, PersonId = 2, CaseStatus = "Closed" },
-                    new AllocationSet() { Id = 2, PersonId = 3, CaseStatus = "Open" }
+                TestHelpers.CreateWorker(), TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false)
+            };
+
+            var expectedResponse = new List<Worker>
+            {
+                new Worker
+                {
+                    Id = workers[0].Id,
+                    Email = workers[0].Email,
+                    Role = workers[0].Role,
+                    ContextFlag = workers[0].ContextFlag,
+                    CreatedBy = workers[0].CreatedBy,
+                    FirstName = workers[0].FirstName,
+                    LastName = workers[0].LastName,
+                    DateStart = workers[0].DateStart,
+                    AllocationCount =
+                        workers[0].Allocations?.Count(allocation => allocation.CaseStatus.ToUpper() == "OPEN") ?? 0,
+                    Teams = workers[0].WorkerTeams?.Select(x =>
+                        new Team() {Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context}).ToList() ?? new List<Team>()
                 },
-                WorkerTeams = new List<WorkerTeam>()
+                new Worker
                 {
-                    new WorkerTeam() { Id = 1 , Team = new dbTeam() { Id = 1, Name = "Team 1", Context = "C" } },
-                    new WorkerTeam() { Id = 2 , Team = new dbTeam() { Id = 2, Name = "Team 2", Context = "C" } },
-                }
+                    Id = workers[1].Id,
+                    Email = workers[1].Email,
+                    Role = workers[1].Role,
+                    ContextFlag = workers[1].ContextFlag,
+                    CreatedBy = workers[1].CreatedBy,
+                    FirstName = workers[1].FirstName,
+                    LastName = workers[1].LastName,
+                    DateStart = workers[1].DateStart,
+                    AllocationCount = 0,
+                    Teams = new List<Team>()
+                },
             };
 
-            var expectedResponse = new Worker()
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Id = id,
-                AllocationCount = allocationCount,
-                Email = email,
-                Role = role,
-                ContextFlag = contextFlag,
-                CreatedBy = createdBy,
-                DateStart = dateStart,
-                Teams = new List<Team>()
-                {
-                    new Team() { Id = 1, Name = "Team 1", Context = "C"},
-                    new Team() { Id = 2, Name = "Team 2", Context = "C"}
-                }
-            };
-
-            dbWorker.ToDomain(true).Should().BeEquivalentTo(expectedResponse);
+            workers.Select(w => w.ToDomain(true)).Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
