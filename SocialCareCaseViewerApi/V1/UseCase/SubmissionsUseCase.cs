@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mongoGateway = mongoGateway;
         }
 
-        public CaseSubmissionResponse ExecutePost(CreateCaseSubmissionRequest request)
+        public (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             if (worker == null)
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             _mongoGateway.InsertRecord(CollectionName, caseSubmission);
 
-            return caseSubmission.ToDomain().ToResponse();
+            return (caseSubmission.ToDomain().ToResponse(), caseSubmission);
         }
 
         public CaseSubmissionResponse? ExecuteGetById(Guid submissionId)

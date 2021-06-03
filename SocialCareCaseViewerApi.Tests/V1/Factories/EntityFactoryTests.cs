@@ -308,6 +308,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var domainCaseSubmission = new DomainCaseSubmission()
             {
+                SubmissionId = databaseCaseSubmission.SubmissionId,
                 FormId = databaseCaseSubmission.FormId,
                 Residents = databaseCaseSubmission.Residents,
                 Workers = databaseCaseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),

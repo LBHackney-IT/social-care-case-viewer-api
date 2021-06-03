@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(s => s.FormId)
                 .NotNull().WithMessage("Provide a form ID");
             RuleFor(s => s.ResidentId)
-                .NotNull().WithMessage("Provided an ID for the resident");
+                .NotNull().WithMessage("Provide an ID for the resident");
             RuleFor(s => s.CreatedBy)
                 .NotNull().WithMessage("Provide who created the submission")
                 .EmailAddress().WithMessage("Provide a valid email address for who created the submission");
