@@ -54,9 +54,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("last_modified_at")] public DateTime? LastModifiedAt { get; set; }
 
         //nav props
-        public ICollection<WorkerTeam> WorkerTeams { get; set; } = null!;
+        public ICollection<WorkerTeam>? WorkerTeams { get; set; }
 
-        public ICollection<AllocationSet> Allocations { get; set; } = null!;
+        public ICollection<AllocationSet>? Allocations { get; set; }
 
         public Worker ShallowCopy()
         {
