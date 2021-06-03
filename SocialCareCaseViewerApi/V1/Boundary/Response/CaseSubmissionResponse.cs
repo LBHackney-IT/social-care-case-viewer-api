@@ -18,6 +18,16 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         // outer hashset key represents step id for form, inner hashset key represents questionId, answer values stored as string[]
         public Dictionary<string, Dictionary<string, string[]>> FormAnswers { get; set; } = null!;
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return true;
+        }
     }
 
     public class EditHistory<T> where T : class

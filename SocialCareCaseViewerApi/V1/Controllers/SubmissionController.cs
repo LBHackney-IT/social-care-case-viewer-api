@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var createdSubmission = _submissionsUseCase.ExecutePost(request);
+                var createdSubmission = _submissionsUseCase.ExecutePost(request).Item1;
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (WorkerNotFoundException e)
