@@ -25,6 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway = new Mock<IMongoGateway>();
             _submissionsUseCase = new SubmissionsUseCase(_mockDatabaseGateway.Object, _mockMongoGateway.Object);
         }
+        // private const string CollectionName = "resident-case-submissions";
 
         [Test]
         public void ExecutePostSuccessfully()
@@ -35,16 +36,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
-            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>())).Verifiable();
+            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var response = _submissionsUseCase.ExecutePost(request);
-            var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, response.CreatedAt, worker, resident, response.FormId).ToDomain().ToResponse();
+            var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
+                response.CreatedAt, worker, resident, response.SubmissionId, request.FormId);
 
             // struggle to verify _mockMongoGateway.InsertRecord as we do not have access to the dynamically created CaseSubmission object inserted
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.CreatedBy), Times.Once);
             _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(request.ResidentId), Times.Once);
+            // _mockMongoGateway.Verify(x => x.InsertRecord(CollectionName, expectedResponse), Times.Once);
 
-            response.Should().BeEquivalentTo(expectedResponse);
+            response.Should().BeEquivalentTo(expectedResponse.ToDomain().ToResponse());
         }
 
         [Test]

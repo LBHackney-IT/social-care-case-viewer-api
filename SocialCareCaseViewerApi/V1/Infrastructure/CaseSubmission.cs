@@ -10,7 +10,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     public class CaseSubmission
     {
         [BsonId]
-        public Guid FormId { get; set; }
+        public Guid SubmissionId { get; set; }
+        public int FormId { get; set; }
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;

@@ -148,6 +148,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new Domain.CaseSubmission
             {
+                SubmissionId = caseSubmission.SubmissionId,
                 FormId = caseSubmission.FormId,
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),

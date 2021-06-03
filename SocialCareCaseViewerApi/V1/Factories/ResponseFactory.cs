@@ -243,6 +243,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new CaseSubmissionResponse
             {
+                SubmissionId = caseSubmission.SubmissionId,
                 FormId = caseSubmission.FormId,
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToResponse()).ToList(),

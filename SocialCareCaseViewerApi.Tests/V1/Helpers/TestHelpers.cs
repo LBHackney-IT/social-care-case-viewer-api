@@ -478,7 +478,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null, DateTime? dateTime = null, Worker? worker = null, InfrastructurePerson? resident = null, Guid? id = null)
+        public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
+            DateTime? dateTime = null,
+            Worker? worker = null,
+            InfrastructurePerson? resident = null,
+            Guid? id = null,
+            int? formId = null)
         {
             id ??= Guid.NewGuid();
             worker ??= CreateWorker();
@@ -487,7 +492,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
             return new Faker<CaseSubmission>()
-                .RuleFor(s => s.FormId, id)
+                .RuleFor(s => s.SubmissionId, id)
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.Number(1, Int32.MaxValue))
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())

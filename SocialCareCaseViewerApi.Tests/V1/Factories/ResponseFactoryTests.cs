@@ -496,6 +496,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var responseCaseSubmission = new CaseSubmissionResponse
             {
+                SubmissionId = domainCaseSubmission.SubmissionId,
                 FormId = domainCaseSubmission.FormId,
                 Residents = domainCaseSubmission.Residents,
                 Workers = domainCaseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
