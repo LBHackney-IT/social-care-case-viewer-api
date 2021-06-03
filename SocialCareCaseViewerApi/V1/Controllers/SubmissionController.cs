@@ -66,7 +66,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Get a submission
         /// </summary>
-        /// <param name="request"></param>
         /// <response code="200">Case submission successfully found</response>
         /// <response code="404">Case submission not found</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
@@ -85,5 +84,5 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
     }
 }
-}
-}
+
+

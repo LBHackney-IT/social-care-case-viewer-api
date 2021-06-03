@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -103,13 +104,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetSubmissionReturns200WhenACaseIsFound()
+        public void GetSubmissionByIdReturns200WhenACaseIsFound()
         {
-            var submissionResponse =TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
+            var submissionResponse = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
 
             _submissionsUseCaseMock.Setup(x => x.ExecuteGetById(submissionResponse.SubmissionId)).Returns(submissionResponse);
 
-            var response = _submissionController.GetSubmissionById(submissionResponse.SubmissionId);
+            var response = _submissionController.GetSubmissionById(submissionResponse.SubmissionId) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(submissionResponse);
+        }
+
+        [Test]
+        public void GetSubmissionByIdReturns404WhenACaseIsNotFound()
+        {
+            var nonExsistentCaseId = new Guid();
+            var response = _submissionController.GetSubmissionById(nonExsistentCaseId) as NotFoundResult;
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(404);
         }
     }
 }

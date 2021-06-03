@@ -75,5 +75,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"Person with id {request.ResidentId} not found");
         }
+
+        [Test]
+        public void ExecuteGetByIdSucessfully()
+        {
+            var submissionResponse = TestHelpers.CreateCaseSubmission();
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), submissionResponse.SubmissionId)).Returns(submissionResponse); ;
+            var response = _submissionsUseCase.ExecuteGetById(submissionResponse.SubmissionId);
+            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), submissionResponse.SubmissionId), Times.Once);
+            response.Should().BeEquivalentTo(submissionResponse.ToDomain().ToResponse());
+        }
+
+
+
     }
 }
