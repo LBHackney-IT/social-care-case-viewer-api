@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -52,6 +53,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return UnprocessableEntity(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Get a submission
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Case submission successfully found</response>
+        /// <response code="404">Case submission not found</response>
+        /// <response code="422">Could not process request</response>
+        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{submissionId:Guid}")]
+        public IActionResult GetSubmissionById(Guid submissionId)
+        {
+         var submission = _submissionsUseCase.ExecuteGetById(submissionId);
+
+         if(submission == null)
+         {
+             return NotFound();
+         }
+
+         return Ok(submission);
         }
     }
 }
