@@ -75,13 +75,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteGetByIdSucessfully()
+        public void ExecuteGetByIdSuccessfully()
         {
             var submissionResponse = TestHelpers.CreateCaseSubmission();
-            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), submissionResponse.SubmissionId)).Returns(submissionResponse); ;
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), submissionResponse.SubmissionId)).Returns(submissionResponse);
+
             var response = _submissionsUseCase.ExecuteGetById(submissionResponse.SubmissionId);
+
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), submissionResponse.SubmissionId), Times.Once);
             response.Should().BeEquivalentTo(submissionResponse.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void ExecuteGetByIdShouldReturnNullIfNoCaseIsFound()
+        {
+            var nonExistentSubmissionId = new Guid();
+
+            var response = _submissionsUseCase.ExecuteGetById(nonExistentSubmissionId);
+
+            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), nonExistentSubmissionId), Times.Once);
+            response.Should().BeNull();
         }
 
 

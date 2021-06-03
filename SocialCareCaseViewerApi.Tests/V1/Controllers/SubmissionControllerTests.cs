@@ -105,7 +105,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetSubmissionByIdReturns200WhenACaseIsFound()
         {
             var submissionResponse = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
-
             _submissionsUseCaseMock.Setup(x => x.ExecuteGetById(submissionResponse.SubmissionId)).Returns(submissionResponse);
 
             var response = _submissionController.GetSubmissionById(submissionResponse.SubmissionId) as ObjectResult;
@@ -118,8 +117,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetSubmissionByIdReturns404WhenACaseIsNotFound()
         {
-            var nonExsistentCaseId = new Guid();
-            var response = _submissionController.GetSubmissionById(nonExsistentCaseId) as NotFoundResult;
+            var nonExistentSubmissionId = new Guid();
+
+            var response = _submissionController.GetSubmissionById(nonExistentSubmissionId) as NotFoundResult;
+
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
