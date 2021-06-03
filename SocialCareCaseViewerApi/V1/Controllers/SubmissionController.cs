@@ -28,9 +28,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="201">Case submission created successfully</response>
         /// <response code="400">Invalid CreateCaseSubmissionRequest received</response>
         /// <response code="422">Could not process request</response>
-        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status201Created)]
+        [
+            ProducesResponseType(
+                typeof(CaseSubmissionResponse),
+                StatusCodes.Status201Created)
+        ]
         [HttpPost]
-        public IActionResult CreateSubmission([FromBody] CreateCaseSubmissionRequest request)
+        public IActionResult
+        CreateSubmission([FromBody] CreateCaseSubmissionRequest request)
         {
             var validator = new CreateCaseSubmissionRequestValidator();
             var validationResults = validator.Validate(request);
@@ -42,8 +47,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var createdSubmission = _submissionsUseCase.ExecutePost(request);
-                return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
+                var createdSubmission =
+                    _submissionsUseCase.ExecutePost(request);
+                return CreatedAtAction(nameof(CreateSubmission),
+                createdSubmission);
             }
             catch (WorkerNotFoundException e)
             {
@@ -55,26 +62,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
+
         /// <summary>
         /// Get a submission
         /// </summary>
         /// <param name="request"></param>
         /// <response code="200">Case submission successfully found</response>
         /// <response code="404">Case submission not found</response>
-        /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{submissionId:Guid}")]
         public IActionResult GetSubmissionById(Guid submissionId)
         {
-         var submission = _submissionsUseCase.ExecuteGetById(submissionId);
+            var submission = _submissionsUseCase.ExecuteGetById(submissionId);
 
-         if(submission == null)
-         {
-             return NotFound();
-         }
+            if (submission == null)
+            {
+                return NotFound();
+            }
 
-         return Ok(submission);
+            return Ok(submission);
         }
     }
+}
+}
 }
