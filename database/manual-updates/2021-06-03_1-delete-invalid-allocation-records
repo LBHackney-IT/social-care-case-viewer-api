@@ -6,8 +6,8 @@ There are two records in dbo.sccv_allocations_combined table that have invalid p
 Person records with those IDs do not exist, so these allocation records should be deleted.
 
 Invalid allocation records:
-allocation id = 78213 (person id 334146100)
-allocation_id = 79637 (person id 333770219)
+id = 78213 (person id 334146100)
+id = 79637 (person id 333770219)
 
 ## Justification for doing a manual update
 
