@@ -40,9 +40,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var (caseSubmissionResponse, caseSubmission) = _submissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
-                caseSubmissionResponse.CreatedAt, worker, resident, caseSubmissionResponse.SubmissionId, request.FormId);
+                caseSubmission.CreatedAt, worker, resident, caseSubmission.SubmissionId, request.FormId);
 
-            // struggle to verify _mockMongoGateway.InsertRecord as we do not have access to the dynamically created CaseSubmission object inserted
+            caseSubmissionResponse.Should().BeEquivalentTo(expectedResponse.ToDomain().ToResponse());
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.CreatedBy), Times.Once);
             _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(request.ResidentId), Times.Once);
             _mockMongoGateway.Verify(x => x.InsertRecord(CollectionName, caseSubmission), Times.Once);
