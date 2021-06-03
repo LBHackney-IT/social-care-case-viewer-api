@@ -152,7 +152,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         private static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
         {
-
             var caseStatusChoices = new List<string> { "open", "closed" };
 
             return new Faker<AllocationSet>()
@@ -160,10 +159,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.TeamId, f => teamId ?? f.UniqueIndex + 1)
-                .RuleFor(a => a.AllocationStartDate, f => f.Date.Past())
-                .RuleFor(a => a.AllocationEndDate, f => f.Date.Past())
+                .RuleFor(a => a.AllocationStartDate, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(a => a.AllocationEndDate, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
-                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past());
+                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime());
 
 
         }
@@ -306,8 +305,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var team = CreateTeam();
 
             return new Faker<WorkerTeam>()
-                .RuleFor(t => t.Id, f => f.UniqueIndex)
-                .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex)
+                .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
+                .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.TeamId, f => f.UniqueIndex)
                 .RuleFor(t => t.Team, team);
         }
