@@ -57,6 +57,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return (caseSubmission.ToDomain().ToResponse(), caseSubmission);
         }
+
+        public CaseSubmissionResponse? ExecuteGetById(Guid submissionId)
+        {
+            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+
+            return foundSubmission?.ToDomain().ToResponse();
+        }
     }
 
 
