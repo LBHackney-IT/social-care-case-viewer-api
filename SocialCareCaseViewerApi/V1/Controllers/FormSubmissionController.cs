@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -18,6 +19,26 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public FormSubmissionController(IFormSubmissionsUseCase formSubmissionsUseCase)
         {
             _formSubmissionsUseCase = formSubmissionsUseCase;
+        }
+
+        /// <summary>
+        /// Get a submission
+        /// </summary>
+        /// <response code="200">Case submission successfully found</response>
+        /// <response code="404">Case submission not found</response>
+        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{submissionId:Guid}")]
+        public IActionResult GetSubmissionById(Guid submissionId)
+        {
+            var submission = _formSubmissionsUseCase.ExecuteGetById(submissionId);
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(submission);
         }
 
         /// <summary>
