@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("notes")]
         [MaxLength(1000)]
-        public string Notes { get; set; }
+        public string ReviewNotes { get; set; }
 
         [Column("managers_name")]
         [MaxLength(100)]

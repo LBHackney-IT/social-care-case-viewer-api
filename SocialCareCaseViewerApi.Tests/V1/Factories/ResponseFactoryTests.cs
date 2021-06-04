@@ -376,7 +376,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 WarningNoteId = dbWarningNoteReview.WarningNoteId,
                 ReviewDate = dbWarningNoteReview.ReviewDate?.ToString("s"),
                 DisclosedWithIndividual = dbWarningNoteReview.DisclosedWithIndividual,
-                Notes = dbWarningNoteReview.Notes,
+                ReviewNotes = dbWarningNoteReview.ReviewNotes,
                 ManagerName = dbWarningNoteReview.ManagerName,
                 DiscussedWithManagerDate = dbWarningNoteReview.DiscussedWithManagerDate?.ToString("s"),
                 CreatedAt = dbWarningNoteReview.CreatedAt?.ToString("s"),
