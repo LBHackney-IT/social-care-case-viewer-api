@@ -7,6 +7,7 @@ using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
@@ -237,6 +238,27 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return response;
         }
+
+        public static CaseSubmissionResponse ToResponse(this CaseSubmission caseSubmission)
+        {
+            return new CaseSubmissionResponse
+            {
+                SubmissionId = caseSubmission.SubmissionId,
+                FormId = caseSubmission.FormId,
+                Residents = caseSubmission.Residents,
+                Workers = caseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
+                CreatedAt = caseSubmission.CreatedAt,
+                CreatedBy = caseSubmission.CreatedBy.ToResponse(),
+                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToResponse()
+                }).ToList(),
+                SubmissionState = caseSubmission.SubmissionState,
+                FormAnswers = caseSubmission.FormAnswers
+            };
+        }
+
         public static List<RelatedPerson> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
         {
             return personList

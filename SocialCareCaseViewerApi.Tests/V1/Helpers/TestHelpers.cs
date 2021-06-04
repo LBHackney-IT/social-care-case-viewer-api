@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
+using Person = Bogus.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -486,6 +489,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 );
 
             return (children, others, parents, siblings, relationships);
+        }
+
+        public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
+            int? formId = null,
+            int? residentId = null,
+            string? createdBy = null)
+        {
+            return new Faker<CreateCaseSubmissionRequest>()
+                .RuleFor(s => s.FormId, f => formId ?? f.UniqueIndex + 1)
+                .RuleFor(s => s.ResidentId, f => residentId ?? f.UniqueIndex + 1)
+                .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+        }
+
+        public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
+            DateTime? dateTime = null,
+            Worker? worker = null,
+            InfrastructurePerson? resident = null,
+            Guid? id = null,
+            int? formId = null)
+        {
+            id ??= Guid.NewGuid();
+            worker ??= CreateWorker();
+            resident ??= CreatePerson();
+
+            var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
+
+            return new Faker<CaseSubmission>()
+                .RuleFor(s => s.SubmissionId, id)
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.Number(1, Int32.MaxValue))
+                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
+                .RuleFor(s => s.Workers, new List<Worker> { worker })
+                .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
+                .RuleFor(s => s.CreatedBy, worker)
+                .RuleFor(s => s.EditHistory, f => new List<EditHistory<Worker>>
+                {
+                    new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
+                })
+                .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, string[]>>());
         }
     }
 }

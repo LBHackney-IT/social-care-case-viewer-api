@@ -488,6 +488,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             ResponseFactory.ToResponse(personRecords, relationships, personRecords.Select(x => x.Id).ToList(), person.Id).Should().BeEquivalentTo(expectedResult);
         }
+
+        [Test]
+        public void CanMapDomainCaseSubmissionToResponse()
+        {
+            var domainCaseSubmission = TestHelpers.CreateCaseSubmission().ToDomain();
+
+            var responseCaseSubmission = new CaseSubmissionResponse
+            {
+                SubmissionId = domainCaseSubmission.SubmissionId,
+                FormId = domainCaseSubmission.FormId,
+                Residents = domainCaseSubmission.Residents,
+                Workers = domainCaseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
+                CreatedAt = domainCaseSubmission.CreatedAt,
+                CreatedBy = domainCaseSubmission.CreatedBy.ToResponse(),
+                EditHistory = domainCaseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToResponse()
+                }).ToList(),
+                SubmissionState = domainCaseSubmission.SubmissionState,
+                FormAnswers = domainCaseSubmission.FormAnswers
+            };
+
+            domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
+        }
+
         private static List<RelatedPerson> AddRelatedPerson(List<Person> persons)
         {
             return persons.Select(x => new RelatedPerson()

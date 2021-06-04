@@ -4,15 +4,18 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -21,7 +24,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
     {
-        #region ToDomain
         public static ResidentInformation ToDomain(this Person databaseEntity)
         {
             return new ResidentInformation
@@ -142,8 +144,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        #endregion
-        #region ToEntity
+        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
+        {
+            return new Domain.CaseSubmission
+            {
+                SubmissionId = caseSubmission.SubmissionId,
+                FormId = caseSubmission.FormId,
+                Residents = caseSubmission.Residents,
+                Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
+                CreatedAt = caseSubmission.CreatedAt,
+                CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
+                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToDomain(false)
+                }).ToList(),
+                SubmissionState = caseSubmission.SubmissionState,
+                FormAnswers = caseSubmission.FormAnswers
+            };
+        }
+
         public static AllocationSet ToEntity(this CreateAllocationRequest request, int workerId, DateTime allocationStartDate, string caseStatus)
         {
             return new AllocationSet
@@ -229,6 +249,5 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = request.CreatedBy
             };
         }
-        #endregion
     }
 }
