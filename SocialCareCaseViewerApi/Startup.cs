@@ -124,6 +124,7 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<PatchWarningNoteRequest>, PatchWarningNoteRequestValidator>();
             services.AddTransient<IValidator<CreateTeamRequest>, CreateTeamRequestValidator>();
             services.AddTransient<IValidator<GetTeamsRequest>, GetTeamsRequestValidator>();
+            services.AddTransient<IValidator<CreateCaseSubmissionRequest>, CreateCaseSubmissionRequestValidator>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -159,6 +160,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
             services.AddScoped<IPersonUseCase, PersonUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
+            services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

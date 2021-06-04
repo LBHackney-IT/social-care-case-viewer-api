@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -22,6 +23,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
+using DomainCaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -38,7 +40,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             _fixture = new Fixture();
         }
 
-        #region ToDomain
         [Test]
         public void CanMapWorkerFromInfrastructureToDomainWithoutTeamDetails()
         {
@@ -264,8 +265,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             otherName.ToDomain().Should().BeEquivalentTo(expectedResponse);
         }
 
-        #endregion
-        #region ToEntity
+        [Test]
+        public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
+        {
+            var databaseCaseSubmission = TestHelpers.CreateCaseSubmission();
+
+            var domainCaseSubmission = new DomainCaseSubmission()
+            {
+                SubmissionId = databaseCaseSubmission.SubmissionId,
+                FormId = databaseCaseSubmission.FormId,
+                Residents = databaseCaseSubmission.Residents,
+                Workers = databaseCaseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
+                CreatedAt = databaseCaseSubmission.CreatedAt,
+                CreatedBy = databaseCaseSubmission.CreatedBy.ToDomain(false),
+                EditHistory = databaseCaseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToDomain(false)
+                }).ToList(),
+                SubmissionState = databaseCaseSubmission.SubmissionState,
+                FormAnswers = databaseCaseSubmission.FormAnswers,
+            };
+
+            databaseCaseSubmission.ToDomain().Should().BeEquivalentTo(domainCaseSubmission);
+        }
+
         [Test]
         public void CanMapCreateAllocationRequestDomainObjectToDatabaseEntity()
         {
@@ -418,8 +442,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             (DateTime.TryParseExact(timestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)).Should().BeTrue();
         }
-
-        #endregion
     }
 }
 
