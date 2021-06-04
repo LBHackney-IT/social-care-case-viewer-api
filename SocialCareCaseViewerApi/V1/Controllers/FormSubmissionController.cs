@@ -11,11 +11,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/submissions")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class SubmissionController : BaseController
+    public class FormSubmissionController : BaseController
     {
         private readonly ISubmissionsUseCase _submissionsUseCase;
 
-        public SubmissionController(ISubmissionsUseCase submissionsUseCase)
+        public FormSubmissionController(ISubmissionsUseCase submissionsUseCase)
         {
             _submissionsUseCase = submissionsUseCase;
         }

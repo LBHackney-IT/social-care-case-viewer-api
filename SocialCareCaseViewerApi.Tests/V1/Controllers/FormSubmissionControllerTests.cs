@@ -11,16 +11,16 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
     [TestFixture]
-    public class SubmissionControllerTests
+    public class FormSubmissionControllerTests
     {
         private Mock<ISubmissionsUseCase> _submissionsUseCaseMock;
-        private SubmissionController _submissionController;
+        private FormSubmissionController _formSubmissionController;
 
         [SetUp]
         public void SetUp()
         {
             _submissionsUseCaseMock = new Mock<ISubmissionsUseCase>();
-            _submissionController = new SubmissionController(_submissionsUseCaseMock.Object);
+            _formSubmissionController = new FormSubmissionController(_submissionsUseCaseMock.Object);
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var createdSubmissionResponse = createdSubmission.ToDomain().ToResponse();
             _submissionsUseCaseMock.Setup(x => x.ExecutePost(request)).Returns((createdSubmissionResponse, createdSubmission));
 
-            var response = _submissionController.CreateSubmission(request) as ObjectResult;
+            var response = _formSubmissionController.CreateSubmission(request) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var invalidRequest = TestHelpers.CreateCaseSubmissionRequest(createdBy: "invalid email");
 
-            var response = _submissionController.CreateSubmission(invalidRequest) as BadRequestObjectResult;
+            var response = _formSubmissionController.CreateSubmission(invalidRequest) as BadRequestObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _submissionsUseCaseMock.Setup(x => x.ExecutePost(createCaseSubmissionRequest))
                 .Throws(new WorkerNotFoundException(errorMessage));
 
-            var response = _submissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
+            var response = _formSubmissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _submissionsUseCaseMock.Setup(x => x.ExecutePost(createCaseSubmissionRequest))
                 .Throws(new PersonNotFoundException(errorMessage));
 
-            var response = _submissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
+            var response = _formSubmissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
