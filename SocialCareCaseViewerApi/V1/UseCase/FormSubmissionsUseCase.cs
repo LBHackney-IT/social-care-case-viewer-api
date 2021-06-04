@@ -11,13 +11,13 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class SubmissionsUseCase : ISubmissionsUseCase
+    public class FormFormSubmissionsUseCase : IFormSubmissionsUseCase
     {
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
         private const string CollectionName = "resident-case-submissions";
 
-        public SubmissionsUseCase(IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
+        public FormFormSubmissionsUseCase(IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
         {
             _databaseGateway = databaseGateway;
             _mongoGateway = mongoGateway;

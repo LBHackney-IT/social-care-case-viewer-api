@@ -4,7 +4,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface ISubmissionsUseCase
+    public interface IFormSubmissionsUseCase
     {
         (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request);
     }

@@ -12,11 +12,11 @@ using SocialCareCaseViewerApi.V1.UseCase;
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
-    public class SubmissionUseCaseTests
+    public class FormSubmissionUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private Mock<IMongoGateway> _mockMongoGateway;
-        private SubmissionsUseCase _submissionsUseCase;
+        private FormFormSubmissionsUseCase _formFormSubmissionsUseCase;
         private const string CollectionName = "resident-case-submissions";
 
         [SetUp]
@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _mockMongoGateway = new Mock<IMongoGateway>();
-            _submissionsUseCase = new SubmissionsUseCase(_mockDatabaseGateway.Object, _mockMongoGateway.Object);
+            _formFormSubmissionsUseCase = new FormFormSubmissionsUseCase(_mockDatabaseGateway.Object, _mockMongoGateway.Object);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
             _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
-            var (caseSubmissionResponse, caseSubmission) = _submissionsUseCase.ExecutePost(request);
+            var (caseSubmissionResponse, caseSubmission) = _formFormSubmissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
                 caseSubmission.CreatedAt, worker, resident, caseSubmission.SubmissionId, request.FormId);
 
@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.CreateCaseSubmissionRequest();
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy));
 
-            Action act = () => _submissionsUseCase.ExecutePost(request);
+            Action act = () => _formFormSubmissionsUseCase.ExecutePost(request);
 
             act.Should().Throw<WorkerNotFoundException>()
                 .WithMessage($"Worker with email {request.CreatedBy} not found");
@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId));
 
-            Action act = () => _submissionsUseCase.ExecutePost(request);
+            Action act = () => _formFormSubmissionsUseCase.ExecutePost(request);
 
             act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"Person with id {request.ResidentId} not found");

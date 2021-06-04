@@ -13,13 +13,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     [TestFixture]
     public class FormSubmissionControllerTests
     {
-        private Mock<ISubmissionsUseCase> _submissionsUseCaseMock;
+        private Mock<IFormSubmissionsUseCase> _submissionsUseCaseMock;
         private FormSubmissionController _formSubmissionController;
 
         [SetUp]
         public void SetUp()
         {
-            _submissionsUseCaseMock = new Mock<ISubmissionsUseCase>();
+            _submissionsUseCaseMock = new Mock<IFormSubmissionsUseCase>();
             _formSubmissionController = new FormSubmissionController(_submissionsUseCaseMock.Object);
         }
 

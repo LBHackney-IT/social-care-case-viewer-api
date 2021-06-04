@@ -13,11 +13,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class FormSubmissionController : BaseController
     {
-        private readonly ISubmissionsUseCase _submissionsUseCase;
+        private readonly IFormSubmissionsUseCase _formSubmissionsUseCase;
 
-        public FormSubmissionController(ISubmissionsUseCase submissionsUseCase)
+        public FormSubmissionController(IFormSubmissionsUseCase formSubmissionsUseCase)
         {
-            _submissionsUseCase = submissionsUseCase;
+            _formSubmissionsUseCase = formSubmissionsUseCase;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var createdSubmission = _submissionsUseCase.ExecutePost(request).Item1;
+                var createdSubmission = _formSubmissionsUseCase.ExecutePost(request).Item1;
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (WorkerNotFoundException e)
