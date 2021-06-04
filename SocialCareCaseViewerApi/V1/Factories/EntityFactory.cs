@@ -76,8 +76,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ContextFlag = worker.ContextFlag,
                 CreatedBy = worker.CreatedBy,
                 DateStart = worker.DateStart,
-                AllocationCount = worker?.Allocations == null ? 0 : worker.Allocations.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count(),
-                Teams = includeTeamData ? worker.WorkerTeams?.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context }).ToList() : null,
+                AllocationCount = worker.Allocations?.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count() ?? 0,
+                Teams = (includeTeamData ? worker.WorkerTeams?.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context }).ToList() : null) ?? new List<Team>()
             };
         }
 
@@ -190,7 +190,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new dbPhoneNumber
             {
-                Number = number.Number.ToString(),
+                Number = number.Number,
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
