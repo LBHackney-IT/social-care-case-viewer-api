@@ -98,27 +98,6 @@ commands:
           name: Deploy lambda
           command: |
             sls deploy --stage <<parameters.stage>> --conceal
-  remove-lambda:
-    description: "Removes API and lambdas via Serverless"
-    parameters:
-      stage:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_13.x | bash -
-            apt-get update && apt-get install -y nodejs
-      - run:
-          name: Install serverless CLI
-          command: npm i -g serverless
-      - run:
-          name: Remove lambda
-          command: |
-            sls remove --stage <<parameters.stage>>
 
 jobs:
   check-code-formatting:
@@ -158,11 +137,6 @@ jobs:
     steps:
       - assume-role-and-persist-workspace-mosaic-production:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRODUCTION
   # terraform-init-and-apply-to-development:
     # executor: docker-terraform
     # steps:
@@ -188,24 +162,8 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "mosaic-prod"
-  remove-lambda-in-production:
-    executor: docker-dotnet
-    steps:
-      - remove-lambda:
-          stage: "production"
 
 workflows:
-  remove-lambda-in-production:
-    jobs:
-      - assume-role-production:
-          context: api-assume-role-production-context
-          filters:
-            branches:
-              only:
-                - development
-      - remove-lambda-in-production:
-          requires:
-            - assume-role-production
   check-and-deploy-development:
     jobs:
       - check-code-formatting
