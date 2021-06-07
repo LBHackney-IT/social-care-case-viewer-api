@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +15,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromBody]
         [JsonPropertyName("stepAnswers")]
-        public object StepAnswers { get; set; } = null!;
+        public Dictionary<string, object>
+        StepAnswers { get; set; } = null!;
     }
 
     public class UpdateFormSubmissionAnswersValidator : AbstractValidator<UpdateFormSubmissionAnswersRequest>

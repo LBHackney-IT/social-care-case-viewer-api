@@ -101,9 +101,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return Ok(_formSubmissionsUseCase.UpdateAnswers(submissionId, stepId, request));
             }
-            catch(GetSubmissionException)
+            catch (GetSubmissionException e)
             {
-                return BadRequest();
+                return UnprocessableEntity(e.Message);
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
             }
         }
     }

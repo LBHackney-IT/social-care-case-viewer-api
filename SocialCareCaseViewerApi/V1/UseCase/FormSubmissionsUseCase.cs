@@ -64,7 +64,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return foundSubmission?.ToDomain().ToResponse();
         }
-    }
 
+        public CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 }
