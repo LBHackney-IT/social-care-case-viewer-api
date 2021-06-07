@@ -204,7 +204,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 WarningNoteId = review.WarningNoteId,
                 ReviewDate = review.ReviewDate?.ToString("s"),
                 DisclosedWithIndividual = review.DisclosedWithIndividual,
-                Notes = review.Notes,
+                ReviewNotes = review.ReviewNotes,
                 ManagerName = review.ManagerName,
                 DiscussedWithManagerDate = review.DiscussedWithManagerDate?.ToString("s"),
                 CreatedAt = review.CreatedAt?.ToString("s"),
