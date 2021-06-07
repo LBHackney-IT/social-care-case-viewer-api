@@ -22,6 +22,7 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [API design](#api-design)
     - [Databases](#databases)
       - [Updating the database schema](#updating-the-database-schema)
+      - [Making manual updates](#making-manual-updates)
     - [Deployment](#deployment)
     - [Related repositories](#related-repositories)
   - [Active contributors](#active-contributors)
@@ -132,6 +133,17 @@ The service API has two databases (as seen in the [C4 component diagram](./docs/
 We currently don't have database migrations set up for the databases which means changes to the schema are documented in the repository and done manually via the AWS console.
 
 If you need to make changes e.g. add a new table to the PostgreSQL database, then see [Updating the database schema](./docs/updating-database-schema.md) for how we manage this and do this via the AWS console.
+
+### Making manual updates
+
+From time to time, we are required to make manual data updates because it's something that's not possible through the UI of the Social Care System. However, this is something we only want to do when really necessary as it requires directly connecting to the database and running SQL statements.
+
+To keep track of these changes, we document them in `/database/manual-updates`. If you need to make a manual data update, then:
+
+1. Duplicate [our template file](database/manual-updates/yyyy_mm_dd_1_<title>-template.md)
+2. Rename the duplicated file by replacing the date and the title
+3. Fill in the sections of the file
+4. Commit, push and create a PR
 
 ### Deployment
 
