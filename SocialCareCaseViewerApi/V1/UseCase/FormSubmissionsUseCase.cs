@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 CreatedBy = worker,
                 SubmissionState = SubmissionState.InProgress,
                 EditHistory = new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = worker, EditTime = dateTimeNow } },
-                FormAnswers = new Dictionary<string, Dictionary<string, string[]>>()
+                FormAnswers = new Dictionary<string, Dictionary<string, object>>()
             };
 
             _mongoGateway.InsertRecord(CollectionName, caseSubmission);
@@ -64,7 +64,31 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return foundSubmission?.ToDomain().ToResponse();
         }
-    }
 
+        public CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
+        {
+            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email {request.EditedBy} not found");
+            }
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            if (submission == null)
+            {
+                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+            }
+
+            submission.FormAnswers[stepId] = request.StepAnswers;
+            submission.EditHistory.Add(new EditHistory<Worker>
+            {
+                Worker = worker,
+                EditTime = DateTime.Now
+            });
+            _mongoGateway.UpsertRecord(CollectionName, submissionId, submission);
+            return submission.ToDomain().ToResponse();
+        }
+    }
 
 }

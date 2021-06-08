@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -10,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
-using Person = Bogus.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -147,7 +145,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.CreatedAt, f => createdAt ?? f.Date.Soon())
                 .RuleFor(w => w.DateStart, start)
                 .RuleFor(w => w.DateEnd, end)
-                .RuleFor(w => w.IsActive, f => isActive)
+                .RuleFor(w => w.IsActive, isActive)
                 .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> { CreateAllocation(), CreateAllocation(), CreateAllocation() } : null)
                 .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> { CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam() } : null)
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
@@ -502,6 +500,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
+        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, Dictionary<string, object>? stepAnswers = null)
+        {
+            stepAnswers ??= new Dictionary<string, object>
+            {
+                {"1", "Value One"},
+                {"2", new List<string>{"Value Two"}},
+                {"3", new List<Dictionary<string, string>> {new Dictionary<string, string> {{"3.1", "Value Three"}}}},
+                {"4", new List<Dictionary<string, List<string>>> {new Dictionary<string, List<string>> {{"4.1", new List<string>{"Value Four"}}}}}
+            };
+
+            return new Faker<UpdateFormSubmissionAnswersRequest>()
+                .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
+                .RuleFor(u => u.StepAnswers, stepAnswers);
+        }
+
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
             DateTime? dateTime = null,
             Worker? worker = null,
@@ -527,7 +540,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, string[]>>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, object>>());
         }
     }
 }
