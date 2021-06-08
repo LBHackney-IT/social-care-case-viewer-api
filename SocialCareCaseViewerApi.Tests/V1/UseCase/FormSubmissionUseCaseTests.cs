@@ -96,5 +96,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), nonExistentSubmissionId), Times.Once);
             response.Should().BeNull();
         }
+
+        [Test]
+        public void ExecuteFinishSubmissionSuccessfullyCompletesASubmission()
+        {
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId)).Returns(createdSubmission);
+
+            _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteFinishSubmissionThrowsWorkerNotFoundExecptionWhenNoWorkerFoundFromRequest()
+        {
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy));
+
+            Action act = () => _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
+
+            act.Should().Throw<WorkerNotFoundException>().WithMessage($"Worker with email {request.CreatedBy} not found");
+        }
+
+        [Test]
+        public void ExecuteFinishSubmissionThrowsGetSubmissionExecptionWhenNoSubmissionFoundFromRequest()
+        {
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
+
+            Action act = () => _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
+
+            act.Should().Throw<GetSubmissionException>().WithMessage($"Submission with ID {createdSubmission.SubmissionId.ToString()} not found");
+        }
     }
 }

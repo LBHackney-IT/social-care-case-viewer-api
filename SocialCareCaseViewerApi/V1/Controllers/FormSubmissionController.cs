@@ -74,5 +74,40 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return UnprocessableEntity(e.Message);
             }
         }
+
+        /// <summary>
+        /// Finish a submission
+        /// </summary>
+        /// <response code="204">Case submission successfully finished</response>
+        /// <response code="400">Invalid FinishCaseSubmissionRequest received</response>
+        /// <response code="422">Could not process request</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        [Route("{submissionId:Guid}")]
+        public IActionResult FinishSubmission(Guid submissionId, [FromBody] FinishCaseSubmissionRequest request)
+        {
+            var validator = new FinishCaseSubmissionRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _formSubmissionsUseCase.ExecuteFinishSubmission(submissionId, request);
+                return NoContent();
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (GetSubmissionException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+        }
+
     }
 }

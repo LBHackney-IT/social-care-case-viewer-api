@@ -64,6 +64,27 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return foundSubmission?.ToDomain().ToResponse();
         }
+
+        public void ExecuteFinishSubmission(Guid submissionId, FinishCaseSubmissionRequest request)
+        {
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
+            }
+            worker.WorkerTeams = null;
+
+            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            if (updateSubmission == null)
+            {
+                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+            }
+
+            updateSubmission.SubmissionState = SubmissionState.Submitted;
+            updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
+
+            _mongoGateway.UpsertRecord<CaseSubmission>(CollectionName, submissionId, updateSubmission);
+        }
     }
 
 
