@@ -109,12 +109,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway
                 .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
                 .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CaseSubmission>()));
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
 
             response.Should().NotBeNull();
             response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
             response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+
+            _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);
+            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId), Times.Once);
+            _mockMongoGateway.Verify(x => x.UpsertRecord<CaseSubmission>(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
         }
 
         [Test]
