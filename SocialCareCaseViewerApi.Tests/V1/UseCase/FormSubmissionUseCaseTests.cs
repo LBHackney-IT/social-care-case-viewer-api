@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void UpdateAnswersThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
+        public void UpdateAnswersThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
@@ -140,7 +140,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void UpdateAnswersThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
+        public void UpdateAnswersThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
