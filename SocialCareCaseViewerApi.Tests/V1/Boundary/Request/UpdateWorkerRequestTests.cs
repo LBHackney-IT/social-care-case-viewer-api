@@ -48,11 +48,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             {
                 var validationResponse = validator.Validate(request);
 
-                if (validationResponse == null)
-                {
-                    throw new NullReferenceException();
-                }
-
                 validationResponse.Should().NotBeNull();
                 validationResponse.IsValid.Should().Be(false);
                 validationResponse.ToString().Should().Be(errorMessage);
@@ -68,10 +63,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             var validationResponse = validator.Validate(request);
 
-            if (validationResponse == null)
-            {
-                throw new NullReferenceException();
-            }
             validationResponse.Should().NotBeNull();
             validationResponse.IsValid.Should().Be(true);
         }

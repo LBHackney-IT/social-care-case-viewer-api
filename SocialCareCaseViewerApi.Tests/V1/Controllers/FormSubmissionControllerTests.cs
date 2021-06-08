@@ -121,6 +121,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void EditSubmissionAnswersReturns400WhenGivenInvalidRequest()
+        {
+            var createdSubmission = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
+            const string stepId = "1";
+            var updateFormSubmissionAnswersRequest = TestHelpers.CreateUpdateFormSubmissionAnswersRequest(editedBy: "not_a_valid_email");
+            _submissionsUseCaseMock.Setup(x => x.UpdateAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest)).Returns(createdSubmission);
+
+            var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(400);
+        }
+
+        [Test]
         public void EditSubmissionAnswersReturns422WhenGetSubmissionExceptionThrown()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission();
