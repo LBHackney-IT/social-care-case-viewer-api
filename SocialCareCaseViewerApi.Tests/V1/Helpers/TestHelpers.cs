@@ -145,7 +145,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.CreatedAt, f => createdAt ?? f.Date.Soon())
                 .RuleFor(w => w.DateStart, start)
                 .RuleFor(w => w.DateEnd, end)
-                .RuleFor(w => w.IsActive, f => isActive)
+                .RuleFor(w => w.IsActive, isActive)
                 .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> { CreateAllocation(), CreateAllocation(), CreateAllocation() } : null)
                 .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> { CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam() } : null)
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);

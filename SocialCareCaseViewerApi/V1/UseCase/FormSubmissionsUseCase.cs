@@ -81,6 +81,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             submission.FormAnswers[stepId] = request.StepAnswers;
+            submission.EditHistory.Add(new EditHistory<Worker>
+            {
+                Worker = worker,
+                EditTime = DateTime.Now
+            });
             _mongoGateway.UpsertRecord(CollectionName, submissionId, submission);
             return submission.ToDomain().ToResponse();
         }

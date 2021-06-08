@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -101,17 +102,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
-            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
             var worker = TestHelpers.CreateWorker();
             const string stepId = "1";
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
-            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
+                .Returns(createdSubmission);
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
 
-            response.
-            // expect response to be equivalent to the answers we gave it!
-            // expect response to have added some history
+            response.Should().NotBeNull();
+            response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
+            response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
         }
 
         [Test]
