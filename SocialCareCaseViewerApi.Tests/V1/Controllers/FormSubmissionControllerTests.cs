@@ -106,6 +106,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void FinishSubmissionReturns204WhenACaseIsSuccesfullyFinished()
+        {
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as NoContentResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void FinishSubmissionWithInvalidRequestReturns400Status()
+        {
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var invalidRequest = TestHelpers.FinishCaseSubmissionRequest(createdBy: "invalid email");
+
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, invalidRequest) as BadRequestObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Provide a valid email address for who is finishing the submission");
+        }
+
+        [Test]
+        public void FinishSubmissionReturns422WhenWorkerNotFoundExecpetionThrown()
+        {
+            const string errorMessage = "Failed to find worker";
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId, request)).Throws(new WorkerNotFoundException(errorMessage));
+
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
         public void EditSubmissionAnswersReturns200AndUpdatedResponse()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
@@ -145,6 +184,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 .Throws(new GetSubmissionException(errorMessage));
 
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        public void FinishSubmissionReturns422WhenGetSubmissionExecpetionThrown()
+        {
+            const string errorMessage = "Failed to find submission";
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId, request)).Throws(new GetSubmissionException(errorMessage));
+
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);

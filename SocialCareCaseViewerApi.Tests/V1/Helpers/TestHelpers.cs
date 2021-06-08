@@ -542,5 +542,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, object>>());
         }
+
+        public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(
+            string? createdBy = null
+        )
+        {
+            return new Faker<FinishCaseSubmissionRequest>()
+            .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+        }
     }
 }

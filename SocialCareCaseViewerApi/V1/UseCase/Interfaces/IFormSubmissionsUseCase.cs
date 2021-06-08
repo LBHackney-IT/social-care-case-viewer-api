@@ -11,6 +11,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 
         CaseSubmissionResponse ExecuteGetById(Guid submissionId);
 
+        void ExecuteFinishSubmission(Guid submissionId, FinishCaseSubmissionRequest request);
         CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId,
             UpdateFormSubmissionAnswersRequest request);
     }
