@@ -468,7 +468,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void PostWarningNoteReturns500WhenWarningNoteCouldNotBeInserted()
+        public void PostWarningNoteReturns400WhenPersonNotFoundExceptionThrown()
         {
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePost(It.IsAny<PostWarningNoteRequest>()))
@@ -540,9 +540,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetWarningNoteByIdReturns404IfNoWarningNoteIsFound()
         {
             var warningNoteId = _fixture.Create<long>();
-
-            _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()));
+            _mockWarningNoteUseCase.Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()));
 
             var response = _classUnderTest.GetWarningNoteById(warningNoteId) as ObjectResult;
 
@@ -562,7 +560,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void PatchWarningNoteReturnsA404ResponseIfItEncountersAnException()
+        public void PatchWarningNoteReturnsA400ResponseWhenPatchWarningNoteExceptionThrown()
         {
             var request = TestHelpers.CreatePatchWarningNoteRequest().Item1;
 
