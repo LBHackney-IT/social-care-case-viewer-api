@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
-        
+
         public void EditSubmissionAnswersReturns200AndUpdatedResponse()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();
@@ -203,7 +203,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
-        
+
         [Test]
         public void EditSubmissionAnswersReturns422WhenGetWorkerNotFoundExceptionThrown()
         {

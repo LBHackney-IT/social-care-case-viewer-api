@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             _mongoGateway.UpsertRecord<CaseSubmission>(CollectionName, submissionId, updateSubmission);
         }
-    
+
 
         public CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
