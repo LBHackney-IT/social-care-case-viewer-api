@@ -11,7 +11,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     {
         [BsonId]
         public Guid SubmissionId { get; set; }
-        public int FormId { get; set; }
+
+        public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;

@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     public class CreateCaseSubmissionRequest
     {
         [JsonPropertyName("formId")]
-        public int FormId { get; set; }
+        public string FormId { get; set; } = null!;
 
         [JsonPropertyName("socialCareId")]
         public int ResidentId { get; set; }

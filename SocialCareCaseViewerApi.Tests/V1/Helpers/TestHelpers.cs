@@ -490,12 +490,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
-            int? formId = null,
+            string? formId = null,
             int? residentId = null,
             string? createdBy = null)
         {
             return new Faker<CreateCaseSubmissionRequest>()
-                .RuleFor(s => s.FormId, f => formId ?? f.UniqueIndex + 1)
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.ResidentId, f => residentId ?? f.UniqueIndex + 1)
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
@@ -520,7 +520,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             Worker? worker = null,
             InfrastructurePerson? resident = null,
             Guid? id = null,
-            int? formId = null)
+            string? formId = null)
         {
             id ??= Guid.NewGuid();
             worker ??= CreateWorker();
@@ -530,7 +530,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, id)
-                .RuleFor(s => s.FormId, f => formId ?? f.Random.Number(1, Int32.MaxValue))
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
