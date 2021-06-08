@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -10,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
-using Person = Bogus.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -542,7 +540,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, string[]>>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, object>>());
         }
     }
 }

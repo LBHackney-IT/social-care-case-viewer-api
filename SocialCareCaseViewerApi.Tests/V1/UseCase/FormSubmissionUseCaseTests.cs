@@ -96,5 +96,52 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), nonExistentSubmissionId), Times.Once);
             response.Should().BeNull();
         }
+
+        [Test]
+        public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            response.
+            // expect response to be equivalent to the answers we gave it!
+            // expect response to have added some history
+        }
+
+        [Test]
+        public void UpdateAnswersThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
+
+            Action act = () => _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            act.Should().Throw<GetSubmissionException>()
+                .WithMessage($"Submission with ID {createdSubmission.SubmissionId.ToString()} not found");
+        }
+
+        [Test]
+        public void UpdateAnswersThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy));
+
+            Action act = () => _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email {request.EditedBy} not found");
+        }
     }
 }
