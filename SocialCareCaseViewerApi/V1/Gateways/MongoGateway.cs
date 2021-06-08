@@ -12,7 +12,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public MongoGateway()
         {
-            string mongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
+            string mongoConnectionString = Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING") ??
+                                           Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
                                            @"mongodb://localhost:1433/";
 
             string databaseName = Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME") ?? "social_care_db_name";

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -107,7 +108,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId)).Returns(createdSubmission);
 
             _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
+        }
 
+        public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            response.Should().NotBeNull();
+            response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
+            response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+
+            _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);
+            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId), Times.Once);
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
         }
 
@@ -135,6 +159,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             Action act = () => _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
 
             act.Should().Throw<GetSubmissionException>().WithMessage($"Submission with ID {createdSubmission.SubmissionId.ToString()} not found");
+        }
+
+        [Test]
+        public void UpdateAnswersThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
+
+            Action act = () => _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            act.Should().Throw<GetSubmissionException>()
+                .WithMessage($"Submission with ID {createdSubmission.SubmissionId.ToString()} not found");
+        }
+
+        [Test]
+        public void UpdateAnswersThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy));
+
+            Action act = () => _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email {request.EditedBy} not found");
         }
     }
 }

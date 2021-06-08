@@ -109,5 +109,40 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Edit answers for a submission
+        /// </summary>
+        /// <param name="submissionId">Get the related submission by unique ID</param>
+        /// <param name="stepId">Get the correct step on the form answers to update</param>
+        /// <param name="request">Contains Edited By - email for worker doing the edit, StepAnswers - new answers to be saved for Form Submission</param>
+        /// <response code="201">Case submission created successfully</response>
+        /// <response code="400">Invalid CreateCaseSubmissionRequest received</response>
+        /// <response code="422">Could not process request</response>
+        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("{submissionId:Guid}/steps/{stepId}")]
+        public IActionResult EditSubmissionAnswers(Guid submissionId, string stepId, [FromBody] UpdateFormSubmissionAnswersRequest request)
+        {
+            var validator = new UpdateFormSubmissionAnswersValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                return Ok(_formSubmissionsUseCase.UpdateAnswers(submissionId, stepId, request));
+            }
+            catch (GetSubmissionException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+        }
     }
 }
