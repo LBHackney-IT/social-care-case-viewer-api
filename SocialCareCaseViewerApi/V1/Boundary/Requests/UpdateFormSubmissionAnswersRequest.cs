@@ -16,7 +16,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromBody]
         [JsonPropertyName("stepAnswers")]
         public Dictionary<string, object>
-        StepAnswers { get; set; } = null!;
+        StepAnswers
+        { get; set; } = null!;
     }
 
     public class UpdateFormSubmissionAnswersValidator : AbstractValidator<UpdateFormSubmissionAnswersRequest>
