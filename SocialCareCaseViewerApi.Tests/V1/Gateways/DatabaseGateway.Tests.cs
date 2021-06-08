@@ -694,7 +694,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.PostWarningNote(request);
 
-            act.Should().Throw<PostWarningNoteException>()
+            act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"Person with given id ({request.PersonId}) not found");
         }
 

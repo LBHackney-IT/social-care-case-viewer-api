@@ -168,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
 
-            result.Should().NotBeNull();
+            result.Should().BeNull();
             result?.StatusCode.Should().Be(404);
             result?.Value.Should().Be("Person not found");
         }
@@ -272,25 +272,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void UpdateAllocationReturns500WhenUpdateFails()
+        public void UpdateAllocationReturns400WhenUpdateFails()
         {
             var request = TestHelpers.CreateUpdateAllocationRequest().Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new EntityUpdateException("Unable to update allocation"));
 
             var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
 
-            response?.StatusCode.Should().Be(500);
+            response?.StatusCode.Should().Be(400);
         }
 
         [Test]
-        public void UpdateAllocationReturns500OnUpdateAllocationException()
+        public void UpdateAllocationReturns400OnUpdateAllocationException()
         {
             var request = TestHelpers.CreateUpdateAllocationRequest().Item1;
             _mockAllocationsUseCase.Setup(x => x.ExecuteUpdate(It.IsAny<UpdateAllocationRequest>())).Throws(new UpdateAllocationException("Unable to update allocation"));
 
             var response = _classUnderTest.UpdateAllocation(request) as ObjectResult;
 
-            response?.StatusCode.Should().Be(500);
+            response?.StatusCode.Should().Be(400);
         }
 
         [Test]
@@ -472,12 +472,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePost(It.IsAny<PostWarningNoteRequest>()))
-                .Throws(new PostWarningNoteException("Warning Note could not be inserted"));
+                .Throws(new PersonNotFoundException("Warning Note could not be inserted"));
 
             var response = _classUnderTest.PostWarningNote(new PostWarningNoteRequest()) as ObjectResult;
 
             response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(500);
+            response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Warning Note could not be inserted");
         }
 
@@ -542,12 +542,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var warningNoteId = _fixture.Create<long>();
 
             _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()))
-                .Throws(new DocumentNotFoundException($"No warning note found for the specified ID: {warningNoteId}"));
+                .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()));
 
             var response = _classUnderTest.GetWarningNoteById(warningNoteId) as ObjectResult;
 
-            response.Should().NotBeNull();
+            response.Should().BeNull();
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be($"No warning note found for the specified ID: {warningNoteId}");
         }
@@ -574,7 +573,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
             response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(404);
+            response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("exception encountered");
         }
 
