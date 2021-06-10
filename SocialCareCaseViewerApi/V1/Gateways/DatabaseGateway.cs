@@ -450,7 +450,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public Worker GetWorkerByEmail(string email)
         {
             return _databaseContext.Workers
-                .Where(worker => worker.Email == email)
+                .Where(worker => worker.Email.ToLower() == email.ToLower())
                 .Include(x => x.Allocations)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(y => y.Team)

@@ -91,6 +91,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeNull();
         }
 
+        [Test]
+        public void GetWorkerByWorkerEmailCaseInsensitive()
+        {
+            const string workerEmail = "realemail@example.com";
+            const string casedEmail = "realEmail@example.com";
+
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: workerEmail));
+            var response = _classUnderTest.GetWorkerByEmail(casedEmail);
+
+            response.Should().BeEquivalentTo(worker);
+        }
+
 
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
