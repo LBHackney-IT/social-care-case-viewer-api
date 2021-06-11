@@ -976,6 +976,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             insertedRecord?.WarningNoteId.Should().Be(request.WarningNoteId);
             insertedRecord?.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord?.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
             insertedRecord?.ReviewNotes.Should().Be(request.ReviewNotes);
             insertedRecord?.ManagerName.Should().Be(request.ManagerName);
             insertedRecord?.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);

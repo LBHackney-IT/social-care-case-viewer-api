@@ -855,6 +855,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WarningNoteId = request.WarningNoteId,
                 ReviewDate = request.ReviewDate,
                 ReviewNotes = request.ReviewNotes,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
                 ManagerName = request.ManagerName,
                 DiscussedWithManagerDate = request.DiscussedWithManagerDate,
                 CreatedBy = request.ReviewedBy,

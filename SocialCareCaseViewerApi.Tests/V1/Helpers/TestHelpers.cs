@@ -365,7 +365,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
-            DateTime? discussedWithManagerDate = null
+            DateTime? discussedWithManagerDate = null,
+            bool? disclosedWithIndividual = null
         )
         {
             var person = CreatePerson();
@@ -377,6 +378,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
                 .RuleFor(p => p.ReviewedBy, f => reviewedBy ?? worker.Email)
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
+                .RuleFor(p => p.DisclosedWithIndividual, f => disclosedWithIndividual ?? f.Random.Bool())
                 .RuleFor(p => p.Status, f => requestStatus)
                 .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
                 .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
