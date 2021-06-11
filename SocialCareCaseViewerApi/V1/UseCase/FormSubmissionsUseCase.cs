@@ -30,7 +30,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
             }
-            worker.WorkerTeams = new List<WorkerTeam>();
+            worker.WorkerTeams = null;
+            worker.Allocations = null;
 
             var resident = _databaseGateway.GetPersonByMosaicId(request.ResidentId);
             if (resident == null)
@@ -73,6 +74,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
             }
             worker.WorkerTeams = null;
+            worker.Allocations = null;
 
             var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
             if (updateSubmission == null)
@@ -94,7 +96,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new WorkerNotFoundException($"Worker with email {request.EditedBy} not found");
             }
-            worker.WorkerTeams = new List<WorkerTeam>();
+            worker.WorkerTeams = null;
+            worker.Allocations = null;
 
             var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
             if (submission == null)
