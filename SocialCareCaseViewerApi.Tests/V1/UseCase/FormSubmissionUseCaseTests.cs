@@ -50,6 +50,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecutePostSetsTheWorkersTeamsAndAllocationsToNull()
+        {
+            var request = TestHelpers.CreateCaseSubmissionRequest();
+            var worker = TestHelpers.CreateWorker();
+            var resident = TestHelpers.CreatePerson();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
+            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
+
+            var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
+
+            caseSubmission.Workers.FirstOrDefault().WorkerTeams.Should().BeNull();
+            caseSubmission.Workers.FirstOrDefault().Allocations.Should().BeNull();
+            caseSubmissionResponse.Workers.FirstOrDefault().Teams.Should().BeEmpty();
+            caseSubmissionResponse.Workers.FirstOrDefault().AllocationCount.Should().Be(0);
+        }
+
+        [Test]
         public void ExecutePostThrowsAnErrorWhenNoWorkerFoundForRequest()
         {
             var request = TestHelpers.CreateCaseSubmissionRequest();
@@ -111,6 +130,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
         }
 
+        [Test]
+        public void ExecuteFinishSubmissionSetsTheWorkersTeamsAndAllocationsToNull()
+        {
+            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId)).Returns(createdSubmission);
+
+            _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId, request);
+
+            worker.WorkerTeams.Should().BeNull();
+            worker.Allocations.Should().BeNull();
+        }
+
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
@@ -129,10 +163,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().NotBeNull();
             response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
             response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
-
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId), Times.Once);
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
+        }
+
+        [Test]
+        public void UpdateAnswersSetsTheWorkersTeamsAndAllocationsToNull()
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var worker = TestHelpers.CreateWorker();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, null, worker);
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
+
+            worker.WorkerTeams.Should().BeNull();
+            worker.Allocations.Should().BeNull();
+            response.Workers.FirstOrDefault().Teams.Should().BeEmpty();
+            response.Workers.FirstOrDefault().AllocationCount.Should().Be(0);
         }
 
         [Test]
