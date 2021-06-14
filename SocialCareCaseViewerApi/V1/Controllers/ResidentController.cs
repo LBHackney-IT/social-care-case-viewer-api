@@ -106,7 +106,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         ///
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
-        [Route("residents")]
         public IActionResult UpdateResident([FromBody] UpdateResidentRequest request)
         {
             try
