@@ -58,14 +58,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return (caseSubmission.ToDomain().ToResponse(), caseSubmission);
         }
 
-        public CaseSubmissionResponse? ExecuteGetById(Guid submissionId)
+        public CaseSubmissionResponse? ExecuteGetById(string submissionId)
         {
             var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
 
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public void ExecuteFinishSubmission(Guid submissionId, FinishCaseSubmissionRequest request)
+        public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             if (worker == null)
@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
             if (updateSubmission == null)
             {
-                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+                throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
             updateSubmission.SubmissionState = SubmissionState.Submitted;
@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
 
 
-        public CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
+        public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
             if (worker == null)
@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
             if (submission == null)
             {
-                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+                throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
             submission.FormAnswers[stepId] = request.StepAnswers;

@@ -106,7 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void FinishSubmissionReturns204WhenACaseIsSuccesfullyFinished()
+        public void FinishSubmissionReturns204WhenACaseIsSuccessfullyFinished()
         {
             var request = TestHelpers.FinishCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
