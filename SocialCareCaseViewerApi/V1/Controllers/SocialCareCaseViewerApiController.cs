@@ -21,19 +21,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
-        private readonly IRelationshipsUseCase _relationshipsUseCase;
 
         public SocialCareCaseViewerApiController(
             IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IRelationshipsUseCase relationshipsUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
         {
             _allocationUseCase = allocationUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
-            _relationshipsUseCase = relationshipsUseCase;
         }
 
         /// <summary>
@@ -213,19 +211,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get all warning notes created for a specific person
-        /// </summary>
-        /// <response code="200">Success. Returns warning notes related to the specified ID</response>
-        /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents/{personId}/warningNotes")]
-        public IActionResult ListWarningNotes(long personId)
-        {
-            return Ok(_warningNoteUseCase.ExecuteGet(personId));
-        }
-
-        /// <summary>
         /// Get a specific warning note along with any associated warning note reviews
         /// </summary>
         /// <response code="200">Success. Returns warning note and any related reviews for the specified ID</response>
@@ -273,28 +258,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (PatchWarningNoteException e)
             {
                 return NotFound(e.Message);
-            }
-        }
-
-        /// <summary>
-        /// Get a list of relationships by person id
-        /// </summary>
-        /// <param name="request"></param>
-        /// <response code="200">Successful request. Relationships returned</response>
-        /// <response code="404">Person not found</response>
-        /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents/{personId}/relationships")]
-        public IActionResult ListRelationships([FromQuery] ListRelationshipsRequest request)
-        {
-            try
-            {
-                return Ok(_relationshipsUseCase.ExecuteGet(request));
-            }
-            catch (GetRelationshipsException ex)
-            {
-                return NotFound(ex.Message);
             }
         }
     }
