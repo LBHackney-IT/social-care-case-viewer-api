@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -49,6 +48,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who created the submission");
+        }
+
+        [Test]
+        public void PostSubmissionWithValidRequestReturns500WhenNoSubmissionIdAssigned()
+        {
+            var request = TestHelpers.CreateCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var createdSubmissionResponse = createdSubmission.ToDomain().ToResponse();
+            createdSubmissionResponse.SubmissionId = null;
+            _submissionsUseCaseMock.Setup(x => x.ExecutePost(request)).Returns((createdSubmissionResponse, createdSubmission));
+
+            var response = _formSubmissionController.CreateSubmission(request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(500);
+            response?.Value.Should().Be("Case submission created with a null submission ID");
         }
 
         [Test]
@@ -129,7 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void FinishSubmissionReturns422WhenWorkerNotFoundExecpetionThrown()
+        public void FinishSubmissionReturns422WhenWorkerNotFoundExceptionThrown()
         {
             const string errorMessage = "Failed to find worker";
             var createdSubmission = TestHelpers.CreateCaseSubmission();

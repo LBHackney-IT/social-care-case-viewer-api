@@ -65,7 +65,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
                 if (createdSubmission.SubmissionId == null)
                 {
-                    return UnprocessableEntity("Case submission created with a null submission ID");
+                    return StatusCode(500, "Case submission created with a null submission ID");
                 }
 
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
