@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             updateSubmission.SubmissionState = SubmissionState.Submitted;
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
-            _mongoGateway.UpsertRecord(CollectionName, submissionId, updateSubmission);
+            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), updateSubmission);
         }
 
 
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Worker = worker,
                 EditTime = DateTime.Now
             });
-            _mongoGateway.UpsertRecord(CollectionName, submissionId, submission);
+            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
     }

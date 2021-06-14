@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             collection.InsertOne(objToAdd);
         }
 
-        public void UpsertRecord<T>(string collectionName, string id, T record)
+        public void UpsertRecord<T>(string collectionName, BsonObjectId id, T record)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
             var filter = new BsonDocument("_id", id);
