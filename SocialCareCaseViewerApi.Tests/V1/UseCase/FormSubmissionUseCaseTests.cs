@@ -37,11 +37,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
-            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
+            // _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
                 caseSubmission.CreatedAt, worker, resident, caseSubmission.SubmissionId, request.FormId);
+            caseSubmissionResponse.SubmissionId = expectedResponse.SubmissionId ?? "0";
 
             caseSubmissionResponse.Should().BeEquivalentTo(expectedResponse.ToDomain().ToResponse());
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.CreatedBy), Times.Once);
@@ -109,11 +110,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByIdShouldReturnNullIfNoCaseIsFound()
         {
-            var nonExistentSubmissionId = new Guid();
+            var response = _formSubmissionsUseCase.ExecuteGetById("1234");
 
-            var response = _formSubmissionsUseCase.ExecuteGetById(nonExistentSubmissionId);
-
-            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), nonExistentSubmissionId), Times.Once);
+            _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             response.Should().BeNull();
         }
 
@@ -145,6 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             worker.Allocations.Should().BeNull();
         }
 
+        [Test]
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
@@ -156,7 +156,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
                 .Returns(createdSubmission);
             _mockMongoGateway.Setup(x =>
-                x.UpsertRecord(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CaseSubmission>()));
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
 
@@ -180,7 +180,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId))
                 .Returns(createdSubmission);
             _mockMongoGateway.Setup(x =>
-                x.UpsertRecord(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CaseSubmission>()));
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId, stepId, request);
 

@@ -62,6 +62,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdSubmission = _formSubmissionsUseCase.ExecutePost(request).Item1;
+
+                if (createdSubmission.SubmissionId == null)
+                {
+                    return UnprocessableEntity("Case submission created with a null submission ID");
+                }
+
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (WorkerNotFoundException e)
@@ -69,10 +75,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return UnprocessableEntity(e.Message);
             }
             catch (PersonNotFoundException e)
-            {
-                return UnprocessableEntity(e.Message);
-            }
-            catch (NullCaseSubmissionIdException e)
             {
                 return UnprocessableEntity(e.Message);
             }

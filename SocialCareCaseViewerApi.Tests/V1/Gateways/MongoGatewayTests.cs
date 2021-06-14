@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Bogus;
 using FluentAssertions;
 using MongoDB.Bson.Serialization.Attributes;
 using NUnit.Framework;
@@ -10,8 +10,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
     public class TestObjectForMongo
     {
-        [BsonId]
-        public Guid Id { get; set; }
+        [BsonId] public string Id { get; set; } = null!;
         public string Property1 { get; set; } = null!;
         public List<TestObjectForMongo>? Property2 { get; set; }
         public TestObjectForMongo? Property3 { get; set; }
@@ -21,22 +20,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     public class MongoGatewayTests
     {
         private readonly IMongoGateway _mongoGateway = new MongoGateway();
-
+        private readonly Faker _faker = new Faker();
         private TestObjectForMongo? _testObjectForMongo;
 
         [SetUp]
         public void Setup()
         {
-
             _testObjectForMongo = new TestObjectForMongo
             {
-                Id = new Guid(),
+                Id = _faker.Random.String2(24),
                 Property1 = "test-property",
                 Property2 = new List<TestObjectForMongo>
                 {
                     new TestObjectForMongo
                     {
-                        Id = new Guid(),
+                        Id = _faker.Random.String2(24),
                         Property1 = "test-property-list",
                         Property2 = null,
                         Property3 = null
@@ -44,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 },
                 Property3 = new TestObjectForMongo
                 {
-                    Id = new Guid(),
+                    Id = _faker.Random.String2(24),
                     Property1 = "test-property-embedded",
                     Property2 = null,
                     Property3 = null

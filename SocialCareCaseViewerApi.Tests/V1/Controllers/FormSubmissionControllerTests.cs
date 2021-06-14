@@ -97,9 +97,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetSubmissionByIdReturns404WhenACaseIsNotFound()
         {
-            var nonExistentSubmissionId = new Guid();
-
-            var response = _formSubmissionController.GetSubmissionById(nonExistentSubmissionId) as NotFoundResult;
+            var response = _formSubmissionController.GetSubmissionById("1234") as NotFoundResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
@@ -145,6 +143,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.Value.Should().Be(errorMessage);
         }
 
+        [Test]
         public void EditSubmissionAnswersReturns200AndUpdatedResponse()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission().ToDomain().ToResponse();

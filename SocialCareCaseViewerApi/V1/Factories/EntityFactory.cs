@@ -147,12 +147,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
         {
-
-            if (caseSubmission.SubmissionId == null)
-            {
-                throw new NullCaseSubmissionIdException("Case submission with a null submission ID cannot be converted");
-            }
-
             return new Domain.CaseSubmission
             {
                 SubmissionId = caseSubmission.SubmissionId,
