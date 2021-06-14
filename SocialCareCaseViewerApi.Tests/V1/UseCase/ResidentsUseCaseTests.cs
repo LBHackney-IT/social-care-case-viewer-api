@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -41,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetReturnsNullWhenPersonNotFound()
         {
             var request = _faker.Random.Long();
-            _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request)).Returns((dbPerson) null);
+            _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request));
 
             var result = _residentsUseCase.ExecuteGet(request);
 
@@ -58,6 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _residentsUseCase.ExecuteGet(request);
 
             response.Should().BeOfType<GetPersonResponse>();
+            response.Should().BeEquivalentTo(person.ToResponse());
         }
 
         [Test]
