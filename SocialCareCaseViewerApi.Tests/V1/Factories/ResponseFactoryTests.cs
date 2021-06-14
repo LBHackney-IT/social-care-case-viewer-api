@@ -334,7 +334,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Type = phoneNumber2.Type
             };
 
-            var expectedResponse = new GetPersonResponse()
+            var expectedResponse = new GetResidentResponse()
             {
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

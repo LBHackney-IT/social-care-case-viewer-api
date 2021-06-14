@@ -5,12 +5,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IResidentsUseCase
     {
-        GetPersonResponse ExecuteGet(long id);
+        GetResidentResponse ExecuteGet(long id);
 
         ResidentInformationList ExecuteGetAll(ResidentQueryParam rqp, int cursor, int limit);
 
         public AddNewResidentResponse ExecutePost(AddNewResidentRequest request);
 
-        void ExecutePatch(UpdatePersonRequest request);
+        void ExecutePatch(UpdateResidentRequest request);
     }
 }

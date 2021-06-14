@@ -105,7 +105,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetResidentByIdReturns200WhenSuccessful()
         {
-            _mockResidentsUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new GetPersonResponse());
+            _mockResidentsUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new GetResidentResponse());
 
             var response = _residentController.GetResident(1L) as ObjectResult;
 
@@ -126,7 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdateResidentReturns200WhenSuccessful()
         {
-            var request = new UpdatePersonRequest();
+            var request = new UpdateResidentRequest();
 
             var result = _residentController.UpdateResident(request) as StatusCodeResult;
 
@@ -137,26 +137,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdateResidentReturns404WhenResidentNotFound()
         {
-            var request = new UpdatePersonRequest();
-            _mockResidentsUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
+            var request = new UpdateResidentRequest();
+            _mockResidentsUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdateResidentRequest>())).Throws(new UpdateResidentException("Resident not found"));
 
             var result = _residentController.UpdateResident(request) as NotFoundObjectResult;
 
             result.Should().NotBeNull();
             result?.StatusCode.Should().Be(404);
-            result?.Value.Should().Be("Person not found");
+            result?.Value.Should().Be("Resident not found");
         }
 
         [Test]
         public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
         {
-            var testPersonId = _fixture.Create<long>();
+            var testResidentId = _fixture.Create<long>();
             var stubbedWarningNotesResponse = _fixture.Create<ListWarningNotesResponse>();
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
                 .Returns(stubbedWarningNotesResponse);
 
-            var response = _residentController.ListWarningNotes(testPersonId) as OkObjectResult;
+            var response = _residentController.ListWarningNotes(testResidentId) as OkObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
@@ -164,9 +164,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetWarningNoteWouldReturns200IfNoWarningNotesAreFoundForThePerson()
+        public void GetWarningNoteReturns200IfNoWarningNotesAreFoundForTheResident()
         {
-            var testPersonId = _fixture.Create<long>();
+            var testResidentId = _fixture.Create<long>();
             var emptyWarningNotesResponse = new ListWarningNotesResponse
             {
                 WarningNotes = new List<WarningNote>()
@@ -175,7 +175,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
                 .Returns(emptyWarningNotesResponse);
 
-            var response = _residentController.ListWarningNotes(testPersonId) as ObjectResult;
+            var response = _residentController.ListWarningNotes(testResidentId) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
@@ -183,7 +183,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void ListRelationshipsReturn200WhenPersonIsFound()
+        public void ListRelationshipsReturn200WhenResidentIsFound()
         {
             var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() };
             _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsRequest>())).Returns(new ListRelationshipsResponse());

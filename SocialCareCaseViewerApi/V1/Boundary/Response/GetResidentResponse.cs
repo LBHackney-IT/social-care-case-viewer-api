@@ -4,7 +4,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class GetPersonResponse
+    public class GetResidentResponse
     {
         public long Id { get; set; }
 

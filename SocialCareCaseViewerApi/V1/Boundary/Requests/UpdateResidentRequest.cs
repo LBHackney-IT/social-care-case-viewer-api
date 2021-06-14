@@ -5,7 +5,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class UpdatePersonRequest
+    public class UpdateResidentRequest
     {
         private string _email;
 

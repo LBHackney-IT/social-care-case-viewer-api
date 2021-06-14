@@ -1162,9 +1162,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
         {
-            Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
+            Action act = () => _classUnderTest.UpdatePerson(new UpdateResidentRequest() { Id = _faker.Random.Long() });
 
-            act.Should().Throw<UpdatePersonException>().WithMessage("Person not found");
+            act.Should().Throw<UpdateResidentException>().WithMessage("Person not found");
         }
 
         [Test]
@@ -1172,7 +1172,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1200,7 +1200,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1222,7 +1222,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             dbAddress displayAddress =
                 SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1241,7 +1241,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             dbAddress displayAddress =
                 SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             request.Address.Address = displayAddress.AddressLines;
             request.Address.Postcode = displayAddress.PostCode;
@@ -1264,7 +1264,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             request.Address = null;
 
@@ -1282,7 +1282,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             PhoneNumberInfrastructure phoneNumber =
                 SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1308,7 +1308,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             PhoneNumberInfrastructure phoneNumber =
                 SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
             request.PhoneNumbers = null;
 
             _classUnderTest.UpdatePerson(request);
@@ -1322,7 +1322,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1347,7 +1347,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
             request.OtherNames = null;
 
             _classUnderTest.UpdatePerson(request);
@@ -1360,7 +1360,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            UpdateResidentRequest request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTestWithProcessDataGateway.UpdatePerson(request);
 
@@ -1451,7 +1451,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             return name;
         }
 
-        private static UpdatePersonRequest GetValidUpdatePersonRequest(long personId)
+        private static UpdateResidentRequest GetValidUpdatePersonRequest(long personId)
         {
             AddressDomain address = new Faker<AddressDomain>()
                 .RuleFor(a => a.Address, f => f.Address.StreetAddress())
@@ -1478,7 +1478,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                     .RuleFor(o => o.LastName, f => f.Person.LastName)
             };
 
-            return new Faker<UpdatePersonRequest>()
+            return new Faker<UpdateResidentRequest>()
                 .RuleFor(p => p.Id, personId)
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())

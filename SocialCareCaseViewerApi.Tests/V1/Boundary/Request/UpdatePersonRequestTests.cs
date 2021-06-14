@@ -23,9 +23,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             _faker = new Faker();
         }
 
-        private UpdatePersonRequest GetValidRequest()
+        private UpdateResidentRequest GetValidRequest()
         {
-            return new UpdatePersonRequest()
+            return new UpdateResidentRequest()
             {
                 Id = 555,
                 Title = "Title",
@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsIfPersonIdIsNotBiggerThan0()
         {
-            UpdatePersonRequest request = GetValidRequest();
+            UpdateResidentRequest request = GetValidRequest();
             request.Id = 0;
 
             var errors = ValidationHelper.ValidateModel(request);

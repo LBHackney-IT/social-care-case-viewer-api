@@ -58,14 +58,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _residentsUseCase.ExecuteGet(request);
 
-            response.Should().BeOfType<GetPersonResponse>();
+            response.Should().BeOfType<GetResidentResponse>();
             response.Should().BeEquivalentTo(person.ToResponse());
         }
 
         [Test]
         public void ExecutePatchCallsDatabaseGateway()
         {
-            var request = new Faker<UpdatePersonRequest>()
+            var request = new Faker<UpdateResidentRequest>()
                 .RuleFor(x => x.Id, _faker.Random.Long())
                 .Generate();
             _mockDataBaseGateway.Setup(x => x.UpdatePerson(request));

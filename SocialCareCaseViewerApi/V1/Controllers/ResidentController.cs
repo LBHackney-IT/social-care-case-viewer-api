@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">One or more request parameters are invalid or missing</response>
         /// <response code="500">There was a problem getting the record</response>
         ///
-        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetResidentResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{id:long}")]
         public IActionResult GetResident(long id)
@@ -107,13 +107,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
         [Route("residents")]
-        public IActionResult UpdateResident([FromBody] UpdatePersonRequest request)
+        public IActionResult UpdateResident([FromBody] UpdateResidentRequest request)
         {
             try
             {
                 _residentsUseCase.ExecutePatch(request);
             }
-            catch (UpdatePersonException ex)
+            catch (UpdateResidentException ex)
             {
                 return NotFound(ex.Message);
             }

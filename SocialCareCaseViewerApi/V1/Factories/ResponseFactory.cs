@@ -136,12 +136,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return formattedFormName;
         }
 
-        public static GetPersonResponse ToResponse(this Person person)
+        public static GetResidentResponse ToResponse(this Person person)
         {
             //get the current display address
             dbAddress displayAddress = person?.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
 
-            return new GetPersonResponse()
+            return new GetResidentResponse()
             {
                 SexualOrientation = person.SexualOrientation,
                 DateOfBirth = person.DateOfBirth,

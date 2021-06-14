@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mosaicAPIGateway = mosaicAPIGateway;
         }
 
-        public GetPersonResponse? ExecuteGet(long id)
+        public GetResidentResponse? ExecuteGet(long id)
         {
             var person = _databaseGateway.GetPersonDetailsById(id);
 
@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _databaseGateway.AddNewResident(request);
         }
 
-        public void ExecutePatch(UpdatePersonRequest request)
+        public void ExecutePatch(UpdateResidentRequest request)
         {
             _databaseGateway.UpdatePerson(request);
         }

@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         IEnumerable<WarningNote> GetWarningNotes(long personId);
         Domain.WarningNote GetWarningNoteById(long warningNoteId);
         Person GetPersonDetailsById(long id);
-        void UpdatePerson(UpdatePersonRequest request);
+        void UpdatePerson(UpdateResidentRequest request);
         List<Person> GetPersonsByListOfIds(List<long> ids);
         Person GetPersonByMosaicId(long mosaicId);
     }
