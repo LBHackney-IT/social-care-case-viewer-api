@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -17,29 +16,23 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     //TODO: rename class to match the API name
     public class SocialCareCaseViewerApiController : BaseController
     {
-        private readonly IGetAllUseCase _getAllUseCase;
-        private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
-        private readonly IResidentsUseCase _residentsUseCase;
         private readonly IRelationshipsUseCase _relationshipsUseCase;
 
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
+        public SocialCareCaseViewerApiController(
             IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IResidentsUseCase residentsUseCase, IRelationshipsUseCase relationshipsUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IRelationshipsUseCase relationshipsUseCase)
         {
-            _getAllUseCase = getAllUseCase;
-            _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
-            _residentsUseCase = residentsUseCase;
             _relationshipsUseCase = relationshipsUseCase;
         }
 
