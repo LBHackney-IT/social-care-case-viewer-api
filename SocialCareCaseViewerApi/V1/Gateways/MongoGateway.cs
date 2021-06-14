@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return collection.Find(new BsonDocument()).ToList();
         }
 
-        public T LoadRecordById<T>(string collectionName, string id)
+        public T LoadRecordById<T>(string collectionName, BsonObjectId id)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
             var filter = Builders<T>.Filter.Eq("_id", id);

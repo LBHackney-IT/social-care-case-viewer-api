@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
@@ -60,7 +61,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse? ExecuteGetById(string submissionId)
         {
-            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
 
             return foundSubmission?.ToDomain().ToResponse();
         }
@@ -75,7 +76,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
             if (updateSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
@@ -98,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
             if (submission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
