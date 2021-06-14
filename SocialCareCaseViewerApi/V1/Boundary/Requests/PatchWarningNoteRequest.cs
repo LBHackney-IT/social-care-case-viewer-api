@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string ReviewNotes { get; set; }
         public string ManagerName { get; set; }
         public DateTime? DiscussedWithManagerDate { get; set; }
-        public bool DisclosedWithIndividual { get; set; }
+        public bool? DisclosedWithIndividual { get; set; }
     }
 
     public class PatchWarningNoteRequestValidator : AbstractValidator<PatchWarningNoteRequest>
@@ -29,9 +29,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.ReviewDate)
                 .NotNull().WithMessage("Review date required")
                 .LessThan(DateTime.Now).WithMessage("Review date must be in the past");
-            RuleFor(x => x.DisclosedWithIndividual)
-                .NotNull().WithMessage("Disclosed with individual must be either true or false")
-                .Must(x => x.Equals(true) || x.Equals(false));
             RuleFor(x => x.ReviewedBy)
                 .NotNull().WithMessage("Reviewer email required")
                 .EmailAddress().WithMessage("Provide a valid email address");
