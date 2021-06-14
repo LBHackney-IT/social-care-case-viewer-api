@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class PersonUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDataBaseGateway;
-        private PersonUseCase _personUseCase;
+        private ResidentsUseCase _residentsUseCase;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void SetUp()
         {
             _mockDataBaseGateway = new Mock<IDatabaseGateway>();
-            _personUseCase = new PersonUseCase(_mockDataBaseGateway.Object);
+            _residentsUseCase = new ResidentsUseCase(_mockDataBaseGateway.Object);
             _fixture = new Fixture();
             _faker = new Faker();
         }
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = GetValidGetPersonRequest();
 
-            _personUseCase.ExecuteGet(request);
+            _residentsUseCase.ExecuteGet(request);
 
             _mockDataBaseGateway.Verify(x => x.GetPersonDetailsById(request.Id));
         }
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request.Id)).Returns((dbPerson) null);
 
-            var result = _personUseCase.ExecuteGet(request);
+            var result = _residentsUseCase.ExecuteGet(request);
 
             result.Should().BeNull();
         }
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDataBaseGateway.Setup(x => x.GetPersonDetailsById(request.Id)).Returns(person);
 
-            var response = _personUseCase.ExecuteGet(request);
+            var response = _residentsUseCase.ExecuteGet(request);
 
             response.Should().BeOfType<GetPersonResponse>();
         }
@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = GetValidUpdatePersonRequest();
 
-            _personUseCase.ExecutePatch(request);
+            _residentsUseCase.ExecutePatch(request);
 
             _mockDataBaseGateway.Verify(x => x.UpdatePerson(request));
         }

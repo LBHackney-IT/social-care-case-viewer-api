@@ -2,25 +2,25 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class PersonUseCase : IPersonUseCase
+    public class ResidentsUseCase : IResidentsUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
-        public PersonUseCase(IDatabaseGateway databaseGateway)
+        public ResidentsUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
         }
 
-        public GetPersonResponse ExecuteGet(GetPersonRequest request)
+        public GetPersonResponse? ExecuteGet(long id)
         {
-            Person person = _databaseGateway.GetPersonDetailsById(request.Id);
+            var person = _databaseGateway.GetPersonDetailsById(id);
 
-            return person != null ? ResponseFactory.ToResponse(person) : null;
+            return person?.ToResponse();
         }
 
         public void ExecutePatch(UpdatePersonRequest request)

@@ -136,7 +136,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return formattedFormName;
         }
 
-        public static GetPersonResponse ToResponse(Person person)
+        public static GetPersonResponse ToResponse(this Person person)
         {
             //get the current display address
             dbAddress displayAddress = person?.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");

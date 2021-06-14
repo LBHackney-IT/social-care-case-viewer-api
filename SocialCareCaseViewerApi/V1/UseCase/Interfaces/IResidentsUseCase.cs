@@ -3,9 +3,9 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IPersonUseCase
+    public interface IResidentsUseCase
     {
-        GetPersonResponse ExecuteGet(GetPersonRequest request);
+        GetPersonResponse ExecuteGet(long id);
 
         void ExecutePatch(UpdatePersonRequest request);
     }
