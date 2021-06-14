@@ -43,7 +43,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var caseSubmission = new CaseSubmission
             {
-                SubmissionId = Guid.NewGuid(),
                 FormId = request.FormId,
                 Residents = new List<Person> { resident },
                 Workers = new List<Worker> { worker },
@@ -85,7 +84,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             updateSubmission.SubmissionState = SubmissionState.Submitted;
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
-            _mongoGateway.UpsertRecord<CaseSubmission>(CollectionName, submissionId, updateSubmission);
+            _mongoGateway.UpsertRecord(CollectionName, submissionId, updateSubmission);
         }
 
 

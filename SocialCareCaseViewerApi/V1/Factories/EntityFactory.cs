@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
@@ -146,6 +147,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
         {
+
+            if (caseSubmission.SubmissionId == null)
+            {
+                throw new NullCaseSubmissionIdException("Case submission with a null submission ID cannot be converted");
+            }
+
             return new Domain.CaseSubmission
             {
                 SubmissionId = caseSubmission.SubmissionId,
