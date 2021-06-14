@@ -141,7 +141,7 @@ From time to time, we are required to make manual data updates because it's some
 
 To keep track of these changes, we document them in `/database/manual-updates`. If you need to make a manual data update, then:
 
-1. Duplicate [our template file](database/manual-updates/yyyy_mm_dd_1_<title>-template.md)
+1. Duplicate [our template file](database/manual-updates/yyyy-mm-dd_1-<title>-template.md)
 2. Rename the duplicated file by replacing the date and the title
 3. Fill in the sections of the file
 4. Commit, push and create a PR
