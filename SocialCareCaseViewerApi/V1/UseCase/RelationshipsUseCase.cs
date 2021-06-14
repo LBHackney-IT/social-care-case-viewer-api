@@ -1,4 +1,3 @@
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -11,8 +10,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class RelationshipsUseCase : IRelationshipsUseCase
     {
-        private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
-        private IDatabaseGateway _databaseGateway;
+        private readonly ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
         public RelationshipsUseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway, IDatabaseGateway databaseGateway)
         {
@@ -20,17 +19,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListRelationshipsResponse ExecuteGet(ListRelationshipsRequest request)
+        public ListRelationshipsResponse ExecuteGet(long personId)
         {
-            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
+            var person = _databaseGateway.GetPersonByMosaicId(personId);
 
             if (person == null)
                 throw new GetRelationshipsException("Person not found");
 
-            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(request.PersonId);
+            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId);
 
-            List<long> personIds = new List<long>();
-            List<Person> personRecords = new List<Person>();
+            var personIds = new List<long>();
+            var personRecords = new List<Person>();
 
             if (relationships != null)
             {
@@ -43,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     personRecords = _databaseGateway.GetPersonsByListOfIds(personIds);
             }
 
-            return ResponseFactory.ToResponse(personRecords, relationships, personIds, request.PersonId);
+            return ResponseFactory.ToResponse(personRecords, relationships, personIds, personId);
         }
     }
 }
