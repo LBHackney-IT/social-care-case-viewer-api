@@ -15,13 +15,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class ResidentController : BaseController
     {
-        private readonly IGetAllUseCase _getAllUseCase;
         private readonly IResidentsUseCase _residentsUseCase;
 
-        public ResidentController(IGetAllUseCase getAllUseCase, IResidentsUseCase residentsUseCase)
+        public ResidentController(IResidentsUseCase residentsUseCase)
         {
-            _getAllUseCase = getAllUseCase;
             _residentsUseCase = residentsUseCase;
+        }
+
+        /// <summary>
+        /// Get a resident by resident id
+        /// </summary>
+        /// <response code="200">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem getting the record</response>
+        ///
+        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{id:long}")]
+        public IActionResult GetResident(long id)
+        {
+            var response = _residentsUseCase.ExecuteGet(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(200, response);
         }
 
         /// <summary>
@@ -31,15 +51,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid Query Parameter.</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult GetResidents([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
+        public IActionResult GetResidents([FromQuery] ResidentQueryParam rqp, int cursor = 0, int limit = 20)
         {
             try
             {
-                return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
+                return Ok(_residentsUseCase.ExecuteGetAll(rqp, cursor, limit));
             }
             catch (MosaicApiException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.GetType().Name.ToString()} : {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.GetType().Name} : {ex.Message}");
             }
             catch (InvalidQueryParameterException e)
             {
@@ -71,28 +91,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-        }
-
-        /// <summary>
-        /// Get a resident by resident id
-        /// </summary>
-        /// <response code="200">Success</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem getting the record</response>
-        ///
-        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("{id:long}")]
-        public IActionResult GetResident(long id)
-        {
-            var response = _residentsUseCase.ExecuteGet(id);
-
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            return StatusCode(200, response);
         }
 
         /// <summary>
