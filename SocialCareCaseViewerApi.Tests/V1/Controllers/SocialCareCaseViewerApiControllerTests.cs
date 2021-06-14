@@ -14,7 +14,6 @@ using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -22,15 +21,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     public class SocialCareCaseViewerApiControllerTests
     {
         private SocialCareCaseViewerApiController _classUnderTest;
-        private Mock<IGetAllUseCase> _mockGetAllUseCase;
-        private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
-        private Mock<IResidentsUseCase> _mockPersonUseCase;
-        private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
 
         private Fixture _fixture;
         private Faker _faker;
@@ -38,140 +33,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [SetUp]
         public void SetUp()
         {
-            _mockGetAllUseCase = new Mock<IGetAllUseCase>();
-            _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
-            _mockPersonUseCase = new Mock<IResidentsUseCase>();
-            _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
 
-            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-                    _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
-            _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object, _mockRelationshipsUseCase.Object);
+            _classUnderTest = new SocialCareCaseViewerApiController(_mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object,
+                _mockVisitsUseCase.Object, _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
 
             _fixture = new Fixture();
             _faker = new Faker();
         }
 
-        [Test]
-        public void ListContactsReturns200WhenSuccessful()
-        {
-            var residentInformationList = _fixture.Create<ResidentInformationList>();
-            var residentQueryParam = new ResidentQueryParam();
-
-            _mockGetAllUseCase.Setup(x => x.Execute(residentQueryParam, 2, 3)).Returns(residentInformationList);
-            var response = _classUnderTest.ListContacts(residentQueryParam, 2, 3) as OkObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(200);
-            response?.Value.Should().BeEquivalentTo(residentInformationList);
-        }
-
-        [Test]
-        public void ListContactsReturns400WhenQueryParametersAreInvalid()
-        {
-            _mockGetAllUseCase.Setup(x => x.Execute(It.IsAny<ResidentQueryParam>(), 2, 3))
-                .Throws(new InvalidQueryParameterException("Invalid Parameters"));
-
-            var response = _classUnderTest.ListContacts(new ResidentQueryParam(), 2, 3) as BadRequestObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be("Invalid Parameters");
-        }
-
-        [Test]
-        public void AddNewResidentReturns201WhenSuccessful()
-        {
-            var addNewResidentResponse = _fixture.Create<AddNewResidentResponse>();
-            var addNewResidentRequest = new AddNewResidentRequest();
-
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(addNewResidentRequest)).Returns(addNewResidentResponse);
-            var response = _classUnderTest.AddNewResident(addNewResidentRequest) as CreatedAtActionResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(201);
-            response?.Value.Should().BeEquivalentTo(addNewResidentResponse);
-        }
-
-        [Test]
-        public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
-        {
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-                .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
-
-            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(500);
-            response?.Value.Should().Be("Resident could not be inserted");
-        }
-
-        [Test]
-        public void AddNewResidentReturns500WhenAddressCouldNotBeInserted()
-        {
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-                .Throws(new AddressCouldNotBeInsertedException("Address could not be inserted"));
-
-            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(500);
-            response?.Value.Should().Be("Address could not be inserted");
-        }
-
-        [Test]
-        public void GetPersonByIdReturns200WhenSuccessful()
-        {
-            GetPersonRequest request = new GetPersonRequest();
-
-            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
-
-            var response = _classUnderTest.GetPerson(request) as ObjectResult;
-
-            response?.Should().NotBeNull();
-            response?.StatusCode.Should().Be(200);
-        }
-
-        [Test]
-        public void GetPersonByIdReturns404WhenPersonNotFound()
-        {
-            GetPersonRequest request = new GetPersonRequest();
-
-            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>()));
-
-            var result = _classUnderTest.GetPerson(request) as NotFoundResult;
-
-            result?.StatusCode.Should().Be(404);
-        }
-
-        [Test]
-        public void UpdatePersonReturns200WhenSuccessful()
-        {
-            UpdatePersonRequest request = new UpdatePersonRequest();
-
-            var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
-
-            result.Should().NotBeNull();
-            result?.StatusCode.Should().Be(204);
-        }
-
-        [Test]
-        public void UpdatePersonReturns404WhenPersonNotFound()
-        {
-            UpdatePersonRequest request = new UpdatePersonRequest();
-
-            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
-
-            var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
-
-            result.Should().NotBeNull();
-            result?.StatusCode.Should().Be(404);
-            result?.Value.Should().Be("Person not found");
-        }
 
         #region Allocations
         [Test]
@@ -482,44 +356,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetWarningNoteReturns200AndGetWarningNoteResponseWhenSuccessful()
-        {
-            var testPersonId = _fixture.Create<long>();
-            var stubbedWarningNotesResponse = _fixture.Create<ListWarningNotesResponse>();
-
-            _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGet(It.IsAny<long>()))
-                .Returns(stubbedWarningNotesResponse);
-
-            var response = _classUnderTest.ListWarningNotes(testPersonId) as OkObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(200);
-            response?.Value.Should().BeEquivalentTo(stubbedWarningNotesResponse);
-        }
-
-        [Test]
-        public void GetWarningNoteWouldReturns200IfNoWarningNotesAreFoundForThePerson()
-        {
-            var testPersonId = _fixture.Create<long>();
-
-            var emptyWarningNotesResponse = new ListWarningNotesResponse
-            {
-                WarningNotes = new List<WarningNote>()
-            };
-
-            _mockWarningNoteUseCase
-                .Setup(x => x.ExecuteGet(It.IsAny<long>()))
-                .Returns(emptyWarningNotesResponse);
-
-            var response = _classUnderTest.ListWarningNotes(testPersonId) as ObjectResult;
-
-            response.Should().NotBeNull();
-            response?.StatusCode.Should().Be(200);
-            response?.Value.Should().BeEquivalentTo(emptyWarningNotesResponse);
-        }
-
-        [Test]
         public void GetWarningNoteByIdReturns200WhenSuccessful()
         {
             var warningNoteId = _fixture.Create<long>();
@@ -664,46 +500,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
-        }
-
-        [Test]
-        public void ListRelationshipsReturn200WhenPersonIsFound()
-        {
-            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() };
-
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsRequest>())).Returns(new ListRelationshipsResponse());
-
-            var response = _classUnderTest.ListRelationships(request) as ObjectResult;
-
-            response?.StatusCode.Should().Be(200);
-        }
-
-        [Test]
-        public void ListRelationshipsReturn404WithCorrectErrorMessageWhenPersonIsNotFound()
-        {
-            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() };
-
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsRequest>())).Throws(new GetRelationshipsException("Person not found"));
-
-            var response = _classUnderTest.ListRelationships(request) as NotFoundObjectResult;
-
-            response?.StatusCode.Should().Be(404);
-            response?.Value.Should().Be("Person not found");
-        }
-
-        [Test]
-        public void ListRelationshipsReturns200AndRelationshipsWhenSuccessful()
-        {
-            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long() };
-
-            var listRelationShipsResponse = _fixture.Create<ListRelationshipsResponse>();
-
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsRequest>())).Returns(listRelationShipsResponse);
-
-            var response = _classUnderTest.ListRelationships(request) as ObjectResult;
-
-            response?.Value.Should().BeOfType<ListRelationshipsResponse>();
-            response?.Value.Should().BeEquivalentTo(listRelationShipsResponse);
         }
     }
 }
