@@ -9,7 +9,6 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
-
     [ApiController]
     [Route("api/v1/residents")]
     [Produces("application/json")]
@@ -17,25 +16,22 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class ResidentController : BaseController
     {
         private readonly IGetAllUseCase _getAllUseCase;
-        private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IResidentsUseCase _residentsUseCase;
 
-        public ResidentController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IResidentsUseCase residentsUseCase)
+        public ResidentController(IGetAllUseCase getAllUseCase, IResidentsUseCase residentsUseCase)
         {
             _getAllUseCase = getAllUseCase;
-            _addNewResidentUseCase = addNewResidentUseCase;
             _residentsUseCase = residentsUseCase;
         }
 
         /// <summary>
-        /// Returns list of contacts who share the query search parameter
+        /// Returns list of residents who share the query search parameter
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
         /// <response code="400">Invalid Query Parameter.</response>
         [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
+        public IActionResult GetResidents([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
             try
             {
@@ -52,7 +48,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Creates a new person record and adds all related entities
+        /// Creates a new resident and adds all related entities
         /// </summary>
         /// <response code="201">Records successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
@@ -63,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                var response = _addNewResidentUseCase.Execute(residentRequest);
+                var response = _residentsUseCase.ExecutePost(residentRequest);
 
                 return CreatedAtAction(nameof(AddNewResident), new { id = response.Id }, response);
             }
@@ -78,7 +74,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get resident by id
+        /// Get a resident by resident id
         /// </summary>
         /// <response code="200">Success</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
@@ -87,7 +83,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{id:long}")]
-        public IActionResult GetPerson(long id)
+        public IActionResult GetResident(long id)
         {
             var response = _residentsUseCase.ExecuteGet(id);
 
@@ -100,7 +96,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Update resident details
+        /// Update a resident's details
         /// </summary>
         /// <response code="200">Success</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
@@ -109,7 +105,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
         [Route("residents")]
-        public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
+        public IActionResult UpdateResident([FromBody] UpdatePersonRequest request)
         {
             try
             {

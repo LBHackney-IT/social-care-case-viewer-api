@@ -23,6 +23,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return person?.ToResponse();
         }
 
+        public AddNewResidentResponse ExecutePost(AddNewResidentRequest request)
+        {
+            return _databaseGateway.AddNewResident(request);
+        }
+
         public void ExecutePatch(UpdatePersonRequest request)
         {
             _databaseGateway.UpdatePerson(request);
