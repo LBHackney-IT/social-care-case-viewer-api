@@ -718,7 +718,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (person == null)
             {
-                throw new PostWarningNoteException($"Person with given id ({request.PersonId}) not found");
+                throw new PersonNotFoundException($"Person with given id ({request.PersonId}) not found");
             }
 
             var warningNote = request.ToDatabaseEntity();
