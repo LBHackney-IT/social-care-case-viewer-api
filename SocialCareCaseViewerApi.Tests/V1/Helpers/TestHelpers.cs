@@ -502,15 +502,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, Dictionary<string, object>? stepAnswers = null)
+        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, string? stepAnswers = null)
         {
-            stepAnswers ??= new Dictionary<string, object>
-            {
-                {"1", "Value One"},
-                {"2", new List<string>{"Value Two"}},
-                {"3", new List<Dictionary<string, string>> {new Dictionary<string, string> {{"3.1", "Value Three"}}}},
-                {"4", new List<Dictionary<string, List<string>>> {new Dictionary<string, List<string>> {{"4.1", new List<string>{"Value Four"}}}}}
-            };
+            stepAnswers ??= "{\"1\":\"one\"}";
 
             return new Faker<UpdateFormSubmissionAnswersRequest>()
                 .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
@@ -541,7 +535,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, object>>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
         }
 
         public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(
