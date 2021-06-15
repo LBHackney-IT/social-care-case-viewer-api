@@ -91,6 +91,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeNull();
         }
 
+        [Test]
+        public void GetWorkerByWorkerEmailCaseInsensitive()
+        {
+            const string workerEmail = "realemail@example.com";
+            const string casedEmail = "realEmail@example.com";
+
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: workerEmail));
+            var response = _classUnderTest.GetWorkerByEmail(casedEmail);
+
+            response.Should().BeEquivalentTo(worker);
+        }
+
 
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
@@ -694,7 +706,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.PostWarningNote(request);
 
-            act.Should().Throw<PostWarningNoteException>()
+            act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"Person with given id ({request.PersonId}) not found");
         }
 
@@ -964,6 +976,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             insertedRecord?.WarningNoteId.Should().Be(request.WarningNoteId);
             insertedRecord?.ReviewDate.Should().Be(request.ReviewDate);
+            insertedRecord?.DisclosedWithIndividual.Should().Be(request.DisclosedWithIndividual);
             insertedRecord?.ReviewNotes.Should().Be(request.ReviewNotes);
             insertedRecord?.ManagerName.Should().Be(request.ManagerName);
             insertedRecord?.DiscussedWithManagerDate.Should().Be(request.DiscussedWithManagerDate);
@@ -1070,8 +1083,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var warningNote = TestHelpers.CreateWarningNote();
             var firstReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
-            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
-            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
+            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, disclosedWithIndividual: true);
+            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, disclosedWithIndividual: false);
 
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNoteReview.Add(firstReview);

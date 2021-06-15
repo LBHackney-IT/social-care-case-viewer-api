@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var response = _addNewResidentUseCase.Execute(residentRequest);
 
-                return CreatedAtAction("GetResident", new { id = response.Id }, response); //TODO: return object with IDs for all related entities
+                return CreatedAtAction(nameof(AddNewResident), new { id = response.Id }, response); //TODO: return object with IDs for all related entities
             }
             catch (ResidentCouldNotBeinsertedException ex)
             {
@@ -135,7 +135,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (UpdatePersonException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
 
             return StatusCode(204);
@@ -211,11 +211,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (EntityUpdateException ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
             catch (UpdateAllocationException ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -311,9 +311,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 var result = _warningNoteUseCase.ExecutePost(request);
                 return CreatedAtAction("CreateAllocation", result, result);
             }
-            catch (PostWarningNoteException ex)
+            catch (PersonNotFoundException ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -324,7 +324,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(ListWarningNotesResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("residents/{personId}/warningNotes")]
+        [Route("residents/{personId:long}/warningNotes")]
         public IActionResult ListWarningNotes(long personId)
         {
             return Ok(_warningNoteUseCase.ExecuteGet(personId));
@@ -337,17 +337,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No warning note found for the specified ID</response>
         [ProducesResponseType(typeof(WarningNoteResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("warningnotes/{warningNoteId}")]
+        [Route("warningnotes/{warningNoteId:long}")]
         public IActionResult GetWarningNoteById(long warningNoteId)
         {
-            try
+            var warningNote = _warningNoteUseCase.ExecuteGetWarningNoteById(warningNoteId);
+
+            if (warningNote == null)
             {
-                return Ok(_warningNoteUseCase.ExecuteGetWarningNoteById(warningNoteId));
+                return NotFound();
             }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+
+            return Ok(warningNote);
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (PatchWarningNoteException e)
             {
-                return NotFound(e.Message);
+                return BadRequest(e.Message);
             }
         }
 

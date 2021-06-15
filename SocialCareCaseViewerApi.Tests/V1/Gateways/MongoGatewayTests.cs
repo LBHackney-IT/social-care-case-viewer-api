@@ -1,7 +1,9 @@
-using System;
 using System.Collections.Generic;
+using Bogus;
 using FluentAssertions;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
 
@@ -10,8 +12,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
     public class TestObjectForMongo
     {
+        [JsonProperty("_id")]
         [BsonId]
-        public Guid Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = null!;
         public string Property1 { get; set; } = null!;
         public List<TestObjectForMongo>? Property2 { get; set; }
         public TestObjectForMongo? Property3 { get; set; }
@@ -21,22 +25,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     public class MongoGatewayTests
     {
         private readonly IMongoGateway _mongoGateway = new MongoGateway();
-
+        private readonly Faker _faker = new Faker();
         private TestObjectForMongo? _testObjectForMongo;
 
         [SetUp]
         public void Setup()
         {
-
             _testObjectForMongo = new TestObjectForMongo
             {
-                Id = new Guid(),
+                Id = _faker.Random.String2(24, "0123456789abcdef"),
                 Property1 = "test-property",
                 Property2 = new List<TestObjectForMongo>
                 {
                     new TestObjectForMongo
                     {
-                        Id = new Guid(),
+                        Id = _faker.Random.String2(24, "0123456789abcdef"),
                         Property1 = "test-property-list",
                         Property2 = null,
                         Property3 = null
@@ -44,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 },
                 Property3 = new TestObjectForMongo
                 {
-                    Id = new Guid(),
+                    Id = _faker.Random.String2(24, "0123456789abcdef"),
                     Property1 = "test-property-embedded",
                     Property2 = null,
                     Property3 = null
@@ -66,7 +69,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             if (_testObjectForMongo != null)
             {
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeNull();
         }
@@ -81,7 +84,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             if (_testObjectForMongo != null)
             {
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeEquivalentTo(_testObjectForMongo);
         }
@@ -182,15 +185,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             if (_testObjectForMongo != null)
             {
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeEquivalentTo(_testObjectForMongo);
 
             if (_testObjectForMongo != null)
             {
-                _mongoGateway.DeleteRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                _mongoGateway.DeleteRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeNull();
         }
@@ -202,9 +205,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             if (_testObjectForMongo != null)
             {
-                _mongoGateway.UpsertRecord("test-collection-name", _testObjectForMongo.Id, _testObjectForMongo);
+                _mongoGateway.UpsertRecord("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id), _testObjectForMongo);
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeEquivalentTo(_testObjectForMongo);
         }
@@ -218,7 +221,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             if (_testObjectForMongo != null)
             {
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
             retrievedObject.Should().BeEquivalentTo(_testObjectForMongo);
 
@@ -228,9 +231,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 _testObjectForMongo.Property2?.Add(new TestObjectForMongo());
                 _testObjectForMongo.Property3 = null;
 
-                _mongoGateway.UpsertRecord("test-collection-name", _testObjectForMongo.Id, _testObjectForMongo);
+                _mongoGateway.UpsertRecord("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id), _testObjectForMongo);
                 retrievedObject =
-                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", _testObjectForMongo.Id);
+                    _mongoGateway.LoadRecordById<TestObjectForMongo>("test-collection-name", ObjectId.Parse(_testObjectForMongo.Id));
             }
 
             retrievedObject?.Property1.Should().Be("new-test-property");

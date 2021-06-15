@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
@@ -9,9 +11,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     public class CaseSubmission
     {
+        [JsonProperty("_id")]
         [BsonId]
-        public Guid SubmissionId { get; set; }
-        public int FormId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? SubmissionId { get; set; }
+
+        public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;
@@ -19,8 +24,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
 
-        // outer hashset int represents step id for form, inner hashset int represents questionId, answer values stored as string[]
-        public Dictionary<string, Dictionary<string, string[]>> FormAnswers { get; set; } = null!;
+        // outer hashset string represents step id for form
+        // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
+        // either string, string[] or List<Dictionary<string,string>>
+        public Dictionary<string, string> FormAnswers { get; set; } = null!;
     }
 
     public enum SubmissionState

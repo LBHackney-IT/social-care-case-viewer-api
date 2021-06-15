@@ -450,7 +450,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public Worker GetWorkerByEmail(string email)
         {
             return _databaseContext.Workers
-                .Where(worker => worker.Email == email)
+                .Where(worker => worker.Email.ToLower() == email.ToLower())
                 .Include(x => x.Allocations)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(y => y.Team)
@@ -718,7 +718,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (person == null)
             {
-                throw new PostWarningNoteException($"Person with given id ({request.PersonId}) not found");
+                throw new PersonNotFoundException($"Person with given id ({request.PersonId}) not found");
             }
 
             var warningNote = request.ToDatabaseEntity();
@@ -855,6 +855,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WarningNoteId = request.WarningNoteId,
                 ReviewDate = request.ReviewDate,
                 ReviewNotes = request.ReviewNotes,
+                DisclosedWithIndividual = request.DisclosedWithIndividual,
                 ManagerName = request.ManagerName,
                 DiscussedWithManagerDate = request.DiscussedWithManagerDate,
                 CreatedBy = request.ReviewedBy,

@@ -24,6 +24,7 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
       - [Updating the database schema](#updating-the-database-schema)
       - [Making manual updates](#making-manual-updates)
     - [Deployment](#deployment)
+    - [Infrastructure](#infrastructure)
     - [Related repositories](#related-repositories)
   - [Active contributors](#active-contributors)
   - [License](#license)
@@ -140,7 +141,7 @@ From time to time, we are required to make manual data updates because it's some
 
 To keep track of these changes, we document them in `/database/manual-updates`. If you need to make a manual data update, then:
 
-1. Duplicate [our template file](database/manual-updates/yyyy_mm_dd_1_<title>-template.md)
+1. Duplicate [our template file](database/manual-updates/yyyy-mm-dd_1-<title>-template.md)
 2. Rename the duplicated file by replacing the date and the title
 3. Fill in the sections of the file
 4. Commit, push and create a PR
@@ -162,6 +163,14 @@ This means pull request merges into `master` and `development` both trigger a de
 To deploy to Production, we first ensure that changes are verified in Staging and then we merge `development` into `master`.
 
 We use CircleCI to handle deployment, see [CircleCI config](./.circleci/config.yml).
+
+### Infrastructure
+
+For deploying the Lambdas and related resources, we used the [Serverless framework](https://www.serverless.com) (see [serverless.yml](./serverless.yml)).
+
+For managing the database in Staging, we use [Terraform](https://www.terraform.io) that is defined within `/terraform/staging` in this repository.
+
+For managing the database and other resources in Production, we use Terraform that is defined within the [Infrastructure repository](https://github.com/LBHackney-IT/infrastructure/blob/master/projects/mosaic).
 
 ### Related repositories
 

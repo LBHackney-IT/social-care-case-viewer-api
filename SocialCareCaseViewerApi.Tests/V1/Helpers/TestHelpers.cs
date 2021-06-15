@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -10,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using InfrastructurePerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
-using Person = Bogus.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
@@ -147,7 +145,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.CreatedAt, f => createdAt ?? f.Date.Soon())
                 .RuleFor(w => w.DateStart, start)
                 .RuleFor(w => w.DateEnd, end)
-                .RuleFor(w => w.IsActive, f => isActive)
+                .RuleFor(w => w.IsActive, isActive)
                 .RuleFor(w => w.Allocations, hasAllocations ? new List<AllocationSet> { CreateAllocation(), CreateAllocation(), CreateAllocation() } : null)
                 .RuleFor(w => w.WorkerTeams, hasWorkerTeams ? new List<WorkerTeam> { CreateWorkerTeam(), CreateWorkerTeam(), CreateWorkerTeam() } : null)
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
@@ -367,7 +365,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
-            DateTime? discussedWithManagerDate = null
+            DateTime? discussedWithManagerDate = null,
+            bool? disclosedWithIndividual = null
         )
         {
             var person = CreatePerson();
@@ -379,6 +378,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
                 .RuleFor(p => p.ReviewedBy, f => reviewedBy ?? worker.Email)
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
+                .RuleFor(p => p.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(p => p.Status, f => requestStatus)
                 .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
                 .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
@@ -415,13 +415,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Recent());
         }
 
-        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId)
+        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId, bool? disclosedWithIndividual = null)
         {
             return new Faker<WarningNoteReview>()
                 .RuleFor(r => r.Id, f => f.UniqueIndex)
                 .RuleFor(r => r.WarningNoteId, f => warningNoteId)
                 .RuleFor(r => r.ReviewDate, f => f.Date.Future())
-                .RuleFor(r => r.DisclosedWithIndividual, f => f.Random.Bool())
+                .RuleFor(r => r.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(r => r.ReviewNotes, f => f.Random.String2(1, 50))
                 .RuleFor(r => r.ManagerName, f => f.Person.FullName)
                 .RuleFor(r => r.DiscussedWithManagerDate, f => f.Date.Past())
@@ -492,32 +492,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
-            int? formId = null,
+            string? formId = null,
             int? residentId = null,
             string? createdBy = null)
         {
             return new Faker<CreateCaseSubmissionRequest>()
-                .RuleFor(s => s.FormId, f => formId ?? f.UniqueIndex + 1)
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.ResidentId, f => residentId ?? f.UniqueIndex + 1)
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+        }
+
+        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, string? stepAnswers = null)
+        {
+            stepAnswers ??= "{\"1\":\"one\"}";
+
+            return new Faker<UpdateFormSubmissionAnswersRequest>()
+                .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
+                .RuleFor(u => u.StepAnswers, stepAnswers);
         }
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
             DateTime? dateTime = null,
             Worker? worker = null,
             InfrastructurePerson? resident = null,
-            Guid? id = null,
-            int? formId = null)
+            string? id = null,
+            string? formId = null)
         {
-            id ??= Guid.NewGuid();
             worker ??= CreateWorker();
             resident ??= CreatePerson();
 
             var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
             return new Faker<CaseSubmission>()
-                .RuleFor(s => s.SubmissionId, id)
-                .RuleFor(s => s.FormId, f => formId ?? f.Random.Number(1, Int32.MaxValue))
+                .RuleFor(s => s.SubmissionId, f => id ?? f.Random.String2(24, "0123456789abcdef"))
+                .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
@@ -527,7 +535,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, Dictionary<string, string[]>>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
+        }
+
+        public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(
+            string? createdBy = null
+        )
+        {
+            return new Faker<FinishCaseSubmissionRequest>()
+            .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
     }
 }

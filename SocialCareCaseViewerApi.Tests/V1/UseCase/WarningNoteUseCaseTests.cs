@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -7,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -196,17 +194,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteGetWarningNoteByIdThrowNotFoundErrorIfNoWarningNoteIsReturned()
+        public void ExecuteGetWarningNoteByIdReturnsNullIfNoWarningNoteFound()
         {
             var warningNoteId = _fixture.Create<long>();
-
             _mockDatabaseGateway.Setup(
-                    x => x.GetWarningNoteById(It.IsAny<long>()))
-                .Returns((WarningNote) null);
+                x => x.GetWarningNoteById(It.IsAny<long>()));
 
-            Func<WarningNoteResponse> testDelegate = () => _classUnderTest.ExecuteGetWarningNoteById(warningNoteId);
+            var response = _classUnderTest.ExecuteGetWarningNoteById(warningNoteId);
 
-            testDelegate.Should().Throw<DocumentNotFoundException>();
+            response.Should().BeNull();
         }
     }
 }

@@ -9,6 +9,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request);
 
-        CaseSubmissionResponse ExecuteGetById(Guid submissionId);
+        CaseSubmissionResponse ExecuteGetById(string submissionId);
+
+        void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request);
+        CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId,
+            UpdateFormSubmissionAnswersRequest request);
     }
 }

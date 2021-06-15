@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? ReviewDate { get; set; }
 
         [Column("individual_notified")]
-        public bool DisclosedWithIndividual { get; set; }
+        public bool? DisclosedWithIndividual { get; set; }
 
         [Column("notes")]
         [MaxLength(1000)]

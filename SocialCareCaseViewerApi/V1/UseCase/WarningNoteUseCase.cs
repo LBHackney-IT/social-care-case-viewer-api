@@ -35,9 +35,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var warningNote = _databaseGateway.GetWarningNoteById(warningNoteId);
 
-            if (warningNote == null) throw new DocumentNotFoundException($"No warning note found for the specified ID: {warningNoteId}");
-
-            return warningNote.ToResponse();
+            return warningNote?.ToResponse();
         }
 
         public void ExecutePatch(PatchWarningNoteRequest request)

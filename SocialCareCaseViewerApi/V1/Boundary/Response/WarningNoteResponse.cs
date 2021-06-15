@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public long Id { get; set; }
         public long WarningNoteId { get; set; }
         public string ReviewDate { get; set; }
-        public bool DisclosedWithIndividual { get; set; }
+        public bool? DisclosedWithIndividual { get; set; }
         public string ReviewNotes { get; set; }
         public string ManagerName { get; set; }
         public string DiscussedWithManagerDate { get; set; }
