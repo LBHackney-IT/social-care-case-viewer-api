@@ -102,14 +102,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetReturnsListRelationshipsResponseWhenPersonIsFoundAndSocialCarePlatformAPIReturnsValidResponse()
         {
             var request = GetValidRequest();
-
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(new Person());
-
             _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonId(It.IsAny<long>())).Returns(TestHelpers.CreateRelationships(request.PersonId));
 
             var result = _relationshipsUseCase.ExecuteGet(request);
-
-            result.Should().NotBeNull();
 
             result.Should().BeOfType<ListRelationshipsResponse>();
         }
@@ -158,17 +154,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var result = _relationshipsUseCase.ExecuteGet(request);
 
-            result.Should().NotBeNull();
-            result.PersonalRelationships.Children.Count.Should().Be(2);
             result.PersonalRelationships.Children.Should().BeEquivalentTo(expectedResult.PersonalRelationships.Children);
-
-            result.PersonalRelationships.Other.Count.Should().Be(2);
             result.PersonalRelationships.Other.Should().BeEquivalentTo(expectedResult.PersonalRelationships.Other);
-
-            result.PersonalRelationships.Parents.Count.Should().Be(2);
             result.PersonalRelationships.Parents.Should().BeEquivalentTo(expectedResult.PersonalRelationships.Parents);
-
-            result.PersonalRelationships.Siblings.Count.Should().Be(2);
             result.PersonalRelationships.Siblings.Should().BeEquivalentTo(expectedResult.PersonalRelationships.Siblings);
         }
 
@@ -182,15 +170,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var result = _relationshipsUseCase.ExecuteGet(request);
 
-            result.Should().NotBeNull();
-            result.PersonalRelationships.Should().NotBeNull();
-            result.PersonalRelationships.Children.Should().NotBeNull();
             result.PersonalRelationships.Children.Count.Should().Be(0);
-            result.PersonalRelationships.Other.Should().NotBeNull();
             result.PersonalRelationships.Other.Count.Should().Be(0);
-            result.PersonalRelationships.Parents.Should().NotBeNull();
             result.PersonalRelationships.Parents.Count.Should().Be(0);
-            result.PersonalRelationships.Siblings.Should().NotBeNull();
             result.PersonalRelationships.Siblings.Count.Should().Be(0);
         }
 

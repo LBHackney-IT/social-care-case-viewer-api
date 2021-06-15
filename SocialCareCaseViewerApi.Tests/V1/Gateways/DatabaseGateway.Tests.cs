@@ -11,7 +11,6 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -123,7 +122,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DateStart = createWorkerRequest.DateStart,
             };
 
-            var responseWorkerTeam = createdWorker.WorkerTeams.ToList()[0];
+            var responseWorkerTeam = createdWorker.WorkerTeams?.ToList()[0];
 
             createdWorker.Id.Should().Be(expectedResponse.Id);
             createdWorker.FirstName.Should().Be(expectedResponse.FirstName);
@@ -136,8 +135,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             createdWorker.LastModifiedBy.Should().Be(expectedResponse.CreatedBy);
             createdWorker.IsActive.Should().BeTrue();
 
-            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
-            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+            responseWorkerTeam?.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam?.WorkerId.Should().Be(expectedResponse.Id);
         }
 
         [Test]
@@ -161,7 +160,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DateStart = workerByGetWorkerById.DateStart,
             };
 
-            var responseWorkerTeam = workerByGetWorkerById.WorkerTeams.ToList()[0];
+            var responseWorkerTeam = workerByGetWorkerById.WorkerTeams?.ToList()[0];
 
             workerByGetWorkerById.Id.Should().Be(expectedResponse.Id);
             workerByGetWorkerById.FirstName.Should().Be(expectedResponse.FirstName);
@@ -172,8 +171,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             workerByGetWorkerById.CreatedBy.Should().Be(expectedResponse.CreatedBy);
             workerByGetWorkerById.DateStart.Should().Be(expectedResponse.DateStart);
 
-            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
-            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+            responseWorkerTeam?.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam?.WorkerId.Should().Be(expectedResponse.Id);
         }
 
         [Test]
@@ -198,7 +197,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DateStart = workerGetByTeamId.DateStart,
             };
 
-            var responseWorkerTeam = workerGetByTeamId.WorkerTeams.ToList()[0];
+            var responseWorkerTeam = workerGetByTeamId.WorkerTeams?.ToList()[0];
 
             workerGetByTeamId.Id.Should().Be(expectedResponse.Id);
             workerGetByTeamId.FirstName.Should().Be(expectedResponse.FirstName);
@@ -209,8 +208,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             workerGetByTeamId.CreatedBy.Should().Be(expectedResponse.CreatedBy);
             workerGetByTeamId.DateStart.Should().Be(expectedResponse.DateStart);
 
-            responseWorkerTeam.TeamId.Should().Be(createdTeams[0].Id);
-            responseWorkerTeam.WorkerId.Should().Be(expectedResponse.Id);
+            responseWorkerTeam?.TeamId.Should().Be(createdTeams[0].Id);
+            responseWorkerTeam?.WorkerId.Should().Be(expectedResponse.Id);
         }
 
         [Test]
@@ -280,18 +279,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedWorker.DateStart.Should().Be(request.DateStart);
             updatedWorker.DateEnd.Should().BeNull();
 
-            var updatedWorkerTeam = updatedWorker.WorkerTeams.First();
+            var updatedWorkerTeam = updatedWorker.WorkerTeams?.First();
             var requestTeam = request.Teams.First();
-            updatedWorkerTeam.TeamId.Should().Be(requestTeam.Id);
-            updatedWorkerTeam.WorkerId.Should().Be(testWorker.Id);
-            updatedWorkerTeam.Team.Should().Be(testTeam);
-            updatedWorkerTeam.Worker.Should().Be(testWorker);
+            updatedWorkerTeam?.TeamId.Should().Be(requestTeam.Id);
+            updatedWorkerTeam?.WorkerId.Should().Be(testWorker.Id);
+            updatedWorkerTeam?.Team.Should().Be(testTeam);
+            updatedWorkerTeam?.Worker.Should().Be(testWorker);
         }
 
         [Test]
         public void CreateWorkerWithDuplicateEmailThrowsPostWorkerException()
         {
-            var (createWorkerRequest, _) = CreateWorkerAndAddToDatabase(true);
+            var (createWorkerRequest, _) = CreateWorkerAndAddToDatabase();
             var (createWorkerRequestDuplicate, _) = CreateWorkerAndAddToDatabase(true, createWorkerRequest.EmailAddress);
 
             _classUnderTest.CreateWorker(createWorkerRequest);
@@ -482,57 +481,57 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Addresses.RemoveRange(DatabaseContext.Addresses);
             DatabaseContext.PhoneNumbers.RemoveRange(DatabaseContext.PhoneNumbers);
 
-            string title = "Mr";
-            string firstName = _faker.Name.FirstName();
-            string lastName = _faker.Name.LastName();
+            const string title = "Mr";
+            var firstName = _faker.Name.FirstName();
+            var lastName = _faker.Name.LastName();
 
-            string otherNameFirstOne = _faker.Name.FirstName();
-            string otherNameLastOne = _faker.Name.LastName();
+            var otherNameFirstOne = _faker.Name.FirstName();
+            var otherNameLastOne = _faker.Name.LastName();
 
-            string otherNameFirstTwo = _faker.Name.FirstName();
-            string otherNameLastTwo = _faker.Name.LastName();
+            var otherNameFirstTwo = _faker.Name.FirstName();
+            var otherNameLastTwo = _faker.Name.LastName();
 
             const string gender = "M";
             const string restricted = "Y";
 
-            OtherName otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
-            OtherName otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
+            var otherNameOne = new OtherName() { FirstName = otherNameFirstOne, LastName = otherNameLastOne };
+            var otherNameTwo = new OtherName() { FirstName = otherNameFirstTwo, LastName = otherNameLastTwo };
 
-            List<OtherName> otherNames = new List<OtherName>() { otherNameOne, otherNameTwo };
+            var otherNames = new List<OtherName>() { otherNameOne, otherNameTwo };
 
-            DateTime dateOfBirth = DateTime.Now.AddYears(-70);
-            DateTime dateOfDeath = DateTime.Now.AddDays(-10);
+            var dateOfBirth = DateTime.Now.AddYears(-70);
+            var dateOfDeath = DateTime.Now.AddDays(-10);
 
-            string ethnicity = "A.A1"; //TODO test for valid values
-            string firstLanguage = "English";
-            string religion = _faker.Random.Word();
-            string sexualOrientation = _faker.Random.Word();
+            const string ethnicity = "A.A1"; //TODO test for valid values
+            const string firstLanguage = "English";
+            var religion = _faker.Random.Word();
+            var sexualOrientation = _faker.Random.Word();
             long nhsNumber = _faker.Random.Number();
 
-            string addressLine = "1 Test Street";
-            long uprn = 1234567;
-            string postCode = "E18";
-            string isDiplayAddress = "Y";
-            string dataIsFromDmPersonsBackup = "N";
+            const string addressLine = "1 Test Street";
+            const long uprn = 1234567;
+            const string postCode = "E18";
+            const string isDisplayAddress = "Y";
+            const string dataIsFromDmPersonsBackup = "N";
 
-            AddressDomain address = new AddressDomain() { Address = addressLine, Postcode = postCode, Uprn = uprn };
+            var address = new AddressDomain() { Address = addressLine, Postcode = postCode, Uprn = uprn };
 
-            string phoneNumberOne = "07755555555";
-            string phoneNumberTypeOne = "Mobile";
+            const string phoneNumberOne = "07755555555";
+            const string phoneNumberTypeOne = "Mobile";
 
-            string phoneNumberTwo = "07977777777";
-            string phoneNumberTypeTwo = "Fax";
+            const string phoneNumberTwo = "07977777777";
+            const string phoneNumberTypeTwo = "Fax";
 
-            List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
+            var phoneNumbers = new List<PhoneNumber>()
             {
                 new PhoneNumber() {Number = phoneNumberOne, Type = phoneNumberTypeOne},
                 new PhoneNumber() {Number = phoneNumberTwo, Type = phoneNumberTypeTwo}
             };
 
-            string emailAddress = _faker.Internet.Email();
-            string preferredMethodOfContact = _faker.Random.Word();
-            string contextFlag = "A"; //TODO test for valid values
-            string createdBy = _faker.Internet.Email();
+            var emailAddress = _faker.Internet.Email();
+            var preferredMethodOfContact = _faker.Random.Word();
+            const string contextFlag = "A"; //TODO test for valid values
+            var createdBy = _faker.Internet.Email();
 
             AddNewResidentRequest request = new AddNewResidentRequest()
             {
@@ -557,7 +556,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 Restricted = restricted
             };
 
-            AddNewResidentResponse response = _classUnderTest.AddNewResident(request);
+            var response = _classUnderTest.AddNewResident(request);
 
             Assert.IsNotNull(response.Id);
 
@@ -590,7 +589,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(contextFlag, person.AgeContext);
             Assert.AreEqual(restricted, person.Restricted);
 
-            //check that othernames were created with correct values
+            //check that other names were created with correct values
             Assert.AreEqual(2, person.OtherNames.Count);
             Assert.IsTrue(person.OtherNames.Any(x => x.FirstName == otherNameFirstOne));
             Assert.IsTrue(person.OtherNames.Any(x => x.LastName == otherNameLastOne));
@@ -603,14 +602,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(addressLine, person.Addresses.First().AddressLines);
             Assert.AreEqual(postCode, person.Addresses.First().PostCode);
             Assert.AreEqual(uprn, person.Addresses.First().Uprn);
-            Assert.AreEqual(isDiplayAddress, person.Addresses.First().IsDisplayAddress);
+            Assert.AreEqual(isDisplayAddress, person.Addresses.First().IsDisplayAddress);
             Assert.AreEqual(dataIsFromDmPersonsBackup, person.Addresses.First().DataIsFromDmPersonsBackup);
 
             //check that phone numbers were created with correct values
             Assert.AreEqual(2, person.PhoneNumbers.Count);
-            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberOne.ToString()));
+            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberOne));
             Assert.IsTrue(person.PhoneNumbers.Any(x => x.Type == phoneNumberTypeOne));
-            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberTwo.ToString()));
+            Assert.IsTrue(person.PhoneNumbers.Any(x => x.Number == phoneNumberTwo));
             Assert.IsTrue(person.PhoneNumbers.Any(x => x.Type == phoneNumberTypeTwo));
             Assert.IsTrue(person.PhoneNumbers.All(x => x.PersonId == person.Id));
 
@@ -633,20 +632,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatePersonRequestWithoutRestrictedValueSetShouldCreateRecordWithRestrictedValueSetToN()
         {
-            AddNewResidentRequest request = new AddNewResidentRequest()
+            var request = new AddNewResidentRequest()
             {
                 FirstName = _faker.Person.FirstName,
                 LastName = _faker.Person.LastName,
                 ContextFlag = "A",
-                CreatedBy = _faker.Internet.Email().ToString()
+                CreatedBy = _faker.Internet.Email()
             };
-
             var response = _classUnderTest.AddNewResident(request);
 
-            Person person = DatabaseContext.Persons.First(x => x.Id == response.Id);
+            var person = DatabaseContext.Persons.First(x => x.Id == response.Id);
 
-            response.Should().NotBeNull();
             person.Restricted.Should().Be("N");
+            person.FirstName.Should().Be(request.FirstName);
+            person.LastName.Should().Be(request.LastName);
+            person.AgeContext.Should().Be(request.ContextFlag);
+            person.CreatedBy.Should().Be(request.CreatedBy);
         }
 
         [Test]
@@ -665,8 +666,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.WarningNotes;
 
             var insertedRecord = query.FirstOrDefault(x => x.Id == response.WarningNoteId);
-
-            insertedRecord.Should().NotBeNull();
 
             insertedRecord?.PersonId.Should().Be(request.PersonId);
             insertedRecord?.Status.Should().Be("open");
@@ -730,7 +729,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.PostWarningNote(request);
 
             _mockProcessDataGateway.Verify();
-            response.CaseNoteId.Should().NotBeNull();
             response.CaseNoteId.Should().Be("CaseNoteId");
         }
 
@@ -855,7 +853,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "open");
 
             //clone the stub to compare the values later
-            WarningNote stubbedWarningNote = (WarningNote) warningNote.Clone();
+            var stubbedWarningNote = (WarningNote) warningNote.Clone();
 
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(worker);
@@ -866,10 +864,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.WarningNotes;
             var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
 
-            updatedRecord.Status.Should().NotBeNull();
             updatedRecord.Status.Should().Be(stubbedWarningNote.Status);
             updatedRecord.EndDate.Should().Be(stubbedWarningNote.EndDate);
-            updatedRecord.NextReviewDate.Should().NotBeNull();
             updatedRecord.NextReviewDate.Should().Be(request.NextReviewDate);
         }
 
@@ -1042,12 +1038,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var newWarningNote = TestHelpers.CreateWarningNote();
             DatabaseContext.WarningNotes.Add(newWarningNote);
             DatabaseContext.SaveChanges();
-
             var expectedResponse = newWarningNote.ToDomain();
 
             var response = _classUnderTest.GetWarningNoteById(newWarningNote.Id);
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(expectedResponse);
             response.WarningNoteReviews.Should().BeEmpty();
         }
@@ -1064,16 +1058,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void GetWarningNoteByIdReturnsAReviewWithTheWarningNoteIfAny()
         {
             var warningNote = TestHelpers.CreateWarningNote();
-
             var review = TestHelpers.CreateWarningNoteReview(warningNote.Id);
-
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNoteReview.Add(review);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
 
-            response.Should().NotBeNull();
             response.WarningNoteReviews.Count.Should().Be(1);
             response.WarningNoteReviews.FirstOrDefault().Should().BeEquivalentTo(review);
         }
@@ -1094,7 +1085,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
 
-            response.Should().NotBeNull();
             response.WarningNoteReviews.Count.Should().Be(3);
             response.WarningNoteReviews.Should().ContainEquivalentOf(firstReview);
             response.WarningNoteReviews.Should().ContainEquivalentOf(secondReview);
@@ -1118,7 +1108,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _classUnderTest.GetWarningNoteById(warningNote.Id);
 
-            response.Should().NotBeNull();
             response.WarningNoteReviews.Count.Should().Be(1);
             response.WarningNoteReviews.Should().ContainEquivalentOf(review);
             response.WarningNoteReviews.Should().NotContain(differentReview);
@@ -1218,12 +1207,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonUpdatesTheCurrentDisplayAddressToBeHistoricalAddress()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-
-            dbAddress displayAddress =
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var displayAddress =
                 SaveAddressToDatabase(DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, "Y"));
-
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
@@ -1279,16 +1266,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonReplacesPhoneNumbers()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            PhoneNumberInfrastructure phoneNumber =
-                SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
-            PhoneNumber number1 = request.PhoneNumbers.First();
-            PhoneNumber number2 = request.PhoneNumbers.Last();
+            var number1 = request.PhoneNumbers.First();
+            var number2 = request.PhoneNumbers.Last();
 
             person.PhoneNumbers.First(x => x.Number == number1.Number).Type.Should().Be(number1.Type);
             person.PhoneNumbers.First(x => x.Number == number2.Number).Type.Should().Be(number2.Type);
@@ -1305,11 +1290,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonRemovesPhoneNumbersIfNewOnesAreNotProvided()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            PhoneNumberInfrastructure phoneNumber =
-                SavePhoneNumberToDataBase(DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id));
-
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var request = GetValidUpdatePersonRequest(person.Id);
             request.PhoneNumbers = null;
 
             _classUnderTest.UpdatePerson(request);
@@ -1320,15 +1302,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonReplacesOtherNames()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
-
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
-            OtherName name1 = request.OtherNames.First();
-            OtherName name2 = request.OtherNames.Last();
+            var name1 = request.OtherNames.First();
+            var name2 = request.OtherNames.Last();
 
             person.OtherNames.First(x => x.FirstName == name1.FirstName).LastName.Should().Be(name1.LastName);
             person.OtherNames.First(x => x.FirstName == name2.FirstName).LastName.Should().Be(name2.LastName);
@@ -1345,10 +1326,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonRemovesOtherNamesIfNewOnesAreNotProvided()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
 
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var request = GetValidUpdatePersonRequest(person.Id);
             request.OtherNames = null;
 
             _classUnderTest.UpdatePerson(request);
@@ -1359,9 +1340,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonCreatesCorrectCaseHistoryNoteByCallingProcessDataGateway()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-
-            UpdatePersonRequest request = GetValidUpdatePersonRequest(person.Id);
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTestWithProcessDataGateway.UpdatePerson(request);
 
@@ -1369,7 +1349,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var result = MongoDbTestContext.getCollection().Find(filter).First();
 
-            string note = $"Person details updated - by {request.CreatedBy}."; //TODO: work out timestamp handling
+            var note = $"Person details updated - by {request.CreatedBy}."; //TODO: work out timestamp handling
 
             result["note"].ToString().Should().Contain(note);
             result["created_by"].Should().Be(request.CreatedBy);
@@ -1385,10 +1365,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetPersonsByListOfIdsReturnsCorrectPersonRecordsBasedOnGivenIds()
         {
-            Person personOne = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            Person personTwo = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            Person personThree = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-
+            var personOne = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var personTwo = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var listOfPersonRecords = new List<Person>() { personOne, personTwo };
 
             var result = _classUnderTest.GetPersonsByListOfIds(listOfPersonRecords.Select(x => x.Id).ToList());
@@ -1399,7 +1378,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetPersonsByListOfIdsReturnsEmptyListWhenNoMatchingPersonsFound()
         {
-            List<long> personIds = _fixture.Create<List<long>>();
+            var personIds = _fixture.Create<List<long>>();
 
             var result = _classUnderTest.GetPersonsByListOfIds(personIds);
 
@@ -1409,7 +1388,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetPersonByMosaicIdReturnsCorrectPersonRecord()
         {
-            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
 
             var result = _classUnderTest.GetPersonByMosaicId(person.Id);
 
@@ -1438,18 +1417,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             return address;
         }
 
-        private PhoneNumberInfrastructure SavePhoneNumberToDataBase(PhoneNumberInfrastructure phoneNumber)
+        private void SavePhoneNumberToDataBase(PhoneNumberInfrastructure phoneNumber)
         {
             DatabaseContext.PhoneNumbers.Add(phoneNumber);
             DatabaseContext.SaveChanges();
-            return phoneNumber;
         }
 
-        private PersonOtherName SavePersonOtherNameToDatabase(PersonOtherName name)
+        private void SavePersonOtherNameToDatabase(PersonOtherName name)
         {
             DatabaseContext.PersonOtherNames.Add(name);
             DatabaseContext.SaveChanges();
-            return name;
         }
 
         private static UpdatePersonRequest GetValidUpdatePersonRequest(long personId)
@@ -1459,7 +1436,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
                 .RuleFor(a => a.Uprn, f => f.Random.Int());
 
-            List<PhoneNumber> phoneNumbers = new List<PhoneNumber>()
+            var phoneNumbers = new List<PhoneNumber>()
             {
                 new Faker<PhoneNumber>()
                     .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
@@ -1469,7 +1446,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                     .RuleFor(p => p.Type, f => f.Random.Word())
             };
 
-            List<OtherName> otherNames = new List<OtherName>()
+            var otherNames = new List<OtherName>()
             {
                 new Faker<OtherName>()
                     .RuleFor(o => o.FirstName, f => f.Person.FirstName)

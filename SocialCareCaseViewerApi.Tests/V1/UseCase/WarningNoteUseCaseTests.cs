@@ -41,7 +41,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _classUnderTest.ExecutePost(new PostWarningNoteRequest());
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(responseObject);
         }
 
@@ -77,14 +76,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetReturnsAGetWarningNoteResponse()
         {
             var testPersonId = _fixture.Create<long>();
-
             _mockDatabaseGateway.Setup(
                 x => x.GetWarningNotes(It.IsAny<long>()))
                 .Returns(new List<dbWarningNote>());
 
             var response = _classUnderTest.ExecuteGet(testPersonId);
 
-            response.Should().NotBeNull();
             response.Should().BeOfType<ListWarningNotesResponse>();
         }
 

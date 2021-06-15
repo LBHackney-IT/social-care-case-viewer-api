@@ -34,7 +34,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.GetTeamById(team.Id) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
@@ -44,7 +43,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _teamController.GetTeamById(1) as NotFoundResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -56,7 +54,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.GetTeamByName(team.Name) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(team.ToDomain().ToResponse());
         }
@@ -66,7 +63,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _teamController.GetTeamByName("fake team name") as NotFoundResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -81,7 +77,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
             var response = _teamController.GetTeams(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamsList);
         }
@@ -108,8 +103,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.GetTeams(getTeamsRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
-
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be($"Context flag must be 1 character in length{Environment.NewLine}Context flag must be 'A' or 'C'");
         }
@@ -124,7 +117,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 
             _teamsUseCase.Verify(x => x.ExecutePost(createTeamRequest), Times.Once);
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(team);
         }
@@ -136,7 +128,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.CreateTeam(createTeamRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Team name must be provided");
         }
@@ -151,7 +142,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }

@@ -165,7 +165,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId ?? "", stepId, request);
 
-            response.Should().NotBeNull();
             response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
             response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);

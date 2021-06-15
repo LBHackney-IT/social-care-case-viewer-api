@@ -33,7 +33,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.CreateSubmission(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(createdSubmissionResponse);
         }
@@ -45,7 +44,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.CreateSubmission(invalidRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who created the submission");
         }
@@ -61,7 +59,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.CreateSubmission(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(500);
             response?.Value.Should().Be("Case submission created with a null submission ID");
         }
@@ -76,7 +73,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -91,7 +87,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.CreateSubmission(createCaseSubmissionRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -104,7 +99,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.GetSubmissionById(submissionResponse.SubmissionId) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(submissionResponse);
         }
@@ -114,7 +108,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _formSubmissionController.GetSubmissionById("1234") as NotFoundResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -126,7 +119,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as NoContentResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(204);
         }
 
@@ -138,7 +130,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, invalidRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who is finishing the submission");
         }
@@ -153,7 +144,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -168,7 +158,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(createdSubmission);
         }
@@ -183,7 +172,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -199,12 +187,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
 
-        public void FinishSubmissionReturns422WhenGetSubmissionExecpetionThrown()
+        [Test]
+        public void FinishSubmissionReturns422WhenGetSubmissionExceptionThrown()
         {
             const string errorMessage = "Failed to find submission";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
@@ -213,7 +201,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -230,7 +217,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }

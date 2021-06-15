@@ -40,7 +40,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var response = _classUnderTest.Execute();
 
-            response.Should().NotBeNull();
             response.Success.Should().BeTrue();
             response.Message.Should().BeEquivalentTo("test: " + _description);
         }

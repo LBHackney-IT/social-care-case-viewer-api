@@ -33,7 +33,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _classUnderTest.Execute("test record id");
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(stubbedCaseData);
         }
     }
