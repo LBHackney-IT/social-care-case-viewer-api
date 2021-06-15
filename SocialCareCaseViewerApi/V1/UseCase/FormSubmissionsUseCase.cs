@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 CreatedBy = worker,
                 SubmissionState = SubmissionState.InProgress,
                 EditHistory = new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = worker, EditTime = dateTimeNow } },
-                FormAnswers = new Dictionary<string, Dictionary<string, object>>()
+                FormAnswers = new Dictionary<string, string>()
             };
 
             _mongoGateway.InsertRecord(CollectionName, caseSubmission);

@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromBody]
         [JsonPropertyName("stepAnswers")]
-        public Dictionary<string, object>
+        public string
         StepAnswers
         { get; set; } = null!;
     }
