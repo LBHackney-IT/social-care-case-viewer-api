@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -28,8 +27,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case submission not found</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{submissionId:Guid}")]
-        public IActionResult GetSubmissionById(Guid submissionId)
+        [Route("{submissionId}")]
+        public IActionResult GetSubmissionById(string submissionId)
         {
             var submission = _formSubmissionsUseCase.ExecuteGetById(submissionId);
 
@@ -63,6 +62,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdSubmission = _formSubmissionsUseCase.ExecutePost(request).Item1;
+
+                if (createdSubmission.SubmissionId == null)
+                {
+                    return StatusCode(500, "Case submission created with a null submission ID");
+                }
+
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (WorkerNotFoundException e)
@@ -83,8 +88,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
-        [Route("{submissionId:Guid}")]
-        public IActionResult FinishSubmission(Guid submissionId, [FromBody] FinishCaseSubmissionRequest request)
+        [Route("{submissionId}")]
+        public IActionResult FinishSubmission(string submissionId, [FromBody] FinishCaseSubmissionRequest request)
         {
             var validator = new FinishCaseSubmissionRequestValidator();
             var validationResults = validator.Validate(request);
@@ -120,8 +125,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="422">Could not process request</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpPatch]
-        [Route("{submissionId:Guid}/steps/{stepId}")]
-        public IActionResult EditSubmissionAnswers(Guid submissionId, string stepId, [FromBody] UpdateFormSubmissionAnswersRequest request)
+        [Route("{submissionId}/steps/{stepId}")]
+        public IActionResult EditSubmissionAnswers(string submissionId, string stepId, [FromBody] UpdateFormSubmissionAnswersRequest request)
         {
             var validator = new UpdateFormSubmissionAnswersValidator();
             var validationResults = validator.Validate(request);

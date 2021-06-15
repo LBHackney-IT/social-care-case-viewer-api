@@ -7,7 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class CaseSubmissionResponse
     {
-        public Guid SubmissionId { get; set; }
+        public string? SubmissionId { get; set; }
         public string FormId { get; set; } = null!;
         public WorkerResponse CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }

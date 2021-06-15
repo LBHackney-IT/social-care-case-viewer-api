@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
@@ -9,8 +11,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     public class CaseSubmission
     {
+        [JsonProperty("_id")]
         [BsonId]
-        public Guid SubmissionId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? SubmissionId { get; set; }
 
         public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
@@ -43,7 +44,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var caseSubmission = new CaseSubmission
             {
-                SubmissionId = Guid.NewGuid(),
                 FormId = request.FormId,
                 Residents = new List<Person> { resident },
                 Workers = new List<Worker> { worker },
@@ -59,14 +59,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return (caseSubmission.ToDomain().ToResponse(), caseSubmission);
         }
 
-        public CaseSubmissionResponse? ExecuteGetById(Guid submissionId)
+        public CaseSubmissionResponse? ExecuteGetById(string submissionId)
         {
-            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
 
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public void ExecuteFinishSubmission(Guid submissionId, FinishCaseSubmissionRequest request)
+        public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             if (worker == null)
@@ -76,20 +76,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
             if (updateSubmission == null)
             {
-                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+                throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
             updateSubmission.SubmissionState = SubmissionState.Submitted;
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
-            _mongoGateway.UpsertRecord<CaseSubmission>(CollectionName, submissionId, updateSubmission);
+            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), updateSubmission);
         }
 
 
-        public CaseSubmissionResponse UpdateAnswers(Guid submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
+        public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
             if (worker == null)
@@ -99,10 +99,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, submissionId);
+            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
             if (submission == null)
             {
-                throw new GetSubmissionException($"Submission with ID {submissionId.ToString()} not found");
+                throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
             submission.FormAnswers[stepId] = request.StepAnswers;
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Worker = worker,
                 EditTime = DateTime.Now
             });
-            _mongoGateway.UpsertRecord(CollectionName, submissionId, submission);
+            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
     }
