@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
 
-        // outer hashset string represents step id for form, inner hashset int represents questionId
+        // outer hashset string represents step id for form
         // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
         // either string, string[] or List<Dictionary<string,string>>
         public Dictionary<string, string> FormAnswers { get; set; } = null!;
