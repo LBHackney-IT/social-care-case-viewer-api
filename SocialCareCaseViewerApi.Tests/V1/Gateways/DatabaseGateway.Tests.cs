@@ -1083,8 +1083,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var warningNote = TestHelpers.CreateWarningNote();
             var firstReview = TestHelpers.CreateWarningNoteReview(warningNote.Id);
-            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, true);
-            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, false);
+            var secondReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, disclosedWithIndividual: true);
+            var thirdReview = TestHelpers.CreateWarningNoteReview(warningNote.Id, disclosedWithIndividual: false);
 
             DatabaseContext.WarningNotes.Add(warningNote);
             DatabaseContext.WarningNoteReview.Add(firstReview);
