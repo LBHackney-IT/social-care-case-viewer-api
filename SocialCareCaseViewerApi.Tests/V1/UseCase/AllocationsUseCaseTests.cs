@@ -61,14 +61,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteReturnsTheResponse()
         {
             var responseObject = new CreateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
-
-
             _mockDatabaseGateway.Setup(x => x.CreateAllocation(It.IsAny<CreateAllocationRequest>()))
                 .Returns(responseObject);
 
             var response = _allocationsUseCase.ExecutePost(new CreateAllocationRequest());
-
-            response.Should().NotBeNull();
 
             response.Should().BeEquivalentTo(responseObject);
         }

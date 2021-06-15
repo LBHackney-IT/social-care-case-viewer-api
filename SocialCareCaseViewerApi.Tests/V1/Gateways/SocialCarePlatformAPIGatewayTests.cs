@@ -36,7 +36,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _socialCarePlatformAPIGateway.GetCaseNotesByPersonId("1");
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(caseNotes);
         }
 
@@ -49,7 +48,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _socialCarePlatformAPIGateway.GetCaseNoteById("1");
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(caseNote);
         }
 
@@ -65,7 +63,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var response = _socialCarePlatformAPIGateway.GetVisitsByPersonId("1").ToList();
 
-            response.Should().NotBeNull();
             response.Count.Should().Be(visits.Count);
             response.Should().BeEquivalentTo(visits);
         }
@@ -88,12 +85,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var visit = TestHelpers.CreateVisit();
             var httpClient = CreateHttpClient(visit);
-
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetVisitByVisitId(visit.VisitId);
 
-            response.Should().NotBeNull();
             response.Should().BeEquivalentTo(visit);
         }
 
@@ -127,28 +122,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void GivenHttpClientReturnsValidResponseThenGatewayReturnsRelationships()
         {
             const long personId = 123;
-
             var relationships = TestHelpers.CreateRelationships(personId);
-
             var httpClient = CreateHttpClient(relationships);
-
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
             var response = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId);
 
-            response.Should().NotBeNull();
-            response.PersonalRelationships.Should().NotBeNull();
-            response.PersonalRelationships.Other.Should().NotBeNull();
-            response.PersonalRelationships.Other.Count.Should().Be(relationships.PersonalRelationships.Other.Count);
             response.PersonalRelationships.Other.Should().BeEquivalentTo(relationships.PersonalRelationships.Other);
-            response.PersonalRelationships.Parents.Should().NotBeNull();
-            response.PersonalRelationships.Parents.Count.Should().Be(relationships.PersonalRelationships.Parents.Count);
             response.PersonalRelationships.Parents.Should().BeEquivalentTo(relationships.PersonalRelationships.Parents);
-            response.PersonalRelationships.Children.Should().NotBeNull();
-            response.PersonalRelationships.Children.Count.Should().Be(relationships.PersonalRelationships.Children.Count);
             response.PersonalRelationships.Children.Should().BeEquivalentTo(relationships.PersonalRelationships.Children);
-            response.PersonalRelationships.Siblings.Should().NotBeNull();
-            response.PersonalRelationships.Siblings.Count.Should().Be(relationships.PersonalRelationships.Siblings.Count);
             response.PersonalRelationships.Siblings.Should().BeEquivalentTo(relationships.PersonalRelationships.Siblings);
         }
 

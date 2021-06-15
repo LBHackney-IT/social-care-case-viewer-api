@@ -34,7 +34,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
             var response = _caseController.GetCaseByRecordId("caseString") as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
         }
 
@@ -57,7 +56,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _caseController.GetCaseByRecordId("caseString") as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Document Not Found");
         }
@@ -71,7 +69,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
             var response = _caseController.GetCases(listCasesRequest) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(careCaseDataList);
         }
@@ -84,7 +81,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _caseController.GetCases(new ListCasesRequest()) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Document Not Found");
         }
