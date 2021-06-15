@@ -16,6 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string ReviewNotes { get; set; }
         public string ManagerName { get; set; }
         public DateTime? DiscussedWithManagerDate { get; set; }
+        public bool? DisclosedWithIndividual { get; set; }
     }
 
     public class PatchWarningNoteRequestValidator : AbstractValidator<PatchWarningNoteRequest>

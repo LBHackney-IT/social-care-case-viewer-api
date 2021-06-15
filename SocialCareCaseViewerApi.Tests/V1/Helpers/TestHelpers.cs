@@ -365,7 +365,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
-            DateTime? discussedWithManagerDate = null
+            DateTime? discussedWithManagerDate = null,
+            bool? disclosedWithIndividual = null
         )
         {
             var person = CreatePerson();
@@ -377,6 +378,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Recent())
                 .RuleFor(p => p.ReviewedBy, f => reviewedBy ?? worker.Email)
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
+                .RuleFor(p => p.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(p => p.Status, f => requestStatus)
                 .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
                 .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
@@ -413,13 +415,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.DateStart, f => dateStart ?? f.Date.Recent());
         }
 
-        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId)
+        public static WarningNoteReview CreateWarningNoteReview(long warningNoteId, bool? disclosedWithIndividual = null)
         {
             return new Faker<WarningNoteReview>()
                 .RuleFor(r => r.Id, f => f.UniqueIndex)
                 .RuleFor(r => r.WarningNoteId, f => warningNoteId)
                 .RuleFor(r => r.ReviewDate, f => f.Date.Future())
-                .RuleFor(r => r.DisclosedWithIndividual, f => f.Random.Bool())
+                .RuleFor(r => r.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(r => r.ReviewNotes, f => f.Random.String2(1, 50))
                 .RuleFor(r => r.ManagerName, f => f.Person.FullName)
                 .RuleFor(r => r.DiscussedWithManagerDate, f => f.Date.Past())
