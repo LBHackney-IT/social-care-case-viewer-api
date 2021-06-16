@@ -50,14 +50,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetCaseByIdReturns404WhenNoCaseIsFound()
+        public void GetCaseByIdReturnsNotFoundWhenNullIsReturned()
         {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()))
-                .Throws(new DocumentNotFoundException("Document Not Found"));
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()));
 
             var response = _caseController.GetCaseByRecordId("caseString") as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Document Not Found");
         }

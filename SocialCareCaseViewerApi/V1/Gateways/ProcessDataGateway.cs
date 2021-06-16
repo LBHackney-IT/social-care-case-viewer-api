@@ -278,7 +278,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var query = collection.AsQueryable().Where(db => filter.Inject());
 
             var result = query.ToList();
-            if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
 
             var response = result.ToResponse().FirstOrDefault();
 

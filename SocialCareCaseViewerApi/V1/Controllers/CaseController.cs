@@ -52,14 +52,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("{caseId}")]
         public IActionResult GetCaseByRecordId(string caseId)
         {
-            try
+            var caseRecord = _caseRecordsUseCase.Execute(caseId);
+
+            if (caseRecord == null)
             {
-                return Ok(_caseRecordsUseCase.Execute(caseId));
+                return NotFound("Document Not Found");
             }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+
+            return Ok(caseRecord);
         }
 
         /// <summary>
