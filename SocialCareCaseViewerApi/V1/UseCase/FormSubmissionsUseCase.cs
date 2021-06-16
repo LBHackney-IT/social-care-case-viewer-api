@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     {
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
-        private const string CollectionName = "resident-case-submissions";
+        private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions];
 
         public FormSubmissionsUseCase(IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
         {
@@ -54,14 +54,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 FormAnswers = new Dictionary<string, string>()
             };
 
-            _mongoGateway.InsertRecord(CollectionName, caseSubmission);
+            _mongoGateway.InsertRecord(_collectionName, caseSubmission);
 
             return (caseSubmission.ToDomain().ToResponse(), caseSubmission);
         }
 
         public CaseSubmissionResponse? ExecuteGetById(string submissionId)
         {
-            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
+            var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
             return foundSubmission?.ToDomain().ToResponse();
         }
@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
+            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (updateSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             updateSubmission.SubmissionState = SubmissionState.Submitted;
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
-            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), updateSubmission);
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updateSubmission);
         }
 
 
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(submissionId));
+            var submission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (submission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Worker = worker,
                 EditTime = DateTime.Now
             });
-            _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), submission);
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
     }
