@@ -73,5 +73,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var filter = Builders<T1>.Filter.Eq(propertyName, propertyValue);
             return collection.Find(filter).FirstOrDefault();
         }
+
+        public List<T1> LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter)
+        {
+            var collection = _mongoDatabase.GetCollection<T1>(collectionName);
+            return collection.Find(filter).ToList();
+        }
     }
 }
