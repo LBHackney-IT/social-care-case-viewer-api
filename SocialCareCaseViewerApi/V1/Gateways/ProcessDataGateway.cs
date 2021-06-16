@@ -10,12 +10,11 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
-
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class ProcessDataGateway : IProcessDataGateway
@@ -29,16 +28,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
 
-        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string? ncId)
         {
             var result = new List<BsonDocument>();
-            FilterDefinition<BsonDocument> firstNameFilter;
-            FilterDefinition<BsonDocument> lastNameFilter;
+            FilterDefinition<BsonDocument>? firstNameFilter;
+            FilterDefinition<BsonDocument>? lastNameFilter;
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId)?.ToList();
-                if (historicRecords?.Count > 0)
+                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId).ToList();
+                if (historicRecords.Count > 0)
                 {
                     result.AddRange(historicRecords);
                 }
@@ -125,7 +124,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
-        private IEnumerable<BsonDocument> GetHistoricRecordsByPersonId(string personId, string ncId)
+        private IEnumerable<BsonDocument> GetHistoricRecordsByPersonId(string personId, string? ncId)
         {
             var mosaicIdQuery = _sccvDbContext.getCollection().AsQueryable();
             var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + personId + "$", "i"));

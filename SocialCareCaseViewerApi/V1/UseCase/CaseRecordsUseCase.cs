@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -19,12 +20,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
         }
-        public CareCaseDataList Execute(ListCasesRequest? request)
+        public CareCaseDataList Execute(ListCasesRequest request)
         {
             string? ncId = null;
 
             //grab both mosaic id and nc reference id
-            if (!string.IsNullOrWhiteSpace(request?.MosaicId))
+            if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
                 string ncIdTmp = _databaseGateway.GetNCReferenceByPersonId(request.MosaicId);
 
@@ -42,16 +43,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
-            var result = _processDataGateway.GetProcessData(request, ncId);
+            var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
+            var careCaseData = response.ToList();
 
-            int? nextCursor = request?.Cursor + request?.Limit;
+            int? nextCursor = request.Cursor + request.Limit;
 
             //support page size 1
-            if (nextCursor == result.Item2 || result.Item1.Count() < request?.Limit) nextCursor = null;
+            if (nextCursor == totalCount || careCaseData.Count < request.Limit) nextCursor = null;
 
             return new CareCaseDataList
             {
-                Cases = result.Item1.ToList(),
+                Cases = careCaseData.ToList(),
                 NextCursor = nextCursor
             };
         }
