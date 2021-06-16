@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<CareCaseData> ToResponse(List<BsonDocument> submittedFormsData)
+        public static List<CareCaseData> ToResponse(this IEnumerable<BsonDocument> submittedFormsData)
         {
             return submittedFormsData.Select(x => x.ToResponse()).ToList();
         }

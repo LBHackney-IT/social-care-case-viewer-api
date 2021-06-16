@@ -77,8 +77,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new DocumentNotFoundException("document not found");
             }
 
-            var response = ResponseFactory
-                .ToResponse(result);
+            var response = result.ToResponse();
 
             if (request.StartDate != null)
             {
@@ -203,63 +202,61 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
         {
-            switch (sortBy)
+            return sortBy switch
             {
-                case "firstName":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.FirstName) :
-                        response.OrderByDescending(x => x.FirstName);
-                case "lastName":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.LastName) :
-                        response.OrderByDescending(x => x.LastName);
-                case "caseFormUrl":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.CaseFormUrl) :
-                        response.OrderByDescending(x => x.CaseFormUrl);
-                case "dateOfBirth":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        }) :
-                        response.OrderByDescending(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        });
-                case "officerEmail":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.OfficerEmail) :
-                        response.OrderByDescending(x => x.OfficerEmail);
-                default:
-                    return (orderBy == "asc") ? response.OrderBy(GetDateToSortBy) : response.OrderByDescending(GetDateToSortBy);
-            }
+                "firstName" => (orderBy == "asc")
+                    ? response.OrderBy(x => x.FirstName)
+                    : response.OrderByDescending(x => x.FirstName),
+                "lastName" => (orderBy == "asc")
+                    ? response.OrderBy(x => x.LastName)
+                    : response.OrderByDescending(x => x.LastName),
+                "caseFormUrl" => (orderBy == "asc")
+                    ? response.OrderBy(x => x.CaseFormUrl)
+                    : response.OrderByDescending(x => x.CaseFormUrl),
+                "dateOfBirth" => (orderBy == "asc")
+                    ? response.OrderBy(x =>
+                    {
+                        _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out var dt);
+                        return dt;
+                    })
+                    : response.OrderByDescending(x =>
+                    {
+                        _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out var dt);
+                        return dt;
+                    }),
+                "officerEmail" => (orderBy == "asc")
+                    ? response.OrderBy(x => x.OfficerEmail)
+                    : response.OrderByDescending(x => x.OfficerEmail),
+                _ => (orderBy == "asc")
+                    ? response.OrderBy(GetDateToSortBy)
+                    : response.OrderByDescending(GetDateToSortBy)
+            };
 
             static DateTime? GetDateToSortBy(CareCaseData x)
             {
                 if (string.IsNullOrEmpty(x.DateOfEvent))
                 {
-                    bool success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
+                    var success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
                     if (success) return timeStamp;
 
-                    bool successForDataImportTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataImportTimestamp);
+                    var successForDataImportTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dataImportTimestamp);
                     if (successForDataImportTimestampFormat) return dataImportTimestamp;
 
-                    bool successForNonISO24hrTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime nonISO24hrTimestamp);
-                    if (successForNonISO24hrTimestampFormat) return nonISO24hrTimestamp;
+                    var successForNonIso24HrTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var nonIso24HrTimestamp);
+                    if (successForNonIso24HrTimestampFormat) return nonIso24HrTimestamp;
                 }
                 else
                 {
-                    bool success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEvent);
+                    var success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEvent);
                     if (success) return dateOfEvent;
 
-                    bool successForISODateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateTimeFormat);
-                    if (successForISODateTimeFormat) return dateOfEventISODateTimeFormat;
+                    var successForIsoDateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateTimeFormat);
+                    if (successForIsoDateTimeFormat) return dateOfEventIsoDateTimeFormat;
 
-                    bool successForISODateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateFormat);
-                    if (successForISODateFormat) return dateOfEventISODateFormat;
+                    var successForIsoDateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateFormat);
+                    if (successForIsoDateFormat) return dateOfEventIsoDateFormat;
                 }
 
                 return null;
