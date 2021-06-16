@@ -282,7 +282,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
-                SubmissionState = "in-progress",
+                SubmissionState = "In progress",
                 FormAnswers = databaseCaseSubmission1.FormAnswers
             };
 
@@ -300,7 +300,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
-                SubmissionState = "submitted",
+                SubmissionState = "Submitted",
                 FormAnswers = databaseCaseSubmission2.FormAnswers
             };
 

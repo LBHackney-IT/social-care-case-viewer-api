@@ -147,8 +147,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
-                { SubmissionState.InProgress, "in-progress" },
-                { SubmissionState.Submitted, "submitted" }
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" }
             };
 
             return new Domain.CaseSubmission
