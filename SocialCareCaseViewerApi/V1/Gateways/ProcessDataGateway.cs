@@ -271,7 +271,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return doc["_id"].AsObjectId.ToString();
         }
 
-        public CareCaseData GetCaseById(string recordId)
+        public CareCaseData? GetCaseById(string recordId)
         {
             var collection = _sccvDbContext.getCollection();
             var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
@@ -280,7 +280,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var result = query.ToList();
             if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
 
-            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+            var response = result.ToResponse().FirstOrDefault();
 
             return response;
         }

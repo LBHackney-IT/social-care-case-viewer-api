@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string? ncId);
 
-        CareCaseData GetCaseById(string recordId);
+        CareCaseData? GetCaseById(string recordId);
 
         Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc);
         IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response);
