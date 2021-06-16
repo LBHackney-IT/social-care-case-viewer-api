@@ -21,6 +21,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
@@ -67,8 +68,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static Worker ToDomain(this DbWorker worker, bool includeTeamData)
         {
-            if (worker == null) return null;
-
             return new Worker
             {
                 Id = worker.Id,
@@ -104,7 +103,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview> reviews = null)
+        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview>? reviews = null)
         {
             return new WarningNote
             {
@@ -158,7 +157,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
                 SubmittedAt = caseSubmission.SubmittedAt,
-                SubmittedBy = caseSubmission.SubmittedBy.ToDomain(false),
+                SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
