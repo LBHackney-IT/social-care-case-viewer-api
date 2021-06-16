@@ -37,9 +37,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public int Limit { get; set; } = 20;
 
         [FromQuery(Name = "sort_by")]
-        public string? SortBy { get; set; }
+        public string SortBy { get; set; } = null!;
 
         [FromQuery(Name = "order_by")]
-        public string? OrderBy { get; set; }
+        public string OrderBy { get; set; } = null!;
     }
 }

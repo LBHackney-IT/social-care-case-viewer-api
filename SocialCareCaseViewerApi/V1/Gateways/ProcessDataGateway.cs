@@ -82,7 +82,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.StartDate != null)
             {
-                if (DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                if (DateTime.TryParseExact(((DateTime)request.StartDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate))
                 {
                     response = response
                         .Where(x =>
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.EndDate != null)
             {
-                if (DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+                if (DateTime.TryParseExact(((DateTime) request.EndDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
                 {
                     response = response
                         .Where(x =>

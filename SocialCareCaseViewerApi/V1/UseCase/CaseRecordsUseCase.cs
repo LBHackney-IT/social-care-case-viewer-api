@@ -44,6 +44,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
+
+
+
             var careCaseData = response.ToList();
 
             int? nextCursor = request.Cursor + request.Limit;
