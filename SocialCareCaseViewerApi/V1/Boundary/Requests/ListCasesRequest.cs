@@ -1,18 +1,15 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListCasesRequest
     {
-        [FromQuery(Name = "record_id")]
-        public string RecordId { get; set; }
-
         [FromQuery(Name = "mosaic_id")]
         public string MosaicId { get; set; }
 
         [FromQuery(Name = "exact_name_match")]
-        public Boolean ExactNameMatch { get; set; } = false;
+        public bool ExactNameMatch { get; set; } = false;
+
         [FromQuery(Name = "first_name")]
         public string FirstName { get; set; }
 
