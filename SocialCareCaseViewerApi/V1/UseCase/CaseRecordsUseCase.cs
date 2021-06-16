@@ -49,19 +49,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
-            var response = new List<CareCaseData>();
-            var totalCount = 0;
-
-            // var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
+            var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
             if (request.MosaicId != null)
             {
-                var allCaseSubmissions = _mongoGateway.LoadRecords<CaseSubmission>("resident-case-submissions");
+                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, r => r.Id == long.Parse(request.MosaicId));
 
-                var caseSubmissions = allCaseSubmissions
-                    .Where(c => c.Residents.Any(r => r.Id == long.Parse(request.MosaicId)))
-                    .Where(c => c.SubmissionState == SubmissionState.Submitted)
+                var caseSubmissions = _mongoGateway
+                    .LoadRecordsByFilter("resident-case-submissions", filter)
+                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
                     .ToList();
 
