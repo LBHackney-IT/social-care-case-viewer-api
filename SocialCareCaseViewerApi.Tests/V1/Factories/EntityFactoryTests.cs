@@ -268,26 +268,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission = TestHelpers.CreateCaseSubmission();
-
-            var domainCaseSubmission = new DomainCaseSubmission()
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var domainCaseSubmission1 = new DomainCaseSubmission()
             {
-                SubmissionId = databaseCaseSubmission.SubmissionId,
-                FormId = databaseCaseSubmission.FormId,
-                Residents = databaseCaseSubmission.Residents,
-                Workers = databaseCaseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
-                CreatedAt = databaseCaseSubmission.CreatedAt,
-                CreatedBy = databaseCaseSubmission.CreatedBy.ToDomain(false),
-                EditHistory = databaseCaseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                SubmissionId = databaseCaseSubmission1.SubmissionId,
+                FormId = databaseCaseSubmission1.FormId,
+                Residents = databaseCaseSubmission1.Residents,
+                Workers = databaseCaseSubmission1.Workers.Select(w => w.ToDomain(false)).ToList(),
+                CreatedAt = databaseCaseSubmission1.CreatedAt,
+                CreatedBy = databaseCaseSubmission1.CreatedBy.ToDomain(false),
+                EditHistory = databaseCaseSubmission1.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
-                SubmissionState = databaseCaseSubmission.SubmissionState,
-                FormAnswers = databaseCaseSubmission.FormAnswers,
+                SubmissionState = "in-progress",
+                FormAnswers = databaseCaseSubmission1.FormAnswers,
             };
 
-            databaseCaseSubmission.ToDomain().Should().BeEquivalentTo(domainCaseSubmission);
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var domainCaseSubmission2 = new DomainCaseSubmission()
+            {
+                SubmissionId = databaseCaseSubmission2.SubmissionId,
+                FormId = databaseCaseSubmission2.FormId,
+                Residents = databaseCaseSubmission2.Residents,
+                Workers = databaseCaseSubmission2.Workers.Select(w => w.ToDomain(false)).ToList(),
+                CreatedAt = databaseCaseSubmission2.CreatedAt,
+                CreatedBy = databaseCaseSubmission2.CreatedBy.ToDomain(false),
+                EditHistory = databaseCaseSubmission2.EditHistory.Select(e => new EditHistory<Worker>
+                {
+                    EditTime = e.EditTime,
+                    Worker = e.Worker.ToDomain(false)
+                }).ToList(),
+                SubmissionState = "submitted",
+                FormAnswers = databaseCaseSubmission2.FormAnswers,
+            };
+
+            databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
+            databaseCaseSubmission2.ToDomain().Should().BeEquivalentTo(domainCaseSubmission2);
         }
 
         [Test]
