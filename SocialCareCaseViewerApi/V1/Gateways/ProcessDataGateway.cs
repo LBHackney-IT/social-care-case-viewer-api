@@ -115,11 +115,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var totalCount = response.Count;
 
-            response = SortData(request.SortBy, request.OrderBy, response)
-                .Skip(request.Cursor)
-                .Take(request.Limit)
-                .ToList();
-
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
@@ -198,69 +193,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             return casesAndVisits;
-        }
-
-        public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
-        {
-            return sortBy switch
-            {
-                "firstName" => (orderBy == "asc")
-                    ? response.OrderBy(x => x.FirstName)
-                    : response.OrderByDescending(x => x.FirstName),
-                "lastName" => (orderBy == "asc")
-                    ? response.OrderBy(x => x.LastName)
-                    : response.OrderByDescending(x => x.LastName),
-                "caseFormUrl" => (orderBy == "asc")
-                    ? response.OrderBy(x => x.CaseFormUrl)
-                    : response.OrderByDescending(x => x.CaseFormUrl),
-                "dateOfBirth" => (orderBy == "asc")
-                    ? response.OrderBy(x =>
-                    {
-                        _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture,
-                            DateTimeStyles.None, out var dt);
-                        return dt;
-                    })
-                    : response.OrderByDescending(x =>
-                    {
-                        _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture,
-                            DateTimeStyles.None, out var dt);
-                        return dt;
-                    }),
-                "officerEmail" => (orderBy == "asc")
-                    ? response.OrderBy(x => x.OfficerEmail)
-                    : response.OrderByDescending(x => x.OfficerEmail),
-                _ => (orderBy == "asc")
-                    ? response.OrderBy(GetDateToSortBy)
-                    : response.OrderByDescending(GetDateToSortBy)
-            };
-
-            static DateTime? GetDateToSortBy(CareCaseData x)
-            {
-                if (string.IsNullOrEmpty(x.DateOfEvent))
-                {
-                    var success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
-                    if (success) return timeStamp;
-
-                    var successForDataImportTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dataImportTimestamp);
-                    if (successForDataImportTimestampFormat) return dataImportTimestamp;
-
-                    var successForNonIso24HrTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var nonIso24HrTimestamp);
-                    if (successForNonIso24HrTimestampFormat) return nonIso24HrTimestamp;
-                }
-                else
-                {
-                    var success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEvent);
-                    if (success) return dateOfEvent;
-
-                    var successForIsoDateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateTimeFormat);
-                    if (successForIsoDateTimeFormat) return dateOfEventIsoDateTimeFormat;
-
-                    var successForIsoDateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateFormat);
-                    if (successForIsoDateFormat) return dateOfEventIsoDateFormat;
-                }
-
-                return null;
-            }
         }
 
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
