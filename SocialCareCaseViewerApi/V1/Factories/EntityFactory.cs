@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -66,6 +67,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static Worker ToDomain(this DbWorker worker, bool includeTeamData)
         {
+            if (worker == null) return null;
+
             return new Worker
             {
                 Id = worker.Id,
@@ -163,6 +166,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers
+            };
+        }
+
+        public static CareCaseData ToCareCaseData(this CaseSubmission caseSubmission, ListCasesRequest listCasesRequest)
+        {
+            var resident = caseSubmission.Residents
+                .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? ""));
+
+            return new CareCaseData
+            {
+                RecordId = caseSubmission.SubmissionId,
+                PersonId = resident.Id,
+                FirstName = resident.FirstName,
+                LastName = resident.LastName,
+                OfficerEmail = caseSubmission.Workers[0].Email,
+                CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString(CultureInfo.InvariantCulture) ?? new DateTime().ToString(CultureInfo.InvariantCulture),
+                FormName = caseSubmission.FormId,
+                DateOfBirth = resident.DateOfBirth.ToString(),
+                DateOfEvent = caseSubmission.CreatedAt.ToString(CultureInfo.InvariantCulture),
+                CaseFormUrl = caseSubmission.SubmissionId
             };
         }
 

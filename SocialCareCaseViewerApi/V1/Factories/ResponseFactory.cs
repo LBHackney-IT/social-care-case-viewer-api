@@ -112,6 +112,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static WorkerResponse ToResponse(this Domain.Worker worker)
         {
+            if (worker == null) return null;
+
             return new WorkerResponse
             {
                 Id = worker.Id,

@@ -49,23 +49,24 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
-            var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
+            var response = new List<CareCaseData>();
+            var totalCount = 0;
 
-            // get our requests, append to the response, increment totalCount!
+            // var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
             if (request.MosaicId != null)
             {
-                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, r => r.Id == long.Parse(request.MosaicId));
+                var allCaseSubmissions = _mongoGateway.LoadRecords<CaseSubmission>("resident-case-submissions");
 
-                var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter("resident-case-submissions", filter)
-                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
-                    .Select(x => x.ToCareCaseData())
+                var caseSubmissions = allCaseSubmissions
+                    .Where(c => c.Residents.Any(r => r.Id == long.Parse(request.MosaicId)))
+                    .Where(c => c.SubmissionState == SubmissionState.Submitted)
+                    .Select(x => x.ToCareCaseData(request))
                     .ToList();
 
-                // now we need to convert to the CareCaseData type
-                allCareCaseData.Append<>(caseSubmissions);
+                allCareCaseData.AddRange(caseSubmissions);
+                totalCount += caseSubmissions.Count;
             }
 
             var careCaseData = SortData(request.SortBy, request.OrderBy, allCareCaseData)
