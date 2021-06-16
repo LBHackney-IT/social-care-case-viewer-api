@@ -12,6 +12,8 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public Worker? SubmittedBy { get; set; }
+        public DateTime? SubmittedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<Worker> Workers { get; set; } = null!;
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;

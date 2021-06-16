@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 #nullable enable
@@ -16,11 +18,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     {
         private readonly IProcessDataGateway _processDataGateway;
         private readonly IDatabaseGateway _databaseGateway;
+        private readonly IMongoGateway _mongoGateway;
 
-        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway)
+        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
         {
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
+            _mongoGateway = mongoGateway;
         }
         public CareCaseDataList Execute(ListCasesRequest request)
         {
@@ -47,7 +51,24 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
 
-            var careCaseData = SortData(request.SortBy, request.OrderBy, response)
+            // get our requests, append to the response, increment totalCount!
+            var allCareCaseData = response.ToList();
+
+            if (request.MosaicId != null)
+            {
+                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, r => r.Id == long.Parse(request.MosaicId));
+
+                var caseSubmissions = _mongoGateway
+                    .LoadRecordsByFilter("resident-case-submissions", filter)
+                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
+                    .Select(x => x.ToCareCaseData())
+                    .ToList();
+
+                // now we need to convert to the CareCaseData type
+                allCareCaseData.Append<>(caseSubmissions);
+            }
+
+            var careCaseData = SortData(request.SortBy, request.OrderBy, allCareCaseData)
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
