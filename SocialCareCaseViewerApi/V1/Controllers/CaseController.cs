@@ -1,5 +1,3 @@
-using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,21 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                string? dateValidationError = null;
-
-                if (!string.IsNullOrWhiteSpace(request?.StartDate) && !DateTime.TryParseExact(request.StartDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
-                {
-                    dateValidationError += "Invalid start date";
-                }
-
-                if (!string.IsNullOrWhiteSpace(request?.EndDate) && !DateTime.TryParseExact(request.EndDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
-                {
-                    dateValidationError += " Invalid end date";
-                }
-
-                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_caseRecordsUseCase.Execute(request));
+                return Ok(_caseRecordsUseCase.Execute(request));
             }
             catch (DocumentNotFoundException e)
             {
