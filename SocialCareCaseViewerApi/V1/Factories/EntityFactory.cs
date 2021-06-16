@@ -146,6 +146,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
         {
+            var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" }
+            };
+
             return new Domain.CaseSubmission
             {
                 SubmissionId = caseSubmission.SubmissionId,
@@ -159,7 +164,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
-                SubmissionState = caseSubmission.SubmissionState,
+                SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
                 FormAnswers = caseSubmission.FormAnswers
             };
         }
