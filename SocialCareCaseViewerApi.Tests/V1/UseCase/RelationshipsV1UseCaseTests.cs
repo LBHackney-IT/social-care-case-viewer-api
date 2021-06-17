@@ -16,18 +16,18 @@ using System.Linq;
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
-    public class RelationshipsUseCaseTests
+    public class RelationshipsV1UseCaseTests
     {
         private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private RelationshipsUseCase _relationshipsUseCase;
+        private RelationshipsV1UseCase _relationshipsUseCase;
 
         [SetUp]
         public void SetUp()
         {
             _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _relationshipsUseCase = new RelationshipsUseCase(_mockSocialCarePlatformAPIGateway.Object, _mockDatabaseGateway.Object);
+            _relationshipsUseCase = new RelationshipsV1UseCase(_mockSocialCarePlatformAPIGateway.Object, _mockDatabaseGateway.Object);
         }
 
         private static ListRelationshipsV1Request GetValidRequest()

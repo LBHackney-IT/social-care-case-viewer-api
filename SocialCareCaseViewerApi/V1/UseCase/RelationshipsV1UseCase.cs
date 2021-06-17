@@ -9,12 +9,12 @@ using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class RelationshipsUseCase : IRelationshipsUseCase
+    public class RelationshipsV1UseCase : IRelationshipsUseCase
     {
         private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
         private IDatabaseGateway _databaseGateway;
 
-        public RelationshipsUseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway, IDatabaseGateway databaseGateway)
+        public RelationshipsV1UseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway, IDatabaseGateway databaseGateway)
         {
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
             _databaseGateway = databaseGateway;
