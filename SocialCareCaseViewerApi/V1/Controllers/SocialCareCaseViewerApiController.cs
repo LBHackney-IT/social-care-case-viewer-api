@@ -391,7 +391,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/relationships")]
-        public IActionResult ListRelationships([FromQuery] ListRelationshipsRequest request)
+        public IActionResult ListRelationships([FromQuery] ListRelationshipsV1Request request)
         {
             try
             {

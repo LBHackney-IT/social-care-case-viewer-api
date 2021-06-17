@@ -30,9 +30,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _relationshipsUseCase = new RelationshipsUseCase(_mockSocialCarePlatformAPIGateway.Object, _mockDatabaseGateway.Object);
         }
 
-        private static ListRelationshipsRequest GetValidRequest()
+        private static ListRelationshipsV1Request GetValidRequest()
         {
-            return new ListRelationshipsRequest() { PersonId = 555666777 };
+            return new ListRelationshipsV1Request() { PersonId = 555666777 };
         }
 
         [Test]

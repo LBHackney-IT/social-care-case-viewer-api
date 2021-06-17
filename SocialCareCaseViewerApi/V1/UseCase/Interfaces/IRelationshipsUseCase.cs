@@ -5,6 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IRelationshipsUseCase
     {
-        ListRelationshipsResponse ExecuteGet(ListRelationshipsRequest request);
+        ListRelationshipsResponse ExecuteGet(ListRelationshipsV1Request request);
     }
 }
