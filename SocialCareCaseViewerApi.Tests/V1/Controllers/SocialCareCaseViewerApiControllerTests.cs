@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
         private Mock<IPersonUseCase> _mockPersonUseCase;
-        private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
+        private Mock<IRelationshipsV1UseCase> _mockRelationshipsUseCase;
 
         private Fixture _fixture;
         private Faker _faker;
@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
             _mockPersonUseCase = new Mock<IPersonUseCase>();
-            _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
+            _mockRelationshipsUseCase = new Mock<IRelationshipsV1UseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
                     _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,

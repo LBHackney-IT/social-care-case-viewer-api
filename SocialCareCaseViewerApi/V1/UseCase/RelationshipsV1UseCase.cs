@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class RelationshipsV1UseCase : IRelationshipsUseCase
+    public class RelationshipsV1UseCase : IRelationshipsV1UseCase
     {
         private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
         private IDatabaseGateway _databaseGateway;

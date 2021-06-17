@@ -3,7 +3,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IRelationshipsUseCase
+    public interface IRelationshipsV1UseCase
     {
         ListRelationshipsV1Response ExecuteGet(ListRelationshipsV1Request request);
     }

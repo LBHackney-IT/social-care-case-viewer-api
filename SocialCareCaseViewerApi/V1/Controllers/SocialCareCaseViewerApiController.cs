@@ -25,12 +25,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
         private readonly IPersonUseCase _personUseCase;
-        private readonly IRelationshipsUseCase _relationshipsUseCase;
+        private readonly IRelationshipsV1UseCase _relationshipsV1UseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsUseCase relationshipsUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsV1UseCase relationshipsV1UseCase)
         {
             _getAllUseCase = getAllUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
             _personUseCase = personUseCase;
-            _relationshipsUseCase = relationshipsUseCase;
+            _relationshipsV1UseCase = relationshipsV1UseCase;
         }
 
         /// <summary>
@@ -395,7 +395,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_relationshipsUseCase.ExecuteGet(request));
+                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
             }
             catch (GetRelationshipsException ex)
             {
