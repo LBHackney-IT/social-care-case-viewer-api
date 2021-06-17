@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                return Ok(_caseRecordsUseCase.Execute(request));
+                return Ok(_caseRecordsUseCase.GetResidentCases(request));
             }
             catch (DocumentNotFoundException e)
             {

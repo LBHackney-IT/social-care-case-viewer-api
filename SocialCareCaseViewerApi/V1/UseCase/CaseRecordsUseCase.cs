@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
             _mongoGateway = mongoGateway;
         }
-        public CareCaseDataList Execute(ListCasesRequest request)
+        public CareCaseDataList GetResidentCases(ListCasesRequest request)
         {
             string? ncId = null;
 
