@@ -426,7 +426,6 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_personal_relationship_detail (
     CONSTRAINT fk_personal_relationship
         FOREIGN KEY(fk_personal_relationship_id)
         REFERENCES dbo.sccv_personal_relationship(id)
-        ON DELETE CASCADE
 );
 
 -- add personal relationship types
