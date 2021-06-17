@@ -25,12 +25,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
         private readonly IPersonUseCase _personUseCase;
-        private readonly IRelationshipsUseCase _relationshipsUseCase;
+        private readonly IRelationshipsV1UseCase _relationshipsV1UseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsUseCase relationshipsUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, IRelationshipsV1UseCase relationshipsV1UseCase)
         {
             _getAllUseCase = getAllUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
             _personUseCase = personUseCase;
-            _relationshipsUseCase = relationshipsUseCase;
+            _relationshipsV1UseCase = relationshipsV1UseCase;
         }
 
         /// <summary>
@@ -388,14 +388,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Relationships returned</response>
         /// <response code="404">Person not found</response>
         /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/relationships")]
-        public IActionResult ListRelationships([FromQuery] ListRelationshipsRequest request)
+        public IActionResult ListRelationships([FromQuery] ListRelationshipsV1Request request)
         {
             try
             {
-                return Ok(_relationshipsUseCase.ExecuteGet(request));
+                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
             }
             catch (GetRelationshipsException ex)
             {

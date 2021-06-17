@@ -118,7 +118,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
-            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId); });
+            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(personId); });
 
             exception.Message.Should().Be("404");
         }
@@ -128,13 +128,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             const long personId = 123;
 
-            var relationships = TestHelpers.CreateRelationships(personId);
+            var relationships = TestHelpers.CreateRelationshipsV1(personId);
 
             var httpClient = CreateHttpClient(relationships);
 
             _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
 
-            var response = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(personId);
+            var response = _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(personId);
 
             response.Should().NotBeNull();
             response.PersonalRelationships.Should().NotBeNull();

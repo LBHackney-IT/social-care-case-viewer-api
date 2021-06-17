@@ -48,10 +48,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return GetDataFromSocialCarePlatformAPI<Visit>(path);
         }
 
-        public Relationships GetRelationshipsByPersonId(long id)
+        public RelationshipsV1 GetRelationshipsByPersonIdV1(long id)
         {
             var path = $"residents/{id}/relationships";
-            return GetDataFromSocialCarePlatformAPI<Relationships>(path);
+            return GetDataFromSocialCarePlatformAPI<RelationshipsV1>(path);
         }
 
         private T GetDataFromSocialCarePlatformAPI<T>(string path)
