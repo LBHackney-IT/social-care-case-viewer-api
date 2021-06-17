@@ -473,7 +473,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             };
         }
 
-        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, RelationshipsV1) CreatePersonsWithRelationships(long personId)
+        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, RelationshipsV1) CreatePersonsWithRelationshipsV1(long personId)
         {
             List<InfrastructurePerson> children = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
             List<InfrastructurePerson> others = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };

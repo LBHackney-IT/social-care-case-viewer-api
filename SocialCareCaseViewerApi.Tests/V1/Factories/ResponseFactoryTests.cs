@@ -465,7 +465,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             List<Person> children, others, parents, siblings;
             RelationshipsV1 relationships;
 
-            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationships(person.Id);
+            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationshipsV1(person.Id);
 
             var expectedResult = new ListRelationshipsV1Response()
             {

@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             List<Person> children, others, parents, siblings;
             RelationshipsV1 relationships;
 
-            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationships(person.Id);
+            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationshipsV1(person.Id);
 
             _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonIdV1(request.PersonId)).Returns(relationships);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.PersonId)).Returns(person);
