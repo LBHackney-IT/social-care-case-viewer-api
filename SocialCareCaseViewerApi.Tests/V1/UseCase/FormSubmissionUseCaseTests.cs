@@ -12,15 +12,16 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class FormSubmissionUseCaseTests
     {
-        private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private Mock<IMongoGateway> _mockMongoGateway;
-        private FormSubmissionsUseCase _formSubmissionsUseCase;
-        private Faker _faker;
+        private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
+        private Mock<IMongoGateway> _mockMongoGateway = null!;
+        private FormSubmissionsUseCase _formSubmissionsUseCase = null!;
+        private Faker _faker = null!;
         private const string CollectionName = "resident-case-submissions";
 
         [SetUp]
@@ -67,10 +68,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
 
-            caseSubmission?.Workers.FirstOrDefault()?.WorkerTeams.Should().BeNull();
-            caseSubmission?.Workers.FirstOrDefault()?.Allocations.Should().BeNull();
-            caseSubmissionResponse?.Workers.FirstOrDefault()?.Teams.Should().BeEmpty();
-            caseSubmissionResponse?.Workers.FirstOrDefault()?.AllocationCount.Should().Be(0);
+            caseSubmission.Workers.FirstOrDefault()?.WorkerTeams.Should().BeNull();
+            caseSubmission.Workers.FirstOrDefault()?.Allocations.Should().BeNull();
+            caseSubmissionResponse.Workers.FirstOrDefault()?.Teams.Should().BeEmpty();
+            caseSubmissionResponse.Workers.FirstOrDefault()?.AllocationCount.Should().Be(0);
         }
 
         [Test]

@@ -39,16 +39,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
-            foreach (var address in resident.Addresses)
+
+            for (var index = 0; index < resident.Addresses?.Count; index++)
             {
+                var address = resident.Addresses[index];
                 address.Person = null;
             }
-            foreach (var number in resident.PhoneNumbers)
+
+            for (var index = 0; index < resident.PhoneNumbers?.Count; index++)
             {
+                var number = resident.PhoneNumbers[index];
                 number.Person = null;
             }
-            foreach (var name in resident.OtherNames)
+
+            for (var index = 0; index < resident.OtherNames?.Count; index++)
             {
+                var name = resident.OtherNames[index];
                 name.Person = null;
             }
 
