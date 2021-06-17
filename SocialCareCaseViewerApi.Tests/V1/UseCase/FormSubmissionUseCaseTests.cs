@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var resident = TestHelpers.CreatePerson();
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(resident);
             _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
