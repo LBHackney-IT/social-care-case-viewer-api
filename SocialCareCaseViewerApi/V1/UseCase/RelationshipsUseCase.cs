@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListRelationshipsResponse ExecuteGet(ListRelationshipsV1Request request)
+        public ListRelationshipsV1Response ExecuteGet(ListRelationshipsV1Request request)
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
 

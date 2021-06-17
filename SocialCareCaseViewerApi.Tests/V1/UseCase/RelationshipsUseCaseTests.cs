@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(new Person());
             _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonId(It.IsAny<long>())).Returns((Relationships) null);
 
-            var expectedResult = new ListRelationshipsResponse() { PersonId = request.PersonId };
+            var expectedResult = new ListRelationshipsV1Response() { PersonId = request.PersonId };
 
             var result = _relationshipsUseCase.ExecuteGet(request);
 
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             result.Should().NotBeNull();
 
-            result.Should().BeOfType<ListRelationshipsResponse>();
+            result.Should().BeOfType<ListRelationshipsV1Response>();
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(personRecords);
 
-            var expectedResult = new ListRelationshipsResponse()
+            var expectedResult = new ListRelationshipsV1Response()
             {
                 PersonId = request.PersonId,
                 PersonalRelationships = new PersonalRelationships<RelatedPerson>()

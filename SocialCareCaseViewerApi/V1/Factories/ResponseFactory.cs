@@ -214,9 +214,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static ListRelationshipsResponse ToResponse(List<Person> personRecords, Relationships relationships, List<long> personIds, long personId)
+        public static ListRelationshipsV1Response ToResponse(List<Person> personRecords, Relationships relationships, List<long> personIds, long personId)
         {
-            ListRelationshipsResponse response = new ListRelationshipsResponse() { PersonId = personId };
+            ListRelationshipsV1Response response = new ListRelationshipsV1Response() { PersonId = personId };
 
             if (personIds.Count == 0 || relationships == null)
                 return response;

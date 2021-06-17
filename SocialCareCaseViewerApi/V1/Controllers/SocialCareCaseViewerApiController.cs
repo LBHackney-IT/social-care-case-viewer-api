@@ -388,7 +388,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Relationships returned</response>
         /// <response code="404">Person not found</response>
         /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId}/relationships")]
         public IActionResult ListRelationships([FromQuery] ListRelationshipsV1Request request)

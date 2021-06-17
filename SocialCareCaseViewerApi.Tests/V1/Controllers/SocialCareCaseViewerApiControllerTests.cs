@@ -668,7 +668,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(new ListRelationshipsResponse());
+            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(new ListRelationshipsV1Response());
 
             var response = _classUnderTest.ListRelationships(request) as ObjectResult;
 
@@ -693,13 +693,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
 
-            var listRelationShipsResponse = _fixture.Create<ListRelationshipsResponse>();
+            var listRelationShipsResponse = _fixture.Create<ListRelationshipsV1Response>();
 
             _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(listRelationShipsResponse);
 
             var response = _classUnderTest.ListRelationships(request) as ObjectResult;
 
-            response?.Value.Should().BeOfType<ListRelationshipsResponse>();
+            response?.Value.Should().BeOfType<ListRelationshipsV1Response>();
             response?.Value.Should().BeEquivalentTo(listRelationShipsResponse);
         }
     }

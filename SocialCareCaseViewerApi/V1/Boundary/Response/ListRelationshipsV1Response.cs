@@ -2,7 +2,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
-    public class ListRelationshipsResponse
+    public class ListRelationshipsV1Response
     {
         public long PersonId { get; set; }
 
