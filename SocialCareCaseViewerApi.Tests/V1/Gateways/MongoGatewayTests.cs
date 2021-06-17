@@ -124,11 +124,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
             _mongoGateway.InsertRecord("test-collection-name", new TestObjectForMongo { Property1 = _testObjectForMongo.Property1 });
 
-             var retrievedObject =
-                    _mongoGateway.LoadMultipleRecordsByProperty<TestObjectForMongo, string>(
-                        "test-collection-name", "Property1", _testObjectForMongo.Property1);
+            var retrievedObject =
+                   _mongoGateway.LoadMultipleRecordsByProperty<TestObjectForMongo, string>(
+                       "test-collection-name", "Property1", _testObjectForMongo.Property1);
 
-             retrievedObject?.Count.Should().Be(2);
+            retrievedObject?.Count.Should().Be(2);
         }
 
         [Test]
