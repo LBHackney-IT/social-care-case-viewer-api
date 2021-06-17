@@ -88,12 +88,6 @@ update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'neighbour') where id = (select id from dbo.sccv_personal_relationship_type where description = 'neighbour');
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'inContactWith') where id = (select id from dbo.sccv_personal_relationship_type where description = 'inContactWith');
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'acquaintance') where id = (select id from dbo.sccv_personal_relationship_type where description = 'acquaintance');
-
--- insert into new personal relationship table
-INSERT INTO dbo.sccv_personal_relationship (fk_person_id, fk_other_person_id, fk_personal_relationship_type_id)
-SELECT hpr.person_id, hpr.other_person_id, rtl.type_id
-FROM dbo.dm_personal_relationships hpr
-LEFT JOIN dbo.dm_relationship_historic_types_lookup rtl ON hpr.personal_rel_type_id = rtl.historic_type_id;
 ```
 
 ## Useful resources
