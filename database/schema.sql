@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_personal_relationship (
     CONSTRAINT fk_person
         FOREIGN KEY(fk_person_id)
         REFERENCES dbo.dm_persons(person_id),
-    CONSTRAINT fk_second_person
+    CONSTRAINT fk_other_person
         FOREIGN KEY(fk_other_person_id)
         REFERENCES dbo.dm_persons(person_id)
 );
