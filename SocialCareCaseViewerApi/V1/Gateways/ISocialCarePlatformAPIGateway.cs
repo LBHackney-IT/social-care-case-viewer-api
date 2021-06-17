@@ -15,6 +15,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         Visit GetVisitByVisitId(long id);
 
-        Relationships GetRelationshipsByPersonId(long id);
+        Relationships GetRelationshipsByPersonIdV1(long id);
     }
 }

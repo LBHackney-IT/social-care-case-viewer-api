@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (person == null)
                 throw new GetRelationshipsException("Person not found");
 
-            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(request.PersonId);
+            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(request.PersonId);
 
             List<long> personIds = new List<long>();
             List<Person> personRecords = new List<Person>();
