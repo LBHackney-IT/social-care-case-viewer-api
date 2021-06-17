@@ -4,6 +4,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
     {
         public long PersonId { get; set; }
 
-        public PersonalRelationships<long> PersonalRelationships { get; set; }
+        public PersonalRelationshipsV1<long> PersonalRelationships { get; set; }
     }
 }

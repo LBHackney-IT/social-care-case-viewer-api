@@ -470,7 +470,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var expectedResult = new ListRelationshipsV1Response()
             {
                 PersonId = person.Id,
-                PersonalRelationships = new PersonalRelationships<RelatedPerson>()
+                PersonalRelationships = new PersonalRelationshipsV1<RelatedPerson>()
                 {
                     Children = AddRelatedPerson(children),
                     Other = AddRelatedPerson(others),

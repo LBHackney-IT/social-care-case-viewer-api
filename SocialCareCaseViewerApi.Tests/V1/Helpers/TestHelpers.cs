@@ -463,7 +463,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new RelationshipsV1()
             {
                 PersonId = personId,
-                PersonalRelationships = new PersonalRelationships<long>()
+                PersonalRelationships = new PersonalRelationshipsV1<long>()
                 {
                     Children = childrenIds ?? new List<long>() { 1, 2 },
                     Parents = parentsIds ?? new List<long>() { 3, 4 },
