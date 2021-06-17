@@ -105,7 +105,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(new Person());
 
-            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonIdV1(It.IsAny<long>())).Returns(TestHelpers.CreateRelationships(request.PersonId));
+            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonIdV1(It.IsAny<long>())).Returns(TestHelpers.CreateRelationshipsV1(request.PersonId));
 
             var result = _relationshipsV1UseCase.ExecuteGet(request);
 
@@ -209,7 +209,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetCallsDatabaseGatewaysGetPersonsByListOfIdsWhenSocialCarePlatformAPIGatewayReturnsRelationships()
         {
             var request = GetValidRequest();
-            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonIdV1(request.PersonId)).Returns(TestHelpers.CreateRelationships(request.PersonId));
+            _mockSocialCarePlatformAPIGateway.Setup(x => x.GetRelationshipsByPersonIdV1(request.PersonId)).Returns(TestHelpers.CreateRelationshipsV1(request.PersonId));
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.PersonId)).Returns(new Person());
 
             _relationshipsV1UseCase.ExecuteGet(request);

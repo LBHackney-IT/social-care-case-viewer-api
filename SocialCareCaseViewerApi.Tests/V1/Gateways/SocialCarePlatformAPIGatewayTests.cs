@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             const long personId = 123;
 
-            var relationships = TestHelpers.CreateRelationships(personId);
+            var relationships = TestHelpers.CreateRelationshipsV1(personId);
 
             var httpClient = CreateHttpClient(relationships);
 

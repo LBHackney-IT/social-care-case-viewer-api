@@ -452,7 +452,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
 
-        public static RelationshipsV1 CreateRelationships(
+        public static RelationshipsV1 CreateRelationshipsV1(
             long personId,
             List<long>? childrenIds = null,
             List<long>? parentsIds = null,
@@ -480,7 +480,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             List<InfrastructurePerson> parents = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
             List<InfrastructurePerson> siblings = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
 
-            RelationshipsV1 relationships = CreateRelationships(
+            RelationshipsV1 relationships = CreateRelationshipsV1(
                     personId: personId,
                     childrenIds: children.Select(x => x.Id).ToList(),
                     othersIds: others.Select(x => x.Id).ToList(),
