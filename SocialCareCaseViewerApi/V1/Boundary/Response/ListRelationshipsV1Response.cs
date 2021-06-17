@@ -6,6 +6,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     {
         public long PersonId { get; set; }
 
-        public PersonalRelationshipsV1<RelatedPerson> PersonalRelationships { get; set; } = new PersonalRelationshipsV1<RelatedPerson>();
+        public PersonalRelationshipsV1<RelatedPersonV1> PersonalRelationships { get; set; } = new PersonalRelationshipsV1<RelatedPersonV1>();
     }
 }

@@ -147,7 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedResult = new ListRelationshipsV1Response()
             {
                 PersonId = request.PersonId,
-                PersonalRelationships = new PersonalRelationshipsV1<RelatedPerson>()
+                PersonalRelationships = new PersonalRelationshipsV1<RelatedPersonV1>()
                 {
                     Children = AddRelatedPerson(children),
                     Other = AddRelatedPerson(others),
@@ -216,9 +216,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Verify(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>()), Times.Once);
         }
 
-        private static List<RelatedPerson> AddRelatedPerson(List<Person> persons)
+        private static List<RelatedPersonV1> AddRelatedPerson(List<Person> persons)
         {
-            return persons.Select(x => new RelatedPerson()
+            return persons.Select(x => new RelatedPersonV1()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,

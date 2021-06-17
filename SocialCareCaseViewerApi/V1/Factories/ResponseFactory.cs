@@ -259,11 +259,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<RelatedPerson> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
+        public static List<RelatedPersonV1> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
         {
             return personList
                .Where(p => relationshipIds.Contains(p.Id))
-               .Select(x => new RelatedPerson()
+               .Select(x => new RelatedPersonV1()
                {
                    Id = x.Id,
                    FirstName = x.FirstName,
