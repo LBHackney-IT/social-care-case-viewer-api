@@ -463,7 +463,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var person = TestHelpers.CreatePerson();
 
             List<Person> children, others, parents, siblings;
-            Relationships relationships;
+            RelationshipsV1 relationships;
 
             (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationships(person.Id);
 

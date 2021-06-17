@@ -452,7 +452,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
 
-        public static Relationships CreateRelationships(
+        public static RelationshipsV1 CreateRelationships(
             long personId,
             List<long>? childrenIds = null,
             List<long>? parentsIds = null,
@@ -460,7 +460,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             List<long>? othersIds = null
         )
         {
-            return new Relationships()
+            return new RelationshipsV1()
             {
                 PersonId = personId,
                 PersonalRelationships = new PersonalRelationships<long>()
@@ -473,14 +473,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             };
         }
 
-        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, Relationships) CreatePersonsWithRelationships(long personId)
+        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, RelationshipsV1) CreatePersonsWithRelationships(long personId)
         {
             List<InfrastructurePerson> children = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
             List<InfrastructurePerson> others = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
             List<InfrastructurePerson> parents = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
             List<InfrastructurePerson> siblings = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
 
-            Relationships relationships = CreateRelationships(
+            RelationshipsV1 relationships = CreateRelationships(
                     personId: personId,
                     childrenIds: children.Select(x => x.Id).ToList(),
                     othersIds: others.Select(x => x.Id).ToList(),
