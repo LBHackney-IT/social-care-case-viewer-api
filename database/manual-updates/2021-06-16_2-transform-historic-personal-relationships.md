@@ -191,8 +191,8 @@ from dbo.dm_personal_rel_types
 where description similar to 'Acquaintance%';
 
 -- insert into new personal relationship table
-INSERT INTO dbo.sccv_personal_relationship (fk_person_id, fk_other_person_id, fk_personal_relationship_type_id)
-SELECT hpr.person_id, hpr.other_person_id, rtl.type_id
+INSERT INTO dbo.sccv_personal_relationship (fk_person_id, fk_other_person_id, fk_personal_relationship_type_id, start_date, end_date, is_informal_carer, parental_responsibility)
+SELECT hpr.person_id, hpr.other_person_id, rtl.type_id, hpr.start_date, hpr.end_date, hpr.is_informal_carer, hpr.parental_responsibility
 FROM dbo.dm_personal_relationships hpr
 LEFT JOIN dbo.sccv_relationship_historic_types_lookup rtl ON hpr.personal_rel_type_id = rtl.historic_type_id;
 ```
