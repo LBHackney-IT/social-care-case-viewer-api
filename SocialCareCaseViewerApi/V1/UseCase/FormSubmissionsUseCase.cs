@@ -34,11 +34,24 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var resident = _databaseGateway.GetPersonByMosaicId(request.ResidentId);
+            var resident = _databaseGateway.GetPersonDetailsById(request.ResidentId);
             if (resident == null)
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
+            foreach (var address in resident.Addresses)
+            {
+                address.Person = null;
+            }
+            foreach (var number in resident.PhoneNumbers)
+            {
+                number.Person = null;
+            }
+            foreach (var name in resident.OtherNames)
+            {
+                name.Person = null;
+            }
+
 
             var dateTimeNow = DateTime.Now;
 
