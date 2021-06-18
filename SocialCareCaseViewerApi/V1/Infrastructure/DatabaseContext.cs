@@ -26,6 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<WarningNoteReview> WarningNoteReview { get; set; }
         public DbSet<PersonalRelationshipType> PersonalRelationshipTypes { get; set; }
         public DbSet<PersonalRelationship> PersonalRelationships { get; set; }
+        public DbSet<PersonalRelationshipDetail> PersonalRelationshipDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
