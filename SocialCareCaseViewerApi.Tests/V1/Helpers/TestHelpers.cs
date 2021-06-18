@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -516,7 +517,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             Worker? worker = null,
             InfrastructurePerson? resident = null,
             int? residentId = null,
-            string? id = null,
+            ObjectId? id = null,
             string? formId = null)
         {
             worker ??= CreateWorker();
@@ -525,7 +526,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
             return new Faker<CaseSubmission>()
-                .RuleFor(s => s.SubmissionId, f => id ?? f.Random.String2(24, "0123456789abcdef"))
+                .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
