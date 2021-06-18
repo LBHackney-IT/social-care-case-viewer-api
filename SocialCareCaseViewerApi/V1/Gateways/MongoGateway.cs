@@ -24,27 +24,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void DropCollection(string collectionName)
         {
-            _mongoDatabase.DropCollection(collectionName);
+            _mongoDatabase.DropCollectionAsync(collectionName);
         }
 
         public void InsertRecord<T>(string collectionName, T objToAdd)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
-            collection.InsertOne(objToAdd);
+            collection.InsertOneAsync(objToAdd);
         }
 
         public void UpsertRecord<T>(string collectionName, BsonObjectId id, T record)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
             var filter = new BsonDocument("_id", id);
-            collection.ReplaceOne(filter, record, new ReplaceOptions { IsUpsert = true });
+            collection.ReplaceOneAsync(filter, record, new ReplaceOptions { IsUpsert = true });
         }
 
         public void DeleteRecordById<T>(string collectionName, BsonObjectId id)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName);
             var filter = Builders<T>.Filter.Eq("_id", id);
-            collection.DeleteOne(filter);
+            collection.DeleteOneAsync(filter);
         }
 
         public List<T> LoadRecords<T>(string collectionName)
