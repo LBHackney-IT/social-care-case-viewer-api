@@ -38,7 +38,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(worker);
         }
@@ -50,7 +49,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.CreateWorker(createWorkerRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("First name must be provided");
         }
@@ -65,7 +63,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.CreateWorker(createWorkerRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -79,7 +76,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _workerController.EditWorker(updateWorkerRequest) as NoContentResult;
 
             _workerUseCase.Verify(x => x.ExecutePatch(updateWorkerRequest), Times.Once);
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(204);
         }
 
@@ -90,7 +86,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.EditWorker(updateWorkerRequest) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -104,7 +99,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.EditWorker(updateWorkerRequest) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
@@ -118,13 +112,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _workerController.GetWorkers(request) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
-
-            var responseValue = response?.Value as List<WorkerResponse>;
-
-            responseValue.Should().BeOfType<List<WorkerResponse>>();
-            responseValue?.Count.Should().Be(workersList.Count);
+            (response?.Value as List<WorkerResponse>)?.Count.Should().Be(workersList.Count);
         }
 
         [Test]

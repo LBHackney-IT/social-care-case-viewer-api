@@ -12,15 +12,16 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class FormSubmissionUseCaseTests
     {
-        private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private Mock<IMongoGateway> _mockMongoGateway;
-        private FormSubmissionsUseCase _formSubmissionsUseCase;
-        private Faker _faker;
+        private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
+        private Mock<IMongoGateway> _mockMongoGateway = null!;
+        private FormSubmissionsUseCase _formSubmissionsUseCase = null!;
+        private Faker _faker = null!;
         private const string CollectionName = "resident-case-submissions";
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var resident = TestHelpers.CreatePerson();
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(resident);
             _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
@@ -50,7 +51,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             caseSubmissionResponse.Should().BeEquivalentTo(expectedResponse.ToDomain().ToResponse());
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.CreatedBy), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(request.ResidentId), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetPersonDetailsById(request.ResidentId), Times.Once);
             _mockMongoGateway.Verify(x => x.InsertRecord(CollectionName, caseSubmission), Times.Once);
         }
 
@@ -62,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var resident = TestHelpers.CreatePerson();
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(request.ResidentId)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(resident);
             _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
@@ -165,7 +166,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId ?? "", stepId, request);
 
-            response.Should().NotBeNull();
             response.FormAnswers[stepId].Should().BeEquivalentTo(request.StepAnswers);
             response.EditHistory.LastOrDefault()?.Worker.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);

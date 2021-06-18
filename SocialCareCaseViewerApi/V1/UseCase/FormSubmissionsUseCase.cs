@@ -34,11 +34,30 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             worker.WorkerTeams = null;
             worker.Allocations = null;
 
-            var resident = _databaseGateway.GetPersonByMosaicId(request.ResidentId);
+            var resident = _databaseGateway.GetPersonDetailsById(request.ResidentId);
             if (resident == null)
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
+
+            for (var index = 0; index < resident.Addresses?.Count; index++)
+            {
+                var address = resident.Addresses[index];
+                address.Person = null;
+            }
+
+            for (var index = 0; index < resident.PhoneNumbers?.Count; index++)
+            {
+                var number = resident.PhoneNumbers[index];
+                number.Person = null;
+            }
+
+            for (var index = 0; index < resident.OtherNames?.Count; index++)
+            {
+                var name = resident.OtherNames[index];
+                name.Person = null;
+            }
+
 
             var dateTimeNow = DateTime.Now;
 
@@ -87,7 +106,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), updateSubmission);
         }
-
 
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {

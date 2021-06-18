@@ -24,7 +24,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var expected = new Dictionary<string, object> { { "success", true } };
             var response = _classUnderTest.HealthCheck() as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(expected);
         }

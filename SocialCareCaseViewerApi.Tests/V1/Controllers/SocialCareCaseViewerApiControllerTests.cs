@@ -62,7 +62,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockGetAllUseCase.Setup(x => x.Execute(residentQueryParam, 2, 3)).Returns(residentInformationList);
             var response = _classUnderTest.ListContacts(residentQueryParam, 2, 3) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(residentInformationList);
         }
@@ -75,7 +74,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.ListContacts(new ResidentQueryParam(), 2, 3) as BadRequestObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Invalid Parameters");
         }
@@ -89,7 +87,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockAddNewResidentUseCase.Setup(x => x.Execute(addNewResidentRequest)).Returns(addNewResidentResponse);
             var response = _classUnderTest.AddNewResident(addNewResidentRequest) as CreatedAtActionResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(addNewResidentResponse);
         }
@@ -102,7 +99,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(500);
             response?.Value.Should().Be("Resident could not be inserted");
         }
@@ -115,7 +111,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(500);
             response?.Value.Should().Be("Address could not be inserted");
         }
@@ -123,21 +118,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetPersonByIdReturns200WhenSuccessful()
         {
-            GetPersonRequest request = new GetPersonRequest();
-
+            var request = new GetPersonRequest();
             _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
 
             var response = _classUnderTest.GetPerson(request) as ObjectResult;
 
-            response?.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
         }
 
         [Test]
         public void GetPersonByIdReturns404WhenPersonNotFound()
         {
-            GetPersonRequest request = new GetPersonRequest();
-
+            var request = new GetPersonRequest();
             _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>()));
 
             var result = _classUnderTest.GetPerson(request) as NotFoundResult;
@@ -148,11 +140,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void UpdatePersonReturns200WhenSuccessful()
         {
-            UpdatePersonRequest request = new UpdatePersonRequest();
+            var request = new UpdatePersonRequest();
 
             var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
 
-            result.Should().NotBeNull();
             result?.StatusCode.Should().Be(204);
         }
 
@@ -182,7 +173,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as CreatedAtActionResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(responseObject);
         }
@@ -195,7 +185,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -207,7 +196,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(500);
         }
 
@@ -215,9 +203,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void CreateAllocationReturns400WhenInvalidMosaicId()
         {
             var request = TestHelpers.CreateAllocationRequest(mosaicId: 0).Item1;
+
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -228,7 +216,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -239,7 +226,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -250,7 +236,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.CreateAllocation(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -334,45 +319,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void ListCaseNotesByPersonIdReturns200WhenSuccessful()
         {
             var request = new ListCaseNotesRequest { Id = "1" };
-
             var notesList = _fixture.Create<ListCaseNotesResponse>();
-
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(notesList);
 
             var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
-            response?.Value.Should().NotBeNull();
+            response?.Value.Should().BeEquivalentTo(notesList);
         }
 
         [Test]
         public void GettingASingleCaseNoteByNoteIdReturns200WhenSuccessful()
         {
             var request = new GetCaseNotesRequest { Id = "1" };
-
             var note = _fixture.Create<CaseNoteResponse>();
-
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Returns(note);
 
             var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
-            response?.Value.Should().NotBeNull();
+            response?.Value.Should().BeEquivalentTo(note);
         }
 
         [Test]
         public void GetCaseNotesByNoteIdReturns404WhenNoMatchingCaseNoteId()
         {
             var request = new GetCaseNotesRequest { Id = "1" };
-
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
                 .Throws(new SocialCarePlatformApiException("404"));
 
             var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -380,13 +357,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetCaseNotesByNoteIdReturns500WhenSocialCarePlatformApiExceptionIs500()
         {
             var request = new GetCaseNotesRequest { Id = "1" };
-
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
                 .Throws(new SocialCarePlatformApiException("500"));
 
             var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(500);
         }
 
@@ -416,14 +391,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new ListVisitsRequest { Id = "1" };
             var visitList = new List<Visit>();
-
             _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
 
             var response = _classUnderTest.ListVisits(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
-            response?.Value.Should().NotBeNull();
+            response?.Value.Should().BeEquivalentTo(visitList);
         }
 
         [Test]
@@ -434,7 +407,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.GetVisitByVisitId(visit.VisitId) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(visit);
         }
@@ -444,7 +416,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var response = _classUnderTest.GetVisitByVisitId(1L) as NotFoundResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(404);
         }
 
@@ -453,13 +424,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var postWarningNoteResponse = _fixture.Create<PostWarningNoteResponse>();
             var postWarningNoteRequest = new PostWarningNoteRequest();
-
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecutePost(postWarningNoteRequest))
                 .Returns(postWarningNoteResponse);
+
             var response = _classUnderTest.PostWarningNote(postWarningNoteRequest) as CreatedAtActionResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().BeEquivalentTo(postWarningNoteResponse);
         }
@@ -473,7 +443,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PostWarningNote(new PostWarningNoteRequest()) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Warning Note could not be inserted");
         }
@@ -490,7 +459,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.ListWarningNotes(testPersonId) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(stubbedWarningNotesResponse);
         }
@@ -499,19 +467,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetWarningNoteWouldReturns200IfNoWarningNotesAreFoundForThePerson()
         {
             var testPersonId = _fixture.Create<long>();
-
             var emptyWarningNotesResponse = new ListWarningNotesResponse
             {
                 WarningNotes = new List<WarningNote>()
             };
-
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGet(It.IsAny<long>()))
                 .Returns(emptyWarningNotesResponse);
 
             var response = _classUnderTest.ListWarningNotes(testPersonId) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(emptyWarningNotesResponse);
         }
@@ -521,14 +486,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var warningNoteId = _fixture.Create<long>();
             var stubbedResponse = _fixture.Create<WarningNoteResponse>();
-
             _mockWarningNoteUseCase
                 .Setup(x => x.ExecuteGetWarningNoteById(It.IsAny<long>()))
                 .Returns(stubbedResponse);
 
             var response = _classUnderTest.GetWarningNoteById(warningNoteId) as OkObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(stubbedResponse);
         }
@@ -567,7 +530,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("exception encountered");
         }
@@ -579,7 +541,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -590,7 +551,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -601,7 +561,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -612,7 +571,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -623,7 +581,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -634,7 +591,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -645,7 +601,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
 
@@ -656,7 +611,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
 
-            response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
         }
     }
