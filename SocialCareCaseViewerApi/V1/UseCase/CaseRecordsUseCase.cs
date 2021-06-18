@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //     totalCount += caseSubmissions.Count;
             // }
 
-            var careCaseData = SortData(request.SortBy, request.OrderBy, allCareCaseData)
+            var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
                 .Skip(request.Cursor)
                 .Take(request.Limit)
                 .ToList();
