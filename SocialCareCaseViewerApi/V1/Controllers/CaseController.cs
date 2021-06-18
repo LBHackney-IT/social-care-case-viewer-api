@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return NotFound(e.Message);
             }
-            catch (Exception e)
+            catch (WebException e)
             {
                 return StatusCode(500, e.ToString());
             }

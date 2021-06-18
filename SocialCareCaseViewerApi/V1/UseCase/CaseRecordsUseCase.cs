@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -52,18 +53,26 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
-            if (request.MosaicId != null)
+            try
             {
-                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, r => r.Id == long.Parse(request.MosaicId));
+                if (request.MosaicId != null)
+                {
+                    var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                        r => r.Id == long.Parse(request.MosaicId));
 
-                var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter)
-                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
-                    .Select(x => x.ToCareCaseData(request))
-                    .ToList();
+                    var caseSubmissions = _mongoGateway
+                        .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter)
+                        .Where(x => x.SubmissionState == SubmissionState.Submitted)
+                        .Select(x => x.ToCareCaseData(request))
+                        .ToList();
 
-                allCareCaseData.AddRange(caseSubmissions);
-                totalCount += caseSubmissions.Count;
+                    allCareCaseData.AddRange(caseSubmissions);
+                    totalCount += caseSubmissions.Count;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new WebException(e.ToString());
             }
 
             var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
