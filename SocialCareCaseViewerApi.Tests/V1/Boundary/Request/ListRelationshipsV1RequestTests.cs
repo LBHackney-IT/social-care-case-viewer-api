@@ -8,7 +8,7 @@ using System.Linq;
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
     [TestFixture]
-    public class ListRelationshipsRequestTests
+    public class ListRelationshipsV1RequestTests
     {
         private Faker _faker;
 
@@ -21,7 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationPassesWhenValidPersonIdIsProvided()
         {
-            var request = new ListRelationshipsRequest() { PersonId = _faker.Random.Long(1, long.MaxValue) };
+            var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long(1, long.MaxValue) };
 
             var errors = ValidationHelper.ValidateModel(request);
 
@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationFailsWhenPersonIdIsNotProvided()
         {
-            var request = new ListRelationshipsRequest();
+            var request = new ListRelationshipsV1Request();
 
             var errors = ValidationHelper.ValidateModel(request);
 

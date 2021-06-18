@@ -214,9 +214,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static ListRelationshipsResponse ToResponse(List<Person> personRecords, Relationships relationships, List<long> personIds, long personId)
+        public static ListRelationshipsV1Response ToResponse(List<Person> personRecords, RelationshipsV1 relationships, List<long> personIds, long personId)
         {
-            ListRelationshipsResponse response = new ListRelationshipsResponse() { PersonId = personId };
+            ListRelationshipsV1Response response = new ListRelationshipsV1Response() { PersonId = personId };
 
             if (personIds.Count == 0 || relationships == null)
                 return response;
@@ -259,11 +259,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<RelatedPerson> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
+        public static List<RelatedPersonV1> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
         {
             return personList
                .Where(p => relationshipIds.Contains(p.Id))
-               .Select(x => new RelatedPerson()
+               .Select(x => new RelatedPersonV1()
                {
                    Id = x.Id,
                    FirstName = x.FirstName,

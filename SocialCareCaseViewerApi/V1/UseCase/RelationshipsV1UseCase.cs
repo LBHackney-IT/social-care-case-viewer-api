@@ -9,25 +9,25 @@ using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class RelationshipsUseCase : IRelationshipsUseCase
+    public class RelationshipsV1UseCase : IRelationshipsV1UseCase
     {
         private ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
         private IDatabaseGateway _databaseGateway;
 
-        public RelationshipsUseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway, IDatabaseGateway databaseGateway)
+        public RelationshipsV1UseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway, IDatabaseGateway databaseGateway)
         {
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
             _databaseGateway = databaseGateway;
         }
 
-        public ListRelationshipsResponse ExecuteGet(ListRelationshipsRequest request)
+        public ListRelationshipsV1Response ExecuteGet(ListRelationshipsV1Request request)
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
 
             if (person == null)
                 throw new GetRelationshipsException("Person not found");
 
-            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonId(request.PersonId);
+            var relationships = _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(request.PersonId);
 
             List<long> personIds = new List<long>();
             List<Person> personRecords = new List<Person>();

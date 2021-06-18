@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_personal_relationship (
     fk_person_id bigint,
     fk_other_person_id bigint,
     fk_personal_relationship_type_id bigint,
+    start_date timestamp without time zone NOT NULL,
+    end_date timestamp without time zone,
+    is_informal_carer varchar(1),
+    parental_responsibility varchar(1),
     sccv_created_at timestamp,
     sccv_created_by varchar(300),
     sccv_last_modified_at timestamp,
@@ -41,7 +45,7 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_personal_relationship (
     CONSTRAINT fk_person
         FOREIGN KEY(fk_person_id)
         REFERENCES dbo.dm_persons(person_id),
-    CONSTRAINT fk_second_person
+    CONSTRAINT fk_other_person
         FOREIGN KEY(fk_other_person_id)
         REFERENCES dbo.dm_persons(person_id)
 );
@@ -57,7 +61,6 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_personal_relationship_detail (
     CONSTRAINT fk_personal_relationship
         FOREIGN KEY(fk_personal_relationship_id)
         REFERENCES dbo.sccv_personal_relationship(id)
-        ON DELETE CASCADE
 );
 ```
 

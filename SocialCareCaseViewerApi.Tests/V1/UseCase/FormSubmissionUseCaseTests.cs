@@ -68,10 +68,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
 
-            caseSubmission.Workers.FirstOrDefault()?.WorkerTeams.Should().BeNull();
-            caseSubmission.Workers.FirstOrDefault()?.Allocations.Should().BeNull();
-            caseSubmissionResponse.Workers.FirstOrDefault()?.Teams.Should().BeEmpty();
-            caseSubmissionResponse.Workers.FirstOrDefault()?.AllocationCount.Should().Be(0);
+            caseSubmission?.Workers.FirstOrDefault()?.WorkerTeams.Should().BeNull();
+            caseSubmission?.Workers.FirstOrDefault()?.Allocations.Should().BeNull();
+            caseSubmissionResponse?.Workers.FirstOrDefault()?.Teams.Should().BeEmpty();
+            caseSubmissionResponse?.Workers.FirstOrDefault()?.AllocationCount.Should().Be(0);
         }
 
         [Test]

@@ -3,8 +3,8 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
-    public interface IRelationshipsUseCase
+    public interface IRelationshipsV1UseCase
     {
-        ListRelationshipsResponse ExecuteGet(ListRelationshipsRequest request);
+        ListRelationshipsV1Response ExecuteGet(ListRelationshipsV1Request request);
     }
 }

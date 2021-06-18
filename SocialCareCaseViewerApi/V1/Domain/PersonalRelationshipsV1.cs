@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.V1.Domain
 {
-    public class PersonalRelationships<T>
+    public class PersonalRelationshipsV1<T>
     {
         public List<T> Parents { get; set; } = new List<T>();
 

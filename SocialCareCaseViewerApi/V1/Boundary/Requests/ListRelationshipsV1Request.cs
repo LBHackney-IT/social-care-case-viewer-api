@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class ListRelationshipsRequest
+    public class ListRelationshipsV1Request
     {
         [Required]
         [Range(1, long.MaxValue, ErrorMessage = "Please enter a valid personId")]

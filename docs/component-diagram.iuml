@@ -19,7 +19,6 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(api_gateway, "API Gateway", "API Gateway", "Routing and auth via API keys")
     Component(api_lambda, "Service API Lambda", "Lambda", "Provides ")
     Component(mongodb_import_lambda, "MongoDB Import Lambda", "Lambda", "Imports form data")
-    Component(postgres_import_lambda, "PostgreSQL Import Lambda", "Lambda", "Imports allocations")
     Component(s3_bucket, "S3 Bucket", "S3 Bucket", "Stores form data and allocations")
 
     Component(persons, "Persons", "GET, POST", "Returns and creates persons")
@@ -37,9 +36,7 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Rel(qlik, s3_bucket, "Uses", "HTTPS")
 
     Rel(s3_bucket, mongodb_import_lambda, "Uses", "HTTPS")
-    Rel(s3_bucket, postgres_import_lambda, "Uses", "HTTPS")
     Rel(mongodb_import_lambda, mongodb, "Uses", "JSON/HTTPS")
-    Rel(postgres_import_lambda, postgres, "Uses", "JSON/HTTPS")
 
     Rel(social_care_front_end, api_gateway, "Uses", "JSON/HTTPS")
 

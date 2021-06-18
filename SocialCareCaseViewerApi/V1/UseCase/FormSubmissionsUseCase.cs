@@ -107,7 +107,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mongoGateway.UpsertRecord(CollectionName, ObjectId.Parse(submissionId), updateSubmission);
         }
 
-
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);

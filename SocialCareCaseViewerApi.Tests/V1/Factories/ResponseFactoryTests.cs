@@ -446,7 +446,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResult = personList
                 .Where(p => relationshipIds.Contains(p.Id))
-                .Select(x => new RelatedPerson()
+                .Select(x => new RelatedPersonV1()
                 {
                     Id = x.Id,
                     FirstName = x.FirstName,
@@ -463,14 +463,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var person = TestHelpers.CreatePerson();
 
             List<Person> children, others, parents, siblings;
-            Relationships relationships;
+            RelationshipsV1 relationships;
 
-            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationships(person.Id);
+            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationshipsV1(person.Id);
 
-            var expectedResult = new ListRelationshipsResponse()
+            var expectedResult = new ListRelationshipsV1Response()
             {
                 PersonId = person.Id,
-                PersonalRelationships = new PersonalRelationships<RelatedPerson>()
+                PersonalRelationships = new PersonalRelationshipsV1<RelatedPersonV1>()
                 {
                     Children = AddRelatedPerson(children),
                     Other = AddRelatedPerson(others),
@@ -514,9 +514,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
         }
 
-        private static List<RelatedPerson> AddRelatedPerson(List<Person> persons)
+        private static List<RelatedPersonV1> AddRelatedPerson(List<Person> persons)
         {
-            return persons.Select(x => new RelatedPerson()
+            return persons.Select(x => new RelatedPersonV1()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
