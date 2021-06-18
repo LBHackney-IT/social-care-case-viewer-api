@@ -188,8 +188,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
                 DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
-                CaseFormUrl = caseSubmission.SubmissionId,
-                CaseFormData = caseSubmission.FormAnswers
+                CaseFormUrl = caseSubmission.SubmissionId
             };
         }
 
