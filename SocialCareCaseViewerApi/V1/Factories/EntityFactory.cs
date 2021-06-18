@@ -154,7 +154,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new Domain.CaseSubmission
             {
-                SubmissionId = caseSubmission.SubmissionId,
+                SubmissionId = caseSubmission.SubmissionId.ToString(),
                 FormId = caseSubmission.FormId,
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
@@ -179,7 +179,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new CareCaseData
             {
-                RecordId = caseSubmission.SubmissionId,
+                RecordId = caseSubmission.SubmissionId.ToString(),
                 PersonId = resident.Id,
                 FirstName = resident.FirstName,
                 LastName = resident.LastName,
@@ -188,7 +188,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
                 DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
-                CaseFormUrl = caseSubmission.SubmissionId
+                CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }
 

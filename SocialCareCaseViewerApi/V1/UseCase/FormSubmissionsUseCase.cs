@@ -63,7 +63,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var caseSubmission = new CaseSubmission
             {
-                SubmissionId = ObjectId.GenerateNewId().ToString(),
                 FormId = request.FormId,
                 Residents = new List<Person> { resident },
                 Workers = new List<Worker> { worker },
