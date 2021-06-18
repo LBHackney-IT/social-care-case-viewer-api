@@ -33,31 +33,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _caseRecordsUseCase = new CaseRecordsUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateWay.Object, _mockMongoGateway.Object);
         }
 
-        // [Test]
-        // public void GetResidentCasesCallMongoGatewayAndReturnsResidentsSubmittedCases()
-        // {
-        //     var request = TestHelpers.CreateListCasesRequest();
-        //
-        //     var expectedResponse = new List<CaseSubmission>
-        //     {
-        //         TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-        //         TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-        //         TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, residentId: int.Parse(request.MosaicId ?? ""))
-        //     };
-        //
-        //     _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
-        //     _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
-        //     _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(
-        //         () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
-        //     _mockMongoGateway
-        //         .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
-        //             It.IsAny<FilterDefinition<CaseSubmission>>()))
-        //         .Returns(expectedResponse);
-        //
-        //     var response = _caseRecordsUseCase.GetResidentCases(request);
-        //
-        //     response.Cases.Count.Should().Be(2);
-        //     response.Cases.Should().BeEquivalentTo(expectedResponse.Take(2).Select(x => x.ToCareCaseData(request)).ToList());
-        // }
+        [Test]
+        public void GetResidentCasesCallMongoGatewayAndReturnsResidentsSubmittedCases()
+        {
+            var request = TestHelpers.CreateListCasesRequest();
+
+            var expectedResponse = new List<CaseSubmission>
+            {
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, residentId: int.Parse(request.MosaicId ?? ""))
+            };
+
+            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(
+                () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                    It.IsAny<FilterDefinition<CaseSubmission>>()))
+                .Returns(expectedResponse);
+
+            var response = _caseRecordsUseCase.GetResidentCases(request);
+
+            response.Cases.Count.Should().Be(2);
+            response.Cases.Should().BeEquivalentTo(expectedResponse.Take(2).Select(x => x.ToCareCaseData(request)).ToList());
+        }
     }
 }

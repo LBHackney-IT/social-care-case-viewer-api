@@ -42,10 +42,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return NotFound(e.Message);
             }
-            catch (WebException e)
-            {
-                return StatusCode(500, e.ToString());
-            }
         }
 
         /// <summary>

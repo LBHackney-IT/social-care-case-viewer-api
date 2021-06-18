@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -53,32 +52,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
-            try
+            if (request.MosaicId != null)
             {
-                if (request.MosaicId != null)
-                {
-                    var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                        r => r.Id == long.Parse(request.MosaicId));
+                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                    r => r.Id == long.Parse(request.MosaicId));
 
-                    var caseSubmissions = _mongoGateway
-                        .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter)
-                        .Where(x => x.SubmissionState == SubmissionState.Submitted)
-                        .Select(x => x.ToCareCaseData(request))
-                        .ToList();
+                var caseSubmissions = _mongoGateway
+                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter)
+                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
+                    .Select(x => x.ToCareCaseData(request))
+                    .ToList();
 
-                    allCareCaseData.AddRange(caseSubmissions);
-                    totalCount += caseSubmissions.Count;
-                }
-            }
-            catch (Exception e)
-            {
-                throw new WebException(e.ToString());
+                allCareCaseData.AddRange(caseSubmissions);
+                totalCount += caseSubmissions.Count;
             }
 
             var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
-                .Skip(request.Cursor)
-                .Take(request.Limit)
-                .ToList();
+            .Skip(request.Cursor)
+            .Take(request.Limit)
+            .ToList();
 
             int? nextCursor = request.Cursor + request.Limit;
 
