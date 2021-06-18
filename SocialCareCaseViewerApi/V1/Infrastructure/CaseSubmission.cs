@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [JsonProperty("_id")]
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? SubmissionId { get; set; }
+        public string SubmissionId { get; set; } = null!;
         public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }

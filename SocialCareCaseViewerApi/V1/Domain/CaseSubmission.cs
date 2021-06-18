@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class CaseSubmission
     {
-        public string? SubmissionId { get; set; }
+        public string SubmissionId { get; set; } = null!;
         public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
