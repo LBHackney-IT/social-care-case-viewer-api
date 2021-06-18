@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -185,10 +184,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstName = resident.FirstName,
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
-                CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString(CultureInfo.InvariantCulture) ?? new DateTime().ToString(CultureInfo.InvariantCulture),
+                CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth.ToString(),
-                DateOfEvent = caseSubmission.CreatedAt.ToString(CultureInfo.InvariantCulture),
+                DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
                 CaseFormUrl = caseSubmission.SubmissionId
             };
         }
