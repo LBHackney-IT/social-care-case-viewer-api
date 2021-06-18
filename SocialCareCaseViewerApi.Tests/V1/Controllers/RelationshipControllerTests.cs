@@ -17,8 +17,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private RelationshipController _classUnderTest;
         private Mock<IRelationshipsV1UseCase> _mockRelationshipsUseCase;
-        private Fixture _fixture;
-        private Faker _faker;
+        private readonly Fixture _fixture = new Fixture();
+        private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void SetUp()
@@ -26,9 +26,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockRelationshipsUseCase = new Mock<IRelationshipsV1UseCase>();
 
             _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object);
-
-            _fixture = new Fixture();
-            _faker = new Faker();
         }
 
         [Test]
