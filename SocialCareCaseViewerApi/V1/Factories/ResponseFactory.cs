@@ -13,6 +13,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class ResponseFactory
@@ -30,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<CareCaseData> ToResponse(List<BsonDocument> submittedFormsData)
+        public static List<CareCaseData> ToResponse(this IEnumerable<BsonDocument> submittedFormsData)
         {
             return submittedFormsData.Select(x => x.ToResponse()).ToList();
         }
@@ -139,7 +140,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static GetPersonResponse ToResponse(Person person)
         {
             //get the current display address
-            dbAddress displayAddress = person?.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+            var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
 
             return new GetPersonResponse()
             {
@@ -161,8 +162,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Restricted = person.Restricted,
                 Title = person.Title,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
-                OtherNames = person.OtherNames?.Select(x => x.ToDomain())?.ToList(),
-                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain())?.ToList()
+                OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList()
             };
         }
 
@@ -249,6 +250,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Workers = caseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToResponse(),
+                SubmittedAt = caseSubmission.SubmittedAt,
+                SubmittedBy = caseSubmission.SubmittedBy?.ToResponse(),
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
                 {
                     EditTime = e.EditTime,

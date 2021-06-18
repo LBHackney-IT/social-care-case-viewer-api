@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
-                caseSubmission.CreatedAt, worker, resident, caseSubmission.SubmissionId, request.FormId);
+                caseSubmission.CreatedAt, worker, resident, null, caseSubmission.SubmissionId, request.FormId);
             caseSubmissionResponse.SubmissionId = expectedResponse.SubmissionId ?? "0";
 
             caseSubmissionResponse.Should().BeEquivalentTo(expectedResponse.ToDomain().ToResponse());

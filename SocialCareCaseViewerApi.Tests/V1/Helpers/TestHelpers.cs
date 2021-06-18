@@ -515,11 +515,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? dateTime = null,
             Worker? worker = null,
             InfrastructurePerson? resident = null,
+            int? residentId = null,
             string? id = null,
             string? formId = null)
         {
             worker ??= CreateWorker();
-            resident ??= CreatePerson();
+            resident ??= CreatePerson(residentId);
 
             var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
@@ -536,6 +537,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
+        }
+
+        public static ListCasesRequest CreateListCasesRequest(bool nullMosaicId = false)
+        {
+            return new Faker<ListCasesRequest>()
+                .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
         }
 
         public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(

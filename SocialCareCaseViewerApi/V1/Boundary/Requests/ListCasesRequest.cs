@@ -1,35 +1,34 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListCasesRequest
     {
-        [FromQuery(Name = "record_id")]
-        public string RecordId { get; set; }
-
         [FromQuery(Name = "mosaic_id")]
-        public string MosaicId { get; set; }
+        public string? MosaicId { get; set; }
 
         [FromQuery(Name = "exact_name_match")]
-        public Boolean ExactNameMatch { get; set; } = false;
+        public bool ExactNameMatch { get; set; } = false;
+
         [FromQuery(Name = "first_name")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         [FromQuery(Name = "last_name")]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [FromQuery(Name = "worker_email")]
-        public string WorkerEmail { get; set; }
+        public string? WorkerEmail { get; set; }
 
         [FromQuery(Name = "form_name")]
-        public string FormName { get; set; }
+        public string? FormName { get; set; }
 
         [FromQuery(Name = "start_date")]
-        public string StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         [FromQuery(Name = "end_date")]
-        public string EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [FromQuery(Name = "cursor")]
         public int Cursor { get; set; } = 0;
@@ -38,9 +37,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public int Limit { get; set; } = 20;
 
         [FromQuery(Name = "sort_by")]
-        public string SortBy { get; set; }
+        public string SortBy { get; set; } = null!;
 
         [FromQuery(Name = "order_by")]
-        public string OrderBy { get; set; }
+        public string OrderBy { get; set; } = null!;
     }
 }

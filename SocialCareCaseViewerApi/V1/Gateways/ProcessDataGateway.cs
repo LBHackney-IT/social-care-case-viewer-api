@@ -10,12 +10,11 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
-
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class ProcessDataGateway : IProcessDataGateway
@@ -29,16 +28,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
         }
 
-        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string ncId)
+        public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string? ncId)
         {
             var result = new List<BsonDocument>();
-            FilterDefinition<BsonDocument> firstNameFilter;
-            FilterDefinition<BsonDocument> lastNameFilter;
+            FilterDefinition<BsonDocument>? firstNameFilter;
+            FilterDefinition<BsonDocument>? lastNameFilter;
 
             if (!string.IsNullOrWhiteSpace(request.MosaicId))
             {
-                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId)?.ToList();
-                if (historicRecords?.Count > 0)
+                var historicRecords = GetHistoricRecordsByPersonId(request.MosaicId, ncId).ToList();
+                if (historicRecords.Count > 0)
                 {
                     result.AddRange(historicRecords);
                 }
@@ -78,12 +77,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new DocumentNotFoundException("document not found");
             }
 
-            var response = ResponseFactory
-                .ToResponse(result);
+            var response = result.ToResponse();
 
             if (request.StartDate != null)
             {
-                if (DateTime.TryParseExact(request.StartDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
+                if (DateTime.TryParseExact(((DateTime) request.StartDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate))
                 {
                     response = response
                         .Where(x =>
@@ -100,7 +98,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.EndDate != null)
             {
-                if (DateTime.TryParseExact(request.EndDate, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+                if (DateTime.TryParseExact(((DateTime) request.EndDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
                 {
                     response = response
                         .Where(x =>
@@ -117,15 +115,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var totalCount = response.Count;
 
-            response = SortData(request.SortBy, request.OrderBy, response)
-                .Skip(request.Cursor)
-                .Take(request.Limit)
-                .ToList();
-
             return new Tuple<IEnumerable<CareCaseData>, int>(response, totalCount);
         }
 
-        private IEnumerable<BsonDocument> GetHistoricRecordsByPersonId(string personId, string ncId)
+        private IEnumerable<BsonDocument> GetHistoricRecordsByPersonId(string personId, string? ncId)
         {
             var mosaicIdQuery = _sccvDbContext.getCollection().AsQueryable();
             var mosaicIDFilter = Builders<BsonDocument>.Filter.Regex("mosaic_id", new BsonRegularExpression("^" + personId + "$", "i"));
@@ -202,71 +195,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return casesAndVisits;
         }
 
-        public IOrderedEnumerable<CareCaseData> SortData(string sortBy, string orderBy, List<CareCaseData> response)
-        {
-            switch (sortBy)
-            {
-                case "firstName":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.FirstName) :
-                        response.OrderByDescending(x => x.FirstName);
-                case "lastName":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.LastName) :
-                        response.OrderByDescending(x => x.LastName);
-                case "caseFormUrl":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.CaseFormUrl) :
-                        response.OrderByDescending(x => x.CaseFormUrl);
-                case "dateOfBirth":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        }) :
-                        response.OrderByDescending(x =>
-                        {
-                            _ = DateTime.TryParseExact(x.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt);
-                            return dt;
-                        });
-                case "officerEmail":
-                    return (orderBy == "asc") ?
-                        response.OrderBy(x => x.OfficerEmail) :
-                        response.OrderByDescending(x => x.OfficerEmail);
-                default:
-                    return (orderBy == "asc") ? response.OrderBy(GetDateToSortBy) : response.OrderByDescending(GetDateToSortBy);
-            }
-
-            static DateTime? GetDateToSortBy(CareCaseData x)
-            {
-                if (string.IsNullOrEmpty(x.DateOfEvent))
-                {
-                    bool success = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime timeStamp);
-                    if (success) return timeStamp;
-
-                    bool successForDataImportTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataImportTimestamp);
-                    if (successForDataImportTimestampFormat) return dataImportTimestamp;
-
-                    bool successForNonISO24hrTimestampFormat = DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime nonISO24hrTimestamp);
-                    if (successForNonISO24hrTimestampFormat) return nonISO24hrTimestamp;
-                }
-                else
-                {
-                    bool success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEvent);
-                    if (success) return dateOfEvent;
-
-                    bool successForISODateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateTimeFormat);
-                    if (successForISODateTimeFormat) return dateOfEventISODateTimeFormat;
-
-                    bool successForISODateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfEventISODateFormat);
-                    if (successForISODateFormat) return dateOfEventISODateFormat;
-                }
-
-                return null;
-            }
-        }
-
         public async Task<string> InsertCaseNoteDocument(CaseNotesDocument caseNotesDoc)
         {
             var doc = BsonSerializer.Deserialize<BsonDocument>(caseNotesDoc.CaseFormData);
@@ -275,16 +203,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return doc["_id"].AsObjectId.ToString();
         }
 
-        public CareCaseData GetCaseById(string recordId)
+        public CareCaseData? GetCaseById(string recordId)
         {
             var collection = _sccvDbContext.getCollection();
             var filter = Builders<BsonDocument>.Filter.Eq("_id", ObjectId.Parse(recordId));
             var query = collection.AsQueryable().Where(db => filter.Inject());
 
             var result = query.ToList();
-            if (result.FirstOrDefault() == null) throw new DocumentNotFoundException("Search did not return any results");
 
-            var response = ResponseFactory.ToResponse(result).FirstOrDefault();
+            var response = result.ToResponse().FirstOrDefault();
 
             return response;
         }
