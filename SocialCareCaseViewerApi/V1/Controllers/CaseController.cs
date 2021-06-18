@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (DocumentNotFoundException e)
             {
                 return NotFound(e.Message);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.ToString());
             }
         }
 
