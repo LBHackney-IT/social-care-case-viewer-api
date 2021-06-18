@@ -29,6 +29,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a problem getting the relationships</response>
         [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
         [HttpGet]
+        [Route("residents/{personId}/relationships-v1")]
+        public IActionResult ListRelationshipsV1([FromQuery] ListRelationshipsV1Request request)
+        {
+            try
+            {
+                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
+            }
+            catch (GetRelationshipsException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get a list of relationships by person id
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Successful request. Relationships returned</response>
+        /// <response code="404">Person not found</response>
+        /// <response code="500">There was a problem getting the relationships</response>
+        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
+        [HttpGet]
         [Route("residents/{personId}/relationships")]
         public IActionResult ListRelationships([FromQuery] ListRelationshipsV1Request request)
         {
