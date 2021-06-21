@@ -14,6 +14,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<AllocationSet> Allocations { get; set; }
         public List<WarningNote> WarningNotes { get; set; }
 
+        [InverseProperty("Person")]
+        public List<PersonalRelationship> PersonalRelationships { get; set; }
+
+        [InverseProperty("OtherPerson")]
+        public List<PersonalRelationship> InversePersonalRelationships { get; set; }
+
         [Column("person_id")]
         [MaxLength(16)]
         [Key]
