@@ -42,11 +42,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long personId,
             long otherPersonId,
             long typeId,
-            Boolean hasEnded = false
+            Boolean hasEnded = false,
+            long? id = null
         )
         {
             return new Faker<PersonalRelationship>()
-                .RuleFor(pr => pr.Id, f => f.UniqueIndex)
+                .RuleFor(pr => pr.Id, f => id ?? f.UniqueIndex)
                 .RuleFor(pr => pr.PersonId, personId)
                 .RuleFor(pr => pr.OtherPersonId, otherPersonId)
                 .RuleFor(pr => pr.TypeId, typeId)

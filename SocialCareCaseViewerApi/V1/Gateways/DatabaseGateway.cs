@@ -880,6 +880,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
         }
 
+        public Person GetPersonWithPersonalRelationshipsByPersonId(long personId)
+        {
+            var personWithRelationships = _databaseContext
+                .Persons
+                .Include(person => person.PersonalRelationships)
+                .FirstOrDefault(p => p.Id == personId);
+
+            personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
+
+            return personWithRelationships;
+        }
+
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
