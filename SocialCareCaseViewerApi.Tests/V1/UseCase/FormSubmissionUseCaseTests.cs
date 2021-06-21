@@ -144,6 +144,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecuteListBySubmissionStatusShouldReturnAnEmptyListIfNoMatchesWereFound()
+        {
+            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.Submitted);
+
+            _mockMongoGateway
+                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.Submitted), Times.Once);
+
+            response.Should().BeEmpty();
+        }
+
+        [Test]
         public void ExecuteFinishSubmissionSuccessfullyCompletesASubmission()
         {
             var request = TestHelpers.FinishCaseSubmissionRequest();

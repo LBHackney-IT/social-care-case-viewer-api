@@ -92,7 +92,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 .LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(_collectionName, "SubmissionState",
                     state);
 
-            return foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
+            return foundSubmissions == null
+                ? new List<CaseSubmissionResponse>()
+                : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
         public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
