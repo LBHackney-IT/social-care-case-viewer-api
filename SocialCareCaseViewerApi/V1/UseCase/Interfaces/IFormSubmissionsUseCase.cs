@@ -15,6 +15,5 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId,
             UpdateFormSubmissionAnswersRequest request);
 
-        void Fix();
     }
 }

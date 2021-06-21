@@ -132,10 +132,5 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
-
-        public void Fix()
-        {
-            _mongoGateway.DropCollection(_collectionName);
-        }
     }
 }
