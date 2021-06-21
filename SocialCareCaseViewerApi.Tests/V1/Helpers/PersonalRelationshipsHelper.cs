@@ -10,10 +10,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
     {
         public static (Person, Person, PersonalRelationship?, PersonalRelationshipType?, PersonalRelationshipDetail?) SavePersonWithPersonalRelationshipToDatabase(
             DatabaseContext databaseContext,
-            Boolean withRelationship = true,
+            bool withRelationship = true,
             string relationshipType = "parent",
             string otherRelationshipType = "child",
-            Boolean hasEnded = false,
+            bool hasEnded = false,
             string? details = null
         )
         {
@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long personId,
             long otherPersonId,
             long typeId,
-            Boolean hasEnded = false,
+            bool hasEnded = false,
             long? id = null
         )
         {
