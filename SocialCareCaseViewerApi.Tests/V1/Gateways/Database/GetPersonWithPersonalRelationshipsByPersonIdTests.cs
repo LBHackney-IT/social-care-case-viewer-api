@@ -21,6 +21,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
+        public void WhenNoMatchingPersonIdReturnsNull()
+        {
+            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(123456789);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public void WhenThereAreNoRelationshipsReturnsEmptyListForPersonalRelationships()
         {
             var (person, _, _, _, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext, withRelationship: false);

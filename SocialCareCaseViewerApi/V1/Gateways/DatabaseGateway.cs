@@ -887,6 +887,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(person => person.PersonalRelationships)
                 .FirstOrDefault(p => p.Id == personId);
 
+            if (personWithRelationships == null) return null;
+
             personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
 
             return personWithRelationships;
