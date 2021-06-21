@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -83,6 +84,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
             return foundSubmission?.ToDomain().ToResponse();
+        }
+
+        public List<CaseSubmissionResponse> ExecuteListBySubmissionStatus(SubmissionState state)
+        {
+            var foundSubmissions = _mongoGateway
+                .LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(_collectionName, "SubmissionState",
+                    state);
+
+            return foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
         public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
