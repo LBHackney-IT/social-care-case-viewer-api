@@ -15,14 +15,17 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("fk_person_id")]
         [MaxLength(16)]
         public long PersonId { get; set; }
+        public Person Person { get; set; }
 
         [Column("fk_other_person_id")]
         [MaxLength(16)]
         public long OtherPersonId { get; set; }
+        public Person OtherPerson { get; set; }
 
         [Column("fk_personal_relationship_type_id")]
         [MaxLength(16)]
-        public long PersonalRelationshipTypeId { get; set; }
+        public long TypeId { get; set; }
+        public PersonalRelationshipType Type { get; set; }
 
         [Column("start_date")]
         public DateTime StartDate { get; set; }
@@ -50,5 +53,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("sccv_last_modified_by")]
         public string LastModifiedBy { get; set; }
+
+        [InverseProperty("PersonalRelationship")]
+        public PersonalRelationshipDetail Details { get; set; }
     }
 }

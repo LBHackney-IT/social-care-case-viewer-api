@@ -15,6 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("fk_personal_relationship_id")]
         [MaxLength(16)]
         public long PersonalRelationshipId { get; set; }
+        public PersonalRelationship PersonalRelationship { get; set; }
 
         [Column("details")]
         [MaxLength(100)]
