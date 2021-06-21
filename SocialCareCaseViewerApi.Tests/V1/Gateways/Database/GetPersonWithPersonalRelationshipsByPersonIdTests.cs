@@ -71,13 +71,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void WhenThereIsARelationshipHasAnEndDateReturnsEmptyListForPersonalRelationships()
+        public void WhenIncludeEndedRelationshipsIsFalseReturnsEmptyListForPersonalRelationships()
         {
             var (person, _, _, _, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext, hasEnded: true);
 
-            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
+            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id, includeEndedRelationships: false);
 
             response.PersonalRelationships.Should().BeEmpty();
+        }
+
+        [Test]
+        public void WhenIncludeEndedRelationshipsIsTrueReturnsPersonalRelationships()
+        {
+            var (person, _, _, _, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext, hasEnded: true);
+
+            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id, includeEndedRelationships: true);
+
+            response.PersonalRelationships.Should().NotBeEmpty();
         }
 
         [Test]

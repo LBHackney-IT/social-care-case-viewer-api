@@ -880,7 +880,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
         }
 
-        public Person GetPersonWithPersonalRelationshipsByPersonId(long personId)
+        public Person GetPersonWithPersonalRelationshipsByPersonId(long personId, Boolean includeEndedRelationships = false)
         {
             var personWithRelationships = _databaseContext
                 .Persons
@@ -889,7 +889,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (personWithRelationships == null) return null;
 
-            personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
+            if (includeEndedRelationships == false)
+            {
+                personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
+            }
 
             return personWithRelationships;
         }
