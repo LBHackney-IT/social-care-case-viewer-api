@@ -149,5 +149,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return UnprocessableEntity(e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("fix")]
+        public IActionResult RemoveBadSubmissions()
+        {
+            _formSubmissionsUseCase.Fix();
+            return Ok();
+        }
     }
 }
