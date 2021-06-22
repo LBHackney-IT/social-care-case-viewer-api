@@ -48,7 +48,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Success. Returns a list of any in progress case submissions</response>
         [ProducesResponseType(typeof(List<CaseSubmissionResponse>), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("status/in-progress")]
         public IActionResult ListAllSubmissionsInProgress()
         {
             var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
