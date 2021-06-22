@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
@@ -94,6 +97,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _formSubmissionController.GetSubmissionById("1234") as NotFoundResult;
 
             response?.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public void ListBySubmissionStatusReturns200WhenMatchesAreFound()
+        {
+            var submissionResponse = new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission(SubmissionState.InProgress).ToDomain().ToResponse() };
+
+            _submissionsUseCaseMock.Setup(x => x.ExecuteListBySubmissionStatus(SubmissionState.InProgress)).Returns(submissionResponse);
+
+            var response = _formSubmissionController.ListAllSubmissionsInProgress() as ObjectResult;
+
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(submissionResponse);
+        }
+
+        [Test]
+        public void ListBySubmissionStatusReturns200AndEmptyListWhenNoMatchesAreFound()
+        {
+            var submissionResponse = new List<CaseSubmissionResponse>();
+
+            _submissionsUseCaseMock.Setup(x => x.ExecuteListBySubmissionStatus(SubmissionState.InProgress)).Returns(submissionResponse);
+
+            var response = _formSubmissionController.ListAllSubmissionsInProgress() as ObjectResult;
+
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(submissionResponse);
         }
 
         [Test]

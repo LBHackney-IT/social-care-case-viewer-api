@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using FluentAssertions;
@@ -120,6 +121,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), ObjectId.Parse(objectId)), Times.Once);
             response.Should().BeNull();
+        }
+
+        [Test]
+        public void ExecuteListBySubmissionStatusSuccessfully()
+        {
+            var firstSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var secondSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+
+            var submissionResponse = new List<CaseSubmission> { firstSubmission, secondSubmission };
+
+            _mockMongoGateway
+                .Setup(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress))
+                .Returns(submissionResponse);
+
+            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
+
+            _mockMongoGateway
+                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress), Times.Once);
+
+            response.Should().BeEquivalentTo(submissionResponse.Select(x => x.ToDomain().ToResponse()));
+        }
+
+        [Test]
+        public void ExecuteListBySubmissionStatusShouldReturnAnEmptyListIfNoMatchesWereFound()
+        {
+            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.Submitted);
+
+            _mockMongoGateway
+                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.Submitted), Times.Once);
+
+            response.Should().BeEmpty();
         }
 
         [Test]
