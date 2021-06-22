@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -38,6 +40,20 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
 
             return Ok(submission);
+        }
+
+        /// <summary>
+        /// Lists all in-progress case submissions
+        /// </summary>
+        /// <response code="200">Success. Returns a list of any in progress case submissions</response>
+        [ProducesResponseType(typeof(List<CaseSubmissionResponse>), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("status/in-progress")]
+        public IActionResult ListAllSubmissionsInProgress()
+        {
+            var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
+
+            return Ok(submissions);
         }
 
         /// <summary>
