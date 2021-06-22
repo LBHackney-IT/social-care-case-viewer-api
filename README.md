@@ -126,8 +126,20 @@ We use [SwaggerHub](https://swagger.io/tools/swaggerhub/) to document the API de
 
 The service API has two databases (as seen in the [C4 component diagram](./docs/component-diagram.svg)):
 
-- [MongoDB](https://www.mongodb.com) (DocumentDB in AWS)
-- [PostgreSQL](https://www.postgresql.org) (RDS PostgreSQL in AWS)
+#### [MongoDB](https://www.mongodb.com) (DocumentDB in AWS)
+
+This database stores:
+
+1. Case history. An audit log of each time an event recorded against a person.
+2. Google Form submission meta data. E.g: Form name, who created it, timestamp.
+3. Full data of forms submitted using the new system.
+
+#### [PostgreSQL](https://www.postgresql.org) (RDS PostgreSQL in AWS)
+
+This database stores:
+
+1. Stores person data. E.g: Addresses, telephone number, worker allocations.
+
 
 #### Updating the database schema
 
