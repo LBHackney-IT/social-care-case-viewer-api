@@ -105,9 +105,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             var (person, _, _, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
             var anotherPerson = TestHelpers.CreatePerson();
-            var anotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person.Id, anotherPerson.Id, personalRelationshipType.Id, id: 1);
+            var anotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person, anotherPerson, personalRelationshipType, id: 1);
             var andAnotherPerson = TestHelpers.CreatePerson();
-            var andAnotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person.Id, andAnotherPerson.Id, personalRelationshipType.Id, hasEnded: true, id: 2);
+            var andAnotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person, andAnotherPerson, personalRelationshipType, hasEnded: true, id: 2);
             DatabaseContext.Persons.Add(anotherPerson);
             DatabaseContext.Persons.Add(andAnotherPerson);
             DatabaseContext.PersonalRelationships.Add(anotherRelationship);
