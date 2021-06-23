@@ -3,12 +3,11 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
 {
@@ -28,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         [Test]
         public void CallsDatabaseGateway()
         {
-            var person = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationships();
+            var person = TestHelpers.CreatePerson();
             _mockDatabaseGateway.Setup(x => x.GetPersonWithPersonalRelationshipsByPersonId(It.IsAny<long>(), It.IsAny<bool>())).Returns(person);
 
             _relationshipsUseCase.ExecuteGet(person.Id);
@@ -39,18 +38,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         [Test]
         public void WhenPersonIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetRelationshipsExceptionWithMessage()
         {
-            var personId = 123456789;
+            var person = TestHelpers.CreatePerson();
             _mockDatabaseGateway.Setup(x => x.GetPersonWithPersonalRelationshipsByPersonId(It.IsAny<long>(), It.IsAny<bool>())).Returns((Person) null);
 
-            _relationshipsUseCase.Invoking(x => x.ExecuteGet(personId))
+            _relationshipsUseCase.Invoking(x => x.ExecuteGet(person.Id))
                 .Should().Throw<GetRelationshipsException>()
                 .WithMessage("Person not found");
         }
 
         [Test]
-        public void WhenPersonHasNoPersonalRelationshipsReturnsDefaultListRelationshipsResponse()
+        public void WhenPersonHasPersonalRelationshipsAsNullReturnsDefaultListRelationshipsResponse()
         {
-            var person = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationships(withRelationships: false);
+            var person = TestHelpers.CreatePerson();
+            person.PersonalRelationships = null;
+            _mockDatabaseGateway.Setup(x => x.GetPersonWithPersonalRelationshipsByPersonId(It.IsAny<long>(), It.IsAny<bool>())).Returns(person);
+
+            var result = _relationshipsUseCase.ExecuteGet(person.Id);
+
+            result.Should().BeEquivalentTo(new ListRelationshipsResponse() { PersonId = person.Id });
+        }
+
+        [Test]
+        public void WhenPersonHasPersonalRelationshipsAsEmptyListReturnsDefaultListRelationshipsResponse()
+        {
+            var person = TestHelpers.CreatePerson();
+            person.PersonalRelationships = new List<PersonalRelationship>();
             _mockDatabaseGateway.Setup(x => x.GetPersonWithPersonalRelationshipsByPersonId(It.IsAny<long>(), It.IsAny<bool>())).Returns(person);
 
             var result = _relationshipsUseCase.ExecuteGet(person.Id);
@@ -61,21 +73,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         [Test]
         public void WhenPersonHasPersonalRelationshipsReturnsRelationshipsMappedToType()
         {
-            var person = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationships();
+            var (person, _, _) = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationships();
             _mockDatabaseGateway.Setup(x => x.GetPersonWithPersonalRelationshipsByPersonId(It.IsAny<long>(), It.IsAny<bool>())).Returns(person);
 
             var result = _relationshipsUseCase.ExecuteGet(person.Id);
 
-            result.PersonalRelationships.Grandparent.Should().HaveCount(1);
-            result.PersonalRelationships.Grandparent.FirstOrDefault().Should().BeOfType<RelatedPerson>();
-            result.PersonalRelationships.Parent.Should().HaveCount(1);
-            result.PersonalRelationships.Parent.FirstOrDefault().Should().BeOfType<RelatedPerson>();
-            result.PersonalRelationships.Child.Should().HaveCount(1);
-            result.PersonalRelationships.Child.FirstOrDefault().Should().BeOfType<RelatedPerson>();
-            result.PersonalRelationships.Neighbour.Should().HaveCount(1);
-            result.PersonalRelationships.Neighbour.FirstOrDefault().Should().BeOfType<RelatedPerson>();
-            result.PersonalRelationships.Acquaintance.Should().HaveCount(1);
-            result.PersonalRelationships.Acquaintance.FirstOrDefault().Should().BeOfType<RelatedPerson>();
+            result.PersonalRelationships.Should().HaveCount(3);
         }
     }
 }

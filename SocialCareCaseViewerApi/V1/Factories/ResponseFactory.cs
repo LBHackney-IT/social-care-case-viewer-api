@@ -275,58 +275,23 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ).ToList();
         }
 
-        public static PersonalRelationships ToResponse(this List<PersonalRelationship> personalRelationships)
+        public static List<Domain.PersonalRelationship> ToResponse(this List<Infrastructure.PersonalRelationship> personalRelationships)
         {
-            return new PersonalRelationships()
-            {
-                GreatGrandchild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "greatGrandchild"),
-                GreatGrandparent = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "greatGrandparent"),
-                Grandchild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "grandchild"),
-                Grandparent = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "grandparent"),
-                Parent = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "parent"),
-                StepParent = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "stepParent"),
-                AuntUncle = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "auntUncle"),
-                Child = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "child"),
-                StepChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "stepChild"),
-                UnbornChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "unbornChild"),
-                Partner = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "partner"),
-                ExPartner = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "exPartner"),
-                Sibling = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "sibling"),
-                HalfSibling = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "halfSibling"),
-                StepSibling = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "stepSibling"),
-                UnbornSibling = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "unbornSibling"),
-                Spouse = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "spouse"),
-                Cousin = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "cousin"),
-                NieceNephew = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "nieceNephew"),
-                FosterCarer = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "fosterCarer"),
-                Friend = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "friend"),
-                Other = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "other"),
-                ExSpouse = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "exSpouse"),
-                ParentOfUnbornChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "parentOfUnbornChild"),
-                SiblingOfUnbornChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "siblingOfUnbornChild"),
-                FosterCarerSupportCarer = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "fosterCarerSupportCarer"),
-                PrivateFosterCarer = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "privateFosterCarer"),
-                PrivateFosterChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "privateFosterChild"),
-                FosterChild = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "fosterChild"),
-                SupportCarerFosterCarer = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "supportCarerFosterCarer"),
-                Neighbour = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "neighbour"),
-                InContactWith = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "inContactWith"),
-                Acquaintance = MapPersonalRelationshipsToRelatedPersonList(personalRelationships, "acquaintance")
-            };
-        }
-
-        private static List<RelatedPerson> MapPersonalRelationshipsToRelatedPersonList(List<PersonalRelationship> personalRelationships, string type)
-        {
-            return personalRelationships
-                .Where(pr => pr.Type.Description == type)
-                .Select(rp => new RelatedPerson()
+            return personalRelationships.GroupBy(
+                personalRelationship => personalRelationship.Type,
+                (type, relationships) => new Domain.PersonalRelationship()
                 {
-                    Id = rp.OtherPerson.Id,
-                    FirstName = rp.OtherPerson.FirstName,
-                    LastName = rp.OtherPerson.LastName,
-                    Gender = rp.OtherPerson.Gender
+                    Type = type.Description,
+                    Persons = relationships.Select(relationship => new RelatedPerson()
+                    {
+                        Id = relationship.OtherPerson.Id,
+                        FirstName = relationship.OtherPerson.FirstName,
+                        LastName = relationship.OtherPerson.LastName,
+                        Gender = relationship.OtherPerson.Gender
+                    }
+                    ).ToList()
                 }
-                ).ToList();
+            ).ToList();
         }
     }
 }

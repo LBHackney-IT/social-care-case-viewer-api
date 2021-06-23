@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WhenThereIsARelationshipReturnsTheDescriptionOfThePersonalRelationshipType()
         {
-            var (person, _, _, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext, relationshipType: "stepParent", otherRelationshipType: "stepChild");
+            var (person, _, _, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext, relationshipType: "stepParent");
 
             var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
             var personalRelationshipTypeInResponse = response.PersonalRelationships.FirstOrDefault().Type;
