@@ -21,6 +21,9 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Architecture](#architecture)
     - [API design](#api-design)
     - [Databases](#databases)
+      - [MongoDB (DocumentDB in AWS)](#mongodb-documentdb-in-aws)
+      - [PostgreSQL (RDS PostgreSQL in AWS)](#postgresql-rds-postgresql-in-aws)
+      - [Connecting to a database](#connecting-to-a-database)
       - [Updating the database schema](#updating-the-database-schema)
       - [Making manual updates](#making-manual-updates)
     - [Deployment](#deployment)
@@ -140,6 +143,11 @@ This database stores:
 
 1. Stores person data. E.g: Addresses, telephone number, worker allocations.
 
+#### Connecting to a database
+
+Sometimes we need to directly connect to a database for an environment to diagnose
+an issue or because we need to [make a manual update](#making-manual-updates).
+This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database) documentation.
 
 #### Updating the database schema
 
@@ -147,7 +155,7 @@ We currently don't have database migrations set up for the databases which means
 
 If you need to make changes e.g. add a new table to the PostgreSQL database, then see [Updating the database schema](./docs/updating-database-schema.md) for how we manage this and do this via the AWS console.
 
-### Making manual updates
+#### Making manual updates
 
 From time to time, we are required to make manual data updates because it's something that's not possible through the UI of the Social Care System. However, this is something we only want to do when really necessary as it requires directly connecting to the database and running SQL statements.
 
