@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
+using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -515,16 +516,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? dateTime = null,
             Worker? worker = null,
             InfrastructurePerson? resident = null,
-            string? id = null,
+            int? residentId = null,
+            ObjectId? id = null,
             string? formId = null)
         {
             worker ??= CreateWorker();
-            resident ??= CreatePerson();
+            resident ??= CreatePerson(residentId);
 
             var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
 
             return new Faker<CaseSubmission>()
-                .RuleFor(s => s.SubmissionId, f => id ?? f.Random.String2(24, "0123456789abcdef"))
+                .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
@@ -536,6 +538,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
+        }
+
+        public static ListCasesRequest CreateListCasesRequest(bool nullMosaicId = false)
+        {
+            return new Faker<ListCasesRequest>()
+                .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
         }
 
         public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(

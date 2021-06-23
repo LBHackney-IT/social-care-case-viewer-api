@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -36,5 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         void UpdatePerson(UpdatePersonRequest request);
         List<Person> GetPersonsByListOfIds(List<long> ids);
         Person GetPersonByMosaicId(long mosaicId);
+        Person GetPersonWithPersonalRelationshipsByPersonId(long personId, Boolean includeEndedRelationships);
     }
 }

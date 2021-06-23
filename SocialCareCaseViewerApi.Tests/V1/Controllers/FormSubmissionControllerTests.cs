@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
@@ -46,21 +49,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who created the submission");
-        }
-
-        [Test]
-        public void PostSubmissionWithValidRequestReturns500WhenNoSubmissionIdAssigned()
-        {
-            var request = TestHelpers.CreateCaseSubmissionRequest();
-            var createdSubmission = TestHelpers.CreateCaseSubmission();
-            var createdSubmissionResponse = createdSubmission.ToDomain().ToResponse();
-            createdSubmissionResponse.SubmissionId = null;
-            _submissionsUseCaseMock.Setup(x => x.ExecutePost(request)).Returns((createdSubmissionResponse, createdSubmission));
-
-            var response = _formSubmissionController.CreateSubmission(request) as ObjectResult;
-
-            response?.StatusCode.Should().Be(500);
-            response?.Value.Should().Be("Case submission created with a null submission ID");
         }
 
         [Test]
@@ -112,12 +100,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void ListBySubmissionStatusReturns200WhenMatchesAreFound()
+        {
+            var submissionResponse = new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission(SubmissionState.InProgress).ToDomain().ToResponse() };
+
+            _submissionsUseCaseMock.Setup(x => x.ExecuteListBySubmissionStatus(SubmissionState.InProgress)).Returns(submissionResponse);
+
+            var response = _formSubmissionController.ListAllSubmissionsInProgress() as ObjectResult;
+
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(submissionResponse);
+        }
+
+        [Test]
+        public void ListBySubmissionStatusReturns200AndEmptyListWhenNoMatchesAreFound()
+        {
+            var submissionResponse = new List<CaseSubmissionResponse>();
+
+            _submissionsUseCaseMock.Setup(x => x.ExecuteListBySubmissionStatus(SubmissionState.InProgress)).Returns(submissionResponse);
+
+            var response = _formSubmissionController.ListAllSubmissionsInProgress() as ObjectResult;
+
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(submissionResponse);
+        }
+
+        [Test]
         public void FinishSubmissionReturns204WhenACaseIsSuccessfullyFinished()
         {
             var request = TestHelpers.FinishCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as NoContentResult;
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as NoContentResult;
 
             response?.StatusCode.Should().Be(204);
         }
@@ -128,7 +142,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var invalidRequest = TestHelpers.FinishCaseSubmissionRequest(createdBy: "invalid email");
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, invalidRequest) as BadRequestObjectResult;
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), invalidRequest) as BadRequestObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who is finishing the submission");
@@ -140,9 +154,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Failed to find worker";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var request = TestHelpers.FinishCaseSubmissionRequest();
-            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId, request)).Throws(new WorkerNotFoundException(errorMessage));
+            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new WorkerNotFoundException(errorMessage));
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
@@ -182,10 +196,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Failed to find submission";
             var updateFormSubmissionAnswersRequest = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
             const string stepId = "1";
-            _submissionsUseCaseMock.Setup(x => x.UpdateAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest))
+            _submissionsUseCaseMock.Setup(x => x.UpdateAnswers(createdSubmission.SubmissionId.ToString(), stepId, updateFormSubmissionAnswersRequest))
                 .Throws(new GetSubmissionException(errorMessage));
 
-            var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
+            var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId.ToString(), stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
@@ -197,9 +211,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Failed to find submission";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var request = TestHelpers.FinishCaseSubmissionRequest();
-            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId, request)).Throws(new GetSubmissionException(errorMessage));
+            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new GetSubmissionException(errorMessage));
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId, request) as ObjectResult;
+            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
@@ -212,10 +226,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Failed to find worker";
             var updateFormSubmissionAnswersRequest = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
             const string stepId = "1";
-            _submissionsUseCaseMock.Setup(x => x.UpdateAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest))
+            _submissionsUseCaseMock.Setup(x => x.UpdateAnswers(createdSubmission.SubmissionId.ToString(), stepId, updateFormSubmissionAnswersRequest))
                 .Throws(new WorkerNotFoundException(errorMessage));
 
-            var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId, stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
+            var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId.ToString(), stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);

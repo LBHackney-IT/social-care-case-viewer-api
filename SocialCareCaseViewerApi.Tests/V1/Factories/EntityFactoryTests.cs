@@ -271,7 +271,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
-                SubmissionId = databaseCaseSubmission1.SubmissionId,
+                SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
                 FormId = databaseCaseSubmission1.FormId,
                 Residents = databaseCaseSubmission1.Residents,
                 Workers = databaseCaseSubmission1.Workers.Select(w => w.ToDomain(false)).ToList(),
@@ -289,7 +289,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
-                SubmissionId = databaseCaseSubmission2.SubmissionId,
+                SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
                 FormId = databaseCaseSubmission2.FormId,
                 Residents = databaseCaseSubmission2.Residents,
                 Workers = databaseCaseSubmission2.Workers.Select(w => w.ToDomain(false)).ToList(),

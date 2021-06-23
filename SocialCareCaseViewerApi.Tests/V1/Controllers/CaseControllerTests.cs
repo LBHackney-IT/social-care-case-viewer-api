@@ -49,10 +49,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetCaseByIdReturns404WhenNoCaseIsFound()
+        public void GetCaseByIdReturnsNotFoundWhenNullIsReturned()
         {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()))
-                .Throws(new DocumentNotFoundException("Document Not Found"));
+            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()));
 
             var response = _caseController.GetCaseByRecordId("caseString") as ObjectResult;
 
@@ -66,7 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var careCaseDataList = _fixture.Create<CareCaseDataList>();
             var listCasesRequest = new ListCasesRequest();
 
-            _mockProcessDataUseCase.Setup(x => x.Execute(listCasesRequest)).Returns(careCaseDataList);
+            _mockProcessDataUseCase.Setup(x => x.GetResidentCases(listCasesRequest)).Returns(careCaseDataList);
             var response = _caseController.GetCases(listCasesRequest) as OkObjectResult;
 
             response?.StatusCode.Should().Be(200);
@@ -76,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCasesReturns404WhenNoCasesAreFound()
         {
-            _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<ListCasesRequest>()))
+            _mockProcessDataUseCase.Setup(x => x.GetResidentCases(It.IsAny<ListCasesRequest>()))
                 .Throws(new DocumentNotFoundException("Document Not Found"));
 
             var response = _caseController.GetCases(new ListCasesRequest()) as ObjectResult;

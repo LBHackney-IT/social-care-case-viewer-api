@@ -1,5 +1,5 @@
 using System;
-using System.Globalization;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,21 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                string? dateValidationError = null;
-
-                if (!string.IsNullOrWhiteSpace(request?.StartDate) && !DateTime.TryParseExact(request.StartDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate))
-                {
-                    dateValidationError += "Invalid start date";
-                }
-
-                if (!string.IsNullOrWhiteSpace(request?.EndDate) && !DateTime.TryParseExact(request.EndDate,
-                    "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
-                {
-                    dateValidationError += " Invalid end date";
-                }
-
-                return !string.IsNullOrEmpty(dateValidationError) ? StatusCode(400, dateValidationError) : Ok(_caseRecordsUseCase.Execute(request));
+                return Ok(_caseRecordsUseCase.GetResidentCases(request));
             }
             catch (DocumentNotFoundException e)
             {
@@ -68,14 +54,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("{caseId}")]
         public IActionResult GetCaseByRecordId(string caseId)
         {
-            try
+            var caseRecord = _caseRecordsUseCase.Execute(caseId);
+
+            if (caseRecord == null)
             {
-                return Ok(_caseRecordsUseCase.Execute(caseId));
+                return NotFound("Document Not Found");
             }
-            catch (DocumentNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+
+            return Ok(caseRecord);
         }
 
         /// <summary>

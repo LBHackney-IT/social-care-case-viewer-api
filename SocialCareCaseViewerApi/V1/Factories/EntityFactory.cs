@@ -20,6 +20,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
@@ -101,7 +102,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return teams.Select(t => t.ToDomain()).ToList();
         }
 
-        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview> reviews = null)
+        public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview>? reviews = null)
         {
             return new WarningNote
             {
@@ -153,12 +154,14 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
             return new Domain.CaseSubmission
             {
-                SubmissionId = caseSubmission.SubmissionId,
+                SubmissionId = caseSubmission.SubmissionId.ToString(),
                 FormId = caseSubmission.FormId,
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
+                SubmittedAt = caseSubmission.SubmittedAt,
+                SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
@@ -166,6 +169,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 }).ToList(),
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
                 FormAnswers = caseSubmission.FormAnswers
+            };
+        }
+
+        public static CareCaseData ToCareCaseData(this CaseSubmission caseSubmission, ListCasesRequest listCasesRequest)
+        {
+            var resident = caseSubmission.Residents
+                .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? ""));
+
+            return new CareCaseData
+            {
+                RecordId = caseSubmission.SubmissionId.ToString(),
+                PersonId = resident.Id,
+                FirstName = resident.FirstName,
+                LastName = resident.LastName,
+                OfficerEmail = caseSubmission.Workers[0].Email,
+                CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
+                FormName = caseSubmission.FormId,
+                DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
+                DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
+                CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }
 

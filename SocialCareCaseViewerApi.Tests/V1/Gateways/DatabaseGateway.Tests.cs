@@ -480,6 +480,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.PersonOtherNames.RemoveRange(DatabaseContext.PersonOtherNames);
             DatabaseContext.Addresses.RemoveRange(DatabaseContext.Addresses);
             DatabaseContext.PhoneNumbers.RemoveRange(DatabaseContext.PhoneNumbers);
+            DatabaseContext.PersonalRelationships.RemoveRange(DatabaseContext.PersonalRelationships);
 
             const string title = "Mr";
             var firstName = _faker.Name.FirstName();

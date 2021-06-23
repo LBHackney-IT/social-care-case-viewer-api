@@ -7,9 +7,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface ICaseRecordsUseCase
     {
-        CareCaseDataList Execute(ListCasesRequest? request);
+        CareCaseDataList GetResidentCases(ListCasesRequest request);
 
-        CareCaseData Execute(string recordId);
+        CareCaseData? Execute(string recordId);
         Task<string> Execute(CreateCaseNoteRequest request);
     }
 }
