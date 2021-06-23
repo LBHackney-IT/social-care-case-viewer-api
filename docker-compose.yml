@@ -1,23 +1,20 @@
 version: "3.2"
 
 services:
-  # social-care-case-viewer-api:
-    # image: social-care-case-viewer-api
-    # build:
-      # context: SocialCareCaseViewerApi/
-      # dockerfile: ./Dockerfile
-    # ports:
-      # - 3000:3000
-    # environment:
-      # - CONNECTION_STRING=Host=dev-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
-    # links:
-      # - dev-database
-  # dev-database:
-    # env_file:
-      # - database.env
-    # image: postgres:12
-    # volumes:
-      # - ./database:/docker-entrypoint-initdb.d
+  social-care-case-viewer-api:
+    image: social-care-case-viewer-api
+    build:
+      context: SocialCareCaseViewerApi/
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
+      - CONNECTION_STRING=Host=test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
+      - SOCIAL_CARE_PLATFORM_API_URL=https://this-is-an-example.com/
+    links:
+      - mongo-db
+      - test-database
 
   social-care-case-viewer-api-test:
     image: social-care-case-viewer-api-test
@@ -34,6 +31,7 @@ services:
     links:
         - mongo-db
         - test-database
+
   mongo-db:
       image: mongo:3.6
       ports:
