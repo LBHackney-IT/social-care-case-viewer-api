@@ -59,7 +59,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 name.Person = null;
             }
 
-
+             for (var index = 0; index < resident.Allocations?.Count; index++)
+            {
+                var allocation = resident.Allocations[index];
+                allocation.Person = null;
+            }
+            
             var dateTimeNow = DateTime.Now;
 
             var caseSubmission = new CaseSubmission
