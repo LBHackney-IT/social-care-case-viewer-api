@@ -16,16 +16,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     public class RelationshipControllerTests
     {
         private RelationshipController _classUnderTest;
-        private Mock<IRelationshipsV1UseCase> _mockRelationshipsUseCase;
+        private Mock<IRelationshipsV1UseCase> _mockRelationshipsV1UseCase;
+        private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
         private readonly Fixture _fixture = new Fixture();
         private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void SetUp()
         {
-            _mockRelationshipsUseCase = new Mock<IRelationshipsV1UseCase>();
+            _mockRelationshipsV1UseCase = new Mock<IRelationshipsV1UseCase>();
+            _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
 
-            _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object);
+            _classUnderTest = new RelationshipController(_mockRelationshipsV1UseCase.Object, _mockRelationshipsUseCase.Object);
         }
 
         [Test]
@@ -33,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(new ListRelationshipsV1Response());
+            _mockRelationshipsV1UseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(new ListRelationshipsV1Response());
 
             var response = _classUnderTest.ListRelationshipsV1(request) as ObjectResult;
 
@@ -45,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Throws(new GetRelationshipsException("Person not found"));
+            _mockRelationshipsV1UseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Throws(new GetRelationshipsException("Person not found"));
 
             var response = _classUnderTest.ListRelationshipsV1(request) as NotFoundObjectResult;
 
@@ -60,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             var listRelationShipsResponse = _fixture.Create<ListRelationshipsV1Response>();
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(listRelationShipsResponse);
+            _mockRelationshipsV1UseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(listRelationShipsResponse);
 
             var response = _classUnderTest.ListRelationshipsV1(request) as ObjectResult;
 
@@ -71,11 +73,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListRelationshipsReturns200WhenPersonIsFound()
         {
-            var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
+            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new ListRelationshipsResponse());
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(new ListRelationshipsV1Response());
-
-            var response = _classUnderTest.ListRelationships(request) as ObjectResult;
+            var response = _classUnderTest.ListRelationships(123456789) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
@@ -83,11 +83,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListRelationshipsReturns404WithCorrectErrorMessageWhenPersonIsNotFound()
         {
-            var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
+            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Throws(new GetRelationshipsException("Person not found"));
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Throws(new GetRelationshipsException("Person not found"));
-
-            var response = _classUnderTest.ListRelationships(request) as NotFoundObjectResult;
+            var response = _classUnderTest.ListRelationships(123456789) as NotFoundObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Person not found");
@@ -96,15 +94,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListRelationshipsReturns200AndRelationshipsWhenSuccessful()
         {
-            var request = new ListRelationshipsV1Request() { PersonId = _faker.Random.Long() };
+            var listRelationShipsResponse = _fixture.Create<ListRelationshipsResponse>();
+            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(listRelationShipsResponse);
 
-            var listRelationShipsResponse = _fixture.Create<ListRelationshipsV1Response>();
+            var response = _classUnderTest.ListRelationships(123456789) as ObjectResult;
 
-            _mockRelationshipsUseCase.Setup(x => x.ExecuteGet(It.IsAny<ListRelationshipsV1Request>())).Returns(listRelationShipsResponse);
-
-            var response = _classUnderTest.ListRelationships(request) as ObjectResult;
-
-            response?.Value.Should().BeOfType<ListRelationshipsV1Response>();
+            response?.Value.Should().BeOfType<ListRelationshipsResponse>();
             response?.Value.Should().BeEquivalentTo(listRelationShipsResponse);
         }
     }

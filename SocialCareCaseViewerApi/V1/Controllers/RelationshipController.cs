@@ -14,14 +14,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class RelationshipController : BaseController
     {
         private readonly IRelationshipsV1UseCase _relationshipsV1UseCase;
+        private readonly IRelationshipsUseCase _relationshipsUseCase;
 
-        public RelationshipController(IRelationshipsV1UseCase relationshipsV1UseCase)
+        public RelationshipController(IRelationshipsV1UseCase relationshipsV1UseCase, IRelationshipsUseCase relationshipsUseCase)
         {
             _relationshipsV1UseCase = relationshipsV1UseCase;
+            _relationshipsUseCase = relationshipsUseCase;
         }
 
         /// <summary>
-        /// Get a list of relationships by person id
+        /// Get a list of relationships by person id (old)
         /// </summary>
         /// <param name="request"></param>
         /// <response code="200">Successful request. Relationships returned</response>
@@ -45,18 +47,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Get a list of relationships by person id
         /// </summary>
-        /// <param name="request"></param>
         /// <response code="200">Successful request. Relationships returned</response>
         /// <response code="404">Person not found</response>
         /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("residents/{personId}/relationships")]
-        public IActionResult ListRelationships([FromQuery] ListRelationshipsV1Request request)
+        [Route("residents/{personId:long}/relationships")]
+        public IActionResult ListRelationships(long personId)
         {
             try
             {
-                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
+                return Ok(_relationshipsUseCase.ExecuteGet(personId));
             }
             catch (GetRelationshipsException ex)
             {
