@@ -265,14 +265,33 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static List<RelatedPersonV1> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
         {
             return personList
-               .Where(p => relationshipIds.Contains(p.Id))
-               .Select(x => new RelatedPersonV1()
-               {
-                   Id = x.Id,
-                   FirstName = x.FirstName,
-                   LastName = x.LastName
-               }
-               ).ToList();
+                .Where(p => relationshipIds.Contains(p.Id))
+                .Select(x => new RelatedPersonV1()
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName
+                }
+                ).ToList();
+        }
+
+        public static List<Domain.PersonalRelationship> ToResponse(this List<Infrastructure.PersonalRelationship> personalRelationships)
+        {
+            return personalRelationships.GroupBy(
+                personalRelationship => personalRelationship.Type,
+                (type, relationships) => new Domain.PersonalRelationship()
+                {
+                    Type = type.Description,
+                    Persons = relationships.Select(relationship => new RelatedPerson()
+                    {
+                        Id = relationship.OtherPerson.Id,
+                        FirstName = relationship.OtherPerson.FirstName,
+                        LastName = relationship.OtherPerson.LastName,
+                        Gender = relationship.OtherPerson.Gender
+                    }
+                    ).ToList()
+                }
+            ).ToList();
         }
     }
 }

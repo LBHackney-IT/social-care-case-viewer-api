@@ -880,7 +880,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
         }
 
-        public Person GetPersonWithPersonalRelationshipsByPersonId(long personId, Boolean includeEndedRelationships = false)
+        public Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false)
         {
             var personWithRelationships = _databaseContext
                 .Persons

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Bogus;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -10,10 +11,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
     {
         public static (Person, Person, PersonalRelationship?, PersonalRelationshipType?, PersonalRelationshipDetail?) SavePersonWithPersonalRelationshipToDatabase(
             DatabaseContext databaseContext,
-            Boolean withRelationship = true,
+            bool withRelationship = true,
             string relationshipType = "parent",
-            string otherRelationshipType = "child",
-            Boolean hasEnded = false,
+            bool hasEnded = false,
             string? details = null
         )
         {
@@ -26,8 +26,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             if (withRelationship == false) return (person, otherPerson, null, null, null);
 
-            var (personalRelationshipType, _) = CreatePersonalRelationshipTypes(relationshipType, otherRelationshipType);
-            var personalRelationship = CreatePersonalRelationship(person.Id, otherPerson.Id, personalRelationshipType.Id, hasEnded);
+            var personalRelationshipType = CreatePersonalRelationshipType(relationshipType);
+            var personalRelationship = CreatePersonalRelationship(person, otherPerson, personalRelationshipType, hasEnded);
             var personalRelationshipDetail = CreatePersonalRelationshipDetail(personalRelationship.Id, details);
 
             databaseContext.PersonalRelationshipTypes.Add(personalRelationshipType);
@@ -38,19 +38,69 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (person, otherPerson, personalRelationship, personalRelationshipType, personalRelationshipDetail);
         }
 
+        public static (Person, List<Person>, List<PersonalRelationship>) CreatePersonWithPersonalRelationships()
+        {
+            var person = TestHelpers.CreatePerson();
+            var otherPersons = new List<Person>()
+            {
+                TestHelpers.CreatePerson(),
+                TestHelpers.CreatePerson(),
+                TestHelpers.CreatePerson()
+            };
+
+            var parent = CreatePersonalRelationshipType("parent");
+            var child = CreatePersonalRelationshipType("child");
+            var neighbour = CreatePersonalRelationshipType("neighbour");
+
+            var personalrelationships = new List<PersonalRelationship>()
+            {
+                CreatePersonalRelationship(person, otherPersons[0], parent),
+                CreatePersonalRelationship(person, otherPersons[1], child),
+                CreatePersonalRelationship(person, otherPersons[2], neighbour)
+            };
+
+            person.PersonalRelationships = personalrelationships;
+
+            return (person, otherPersons, personalrelationships);
+        }
+
+        public static (Person, List<Person>, List<PersonalRelationship>) CreatePersonWithPersonalRelationshipsOfSameType()
+        {
+            var person = TestHelpers.CreatePerson();
+            var otherPersons = new List<Person>()
+            {
+                TestHelpers.CreatePerson(),
+                TestHelpers.CreatePerson()
+            };
+
+            var parent = CreatePersonalRelationshipType("parent");
+
+            var personalrelationships = new List<PersonalRelationship>()
+            {
+                CreatePersonalRelationship(person, otherPersons[0], parent),
+                CreatePersonalRelationship(person, otherPersons[1], parent),
+            };
+
+            person.PersonalRelationships = personalrelationships;
+
+            return (person, otherPersons, personalrelationships);
+        }
+
         public static PersonalRelationship CreatePersonalRelationship(
-            long personId,
-            long otherPersonId,
-            long typeId,
-            Boolean hasEnded = false,
+            Person person,
+            Person otherPerson,
+            PersonalRelationshipType type,
+            bool hasEnded = false,
             long? id = null
         )
         {
             return new Faker<PersonalRelationship>()
                 .RuleFor(pr => pr.Id, f => id ?? f.UniqueIndex)
-                .RuleFor(pr => pr.PersonId, personId)
-                .RuleFor(pr => pr.OtherPersonId, otherPersonId)
-                .RuleFor(pr => pr.TypeId, typeId)
+                .RuleFor(pr => pr.PersonId, person.Id)
+                .RuleFor(pr => pr.OtherPersonId, otherPerson.Id)
+                .RuleFor(pr => pr.OtherPerson, otherPerson)
+                .RuleFor(pr => pr.TypeId, type.Id)
+                .RuleFor(pr => pr.Type, type)
                 .RuleFor(pr => pr.StartDate, f => f.Date.Past())
                 .RuleFor(pr => pr.EndDate, f => hasEnded ? f.Date.Future() : (DateTime?) null)
                 .RuleFor(pr => pr.IsInformalCarer, f => f.Random.String2(1, "YN"))
@@ -65,20 +115,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(prd => prd.Details, f => details ?? f.Random.String2(1000));
         }
 
-        public static (PersonalRelationshipType, PersonalRelationshipType) CreatePersonalRelationshipTypes(string? description = null, string? inverseDescription = null)
+        public static PersonalRelationshipType CreatePersonalRelationshipType(string description = "parent")
         {
-            PersonalRelationshipType personalRelationshipType = new Faker<PersonalRelationshipType>()
+            return new Faker<PersonalRelationshipType>()
                 .RuleFor(prt => prt.Id, f => f.UniqueIndex)
                 .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
-
-            PersonalRelationshipType inversePersonalRelationshipType = new Faker<PersonalRelationshipType>()
-                .RuleFor(prt => prt.Id, f => f.UniqueIndex)
-                .RuleFor(prt => prt.Description, f => inverseDescription ?? f.Random.String2(20));
-
-            personalRelationshipType.InverseTypeId = inversePersonalRelationshipType.Id;
-            inversePersonalRelationshipType.InverseTypeId = personalRelationshipType.Id;
-
-            return (personalRelationshipType, inversePersonalRelationshipType);
         }
     }
 }
