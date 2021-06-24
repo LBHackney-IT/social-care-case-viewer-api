@@ -885,6 +885,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var personWithRelationships = _databaseContext
                 .Persons
                 .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.Type)
+                .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.OtherPerson)
+                .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.Details)
                 .FirstOrDefault(p => p.Id == personId);
 
             if (personWithRelationships == null) return null;
