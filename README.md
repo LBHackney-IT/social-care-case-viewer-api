@@ -14,6 +14,8 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Installation](#installation)
   - [Usage](#usage)
     - [Running the application](#running-the-application)
+      -[Using dotnet run](#using-dotnet-run)
+      -[Using docker](#using-docker)
     - [Running the tests](#running-the-tests)
       - [Using the terminal](#using-the-terminal)
       - [Using an IDE](#using-an-ide)
@@ -69,14 +71,7 @@ $ cd SocialCareCaseViewerApi && dotnet run
 
 #### Using docker
 
-You can also run the API locally and have it connect to local databases running within docker.
-First make sure the local dev databases are running in docker:
-
-```sh
-$ make start-local-dev-dbs
-```
-
-Once these are running, you can run this command to build and run the API within the docker:
+Run the API locally with connected local dev databases using this command:
 
 ```sh
 $ make serve
@@ -87,18 +82,6 @@ N.B: This would only spin up the Application, Postgres & MongoDB locally in dock
 It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
 
 The docker implementation is still a work-in-progress but the above setup should allow for some API calls to be tested locally.
-
-#### Troubleshooting
-
-While running the application and test databases using docker, when you attempt to test an API call, you may get a `500` error.
-If you see in the stacktrace an error when code in [SccvDbContext](./SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs) was run, e.g:
-
-```sh
-System.ArgumentNullException: String reference not set to an instance of a String. (Parameter 's')
-```
-
-A quick fix for this to comment out the code in in [SccvDbContext](./SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs) that sets up using a `localTrustStore` and adding a SSL certificate (e.g `lines 14 - 36`).
-After commenting this out, rerun `make serve` and try again.
 
 ### Running the tests
 
