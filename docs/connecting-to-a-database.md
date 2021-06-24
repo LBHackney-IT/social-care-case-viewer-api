@@ -22,7 +22,7 @@ Using the AWS console, you can connect via a bastion host to the:
 ## Connecting to the PostgreSQL (RDS PostgreSQL) database
 
 1. Within relevant AWS account, go to **Systems Manager** → **Parameter Store**
-2. Search for **/social-care-case-viewer-api/\<environment-key\>/postgres**
+2. Search for **/social-care-case-viewer-api/\<systems-manager-key\>/postgres**
 3. In a new tab, go to **Session Manager** under **Node Management** in **Systems Manager**
 4. Click on **Start session**
 5. Select the appropriate EC2 jumpbox and click on **Start session**
