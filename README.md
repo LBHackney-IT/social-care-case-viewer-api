@@ -81,7 +81,6 @@ $ make serve
 N.B: This would only spin up the Application, Postgres & MongoDB locally in docker.
 It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
 
-The docker implementation is still a work-in-progress but the above setup should allow for some API calls to be tested locally.
 
 ### Running the tests
 
