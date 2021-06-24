@@ -26,11 +26,15 @@ Using the AWS console, you can connect via a bastion host to the:
 3. In a new tab, go to **Session Manager** under **Node Management** in **Systems Manager**
 4. Click on **Start session**
 5. Select the appropriate EC2 jumpbox and click on **Start session**
-6. Using the parameters from Parameter Store in your other tab, connect to the PostgreSQL database by running:
+6. Using the parameters from Parameter Store in your other tab, run the following command:
 
 ```
 $ psql --host=<hostname> --port=<port> --username=<username> --dbname=social_care
 ```
+
+This will prompt you to enter the password.
+
+7. Paste the password and hit enter (NB: the characters won't show)
 
 This will connect you to the PostgreSQL database of the service API.
 
@@ -71,13 +75,18 @@ $ ls
 $ wget https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem
 ```
 
-6. Using the parameter from Parameter Store in your other tab, connect to the MongoDB by running the following command and extracting parts from the connection string - `mongodb://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>`
+6. Using the parameter from Parameter Store in your other tab, run the following command by extracting parts from the connection string - `mongodb://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>`
 
 ```
 mongo --ssl --host <HOSTNAME>:<PORT> --sslCAFile rds-ca-2019-root.pem --username <USERNAME> --password
 ```
 
+This will prompt you to enter the password.
+
 7. Paste the password and hit enter
+
+This will connect you to the MongoDB of the service API.
+
 8. Connect to the `social_care_db` database by running:
 
 ```
