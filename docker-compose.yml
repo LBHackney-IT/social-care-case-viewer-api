@@ -9,7 +9,9 @@ services:
     ports:
       - 3000:3000
     environment:
-      - MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
+      - SCCV_MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
+      - SCCV_MONGO_DB_NAME=social_care_db_test
+      - SCCV_MONGO_COLLECTION_NAME=form_data_test
       - CONNECTION_STRING=Host=test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
       - SOCIAL_CARE_PLATFORM_API_URL=https://this-is-an-example.com/
     links:
