@@ -63,6 +63,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 var allocation = resident.Allocations[index];
                 allocation.Person = null;
+                allocation.Team = null;
             }
 
             var dateTimeNow = DateTime.Now;
