@@ -9,14 +9,30 @@ services:
     ports:
       - 3000:3000
     environment:
-      - SCCV_MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
+      - SCCV_MONGO_CONN_STRING=mongodb://sccv-api-mongo-db:27017/?gssapiServiceName=mongodb
       - SCCV_MONGO_DB_NAME=social_care_db_test
       - SCCV_MONGO_COLLECTION_NAME=form_data_test
-      - CONNECTION_STRING=Host=test-database;Port=5432;Database=testdb;Username=postgres;Password=mypassword
+      - CONNECTION_STRING=Host=sccv-api-postgresql;Port=5432;Database=testdb;Username=postgres;Password=mypassword
       - SOCIAL_CARE_PLATFORM_API_URL=https://this-is-an-example.com/
     links:
-      - mongo-db
-      - test-database
+      - sccv-api-mongo-db
+      - sccv-api-postgresql
+
+  sccv-api-mongo-db:
+    image: mongo:3.6
+    ports:
+      - 1443:27017
+
+  sccv-api-postgresql:
+    image: sccv-api-postgresql
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+    ports:
+      - 5433:5432
+    env_file:
+      - database.env
+
 
   social-care-case-viewer-api-test:
     image: social-care-case-viewer-api-test
@@ -24,23 +40,23 @@ services:
       context: .
       dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
     environment:
-            - MONGO_CONN_STRING=mongodb://mongo-db:27017/?gssapiServiceName=mongodb
-            - DB_HOST=test-database
+            - MONGO_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
+            - DB_HOST=sccv-api-test-postgresql
             - DB_USERNAME=postgres
             - DB_PASSWORD=mypassword
             - DB_DATABASE=testdb
             - DB_PORT=5432
     links:
-        - mongo-db
-        - test-database
+        - sccv-api-test-mongo-db
+        - sccv-api-test-postgresql
 
-  mongo-db:
+  sccv-api-test-mongo-db:
       image: mongo:3.6
       ports:
         - 1433:27017
 
-  test-database:
-    image: test-database
+  sccv-api-test-postgresql:
+    image: sccv-api-test-postgresql
     build:
       context: .
       dockerfile: database/Dockerfile

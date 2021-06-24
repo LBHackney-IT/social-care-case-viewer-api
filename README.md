@@ -69,17 +69,24 @@ $ cd SocialCareCaseViewerApi && dotnet run
 
 #### Using docker
 
-You can also the API locally within a docker container and have it connect to the test databases within docker.
-Make sure the test databases are running with docker, see make command for [running the test databases in the background]((#running-the-tests)) below.
+You can also run the API locally and have it connect to local databases running within docker.
+First make sure the local dev databases are running in docker:
 
-Once these are running, you can run this command to build and run the API within docker:
+```sh
+$ make start-local-dev-dbs
+```
+
+Once these are running, you can run this command to build and run the API within the docker:
 
 ```sh
 $ make serve
 ```
 **The application will be served at http://localhost:3000**.
 
-N.B: This would only spin up the Application, Postgres & MongoDB locally in docker. It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
+N.B: This would only spin up the Application, Postgres & MongoDB locally in docker.
+It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
+
+The docker implementation is still a work-in-progress but the above setup should allow for some API calls to be tested locally.
 
 #### Troubleshooting
 
@@ -92,8 +99,6 @@ System.ArgumentNullException: String reference not set to an instance of a Strin
 
 A quick fix for this to comment out the code in in [SccvDbContext](./SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs) that sets up using a `localTrustStore` and adding a SSL certificate (e.g `lines 14 - 36`).
 After commenting this out, rerun `make serve` and try again.
-
-The docker implementation is still a work-in-progress but the above setup should allow for some API calls to be tested locally.
 
 ### Running the tests
 
