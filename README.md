@@ -53,13 +53,47 @@ $ git clone git@github.com:LBHackney-IT/social-care-case-viewer-api.git
 
 ### Running the application
 
-To serve the API locally, use:
+There are two ways of running the application: using dotnet or using docker.
+
+#### Using dotnet run
+Using the dotnet command will not automatically connect the API to any local database instances.
+
+To serve the API locally with dotnet,
+run `dotnet run` from within the [SocialCareCaseViewerApi](./SocialCareCaseViewerApi) project directory, i.e:
 
 ```sh
 $ cd SocialCareCaseViewerApi && dotnet run
 ```
 
-The application will be served at http://localhost:5000.
+**The application will be served at http://localhost:5000**.
+
+#### Using docker
+
+You can also the API locally within a docker container and have it connect to the test databases within docker.
+Make sure the test databases are running with docker, see make command for [running the test databases in the background]((#running-the-tests)) below.
+
+Once these are running, you can run this command to build and run the API within docker:
+
+```sh
+$ make serve
+```
+**The application will be served at http://localhost:3000**.
+
+N.B: This would only spin up the Application, Postgres & MongoDB locally in docker. It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
+
+#### Troubleshooting
+
+While running the application and test databases using docker, when you attempt to test an API call, you may get a `500` error.
+If you see in the stacktrace an error when code in [SccvDbContext](./SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs) was run, e.g:
+
+```sh
+System.ArgumentNullException: String reference not set to an instance of a String. (Parameter 's')
+```
+
+A quick fix for this to comment out the code in in [SccvDbContext](./SocialCareCaseViewerApi/V1/Infrastructure/SccvDbContext.cs) that sets up using a `localTrustStore` and adding a SSL certificate (e.g `lines 14 - 36`).
+After commenting this out, rerun `make serve` and try again.
+
+The docker implementation is still a work-in-progress but the above setup should allow for some API calls to be tested locally.
 
 ### Running the tests
 
@@ -89,7 +123,7 @@ $ dotnet test --filter GivenHttpClientReturnsValidResponseThenGatewayReturnsList
 $ dotnet test --filter SocialCarePlatformAPIGatewayTests
 ```
 
-If your docker test database is out of sync with the schema on your current banch run
+If your docker test database is out of sync with the schema on your current branch run
 
 ```sh
 $ make restart-db

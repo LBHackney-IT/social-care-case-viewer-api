@@ -8,7 +8,7 @@ build:
 
 .PHONY: serve
 serve:
-	docker-compose build base-api && docker-compose up base-api
+	docker-compose build social-care-case-viewer-api && docker-compose up social-care-case-viewer-api
 
 .PHONY: shell
 shell:
