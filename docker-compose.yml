@@ -9,6 +9,7 @@ services:
     ports:
       - 3000:3000
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - SCCV_MONGO_CONN_STRING=mongodb://sccv-api-mongo-db:27017/?gssapiServiceName=mongodb
       - SCCV_MONGO_DB_NAME=social_care_db_test
       - SCCV_MONGO_COLLECTION_NAME=form_data_test
