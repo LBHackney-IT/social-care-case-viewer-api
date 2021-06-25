@@ -147,7 +147,7 @@ This database stores:
 
 Sometimes we need to directly connect to a database for an environment to diagnose
 an issue or because we need to [make a manual update](#making-manual-updates).
-This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database) documentation.
+This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database.md) documentation.
 
 #### Updating the database schema
 
