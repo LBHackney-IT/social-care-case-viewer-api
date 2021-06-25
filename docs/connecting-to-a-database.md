@@ -93,7 +93,7 @@ This will connect you to the MongoDB of the service API.
 use social_care_db;
 ```
 
-#### Useful commands
+### Useful commands
 
 To verify that data exists for a collection:
 
