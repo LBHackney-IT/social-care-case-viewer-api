@@ -14,6 +14,8 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Installation](#installation)
   - [Usage](#usage)
     - [Running the application](#running-the-application)
+      - [Using dotnet run](#using-dotnet-run)
+      - [Using docker](#using-docker)
     - [Running the tests](#running-the-tests)
       - [Using the terminal](#using-the-terminal)
       - [Using an IDE](#using-an-ide)
@@ -56,13 +58,32 @@ $ git clone git@github.com:LBHackney-IT/social-care-case-viewer-api.git
 
 ### Running the application
 
-To serve the API locally, use:
+There are two ways of running the application: using dotnet or using docker.
+
+#### Using dotnet run
+Using the dotnet command will not automatically connect the API to any local database instances.
+
+To serve the API locally with dotnet,
+run `dotnet run` from within the [SocialCareCaseViewerApi](./SocialCareCaseViewerApi) project directory, i.e:
 
 ```sh
 $ cd SocialCareCaseViewerApi && dotnet run
 ```
 
-The application will be served at http://localhost:5000.
+**The application will be served at http://localhost:5000**.
+
+#### Using docker
+
+Run the API locally with connected local dev databases using this command:
+
+```sh
+$ make serve
+```
+**The application will be served at http://localhost:3000**.
+
+N.B: This would only spin up the Application, Postgres & MongoDB locally in docker.
+It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
+
 
 ### Running the tests
 
@@ -92,7 +113,7 @@ $ dotnet test --filter GivenHttpClientReturnsValidResponseThenGatewayReturnsList
 $ dotnet test --filter SocialCarePlatformAPIGatewayTests
 ```
 
-If your docker test database is out of sync with the schema on your current banch run
+If your docker test database is out of sync with the schema on your current branch run
 
 ```sh
 $ make restart-db
@@ -147,7 +168,7 @@ This database stores:
 
 Sometimes we need to directly connect to a database for an environment to diagnose
 an issue or because we need to [make a manual update](#making-manual-updates).
-This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database) documentation.
+This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database.md) documentation.
 
 #### Updating the database schema
 
