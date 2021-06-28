@@ -126,14 +126,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void UpdateSubmissionReturns204WhenACaseIsSuccessfullyFinished()
+        public void UpdateSubmissionReturns201WhenACaseIsSuccessfullyFinished()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var submissionResponse = createdSubmission.ToDomain().ToResponse();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request)).Returns(submissionResponse);
 
-            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as NoContentResult;
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
-            response?.StatusCode.Should().Be(204);
+            response?.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(submissionResponse);
         }
 
         [Test]
@@ -145,7 +148,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), invalidRequest) as BadRequestObjectResult;
 
             response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be("Provide a valid email address for who is finishing the submission");
+            response?.Value.Should().Be("Provide a valid email address for who is updating the submission");
         }
 
         [Test]

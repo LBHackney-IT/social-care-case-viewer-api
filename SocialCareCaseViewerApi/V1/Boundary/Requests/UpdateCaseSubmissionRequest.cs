@@ -22,8 +22,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public UpdateCaseSubmissionRequestValidator()
         {
             RuleFor(s => s.UpdatedBy)
-                .NotNull().WithMessage("Provide who is finishing the submission")
-                .EmailAddress().WithMessage("Provide a valid email address for who is finishing the submission");
+                .NotNull().WithMessage("Provide who is updating the submission")
+                .EmailAddress().WithMessage("Provide a valid email address for who is updating the submission");
         }
     }
 }

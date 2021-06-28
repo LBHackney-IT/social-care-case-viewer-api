@@ -96,12 +96,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Finish a submission
+        /// Update a submission
         /// </summary>
-        /// <response code="204">Case submission successfully finished</response>
-        /// <response code="400">Invalid FinishCaseSubmissionRequest received</response>
+        /// <response code="200">Case submission successfully updated</response>
+        /// <response code="400">Invalid UpdateCaseSubmissionRequest received</response>
         /// <response code="422">Could not process request</response>
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPatch]
         [Route("{submissionId}")]
         public IActionResult UpdateSubmission(string submissionId, [FromBody] UpdateCaseSubmissionRequest request)
@@ -116,8 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                _formSubmissionsUseCase.ExecuteUpdateSubmission(submissionId, request);
-                return NoContent();
+                return Ok(_formSubmissionsUseCase.ExecuteUpdateSubmission(submissionId, request));
             }
             catch (WorkerNotFoundException e)
             {

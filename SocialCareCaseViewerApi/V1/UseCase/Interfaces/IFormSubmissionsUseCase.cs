@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 
         List<CaseSubmissionResponse> ExecuteListBySubmissionStatus(SubmissionState state);
 
-        void ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request);
+        CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request);
         CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId,
             UpdateFormSubmissionAnswersRequest request);
 

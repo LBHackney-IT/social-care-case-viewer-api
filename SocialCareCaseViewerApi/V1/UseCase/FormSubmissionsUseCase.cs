@@ -79,7 +79,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
-        public void ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
+        public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.UpdatedBy);
             if (worker == null)
@@ -88,8 +88,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             SanitiseWorker(worker);
 
-            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
-            if (updateSubmission == null)
+            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
+            if (updatedSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
@@ -102,7 +102,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
                 if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
                 {
-                    updateSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+                    updatedSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
                 }
                 else
                 {
@@ -123,12 +123,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     SanitiseResident(resident);
                     newResident.Add(resident);
                 }
-                updateSubmission.Residents = newResident;
+                updatedSubmission.Residents = newResident;
             }
 
-            updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
+            updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
-            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updateSubmission);
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updatedSubmission);
+
+            return updatedSubmission.ToDomain().ToResponse();
         }
 
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)

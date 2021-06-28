@@ -163,10 +163,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.UpdatedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 
-            _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
             createdSubmission.SubmissionState.Should().Be(SubmissionState.Submitted);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
         [Test]
@@ -225,10 +226,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.UpdatedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 
-            _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
             createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
         [Test]
@@ -309,7 +311,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteFinishSubmissionThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
+        public void ExecuteUpdateSubmissionThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
@@ -321,7 +323,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteFinishSubmissionThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
+        public void ExecuteUpdateSubmissionThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();

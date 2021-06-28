@@ -6,19 +6,19 @@ using FluentAssertions;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
-    public class FinishCaseSubmissionRequestTests
+    public class UpdateCaseSubmissionRequestTests
     {
         [Test]
-        public void FinishCaseSubmissionRequestValidationReturnsErrorsWithInvalidProperties()
+        public void UpdateCaseSubmissionRequestValidationReturnsErrorsWithInvalidProperties()
         {
-            var badFinishCaseSubmissionRequest = new List<(UpdateCaseSubmissionRequest, string)>
+            var badUpdateCaseSubmissionRequest = new List<(UpdateCaseSubmissionRequest, string)>
             {
-                (TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email"), "Provide a valid email address for who is finishing the submission")
+                (TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email"), "Provide a valid email address for who is updating the submission")
             };
 
             var validator = new UpdateCaseSubmissionRequestValidator();
 
-            foreach (var (request, expectedErrorMessage) in badFinishCaseSubmissionRequest)
+            foreach (var (request, expectedErrorMessage) in badUpdateCaseSubmissionRequest)
             {
                 var validationResponse = validator.Validate(request);
 
@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidFinishCaseSubmissionReturnsNoErrorsOnValidation()
+        public void ValidUpdateCaseSubmissionReturnsNoErrorsOnValidation()
         {
             var createTeamRequest = TestHelpers.UpdateCaseSubmissionRequest();
             var validator = new UpdateCaseSubmissionRequestValidator();
