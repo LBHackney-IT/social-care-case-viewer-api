@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     public enum SubmissionState
     {
         InProgress,
-        Submitted
+        Submitted,
+        Approved
     }
 }
