@@ -27,20 +27,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
-            }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
-
-            var resident = _databaseGateway.GetPersonDetailsById(request.ResidentId);
-            if (resident == null)
-            {
-                throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
-            }
-            SanitiseResident(resident);
+            var worker = GetSanitisedWorker(request.CreatedBy);
+            var resident = GetSanitisedResident(request.ResidentId, true);
 
             var dateTimeNow = DateTime.Now;
 
@@ -81,12 +69,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.UpdatedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.UpdatedBy} not found");
-            }
-            SanitiseWorker(worker);
+            var worker = GetSanitisedWorker(request.UpdatedBy);
 
             var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (updatedSubmission == null)
@@ -106,13 +89,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.EditedBy} not found");
-            }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
+            var worker = GetSanitisedWorker(request.EditedBy);
 
             var submission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (submission == null)
@@ -172,21 +149,32 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (request.Residents == null) return;
 
-            var newResident = new List<Person>();
-            foreach (var residentId in request.Residents)
-            {
-                var resident = _databaseGateway.GetPersonByMosaicId(residentId);
-                if (resident == null)
-                {
-                    throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
-                }
-                SanitiseResident(resident);
-                newResident.Add(resident);
-            }
+            var newResident = request.Residents.Select(residentId => GetSanitisedResident(residentId)).ToList();
 
             caseSubmission.Residents = newResident;
         }
 
+        private Worker GetSanitisedWorker(string workerEmail)
+        {
+            var worker = _databaseGateway.GetWorkerByEmail(workerEmail);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email {workerEmail} not found");
+            }
+            SanitiseWorker(worker);
+            return worker;
+        }
+
+        private Person GetSanitisedResident(long residentId, bool includeExtraDetails = false)
+        {
+            var resident = includeExtraDetails ? _databaseGateway.GetPersonDetailsById(residentId) : _databaseGateway.GetPersonByMosaicId(residentId);
+            if (resident == null)
+            {
+                throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
+            }
+            SanitiseResident(resident);
+            return resident;
+        }
 
         private static void SanitiseWorker(Worker workerToSanitise)
         {
