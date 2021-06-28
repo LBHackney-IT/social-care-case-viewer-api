@@ -96,17 +96,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Finish a submission
+        /// Update a submission
         /// </summary>
-        /// <response code="204">Case submission successfully finished</response>
-        /// <response code="400">Invalid FinishCaseSubmissionRequest received</response>
+        /// <response code="200">Case submission successfully updated</response>
+        /// <response code="400">Invalid UpdateCaseSubmissionRequest received</response>
         /// <response code="422">Could not process request</response>
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPatch]
         [Route("{submissionId}")]
-        public IActionResult FinishSubmission(string submissionId, [FromBody] FinishCaseSubmissionRequest request)
+        public IActionResult UpdateSubmission(string submissionId, [FromBody] UpdateCaseSubmissionRequest request)
         {
-            var validator = new FinishCaseSubmissionRequestValidator();
+            var validator = new UpdateCaseSubmissionRequestValidator();
             var validationResults = validator.Validate(request);
 
             if (!validationResults.IsValid)
@@ -116,14 +116,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                _formSubmissionsUseCase.ExecuteFinishSubmission(submissionId, request);
-                return NoContent();
+                return Ok(_formSubmissionsUseCase.ExecuteUpdateSubmission(submissionId, request));
             }
             catch (WorkerNotFoundException e)
             {
                 return UnprocessableEntity(e.Message);
             }
             catch (GetSubmissionException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (UpdateSubmissionException e)
             {
                 return UnprocessableEntity(e.Message);
             }

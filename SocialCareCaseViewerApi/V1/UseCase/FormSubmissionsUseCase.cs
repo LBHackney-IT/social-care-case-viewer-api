@@ -40,31 +40,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
-
-            for (var index = 0; index < resident.Addresses?.Count; index++)
-            {
-                var address = resident.Addresses[index];
-                address.Person = null;
-            }
-
-            for (var index = 0; index < resident.PhoneNumbers?.Count; index++)
-            {
-                var number = resident.PhoneNumbers[index];
-                number.Person = null;
-            }
-
-            for (var index = 0; index < resident.OtherNames?.Count; index++)
-            {
-                var name = resident.OtherNames[index];
-                name.Person = null;
-            }
-
-            for (var index = 0; index < resident.Allocations?.Count; index++)
-            {
-                var allocation = resident.Allocations[index];
-                allocation.Person = null;
-                allocation.Team = null;
-            }
+            SanitiseResident(resident);
 
             var dateTimeNow = DateTime.Now;
 
@@ -103,26 +79,58 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
-        public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
+        public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+            var worker = _databaseGateway.GetWorkerByEmail(request.UpdatedBy);
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
+                throw new WorkerNotFoundException($"Worker with email {request.UpdatedBy} not found");
             }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
+            SanitiseWorker(worker);
 
-            var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
-            if (updateSubmission == null)
+            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
+            if (updatedSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
-            updateSubmission.SubmissionState = SubmissionState.Submitted;
-            updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
+            if (request.SubmissionState != null)
+            {
+                var stringToSubmissionState = new Dictionary<string, SubmissionState> {
+                { "in_progress", SubmissionState.InProgress },
+                { "submitted", SubmissionState.Submitted }
+            };
+                if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
+                {
+                    updatedSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+                }
+                else
+                {
+                    throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
+                }
+            }
 
-            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updateSubmission);
+            if (request.Residents != null)
+            {
+                var newResident = new List<Person>();
+                foreach (var residentId in request.Residents)
+                {
+                    var resident = _databaseGateway.GetPersonByMosaicId(residentId);
+                    if (resident == null)
+                    {
+                        throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
+                    }
+                    SanitiseResident(resident);
+                    newResident.Add(resident);
+                }
+                updatedSubmission.Residents = newResident;
+            }
+
+            updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
+
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updatedSubmission);
+
+            return updatedSubmission.ToDomain().ToResponse();
         }
 
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
@@ -149,6 +157,40 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             });
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
+        }
+
+        private static void SanitiseWorker(Worker workerToSanitise)
+        {
+            workerToSanitise.WorkerTeams = null;
+            workerToSanitise.Allocations = null;
+        }
+
+        private static void SanitiseResident(Person residentToSanitise)
+        {
+            for (var index = 0; index < residentToSanitise.Addresses?.Count; index++)
+            {
+                var address = residentToSanitise.Addresses[index];
+                address.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.PhoneNumbers?.Count; index++)
+            {
+                var number = residentToSanitise.PhoneNumbers[index];
+                number.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.OtherNames?.Count; index++)
+            {
+                var name = residentToSanitise.OtherNames[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Allocations?.Count; index++)
+            {
+                var allocation = residentToSanitise.Allocations[index];
+                allocation.Person = null;
+                allocation.Team = null;
+            }
         }
     }
 }

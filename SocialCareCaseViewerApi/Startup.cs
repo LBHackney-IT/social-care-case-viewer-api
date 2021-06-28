@@ -125,7 +125,7 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<CreateTeamRequest>, CreateTeamRequestValidator>();
             services.AddTransient<IValidator<GetTeamsRequest>, GetTeamsRequestValidator>();
             services.AddTransient<IValidator<CreateCaseSubmissionRequest>, CreateCaseSubmissionRequestValidator>();
-            services.AddTransient<IValidator<FinishCaseSubmissionRequest>, FinishCaseSubmissionRequestValidator>();
+            services.AddTransient<IValidator<UpdateCaseSubmissionRequest>, UpdateCaseSubmissionRequestValidator>();
             services
                 .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
         }
