@@ -14,6 +14,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public DateTime CreatedAt { get; set; }
         public WorkerResponse? SubmittedBy { get; set; }
         public DateTime? SubmittedAt { get; set; }
+        public WorkerResponse? ApprovedBy { get; set; }
+        public DateTime? ApprovedAt { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<WorkerResponse> Workers { get; set; } = null!;
         public List<EditHistory<WorkerResponse>> EditHistory { get; set; } = null!;

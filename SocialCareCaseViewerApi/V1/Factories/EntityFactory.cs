@@ -163,6 +163,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
+                ApprovedAt = caseSubmission.ApprovedAt,
+                ApprovedBy = caseSubmission.ApprovedBy?.ToDomain(false),
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
