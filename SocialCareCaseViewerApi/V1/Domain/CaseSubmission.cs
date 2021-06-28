@@ -16,6 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public DateTime? SubmittedAt { get; set; }
         public Worker? ApprovedBy { get; set; }
         public DateTime? ApprovedAt { get; set; }
+        public string? RejectionReason { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<Worker> Workers { get; set; } = null!;
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;

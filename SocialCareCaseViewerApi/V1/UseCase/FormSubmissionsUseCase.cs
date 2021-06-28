@@ -124,8 +124,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var newSubmissionState = submission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
 
-            submission.SubmissionState = newSubmissionState;
-
             // We should never hit the default but C# compiler complains if we don't provide a default case
             // https://stackoverflow.com/questions/1098644/switch-statement-without-default-when-dealing-with-enumerations
             switch (newSubmissionState)
@@ -139,10 +137,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     submission.ApprovedBy = worker;
                     break;
                 case SubmissionState.InProgress:
+                    submission.RejectionReason = request.RejectionReason;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(request));
             }
+
+            submission.SubmissionState = newSubmissionState;
         }
 
         private void UpdateResidents(CaseSubmission caseSubmission, UpdateCaseSubmissionRequest request)
