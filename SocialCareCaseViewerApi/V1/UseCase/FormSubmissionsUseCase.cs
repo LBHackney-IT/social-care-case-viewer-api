@@ -94,38 +94,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
-            if (request.SubmissionState != null)
-            {
-                var stringToSubmissionState = new Dictionary<string, SubmissionState> {
-                { "in_progress", SubmissionState.InProgress },
-                { "submitted", SubmissionState.Submitted },
-                { "approved", SubmissionState.Approved}
-            };
-                if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
-                {
-                    updatedSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
-                }
-                else
-                {
-                    throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
-                }
-            }
-
-            if (request.Residents != null)
-            {
-                var newResident = new List<Person>();
-                foreach (var residentId in request.Residents)
-                {
-                    var resident = _databaseGateway.GetPersonByMosaicId(residentId);
-                    if (resident == null)
-                    {
-                        throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
-                    }
-                    SanitiseResident(resident);
-                    newResident.Add(resident);
-                }
-                updatedSubmission.Residents = newResident;
-            }
+            UpdateSubmissionState(updatedSubmission, request, worker);
+            UpdateResidents(updatedSubmission, request);
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -159,6 +129,64 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
+
+        private static void UpdateSubmissionState(CaseSubmission submission, UpdateCaseSubmissionRequest request, Worker worker)
+        {
+            if (request.SubmissionState == null) return;
+
+            var stringToSubmissionState = new Dictionary<string, SubmissionState> {
+                { "in_progress", SubmissionState.InProgress },
+                { "submitted", SubmissionState.Submitted },
+                { "approved", SubmissionState.Approved}
+            };
+
+            if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
+            {
+                throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
+            }
+
+            var newSubmissionState = submission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+
+            submission.SubmissionState = newSubmissionState;
+
+            // We should never hit the default but C# compiler complains if we don't provide a default case
+            // https://stackoverflow.com/questions/1098644/switch-statement-without-default-when-dealing-with-enumerations
+            switch (newSubmissionState)
+            {
+                case SubmissionState.Submitted:
+                    submission.SubmittedAt = DateTime.Now;
+                    submission.SubmittedBy = worker;
+                    break;
+                case SubmissionState.Approved:
+                    submission.ApprovedAt = DateTime.Now;
+                    submission.ApprovedBy = worker;
+                    break;
+                case SubmissionState.InProgress:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(request));
+            }
+        }
+
+        private void UpdateResidents(CaseSubmission caseSubmission, UpdateCaseSubmissionRequest request)
+        {
+            if (request.Residents == null) return;
+
+            var newResident = new List<Person>();
+            foreach (var residentId in request.Residents)
+            {
+                var resident = _databaseGateway.GetPersonByMosaicId(residentId);
+                if (resident == null)
+                {
+                    throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
+                }
+                SanitiseResident(resident);
+                newResident.Add(resident);
+            }
+
+            caseSubmission.Residents = newResident;
+        }
+
 
         private static void SanitiseWorker(Worker workerToSanitise)
         {
