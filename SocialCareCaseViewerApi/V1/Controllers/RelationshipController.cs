@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -13,35 +12,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class RelationshipController : BaseController
     {
-        private readonly IRelationshipsV1UseCase _relationshipsV1UseCase;
         private readonly IRelationshipsUseCase _relationshipsUseCase;
 
-        public RelationshipController(IRelationshipsV1UseCase relationshipsV1UseCase, IRelationshipsUseCase relationshipsUseCase)
+        public RelationshipController(IRelationshipsUseCase relationshipsUseCase)
         {
-            _relationshipsV1UseCase = relationshipsV1UseCase;
             _relationshipsUseCase = relationshipsUseCase;
-        }
-
-        /// <summary>
-        /// Get a list of relationships by person id (old)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <response code="200">Successful request. Relationships returned</response>
-        /// <response code="404">Person not found</response>
-        /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents/{personId}/relationships-v1")]
-        public IActionResult ListRelationshipsV1([FromQuery] ListRelationshipsV1Request request)
-        {
-            try
-            {
-                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
-            }
-            catch (GetRelationshipsException ex)
-            {
-                return NotFound(ex.Message);
-            }
         }
 
         /// <summary>

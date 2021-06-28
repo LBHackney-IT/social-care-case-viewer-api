@@ -215,31 +215,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static ListRelationshipsV1Response ToResponse(List<Person> personRecords, RelationshipsV1 relationships, List<long> personIds, long personId)
-        {
-            ListRelationshipsV1Response response = new ListRelationshipsV1Response() { PersonId = personId };
-
-            if (personIds.Count == 0 || relationships == null)
-                return response;
-
-            if (personRecords?.Count > 0)
-            {
-                if (relationships?.PersonalRelationships?.Children?.Count > 0)
-                    response.PersonalRelationships.Children.AddRange(PersonsToRelatedPersonsList(personRecords, relationships.PersonalRelationships.Children));
-
-                if (relationships?.PersonalRelationships?.Other?.Count > 0)
-                    response.PersonalRelationships.Other.AddRange(PersonsToRelatedPersonsList(personRecords, relationships.PersonalRelationships.Other));
-
-                if (relationships?.PersonalRelationships?.Parents?.Count > 0)
-                    response.PersonalRelationships.Parents.AddRange(PersonsToRelatedPersonsList(personRecords, relationships.PersonalRelationships.Parents));
-
-                if (relationships?.PersonalRelationships?.Siblings?.Count > 0)
-                    response.PersonalRelationships.Siblings.AddRange(PersonsToRelatedPersonsList(personRecords, relationships.PersonalRelationships.Siblings));
-            }
-
-            return response;
-        }
-
         public static CaseSubmissionResponse ToResponse(this CaseSubmission caseSubmission)
         {
             return new CaseSubmissionResponse
@@ -260,19 +235,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers
             };
-        }
-
-        public static List<RelatedPersonV1> PersonsToRelatedPersonsList(List<Person> personList, List<long> relationshipIds)
-        {
-            return personList
-                .Where(p => relationshipIds.Contains(p.Id))
-                .Select(x => new RelatedPersonV1()
-                {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName
-                }
-                ).ToList();
         }
 
         public static List<Domain.PersonalRelationship> ToResponse(this List<Infrastructure.PersonalRelationship> personalRelationships)
