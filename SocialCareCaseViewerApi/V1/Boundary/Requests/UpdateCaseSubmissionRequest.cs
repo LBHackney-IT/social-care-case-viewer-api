@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using FluentValidation;
 
@@ -11,6 +12,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("submissionState")]
         public string? SubmissionState { get; set; }
+
+        [JsonPropertyName("residents")]
+        public List<long>? Residents { get; set; }
     }
 
     public class UpdateCaseSubmissionRequestValidator : AbstractValidator<UpdateCaseSubmissionRequest>

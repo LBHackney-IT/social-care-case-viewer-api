@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
-            SantiseResident(resident);
+            SanitiseResident(resident);
 
             var dateTimeNow = DateTime.Now;
 
@@ -110,6 +110,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
+            if (request.Residents != null)
+            {
+                var newResident = new List<Person>();
+                foreach (var residentId in request.Residents)
+                {
+                    var resident = _databaseGateway.GetPersonByMosaicId(residentId);
+                    if (resident == null)
+                    {
+                        throw new UpdateSubmissionExecption($"Resident not found with ID {residentId}");
+                    }
+                    SanitiseResident(resident);
+                    newResident.Add(resident);
+                }
+                updateSubmission.Residents = newResident;
+            }
+
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updateSubmission);
@@ -147,7 +163,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             workerToSanitise.Allocations = null;
         }
 
-        private static void SantiseResident(Person residentToSanitise)
+        private static void SanitiseResident(Person residentToSanitise)
         {
             for (var index = 0; index < residentToSanitise.Addresses?.Count; index++)
             {
