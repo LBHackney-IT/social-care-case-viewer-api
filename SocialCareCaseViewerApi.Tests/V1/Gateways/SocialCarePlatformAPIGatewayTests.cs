@@ -106,37 +106,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GivenHttpClientReturns404ThenGatewayReturnsNoRelationships()
-        {
-            const long personId = 123;
-            var httpClient = CreateHttpClient(HttpStatusCode.NotFound);
-
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
-
-            var exception = Assert.Throws<SocialCarePlatformApiException>(delegate { _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(personId); });
-
-            exception.Message.Should().Be("404");
-        }
-
-        [Test]
-        public void GivenHttpClientReturnsValidResponseThenGatewayReturnsRelationships()
-        {
-            const long personId = 123;
-
-            var relationships = TestHelpers.CreateRelationshipsV1(personId);
-
-            var httpClient = CreateHttpClient(relationships);
-            _socialCarePlatformAPIGateway = new SocialCarePlatformAPIGateway(httpClient);
-
-            var response = _socialCarePlatformAPIGateway.GetRelationshipsByPersonIdV1(personId);
-
-            response.PersonalRelationships.Other.Should().BeEquivalentTo(relationships.PersonalRelationships.Other);
-            response.PersonalRelationships.Parents.Should().BeEquivalentTo(relationships.PersonalRelationships.Parents);
-            response.PersonalRelationships.Children.Should().BeEquivalentTo(relationships.PersonalRelationships.Children);
-            response.PersonalRelationships.Siblings.Should().BeEquivalentTo(relationships.PersonalRelationships.Siblings);
-        }
-
-        [Test]
         public void GivenHttpClientReturnsValidResponseButDeserialisationFailsThenGatewayThrowsSocialCarePlatformApiExceptionWithCorrectMessage()
         {
             const string invalidJson = "(^(^^*(^*__INVALID_JSON__(^*^(^*((*";
