@@ -106,7 +106,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
                 else
                 {
-                    throw new UpdateSubmissionExecption($"Invalid submission state supplied {request.SubmissionState}");
+                    throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
                 }
             }
 
@@ -118,7 +118,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     var resident = _databaseGateway.GetPersonByMosaicId(residentId);
                     if (resident == null)
                     {
-                        throw new UpdateSubmissionExecption($"Resident not found with ID {residentId}");
+                        throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
                     }
                     SanitiseResident(resident);
                     newResident.Add(resident);

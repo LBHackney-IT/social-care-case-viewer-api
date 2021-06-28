@@ -548,12 +548,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
             string? updatedBy = null,
-            string? submissionState = null
+            string? submissionState = null,
+            List<long>? residents = null
         )
         {
             return new Faker<UpdateCaseSubmissionRequest>()
                 .RuleFor(s => s.UpdatedBy, f => updatedBy ?? f.Person.Email)
-                .RuleFor(s => s.SubmissionState, f => submissionState);
+                .RuleFor(s => s.SubmissionState, submissionState)
+                .RuleFor(s => s.Residents, residents);
         }
     }
 }

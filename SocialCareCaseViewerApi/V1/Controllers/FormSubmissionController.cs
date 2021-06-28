@@ -127,7 +127,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return UnprocessableEntity(e.Message);
             }
-            catch (UpdateSubmissionExecption e)
+            catch (UpdateSubmissionException e)
             {
                 return UnprocessableEntity(e.Message);
             }

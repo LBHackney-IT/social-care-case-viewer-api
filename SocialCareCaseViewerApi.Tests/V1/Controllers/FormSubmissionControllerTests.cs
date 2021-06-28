@@ -126,7 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void FinishSubmissionReturns204WhenACaseIsSuccessfullyFinished()
+        public void UpdateSubmissionReturns204WhenACaseIsSuccessfullyFinished()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
@@ -137,7 +137,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void FinishSubmissionWithInvalidRequestReturns400Status()
+        public void UpdateSubmissionWithInvalidRequestReturns400Status()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var invalidRequest = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email");
@@ -149,12 +149,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void FinishSubmissionReturns422WhenWorkerNotFoundExceptionThrown()
+        public void UpdateSubmissionReturns422WhenWorkerNotFoundExceptionThrown()
         {
             const string errorMessage = "Failed to find worker";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             _submissionsUseCaseMock.Setup(x => x.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new WorkerNotFoundException(errorMessage));
+
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
+
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void UpdateSubmissionReturns422WhenUpdateSubmissionExceptionThrown()
+        {
+            const string errorMessage = "Resident not found";
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new UpdateSubmissionException(errorMessage));
 
             var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
