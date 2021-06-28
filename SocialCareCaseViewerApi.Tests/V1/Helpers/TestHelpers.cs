@@ -546,12 +546,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
         }
 
-        public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(
-            string? createdBy = null
+        public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
+            string? updatedBy = null,
+            string? submissionState = null
         )
         {
-            return new Faker<FinishCaseSubmissionRequest>()
-            .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+            return new Faker<UpdateCaseSubmissionRequest>()
+                .RuleFor(s => s.UpdatedBy, f => updatedBy ?? f.Person.Email)
+                .RuleFor(s => s.SubmissionState, f => submissionState);
         }
     }
 }

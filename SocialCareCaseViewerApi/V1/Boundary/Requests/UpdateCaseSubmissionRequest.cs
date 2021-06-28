@@ -6,8 +6,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateCaseSubmissionRequest
     {
-        [JsonPropertyName("createdBy")]
-        public string CreatedBy { get; set; } = null!;
+        [JsonPropertyName("updatedBy")]
+        public string UpdatedBy { get; set; } = null!;
 
         [JsonPropertyName("submissionState")]
         public string? SubmissionState { get; set; }
@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         public UpdateCaseSubmissionRequestValidator()
         {
-            RuleFor(s => s.CreatedBy)
+            RuleFor(s => s.UpdatedBy)
                 .NotNull().WithMessage("Provide who is finishing the submission")
                 .EmailAddress().WithMessage("Provide a valid email address for who is finishing the submission");
         }

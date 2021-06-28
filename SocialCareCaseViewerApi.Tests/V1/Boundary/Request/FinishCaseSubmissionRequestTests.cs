@@ -11,12 +11,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void FinishCaseSubmissionRequestValidationReturnsErrorsWithInvalidProperties()
         {
-            var badFinishCaseSubmissionRequest = new List<(FinishCaseSubmissionRequest, string)>
+            var badFinishCaseSubmissionRequest = new List<(UpdateCaseSubmissionRequest, string)>
             {
-                (TestHelpers.FinishCaseSubmissionRequest(createdBy: "invalid email"), "Provide a valid email address for who is finishing the submission")
+                (TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email"), "Provide a valid email address for who is finishing the submission")
             };
 
-            var validator = new FinishCaseSubmissionRequestValidator();
+            var validator = new UpdateCaseSubmissionRequestValidator();
 
             foreach (var (request, expectedErrorMessage) in badFinishCaseSubmissionRequest)
             {
@@ -30,8 +30,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidFinishCaseSubmissionReturnsNoErrorsOnValidation()
         {
-            var createTeamRequest = TestHelpers.FinishCaseSubmissionRequest();
-            var validator = new FinishCaseSubmissionRequestValidator();
+            var createTeamRequest = TestHelpers.UpdateCaseSubmissionRequest();
+            var validator = new UpdateCaseSubmissionRequestValidator();
 
             var validationResponse = validator.Validate(createTeamRequest);
 

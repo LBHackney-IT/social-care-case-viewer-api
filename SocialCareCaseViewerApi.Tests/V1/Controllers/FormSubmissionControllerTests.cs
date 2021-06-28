@@ -128,10 +128,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void FinishSubmissionReturns204WhenACaseIsSuccessfullyFinished()
         {
-            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as NoContentResult;
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as NoContentResult;
 
             response?.StatusCode.Should().Be(204);
         }
@@ -140,9 +140,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void FinishSubmissionWithInvalidRequestReturns400Status()
         {
             var createdSubmission = TestHelpers.CreateCaseSubmission();
-            var invalidRequest = TestHelpers.FinishCaseSubmissionRequest(createdBy: "invalid email");
+            var invalidRequest = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email");
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), invalidRequest) as BadRequestObjectResult;
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), invalidRequest) as BadRequestObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Provide a valid email address for who is finishing the submission");
@@ -153,10 +153,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             const string errorMessage = "Failed to find worker";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
-            var request = TestHelpers.FinishCaseSubmissionRequest();
-            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new WorkerNotFoundException(errorMessage));
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new WorkerNotFoundException(errorMessage));
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
@@ -210,10 +210,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             const string errorMessage = "Failed to find submission";
             var createdSubmission = TestHelpers.CreateCaseSubmission();
-            var request = TestHelpers.FinishCaseSubmissionRequest();
-            _submissionsUseCaseMock.Setup(x => x.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new GetSubmissionException(errorMessage));
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request)).Throws(new GetSubmissionException(errorMessage));
 
-            var response = _formSubmissionController.FinishSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
+            var response = _formSubmissionController.UpdateSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);

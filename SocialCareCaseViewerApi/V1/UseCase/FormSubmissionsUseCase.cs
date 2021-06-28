@@ -40,31 +40,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
             }
-
-            for (var index = 0; index < resident.Addresses?.Count; index++)
-            {
-                var address = resident.Addresses[index];
-                address.Person = null;
-            }
-
-            for (var index = 0; index < resident.PhoneNumbers?.Count; index++)
-            {
-                var number = resident.PhoneNumbers[index];
-                number.Person = null;
-            }
-
-            for (var index = 0; index < resident.OtherNames?.Count; index++)
-            {
-                var name = resident.OtherNames[index];
-                name.Person = null;
-            }
-
-            for (var index = 0; index < resident.Allocations?.Count; index++)
-            {
-                var allocation = resident.Allocations[index];
-                allocation.Person = null;
-                allocation.Team = null;
-            }
+            SantiseResident(resident);
 
             var dateTimeNow = DateTime.Now;
 
@@ -105,13 +81,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public void ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+            var worker = _databaseGateway.GetWorkerByEmail(request.UpdatedBy);
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
+                throw new WorkerNotFoundException($"Worker with email {request.UpdatedBy} not found");
             }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
+            SanitiseWorker(worker);
 
             var updateSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (updateSubmission == null)
@@ -122,13 +97,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (request.SubmissionState != null)
             {
                 var stringToSubmissionState = new Dictionary<string, SubmissionState> {
-                { "in_progress", SubmissionState.InProgress  },
+                { "in_progress", SubmissionState.InProgress },
                 { "submitted", SubmissionState.Submitted }
             };
                 if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
                 {
                     updateSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
-
                 }
                 else
                 {
@@ -165,6 +139,40 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             });
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
+        }
+
+        private static void SanitiseWorker(Worker workerToSanitise)
+        {
+            workerToSanitise.WorkerTeams = null;
+            workerToSanitise.Allocations = null;
+        }
+
+        private static void SantiseResident(Person residentToSanitise)
+        {
+            for (var index = 0; index < residentToSanitise.Addresses?.Count; index++)
+            {
+                var address = residentToSanitise.Addresses[index];
+                address.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.PhoneNumbers?.Count; index++)
+            {
+                var number = residentToSanitise.PhoneNumbers[index];
+                number.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.OtherNames?.Count; index++)
+            {
+                var name = residentToSanitise.OtherNames[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Allocations?.Count; index++)
+            {
+                var allocation = residentToSanitise.Allocations[index];
+                allocation.Person = null;
+                allocation.Team = null;
+            }
         }
     }
 }
