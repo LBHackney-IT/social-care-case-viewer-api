@@ -103,7 +103,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
-        public void ExecuteFinishSubmission(string submissionId, FinishCaseSubmissionRequest request)
+        public void ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             if (worker == null)
@@ -119,7 +119,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
-            updateSubmission.SubmissionState = SubmissionState.Submitted;
+            if (request.SubmissionState != null)
+            {
+                var stringToSubmissionState = new Dictionary<string, SubmissionState> {
+                { "in_progress", SubmissionState.InProgress  },
+                { "submitted", SubmissionState.Submitted }
+            };
+                if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
+                {
+                    updateSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+
+                }
+                else
+                {
+                    throw new UpdateSubmissionExecption($"Invalid submission state supplied {request.SubmissionState}");
+                }
+            }
+
             updateSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updateSubmission);

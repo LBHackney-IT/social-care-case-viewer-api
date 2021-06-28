@@ -104,9 +104,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPatch]
         [Route("{submissionId}")]
-        public IActionResult FinishSubmission(string submissionId, [FromBody] FinishCaseSubmissionRequest request)
+        public IActionResult UpdateSubmission(string submissionId, [FromBody] UpdateCaseSubmissionRequest request)
         {
-            var validator = new FinishCaseSubmissionRequestValidator();
+            var validator = new UpdateCaseSubmissionRequestValidator();
             var validationResults = validator.Validate(request);
 
             if (!validationResults.IsValid)
@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                _formSubmissionsUseCase.ExecuteFinishSubmission(submissionId, request);
+                _formSubmissionsUseCase.ExecuteUpdateSubmission(submissionId, request);
                 return NoContent();
             }
             catch (WorkerNotFoundException e)

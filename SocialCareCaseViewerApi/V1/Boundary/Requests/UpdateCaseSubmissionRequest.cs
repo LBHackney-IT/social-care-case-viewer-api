@@ -4,15 +4,18 @@ using FluentValidation;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    public class FinishCaseSubmissionRequest
+    public class UpdateCaseSubmissionRequest
     {
         [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; } = null!;
+
+        [JsonPropertyName("submissionState")]
+        public string? SubmissionState { get; set; }
     }
 
-    public class FinishCaseSubmissionRequestValidator : AbstractValidator<FinishCaseSubmissionRequest>
+    public class UpdateCaseSubmissionRequestValidator : AbstractValidator<UpdateCaseSubmissionRequest>
     {
-        public FinishCaseSubmissionRequestValidator()
+        public UpdateCaseSubmissionRequestValidator()
         {
             RuleFor(s => s.CreatedBy)
                 .NotNull().WithMessage("Provide who is finishing the submission")
