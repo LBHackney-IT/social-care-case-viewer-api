@@ -453,45 +453,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
 
-        public static RelationshipsV1 CreateRelationshipsV1(
-            long personId,
-            List<long>? childrenIds = null,
-            List<long>? parentsIds = null,
-            List<long>? siblingsIds = null,
-            List<long>? othersIds = null
-        )
-        {
-            return new RelationshipsV1()
-            {
-                PersonId = personId,
-                PersonalRelationships = new PersonalRelationshipsV1<long>()
-                {
-                    Children = childrenIds ?? new List<long>() { 1, 2 },
-                    Parents = parentsIds ?? new List<long>() { 3, 4 },
-                    Siblings = siblingsIds ?? new List<long>() { 5, 6 },
-                    Other = othersIds ?? new List<long>() { 7, 8 }
-                }
-            };
-        }
-
-        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, RelationshipsV1) CreatePersonsWithRelationshipsV1(long personId)
-        {
-            List<InfrastructurePerson> children = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> others = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> parents = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> siblings = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-
-            RelationshipsV1 relationships = CreateRelationshipsV1(
-                    personId: personId,
-                    childrenIds: children.Select(x => x.Id).ToList(),
-                    othersIds: others.Select(x => x.Id).ToList(),
-                    parentsIds: parents.Select(x => x.Id).ToList(),
-                    siblingsIds: siblings.Select(x => x.Id).ToList()
-                );
-
-            return (children, others, parents, siblings, relationships);
-        }
-
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
             string? formId = null,
             int? residentId = null,
