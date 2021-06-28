@@ -189,6 +189,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 .WithErrorMessage("Discussed with manager date must be in the past");
         }
 
+        [Test]
+        public void GivenARequestWithEndedDateSetForLaterTodayValidationPasses()
+        {
+            var request = new PatchWarningNoteRequest
+            {
+                EndedDate = DateTime.Now.AddHours(1),
+                Status = "open"
+            };
 
+            _classUnderTest.ShouldNotHaveValidationErrorFor(x => x.EndedDate, request);
+        }
     }
 }
