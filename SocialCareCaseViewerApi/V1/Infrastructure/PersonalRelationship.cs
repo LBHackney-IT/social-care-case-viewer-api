@@ -37,6 +37,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         public string IsInformalCarer { get; set; }
 
+        [Column("is_main_carer")]
+        [MaxLength(1)]
+        public string IsMainCarer { get; set; }
+
         [Column("parental_responsibility")]
         [MaxLength(1)]
         public string ParentalResponsibility { get; set; }
