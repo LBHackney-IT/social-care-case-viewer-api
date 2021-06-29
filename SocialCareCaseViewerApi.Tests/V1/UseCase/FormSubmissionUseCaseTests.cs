@@ -25,6 +25,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Faker _faker = null!;
         private const string CollectionName = "resident-case-submissions";
 
+        private static object[] _invalidSubmissionStateForUpdates =
+        {
+            SubmissionState.Discarded,
+            SubmissionState.Submitted,
+            SubmissionState.Approved
+        };
+
         [SetUp]
         public void SetUp()
         {
@@ -407,13 +414,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId), Times.Once);
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
         }
-
-        private static object[] _invalidSubmissionStateForUpdates =
-        {
-            SubmissionState.Discarded,
-            SubmissionState.Submitted,
-            SubmissionState.Approved
-        };
 
         [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
         public void UpdateAnswersThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
