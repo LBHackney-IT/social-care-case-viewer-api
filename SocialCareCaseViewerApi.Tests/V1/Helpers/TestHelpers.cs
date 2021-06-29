@@ -515,7 +515,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         )
         {
             return new Faker<UpdateCaseSubmissionRequest>()
-                .RuleFor(s => s.UpdatedBy, f => updatedBy ?? f.Person.Email)
+                .RuleFor(s => s.EditedBy, f => updatedBy ?? f.Person.Email)
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.RejectionReason, rejectionReason);

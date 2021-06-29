@@ -69,7 +69,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
-            var worker = GetSanitisedWorker(request.UpdatedBy);
+            var worker = GetSanitisedWorker(request.EditedBy);
 
             var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (updatedSubmission == null)
