@@ -118,28 +118,55 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 { "discarded", SubmissionState.Discarded }
             };
 
+            var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
             if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
             {
                 throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
             }
 
-            var newSubmissionState = submission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+            var newSubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
 
             // We should never hit the default but C# compiler complains if we don't provide a default case
             // https://stackoverflow.com/questions/1098644/switch-statement-without-default-when-dealing-with-enumerations
             switch (newSubmissionState)
             {
+                case SubmissionState.Discarded:
+                    if (submission.SubmissionState != SubmissionState.InProgress)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    break;
+                case SubmissionState.InProgress:
+                    if (submission.SubmissionState != SubmissionState.Submitted)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    submission.RejectionReason = request.RejectionReason;
+                    break;
                 case SubmissionState.Submitted:
+                    if (submission.SubmissionState != SubmissionState.InProgress)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
                     submission.SubmittedAt = DateTime.Now;
                     submission.SubmittedBy = worker;
                     break;
                 case SubmissionState.Approved:
+                    if (submission.SubmissionState != SubmissionState.Submitted)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
                     submission.ApprovedAt = DateTime.Now;
                     submission.ApprovedBy = worker;
                     break;
-                case SubmissionState.InProgress:
-                    submission.RejectionReason = request.RejectionReason;
-                    break;
+
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(request));
             }

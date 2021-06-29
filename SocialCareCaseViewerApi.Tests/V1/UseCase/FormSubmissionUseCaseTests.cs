@@ -304,7 +304,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private static object[] _allSubmissionChangePermutations =
         {
             new object[] { SubmissionState.Discarded, SubmissionState.Discarded, false },
-            new object[] { SubmissionState.Discarded, SubmissionState.InProgress, true },
+            new object[] { SubmissionState.Discarded, SubmissionState.InProgress, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Approved, false },
 
@@ -362,7 +362,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
                 act.Should().Throw<UpdateSubmissionException>()
-                    .WithMessage("Invalid submission state change");
+                    .WithMessage($"Invalid submission state change from {mapSubmissionStateToResponseString[startingState]} to {mapSubmissionStateToResponseString[desiredStated]}");
             }
         }
 
