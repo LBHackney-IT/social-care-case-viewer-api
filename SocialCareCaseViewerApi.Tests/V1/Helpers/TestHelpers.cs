@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -484,8 +483,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             worker ??= CreateWorker();
             resident ??= CreatePerson(residentId);
 
-            var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
-
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
@@ -497,7 +494,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 {
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
-                .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
+                .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
         }
 
