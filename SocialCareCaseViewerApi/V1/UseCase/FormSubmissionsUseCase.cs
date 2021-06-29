@@ -171,7 +171,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var resident = includeExtraDetails ? _databaseGateway.GetPersonDetailsById(residentId) : _databaseGateway.GetPersonByMosaicId(residentId);
             if (resident == null)
             {
-                throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
+                throw new PersonNotFoundException($"Resident not found with ID {residentId}");
             }
             SanitiseResident(resident);
             return resident;

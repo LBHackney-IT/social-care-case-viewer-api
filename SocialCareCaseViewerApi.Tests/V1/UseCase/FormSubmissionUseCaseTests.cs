@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecutePostThrowsAnErrorWhenNoResidentFoundForRequest()
+        public void ExecutePostThrowsPersonNotFoundExceptionWhenNoResidentFoundForRequest()
         {
             var request = TestHelpers.CreateCaseSubmissionRequest();
             var worker = TestHelpers.CreateWorker();
@@ -98,7 +98,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             Action act = () => _formSubmissionsUseCase.ExecutePost(request);
 
             act.Should().Throw<PersonNotFoundException>()
-                .WithMessage($"Person with id {request.ResidentId} not found");
+                .WithMessage($"Resident not found with id {request.ResidentId}");
         }
 
         [Test]
@@ -250,7 +250,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteUpdateSubmissionThrowsUpdateSubmissionExceptionWhenInvalidResidentsFound()
+        public void ExecuteUpdateSubmissionThrowsPersonNotFoundExceptionWhenInvalidResidentsFound()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { 0L });
             var createdSubmission = TestHelpers.CreateCaseSubmission();
@@ -261,7 +261,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
-            act.Should().Throw<UpdateSubmissionException>()
+            act.Should().Throw<PersonNotFoundException>()
                 .WithMessage("Resident not found with ID 0");
         }
 

@@ -122,6 +122,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return UnprocessableEntity(e.Message);
             }
+            catch (PersonNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
             catch (GetSubmissionException e)
             {
                 return UnprocessableEntity(e.Message);
