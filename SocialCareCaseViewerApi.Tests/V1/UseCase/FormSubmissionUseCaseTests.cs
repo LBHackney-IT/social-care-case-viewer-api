@@ -301,6 +301,71 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 .WithMessage("Resident not found with ID 0");
         }
 
+        private static object[] _allSubmissionChangePermutations =
+        {
+            new object[] { SubmissionState.Discarded, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.InProgress, true },
+            new object[] { SubmissionState.Discarded, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.Approved, false },
+
+            new object[] { SubmissionState.InProgress, SubmissionState.Discarded, true },
+            new object[] { SubmissionState.InProgress, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.InProgress, SubmissionState.Submitted, true },
+            new object[] { SubmissionState.InProgress, SubmissionState.Approved, false },
+
+            new object[] { SubmissionState.Submitted, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Submitted, SubmissionState.InProgress, true },
+            new object[] { SubmissionState.Submitted, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Submitted, SubmissionState.Approved, true },
+
+            new object[] { SubmissionState.Approved, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Approved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.Approved, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Approved, SubmissionState.Approved, false },
+        };
+
+        [TestCaseSource(nameof(_allSubmissionChangePermutations))]
+        public void ExecuteUpdateSubmissionOnlyAllowsValidSubmissionStateChanges(SubmissionState startingState, SubmissionState desiredStated, bool allowed)
+        {
+            var mapSubmissionStateToRequestString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "in_progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
+            var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
+            var resident = TestHelpers.CreatePerson();
+            var worker = TestHelpers.CreateWorker();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(startingState);
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: mapSubmissionStateToRequestString[desiredStated]);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            if (allowed)
+            {
+                var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+                _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+                response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+                response.SubmissionState.Should().Be(mapSubmissionStateToResponseString[desiredStated]);
+            }
+            else
+            {
+                Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+                act.Should().Throw<UpdateSubmissionException>()
+                    .WithMessage("Invalid submission state change");
+            }
+        }
+
         [Test]
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
         {
