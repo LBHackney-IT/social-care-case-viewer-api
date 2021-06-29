@@ -273,7 +273,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void UpdatingResidentsThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
         {
             var resident = TestHelpers.CreatePerson();
-            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long>{resident.Id});
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id });
             var createdSubmission = TestHelpers.CreateCaseSubmission(submissionState);
             var worker = TestHelpers.CreateWorker();
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
