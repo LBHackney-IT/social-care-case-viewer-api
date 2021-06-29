@@ -11,7 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string ReviewedBy { get; set; }
         public DateTime? NextReviewDate { get; set; }
         public string Status { get; set; }
-        public DateTime? EndedDate { get; set; }
         public string EndedBy { get; set; }
         public string ReviewNotes { get; set; }
         public string ManagerName { get; set; }
@@ -37,8 +36,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.Status)
                 .NotNull().WithMessage("Status must be provided")
                 .Must(x => x.Equals("open") || x.Equals("closed")).WithMessage("Provide a valid status");
-            RuleFor(x => x.EndedDate)
-                .LessThan(DateTime.Today.AddDays(1)).WithMessage("Ended date must be in the past");
             RuleFor(x => x.EndedBy)
                 .EmailAddress().WithMessage("Provide a valid email address");
             RuleFor(x => x.ReviewNotes)

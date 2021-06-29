@@ -25,11 +25,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
+        private readonly ISystemTime _systemTime;
 
-        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway)
+        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
+            _systemTime = systemTime;
         }
 
         public List<Allocation> SelectAllocations(long mosaicId, long workerId)
@@ -815,7 +817,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.Status?.ToLower() == "closed")
             {
                 warningNote.Status = "closed";
-                warningNote.EndDate = request.EndedDate;
+                warningNote.EndDate = _systemTime.Now;
                 warningNote.NextReviewDate = null;
             }
 
@@ -1008,5 +1010,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = createdBy
             };
         }
+    }
+
+    public class SystemTime : ISystemTime
+    {
+        public DateTime Now => DateTime.Now;
+    }
+    public interface ISystemTime
+    {
+        DateTime Now { get; }
     }
 }

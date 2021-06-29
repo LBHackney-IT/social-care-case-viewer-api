@@ -362,7 +362,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? nextReviewDate = null,
             string? startingStatus = "open",
             string? requestStatus = "open",
-            DateTime? endedDate = null,
             string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
@@ -381,7 +380,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
                 .RuleFor(p => p.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(p => p.Status, f => requestStatus)
-                .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
                 .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
                 .RuleFor(p => p.ReviewNotes, f => reviewNotes ?? f.Random.String2(1, 1000))
                 .RuleFor(p => p.ManagerName, f => managerName ?? f.Random.String2(1, 100))

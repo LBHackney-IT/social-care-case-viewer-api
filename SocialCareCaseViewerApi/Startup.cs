@@ -128,6 +128,8 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<FinishCaseSubmissionRequest>, FinishCaseSubmissionRequestValidator>();
             services
                 .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
+
+            services.AddScoped<ISystemTime, SystemTime>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)

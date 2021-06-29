@@ -99,19 +99,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void GivenARequestWithEndedDateSetInTheFutureValidationFails()
-        {
-            var request = new PatchWarningNoteRequest
-            {
-                EndedDate = DateTime.Now.AddYears(2),
-                Status = "open"
-            };
-
-            _classUnderTest.ShouldHaveValidationErrorFor(x => x.EndedDate, request)
-                .WithErrorMessage("Ended date must be in the past");
-        }
-
-        [Test]
         public void GivenARequestWithInvalidEndedByEmailAddressValidationFails()
         {
             var request = new PatchWarningNoteRequest
@@ -187,18 +174,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             _classUnderTest.ShouldHaveValidationErrorFor(x => x.DiscussedWithManagerDate, request)
                 .WithErrorMessage("Discussed with manager date must be in the past");
-        }
-
-        [Test]
-        public void GivenARequestWithEndedDateSetForLaterTodayValidationPasses()
-        {
-            var request = new PatchWarningNoteRequest
-            {
-                EndedDate = DateTime.Now.AddHours(1),
-                Status = "open"
-            };
-
-            _classUnderTest.ShouldNotHaveValidationErrorFor(x => x.EndedDate, request);
         }
     }
 }
