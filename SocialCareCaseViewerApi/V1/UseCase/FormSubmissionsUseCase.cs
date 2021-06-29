@@ -114,7 +114,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var stringToSubmissionState = new Dictionary<string, SubmissionState> {
                 { "in_progress", SubmissionState.InProgress },
                 { "submitted", SubmissionState.Submitted },
-                { "approved", SubmissionState.Approved}
+                { "approved", SubmissionState.Approved },
+                { "discarded", SubmissionState.Discarded }
             };
 
             if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))

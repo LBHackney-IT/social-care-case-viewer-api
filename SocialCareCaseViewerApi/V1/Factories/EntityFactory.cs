@@ -150,7 +150,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
-                { SubmissionState.Approved, "Approved"}
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
             };
 
             return new Domain.CaseSubmission
