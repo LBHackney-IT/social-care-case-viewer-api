@@ -96,6 +96,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
+            if (submission.SubmissionState != SubmissionState.InProgress)
+            {
+                throw new UpdateSubmissionException("Cannot update answers, submission state not 'in progress'");
+            }
 
             submission.FormAnswers[stepId] = request.StepAnswers;
             submission.EditHistory.Add(new EditHistory<Worker>
@@ -177,6 +181,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private void UpdateResidents(CaseSubmission caseSubmission, UpdateCaseSubmissionRequest request)
         {
             if (request.Residents == null) return;
+
+            if (caseSubmission.SubmissionState != SubmissionState.InProgress)
+            {
+                throw new UpdateSubmissionException("Cannot update residents for submission, submission state not 'in progress'");
+            }
 
             var newResident = request.Residents.Select(residentId => GetSanitisedResident(residentId)).ToList();
 
