@@ -27,20 +27,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.CreatedBy} not found");
-            }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
-
-            var resident = _databaseGateway.GetPersonDetailsById(request.ResidentId);
-            if (resident == null)
-            {
-                throw new PersonNotFoundException($"Person with id {request.ResidentId} not found");
-            }
-            SanitiseResident(resident);
+            var worker = GetSanitisedWorker(request.CreatedBy);
+            var resident = GetSanitisedResident(request.ResidentId, true);
 
             var dateTimeNow = DateTime.Now;
 
@@ -81,12 +69,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.UpdatedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.UpdatedBy} not found");
-            }
-            SanitiseWorker(worker);
+            var worker = GetSanitisedWorker(request.EditedBy);
 
             var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (updatedSubmission == null)
@@ -94,37 +77,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
-            if (request.SubmissionState != null)
-            {
-                var stringToSubmissionState = new Dictionary<string, SubmissionState> {
-                { "in_progress", SubmissionState.InProgress },
-                { "submitted", SubmissionState.Submitted }
-            };
-                if (stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
-                {
-                    updatedSubmission.SubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
-                }
-                else
-                {
-                    throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
-                }
-            }
-
-            if (request.Residents != null)
-            {
-                var newResident = new List<Person>();
-                foreach (var residentId in request.Residents)
-                {
-                    var resident = _databaseGateway.GetPersonByMosaicId(residentId);
-                    if (resident == null)
-                    {
-                        throw new UpdateSubmissionException($"Resident not found with ID {residentId}");
-                    }
-                    SanitiseResident(resident);
-                    newResident.Add(resident);
-                }
-                updatedSubmission.Residents = newResident;
-            }
+            UpdateSubmissionState(updatedSubmission, request, worker);
+            UpdateResidents(updatedSubmission, request);
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -135,13 +89,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId, UpdateFormSubmissionAnswersRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email {request.EditedBy} not found");
-            }
-            worker.WorkerTeams = null;
-            worker.Allocations = null;
+            var worker = GetSanitisedWorker(request.EditedBy);
 
             var submission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
             if (submission == null)
@@ -157,6 +105,104 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             });
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
+        }
+
+        private static void UpdateSubmissionState(CaseSubmission submission, UpdateCaseSubmissionRequest request, Worker worker)
+        {
+            if (request.SubmissionState == null) return;
+
+            var stringToSubmissionState = new Dictionary<string, SubmissionState> {
+                { "in_progress", SubmissionState.InProgress },
+                { "submitted", SubmissionState.Submitted },
+                { "approved", SubmissionState.Approved },
+                { "discarded", SubmissionState.Discarded }
+            };
+
+            var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
+            if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
+            {
+                throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
+            }
+
+            var newSubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+
+            // We should never hit the default but C# compiler complains if we don't provide a default case
+            // https://stackoverflow.com/questions/1098644/switch-statement-without-default-when-dealing-with-enumerations
+            switch (newSubmissionState)
+            {
+                case SubmissionState.Discarded:
+                    if (submission.SubmissionState != SubmissionState.InProgress)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    break;
+                case SubmissionState.InProgress:
+                    if (submission.SubmissionState != SubmissionState.Submitted)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    submission.RejectionReason = request.RejectionReason;
+                    break;
+                case SubmissionState.Submitted:
+                    if (submission.SubmissionState != SubmissionState.InProgress)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    submission.SubmittedAt = DateTime.Now;
+                    submission.SubmittedBy = worker;
+                    break;
+                case SubmissionState.Approved:
+                    if (submission.SubmissionState != SubmissionState.Submitted)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    submission.ApprovedAt = DateTime.Now;
+                    submission.ApprovedBy = worker;
+                    break;
+
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(request));
+            }
+
+            submission.SubmissionState = newSubmissionState;
+        }
+
+        private void UpdateResidents(CaseSubmission caseSubmission, UpdateCaseSubmissionRequest request)
+        {
+            if (request.Residents == null) return;
+
+            var newResident = request.Residents.Select(residentId => GetSanitisedResident(residentId)).ToList();
+
+            caseSubmission.Residents = newResident;
+        }
+
+        private Worker GetSanitisedWorker(string workerEmail)
+        {
+            var worker = _databaseGateway.GetWorkerByEmail(workerEmail);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email {workerEmail} not found");
+            }
+            SanitiseWorker(worker);
+            return worker;
+        }
+
+        private Person GetSanitisedResident(long residentId, bool includeExtraDetails = false)
+        {
+            var resident = includeExtraDetails ? _databaseGateway.GetPersonDetailsById(residentId) : _databaseGateway.GetPersonByMosaicId(residentId);
+            if (resident == null)
+            {
+                throw new PersonNotFoundException($"Resident not found with ID {residentId}");
+            }
+            SanitiseResident(resident);
+            return resident;
         }
 
         private static void SanitiseWorker(Worker workerToSanitise)

@@ -7,21 +7,24 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateCaseSubmissionRequest
     {
-        [JsonPropertyName("updatedBy")]
-        public string UpdatedBy { get; set; } = null!;
+        [JsonPropertyName("editedBy")]
+        public string EditedBy { get; set; } = null!;
 
         [JsonPropertyName("submissionState")]
         public string? SubmissionState { get; set; }
 
         [JsonPropertyName("residents")]
         public List<long>? Residents { get; set; }
+
+        [JsonPropertyName("rejectionReason")]
+        public string? RejectionReason { get; set; }
     }
 
     public class UpdateCaseSubmissionRequestValidator : AbstractValidator<UpdateCaseSubmissionRequest>
     {
         public UpdateCaseSubmissionRequestValidator()
         {
-            RuleFor(s => s.UpdatedBy)
+            RuleFor(s => s.EditedBy)
                 .NotNull().WithMessage("Provide who is updating the submission")
                 .EmailAddress().WithMessage("Provide a valid email address for who is updating the submission");
         }
