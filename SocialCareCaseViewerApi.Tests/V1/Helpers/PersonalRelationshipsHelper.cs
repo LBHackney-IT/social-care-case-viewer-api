@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
@@ -120,6 +121,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<PersonalRelationshipType>()
                 .RuleFor(prt => prt.Id, f => f.UniqueIndex)
                 .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
+        }
+
+        public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(
+            string? isMainCarer = null,
+            string? isInformalCarer = null,
+            string? details = null
+        )
+        {
+            return new Faker<CreatePersonalRelationshipRequest>()
+                .RuleFor(pr => pr.PersonId, f => f.UniqueIndex + 1)
+                .RuleFor(pr => pr.OtherPersonId, f => f.UniqueIndex + 1)
+                .RuleFor(pr => pr.Type, f => "parent")
+                .RuleFor(pr => pr.IsMainCarer, f => isMainCarer ?? f.Random.String2(1, "YNyn"))
+                .RuleFor(pr => pr.IsInformalCarer, f => isInformalCarer ?? f.Random.String2(1, "YNyn"))
+                .RuleFor(pr => pr.Details, f => details ?? f.Random.String(1000));
         }
     }
 }
