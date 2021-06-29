@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {

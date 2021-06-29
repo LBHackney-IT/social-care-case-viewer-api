@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
@@ -1010,14 +1011,5 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = createdBy
             };
         }
-    }
-
-    public class SystemTime : ISystemTime
-    {
-        public DateTime Now => DateTime.Now;
-    }
-    public interface ISystemTime
-    {
-        DateTime Now { get; }
     }
 }
