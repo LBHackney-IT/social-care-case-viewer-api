@@ -155,7 +155,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteUpdateSubmissionSuccessfullyUpdatesSubmissionState()
+        public void ExecuteUpdateSubmissionToInProgressWithRejectionSuccessfullyUpdatesSubmissionStateAndRejectionMessage()
+        {
+            const string rejectionReason = "rejected";
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "in_progress", rejectionReason: rejectionReason);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.UpdatedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.InProgress);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.RejectionReason.Should().Be(rejectionReason);
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToSubmittedSuccessfullyUpdatesSubmissionState()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "submitted");
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
@@ -168,6 +186,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
             createdSubmission.SubmissionState.Should().Be(SubmissionState.Submitted);
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.SubmittedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToApprovedSuccessfullyUpdatesSubmissionState()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "approved");
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.UpdatedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.Approved);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.ApprovedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
         }
 
         [Test]
