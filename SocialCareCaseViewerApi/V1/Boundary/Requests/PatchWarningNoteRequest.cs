@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.ReviewNotes)
                 .NotNull().WithMessage("Review notes required")
                 .MinimumLength(1).WithMessage("Review notes required")
-                .MaximumLength(1000).WithMessage("Review notes be less than 1000 characters");
+                .MaximumLength(1000).WithMessage("Review notes should be 1000 characters or less");
             RuleFor(x => x.ManagerName)
                 .MaximumLength(100).WithMessage("Manager name must be less than 100 characters");
             RuleFor(x => x.DiscussedWithManagerDate)

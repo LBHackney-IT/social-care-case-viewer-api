@@ -160,7 +160,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             };
 
             _classUnderTest.ShouldHaveValidationErrorFor(x => x.ReviewNotes, request)
-                .WithErrorMessage("Review notes be less than 1000 characters");
+                .WithErrorMessage("Review notes should be 1000 characters or less");
         }
 
         [Test]
