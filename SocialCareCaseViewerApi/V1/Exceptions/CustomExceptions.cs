@@ -92,4 +92,9 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public GetSubmissionException(string message) : base(message) { }
     }
+
+    public class UpdateSubmissionException : Exception
+    {
+        public UpdateSubmissionException(string message) : base(message) { }
+    }
 }

@@ -11,7 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string ReviewedBy { get; set; }
         public DateTime? NextReviewDate { get; set; }
         public string Status { get; set; }
-        public DateTime? EndedDate { get; set; }
         public string EndedBy { get; set; }
         public string ReviewNotes { get; set; }
         public string ManagerName { get; set; }
@@ -37,14 +36,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.Status)
                 .NotNull().WithMessage("Status must be provided")
                 .Must(x => x.Equals("open") || x.Equals("closed")).WithMessage("Provide a valid status");
-            RuleFor(x => x.EndedDate)
-                .LessThan(DateTime.Now).WithMessage("Ended date must be in the past");
             RuleFor(x => x.EndedBy)
                 .EmailAddress().WithMessage("Provide a valid email address");
             RuleFor(x => x.ReviewNotes)
                 .NotNull().WithMessage("Review notes required")
                 .MinimumLength(1).WithMessage("Review notes required")
-                .MaximumLength(1000).WithMessage("Review notes be less than 1000 characters");
+                .MaximumLength(1000).WithMessage("Review notes should be 1000 characters or less");
             RuleFor(x => x.ManagerName)
                 .MaximumLength(100).WithMessage("Manager name must be less than 100 characters");
             RuleFor(x => x.DiscussedWithManagerDate)

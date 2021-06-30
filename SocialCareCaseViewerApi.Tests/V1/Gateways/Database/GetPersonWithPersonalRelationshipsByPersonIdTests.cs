@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -14,11 +15,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     {
         private DatabaseGateway _databaseGateway;
         private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
