@@ -124,18 +124,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(
+            long? personId = null,
+            long? otherPersonId = null,
+            long? typeId = null,
+            string type = "parent",
             string? isMainCarer = null,
             string? isInformalCarer = null,
             string? details = null
         )
         {
             return new Faker<CreatePersonalRelationshipRequest>()
-                .RuleFor(pr => pr.PersonId, f => f.UniqueIndex + 1)
-                .RuleFor(pr => pr.OtherPersonId, f => f.UniqueIndex + 1)
-                .RuleFor(pr => pr.Type, f => "parent")
+                .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(pr => pr.OtherPersonId, f => otherPersonId ?? f.UniqueIndex + 2)
+                .RuleFor(pr => pr.Type, type)
+                .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
                 .RuleFor(pr => pr.IsMainCarer, f => isMainCarer ?? f.Random.String2(1, "YNyn"))
                 .RuleFor(pr => pr.IsInformalCarer, f => isInformalCarer ?? f.Random.String2(1, "YNyn"))
-                .RuleFor(pr => pr.Details, f => details ?? f.Random.String(1000));
+                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000));
+        }
+
+        public static (Person, Person) SavePersonAndOtherPersonToDatabase(DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+            var otherPerson = TestHelpers.CreatePerson();
+
+            databaseContext.Persons.Add(person);
+            databaseContext.Persons.Add(otherPerson);
+            databaseContext.SaveChanges();
+
+            return (person, otherPerson);
         }
     }
 }
