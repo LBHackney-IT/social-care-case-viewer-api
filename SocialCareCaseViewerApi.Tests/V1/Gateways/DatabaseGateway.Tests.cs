@@ -15,6 +15,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
@@ -37,17 +38,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private Fixture _fixture;
         private ProcessDataGateway _processDataGateway;
         private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
             _faker = new Faker();
             _fixture = new Fixture();
             _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
             _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockSocialCarePlatformAPIGateway.Object);
-            _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway);
+            _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway, _mockSystemTime.Object);
         }
 
         [Test]
@@ -809,6 +812,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteUpdatesAnExistingRecordInTheDatabase()
         {
+            var fakeTime = new DateTime(2000, 1, 1);
+            _mockSystemTime.Setup(time => time.Now).Returns(fakeTime);
+
             var (request, person, worker, warningNote) =
                 TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
@@ -824,7 +830,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.WarningNotes;
             var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
 
-            updatedRecord.EndDate.Should().Be(request.EndedDate);
+            updatedRecord.EndDate.Should().Be(fakeTime);
             updatedRecord.LastReviewDate.Should().Be(request.ReviewDate);
             updatedRecord.NextReviewDate.Should().BeNull();
             updatedRecord.Status.Should().Be("closed");
@@ -873,6 +879,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void PatchWarningNoteClosesTheWarningNoteIfRequestStatusIsClosed()
         {
+            var fakeTime = new DateTime(2000, 1, 1);
+
+            _mockSystemTime.Setup(time => time.Now).Returns(fakeTime);
+
             var (request, person, worker, warningNote) =
                 TestHelpers.CreatePatchWarningNoteRequest(requestStatus: "closed");
 
@@ -886,7 +896,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var updatedRecord = query.First(x => x.Id == request.WarningNoteId);
 
             updatedRecord.Status.Should().Be("closed");
-            updatedRecord.EndDate.Should().Be(request.EndedDate);
+            updatedRecord.EndDate.Should().Be(fakeTime);
             updatedRecord.NextReviewDate.Should().BeNull();
         }
 

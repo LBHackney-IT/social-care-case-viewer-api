@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
@@ -25,11 +26,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
+        private readonly ISystemTime _systemTime;
 
-        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway)
+        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
+            _systemTime = systemTime;
         }
 
         public List<Allocation> SelectAllocations(long mosaicId, long workerId)
@@ -815,7 +818,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.Status?.ToLower() == "closed")
             {
                 warningNote.Status = "closed";
-                warningNote.EndDate = request.EndedDate;
+                warningNote.EndDate = _systemTime.Now;
                 warningNote.NextReviewDate = null;
             }
 
