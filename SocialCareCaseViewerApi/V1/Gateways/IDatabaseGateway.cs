@@ -38,5 +38,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         List<Person> GetPersonsByListOfIds(List<long> ids);
         Person GetPersonByMosaicId(long mosaicId);
         Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false);
+        PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description);
     }
 }
