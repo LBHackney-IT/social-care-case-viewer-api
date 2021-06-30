@@ -16,6 +16,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("type")]
         public string Type { get; set; } = null!;
 
+        public long TypeId { get; set; }
+
         [JsonPropertyName("isMainCarer")]
         public string IsMainCarer { get; set; } = null!;
 
