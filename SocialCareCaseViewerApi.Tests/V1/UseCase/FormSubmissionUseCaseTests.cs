@@ -276,6 +276,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
+        [Test]
+        public void ExecuteUpdateSubmissionThrowsUpdateSubmissionExceptionIfEmptyListOfResidentsProvided()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long>());
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage("A submission must be against at least one resident");
+        }
+
         [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
         public void UpdatingResidentsThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
         {

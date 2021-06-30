@@ -182,6 +182,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (request.Residents == null) return;
 
+            if (request.Residents.Count == 0)
+            {
+                throw new UpdateSubmissionException("A submission must be against at least one resident");
+            }
+
             if (caseSubmission.SubmissionState != SubmissionState.InProgress)
             {
                 throw new UpdateSubmissionException("Cannot update residents for submission, submission state not 'in progress'");
