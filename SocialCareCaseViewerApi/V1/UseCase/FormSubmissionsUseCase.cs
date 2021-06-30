@@ -192,7 +192,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new UpdateSubmissionException("Cannot update residents for submission, submission state not 'in progress'");
             }
 
-            var newResident = request.Residents.Select(residentId => GetSanitisedResident(residentId)).ToList();
+            var residentsWithoutDuplicates = new HashSet<long>(request.Residents);
+
+            var newResident = residentsWithoutDuplicates.Select(residentId => GetSanitisedResident(residentId)).ToList();
 
             caseSubmission.Residents = newResident;
         }
