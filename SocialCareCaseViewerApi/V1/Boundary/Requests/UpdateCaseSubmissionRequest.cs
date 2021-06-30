@@ -27,6 +27,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(s => s.EditedBy)
                 .NotNull().WithMessage("Provide who is updating the submission")
                 .EmailAddress().WithMessage("Provide a valid email address for who is updating the submission");
+            When(s => s.Residents != null, () =>
+            {
+                RuleFor(s => s.Residents!.Count).GreaterThan(0)
+                    .WithMessage("Provide residents for who this submission applies too");
+            });
+
         }
     }
 }

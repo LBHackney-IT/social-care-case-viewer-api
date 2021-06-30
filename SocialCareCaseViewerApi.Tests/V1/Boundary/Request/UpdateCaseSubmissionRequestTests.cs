@@ -13,7 +13,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var badUpdateCaseSubmissionRequest = new List<(UpdateCaseSubmissionRequest, string)>
             {
-                (TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email"), "Provide a valid email address for who is updating the submission")
+                (TestHelpers.UpdateCaseSubmissionRequest(updatedBy: "invalid email"), "Provide a valid email address for who is updating the submission"),
+                (TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long>()), "Provide residents for who this submission applies too"),
             };
 
             var validator = new UpdateCaseSubmissionRequestValidator();
