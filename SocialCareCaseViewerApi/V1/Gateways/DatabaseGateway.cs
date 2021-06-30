@@ -908,7 +908,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description)
         {
             return _databaseContext.PersonalRelationshipTypes
-                .FirstOrDefault(prt => prt.Description == description);
+                .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
         }
 
         public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)

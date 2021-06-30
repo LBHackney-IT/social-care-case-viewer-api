@@ -42,5 +42,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             response.Description.Should().Be(description);
             response.InverseTypeId.Should().NotBe(null);
         }
+
+        [Test]
+        [TestCase("parentofunbornchild", "parentOfUnbornChild")]
+        [TestCase("parentOfUnbornChild", "parentOfUnbornChild")]
+        [TestCase("auntuncle", "auntUncle")]
+        [TestCase("auntUncle", "auntUncle")]
+        public void WhenDescriptionIsADifferentCaseReturnsPersonalRelationshipType(string description, string expectedDescription)
+        {
+            var response = _databaseGateway.GetPersonalRelationshipTypeByDescription(description);
+
+            response.Id.Should().NotBe(null);
+            response.Description.Should().Be(expectedDescription);
+            response.InverseTypeId.Should().NotBe(null);
+        }
     }
 }
