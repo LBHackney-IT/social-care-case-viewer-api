@@ -917,7 +917,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 PersonId = request.PersonId,
                 OtherPersonId = request.OtherPersonId,
-                TypeId = request.TypeId,
+                TypeId = (long) request.TypeId,
                 IsMainCarer = request.IsMainCarer,
                 IsInformalCarer = request.IsInformalCarer,
                 StartDate = _systemTime.Now,
