@@ -276,6 +276,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
+        [Test]
+        public void ExecuteUpdateSubmissionRemovesAnyDuplicateResidents()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id, resident.Id });
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionThrowsUpdateSubmissionExceptionIfEmptyListOfResidentsProvided()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long>());
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage("A submission must be against at least one resident");
+        }
+
         [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
         public void UpdatingResidentsThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
         {
