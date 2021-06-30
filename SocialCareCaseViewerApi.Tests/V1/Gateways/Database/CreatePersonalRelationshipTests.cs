@@ -36,11 +36,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             _databaseGateway.CreatePersonalRelationship(request);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
-            personalRelationship.PersonId.Should().Be(request.PersonId);
-            personalRelationship.OtherPersonId.Should().Be(request.OtherPersonId);
-            personalRelationship.TypeId.Should().Be(request.TypeId);
-            personalRelationship.IsMainCarer.Should().Be(request.IsMainCarer);
-            personalRelationship.IsInformalCarer.Should().Be(request.IsInformalCarer);
+            personalRelationship?.PersonId.Should().Be(request.PersonId);
+            personalRelationship?.OtherPersonId.Should().Be(request.OtherPersonId);
+            personalRelationship?.TypeId.Should().Be(request.TypeId);
+            personalRelationship?.IsMainCarer.Should().Be(request.IsMainCarer);
+            personalRelationship?.IsInformalCarer.Should().Be(request.IsInformalCarer);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             _databaseGateway.CreatePersonalRelationship(request);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
-            personalRelationship.StartDate.Should().Be(fakeTime);
+            personalRelationship?.StartDate.Should().Be(fakeTime);
         }
 
         [Test]
@@ -73,8 +73,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var response = _databaseGateway.CreatePersonalRelationship(request);
 
             var details = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault();
-            details.PersonalRelationshipId.Should().Be(response.Id);
-            details.Details.Should().Be(request.Details);
+            details?.PersonalRelationshipId.Should().Be(response.Id);
+            details?.Details.Should().Be(request.Details);
         }
     }
 }
