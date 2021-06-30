@@ -120,7 +120,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<PersonalRelationshipType>()
                 .RuleFor(prt => prt.Id, f => f.UniqueIndex)
-                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
+                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20))
+                .RuleFor(prt => prt.InverseTypeId, f => f.UniqueIndex);
         }
 
         public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(
