@@ -12,8 +12,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetPersonalRelationshipTypeByDescriptionTests : DatabaseTests
     {
         private DatabaseGateway _databaseGateway;
-        private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-        private Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
+        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
 
         [SetUp]
         public void Setup()
