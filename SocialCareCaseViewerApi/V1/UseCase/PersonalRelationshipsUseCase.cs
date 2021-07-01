@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class PersonalRelationshipsUseCase : IPersonalRelationshipsUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
         public PersonalRelationshipsUseCase(IDatabaseGateway databaseGateway)
         {
