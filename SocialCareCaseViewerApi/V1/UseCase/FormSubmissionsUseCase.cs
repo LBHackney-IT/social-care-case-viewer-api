@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public (CaseSubmissionResponse, CaseSubmission) ExecutePost(CreateCaseSubmissionRequest request)
         {
             var worker = GetSanitisedWorker(request.CreatedBy);
-            var resident = GetSanitisedResident(request.ResidentId, true);
+            var resident = GetSanitisedResident(request.ResidentId);
 
             var dateTimeNow = DateTime.Now;
 
@@ -194,7 +194,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var residentsWithoutDuplicates = new HashSet<long>(request.Residents);
 
-            var newResident = residentsWithoutDuplicates.Select(residentId => GetSanitisedResident(residentId)).ToList();
+            var newResident = residentsWithoutDuplicates.Select(GetSanitisedResident).ToList();
 
             caseSubmission.Residents = newResident;
         }
@@ -210,9 +210,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return worker;
         }
 
-        private Person GetSanitisedResident(long residentId, bool includeExtraDetails = false)
+        private Person GetSanitisedResident(long residentId)
         {
-            var resident = includeExtraDetails ? _databaseGateway.GetPersonDetailsById(residentId) : _databaseGateway.GetPersonByMosaicId(residentId);
+            var resident = _databaseGateway.GetPersonDetailsById(residentId);
             if (resident == null)
             {
                 throw new PersonNotFoundException($"Resident not found with ID {residentId}");
