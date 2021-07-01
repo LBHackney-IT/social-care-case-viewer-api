@@ -15,14 +15,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
     {
         private RelationshipController _classUnderTest;
         private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
+        private Mock<IPersonalRelationshipsUseCase> _mockPersonalRelationshipsUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
+            _mockPersonalRelationshipsUseCase = new Mock<IPersonalRelationshipsUseCase>();
 
-            _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object);
+            _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object, _mockPersonalRelationshipsUseCase.Object);
         }
 
         [Test]
