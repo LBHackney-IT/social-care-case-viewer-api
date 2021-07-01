@@ -918,8 +918,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = request.PersonId,
                 OtherPersonId = request.OtherPersonId,
                 TypeId = (long) request.TypeId,
-                IsMainCarer = request.IsMainCarer,
-                IsInformalCarer = request.IsInformalCarer,
+                IsMainCarer = request.IsMainCarer?.ToUpper(),
+                IsInformalCarer = request.IsInformalCarer?.ToUpper(),
                 StartDate = _systemTime.Now,
                 Details = new PersonalRelationshipDetail()
                 {

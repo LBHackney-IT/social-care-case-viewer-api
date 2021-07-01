@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
             Action act = () => _personalRelationshipsUseCase.ExecutePost(_request);
 
             act.Should().Throw<PersonNotFoundException>()
-                .WithMessage($"\"personId\" with \"{_request.PersonId}\" was not found.");
+                .WithMessage($"'personId' with '{_request.PersonId}' was not found.");
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
             Action act = () => _personalRelationshipsUseCase.ExecutePost(_request);
 
             act.Should().Throw<PersonNotFoundException>()
-                .WithMessage($"\"otherPersonId\" with \"{_request.OtherPersonId}\" was not found.");
+                .WithMessage($"'otherPersonId' with '{_request.OtherPersonId}' was not found.");
         }
 
         [Test]
@@ -102,7 +102,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
             Action act = () => _personalRelationshipsUseCase.ExecutePost(_request);
 
             act.Should().Throw<PersonalRelationshipTypeNotFoundException>()
-                .WithMessage($"\"type\" with \"{_request.Type}\" was not found.");
+                .WithMessage($"'type' with '{_request.Type}' was not found.");
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
             Action act = () => _personalRelationshipsUseCase.ExecutePost(_request);
 
             act.Should().Throw<PersonalRelationshipAlreadyExistsException>()
-                .WithMessage($"Personal relationship with \"type\" of \"{_request.Type}\" already exists.");
+                .WithMessage($"Personal relationship with 'type' of '{_request.Type}' already exists.");
         }
 
         [Test]

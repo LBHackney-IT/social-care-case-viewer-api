@@ -39,8 +39,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             personalRelationship?.PersonId.Should().Be(request.PersonId);
             personalRelationship?.OtherPersonId.Should().Be(request.OtherPersonId);
             personalRelationship?.TypeId.Should().Be(request.TypeId);
-            personalRelationship?.IsMainCarer.Should().Be(request.IsMainCarer);
-            personalRelationship?.IsInformalCarer.Should().Be(request.IsInformalCarer);
+            personalRelationship?.IsMainCarer.Should().Be(request.IsMainCarer.ToUpper());
+            personalRelationship?.IsInformalCarer.Should().Be(request.IsInformalCarer.ToUpper());
         }
 
         [Test]
@@ -59,6 +59,66 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
             personalRelationship?.StartDate.Should().Be(fakeTime);
+        }
+
+        [Test]
+        public void WhenIsMainCarerIsLowercaseConvertsItToUppercase()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description, isMainCarer: "y"
+            );
+
+            _databaseGateway.CreatePersonalRelationship(request);
+
+            var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
+            personalRelationship?.IsMainCarer.Should().Be("Y");
+        }
+
+        [Test]
+        public void WhenIsMainCarerIsNullItDoesNotThrowANullException()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description
+            );
+            request.IsMainCarer = null;
+
+            Action act = () => _databaseGateway.CreatePersonalRelationship(request);
+
+            act.Should().NotThrow<NullReferenceException>();
+        }
+
+        [Test]
+        public void WhenIsInformalCarerIsLowercaseConvertsItToUppercase()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description, isInformalCarer: "y"
+            );
+
+            _databaseGateway.CreatePersonalRelationship(request);
+
+            var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
+            personalRelationship?.IsInformalCarer.Should().Be("Y");
+        }
+
+        [Test]
+        public void WhenIsInformalCarerIsNullItDoesNotThrowANullException()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description
+            );
+            request.IsInformalCarer = null;
+
+            Action act = () => _databaseGateway.CreatePersonalRelationship(request);
+
+            act.Should().NotThrow<NullReferenceException>();
         }
 
         [Test]

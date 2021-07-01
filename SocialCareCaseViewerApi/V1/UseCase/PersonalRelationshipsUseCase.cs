@@ -20,21 +20,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var persons = _databaseGateway.GetPersonsByListOfIds(new List<long>() { request.PersonId, request.OtherPersonId });
 
             var personDoesNotExist = persons.Find(person => person.Id == request.PersonId) == null;
-            if (personDoesNotExist) throw new PersonNotFoundException($"\"personId\" with \"{request.PersonId}\" was not found.");
+            if (personDoesNotExist) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
 
             var otherPersonDoesNotExist = persons.Find(person => person.Id == request.OtherPersonId) == null;
-            if (otherPersonDoesNotExist) throw new PersonNotFoundException($"\"otherPersonId\" with \"{request.OtherPersonId}\" was not found.");
+            if (otherPersonDoesNotExist) throw new PersonNotFoundException($"'otherPersonId' with '{request.OtherPersonId}' was not found.");
 
             var type = _databaseGateway.GetPersonalRelationshipTypeByDescription(request.Type);
 
             var typeDoesNotExist = type == null;
-            if (typeDoesNotExist) throw new PersonalRelationshipTypeNotFoundException($"\"type\" with \"{request.Type}\" was not found.");
+            if (typeDoesNotExist) throw new PersonalRelationshipTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
             var personWithPersonalRelationships = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(request.PersonId);
 
             var personalRelationships = personWithPersonalRelationships.PersonalRelationships;
             var personalRelationshipAlreadyExists = personalRelationships.Find(pr => pr.OtherPersonId == request.OtherPersonId && pr.Type.Description == request.Type) != null;
-            if (personalRelationshipAlreadyExists) throw new PersonalRelationshipAlreadyExistsException($"Personal relationship with \"type\" of \"{request.Type}\" already exists.");
+            if (personalRelationshipAlreadyExists) throw new PersonalRelationshipAlreadyExistsException($"Personal relationship with 'type' of '{request.Type}' already exists.");
 
             request.TypeId = type.Id;
 

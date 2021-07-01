@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -13,10 +15,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class RelationshipController : BaseController
     {
         private readonly IRelationshipsUseCase _relationshipsUseCase;
+        private readonly IPersonalRelationshipsUseCase _personalRelationshipsUseCase;
 
-        public RelationshipController(IRelationshipsUseCase relationshipsUseCase)
+        public RelationshipController(IRelationshipsUseCase relationshipsUseCase, IPersonalRelationshipsUseCase personalRelationshipsUseCase)
         {
             _relationshipsUseCase = relationshipsUseCase;
+            _personalRelationshipsUseCase = personalRelationshipsUseCase;
         }
 
         /// <summary>
@@ -37,6 +41,41 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (GetRelationshipsException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Create a personal relationship
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="201">Successfully created personal relationship.</response>
+        /// <response code="400">Invalid CreatePersonalRelationshipRequest received</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("relationships/personal")]
+        public IActionResult CreatePersonalRelationship([FromBody] CreatePersonalRelationshipRequest request)
+        {
+            var validator = new CreatePersonalRelationshipRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _personalRelationshipsUseCase.ExecutePost(request);
+
+                return CreatedAtAction("CreatePersonalRelationship", "Successfully created personal relationship.");
+            }
+            catch (Exception e) when (
+                e is PersonNotFoundException ||
+                e is PersonalRelationshipTypeNotFoundException ||
+                e is PersonalRelationshipAlreadyExistsException
+            )
+            {
+                return BadRequest(e.Message);
             }
         }
     }
