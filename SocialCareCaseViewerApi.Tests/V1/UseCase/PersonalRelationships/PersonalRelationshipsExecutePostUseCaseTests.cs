@@ -132,7 +132,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         {
             _personalRelationshipsUseCase.ExecutePost(_request);
 
-            _mockDatabaseGateway.Verify(gateway => gateway.CreatePersonalRelationship(_request));
+            _mockDatabaseGateway.Verify(gateway => gateway.CreatePersonalRelationship(
+                It.Is<CreatePersonalRelationshipRequest>(
+                    request =>
+                        request.PersonId == _request.PersonId &&
+                        request.OtherPersonId == _request.OtherPersonId &&
+                        request.TypeId == _typeInRequest.Id &&
+                        request.IsMainCarer == _request.IsMainCarer &&
+                        request.IsInformalCarer == request.IsInformalCarer &&
+                        request.Details == _request.Details
+                )
+            ));
         }
 
         [Test]

@@ -36,6 +36,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var personalRelationshipAlreadyExists = personalRelationships.Find(pr => pr.OtherPersonId == request.OtherPersonId && pr.Type.Description == request.Type) != null;
             if (personalRelationshipAlreadyExists) throw new PersonalRelationshipAlreadyExistsException($"Personal relationship with \"type\" of \"{request.Type}\" already exists.");
 
+            request.TypeId = type.Id;
+
             _databaseGateway.CreatePersonalRelationship(request);
 
             _databaseGateway.CreatePersonalRelationship(new CreatePersonalRelationshipRequest()
