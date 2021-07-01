@@ -20,13 +20,13 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long? TypeId { get; set; }
 
         [JsonPropertyName("isMainCarer")]
-        public string IsMainCarer { get; set; } = null!;
+        public string? IsMainCarer { get; set; } = null!;
 
         [JsonPropertyName("isInformalCarer")]
-        public string IsInformalCarer { get; set; } = null!;
+        public string? IsInformalCarer { get; set; } = null!;
 
         [JsonPropertyName("details")]
-        public string Details { get; set; } = null!;
+        public string? Details { get; set; } = null!;
     }
 
     public class CreatePersonalRelationshipRequestValidator : AbstractValidator<CreatePersonalRelationshipRequest>
