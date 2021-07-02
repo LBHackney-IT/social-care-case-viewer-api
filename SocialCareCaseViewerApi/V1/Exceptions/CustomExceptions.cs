@@ -92,4 +92,19 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public GetSubmissionException(string message) : base(message) { }
     }
+
+    public class UpdateSubmissionException : Exception
+    {
+        public UpdateSubmissionException(string message) : base(message) { }
+    }
+
+    public class PersonalRelationshipTypeNotFoundException : Exception
+    {
+        public PersonalRelationshipTypeNotFoundException(string message) : base(message) { }
+    }
+
+    public class PersonalRelationshipAlreadyExistsException : Exception
+    {
+        public PersonalRelationshipAlreadyExistsException(string message) : base(message) { }
+    }
 }

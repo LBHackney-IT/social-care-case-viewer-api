@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetAllResidentsTests : DatabaseTests
     {
         private DatabaseGateway _classUnderTest;
-        private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }

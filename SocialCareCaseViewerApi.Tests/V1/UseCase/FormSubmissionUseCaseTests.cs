@@ -25,6 +25,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Faker _faker = null!;
         private const string CollectionName = "resident-case-submissions";
 
+        private static object[] _invalidSubmissionStateForUpdates =
+        {
+            SubmissionState.Discarded,
+            SubmissionState.Submitted,
+            SubmissionState.Approved
+        };
+
         [SetUp]
         public void SetUp()
         {
@@ -88,7 +95,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecutePostThrowsAnErrorWhenNoResidentFoundForRequest()
+        public void ExecutePostThrowsPersonNotFoundExceptionWhenNoResidentFoundForRequest()
         {
             var request = TestHelpers.CreateCaseSubmissionRequest();
             var worker = TestHelpers.CreateWorker();
@@ -98,7 +105,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             Action act = () => _formSubmissionsUseCase.ExecutePost(request);
 
             act.Should().Throw<PersonNotFoundException>()
-                .WithMessage($"Person with id {request.ResidentId} not found");
+                .WithMessage($"Resident not found with id {request.ResidentId}");
         }
 
         [Test]
@@ -155,32 +162,268 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteFinishSubmissionSuccessfullyCompletesASubmission()
+        public void ExecuteUpdateSubmissionToInProgressWithRejectionSuccessfullyUpdatesSubmissionStateAndRejectionMessage()
         {
-            var request = TestHelpers.FinishCaseSubmissionRequest();
-            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            const string rejectionReason = "rejected";
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "in_progress", rejectionReason: rejectionReason);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
             var worker = TestHelpers.CreateWorker();
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 
-            _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request);
-            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), It.IsAny<CaseSubmission>()), Times.Once);
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.InProgress);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.RejectionReason.Should().Be(rejectionReason);
         }
 
         [Test]
-        public void ExecuteFinishSubmissionSetsTheWorkersTeamsAndAllocationsToNull()
+        public void ExecuteUpdateSubmissionToSubmittedSuccessfullyUpdatesSubmissionState()
         {
-            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "submitted");
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
             var worker = TestHelpers.CreateWorker();
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 
-            _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request);
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.Submitted);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.SubmittedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToApprovedSuccessfullyUpdatesSubmissionState()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "approved");
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.Approved);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.ApprovedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionThrowsUpdateSubmissionExceptionIfInvalidSubmissionState()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "invalid-state");
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage($"Invalid submission state supplied {request.SubmissionState}");
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionDoesNotChangeSubmissionStateWhenNullStateProvided()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: null);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.InProgress);
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionSetsTheWorkersTeamsAndAllocationsToNull()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             worker.WorkerTeams.Should().BeNull();
             worker.Allocations.Should().BeNull();
         }
+
+        [Test]
+        public void ExecuteUpdateSubmissionSuccessfullyUpdatesARecordsResidents()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id });
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionRemovesAnyDuplicateResidents()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id, resident.Id });
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionThrowsUpdateSubmissionExceptionIfEmptyListOfResidentsProvided()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long>());
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage("A submission must be against at least one resident");
+        }
+
+        [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
+        public void UpdatingResidentsThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id });
+            var createdSubmission = TestHelpers.CreateCaseSubmission(submissionState);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>().WithMessage("Cannot update residents for submission, submission state not 'in progress'");
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionDoesNotChangeResidentsIfNoListIsPassed()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(resident: resident);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionThrowsPersonNotFoundExceptionWhenInvalidResidentsFound()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { 0L });
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(0L));
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<PersonNotFoundException>()
+                .WithMessage("Resident not found with ID 0");
+        }
+
+        private static object[] _allSubmissionChangePermutations =
+        {
+            new object[] { SubmissionState.Discarded, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.Approved, false },
+
+            new object[] { SubmissionState.InProgress, SubmissionState.Discarded, true },
+            new object[] { SubmissionState.InProgress, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.InProgress, SubmissionState.Submitted, true },
+            new object[] { SubmissionState.InProgress, SubmissionState.Approved, false },
+
+            new object[] { SubmissionState.Submitted, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Submitted, SubmissionState.InProgress, true },
+            new object[] { SubmissionState.Submitted, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Submitted, SubmissionState.Approved, true },
+
+            new object[] { SubmissionState.Approved, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.Approved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.Approved, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.Approved, SubmissionState.Approved, false },
+        };
+
+        [TestCaseSource(nameof(_allSubmissionChangePermutations))]
+        public void ExecuteUpdateSubmissionOnlyAllowsValidSubmissionStateChanges(SubmissionState startingState, SubmissionState desiredStated, bool allowed)
+        {
+            var mapSubmissionStateToRequestString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "in_progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
+            var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
+                { SubmissionState.InProgress, "In progress" },
+                { SubmissionState.Submitted, "Submitted" },
+                { SubmissionState.Approved, "Approved" },
+                { SubmissionState.Discarded, "Discarded" }
+            };
+
+            var resident = TestHelpers.CreatePerson();
+            var worker = TestHelpers.CreateWorker();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(startingState);
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: mapSubmissionStateToRequestString[desiredStated]);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            if (allowed)
+            {
+                var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+                _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+                response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+                response.SubmissionState.Should().Be(mapSubmissionStateToResponseString[desiredStated]);
+            }
+            else
+            {
+                Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+                act.Should().Throw<UpdateSubmissionException>()
+                    .WithMessage($"Invalid submission state change from {mapSubmissionStateToResponseString[startingState]} to {mapSubmissionStateToResponseString[desiredStated]}");
+            }
+        }
+
 
         [Test]
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
@@ -203,6 +446,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(request.EditedBy), Times.Once);
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId), Times.Once);
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
+        }
+
+        [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
+        public void UpdateAnswersThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
+        {
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
+            var createdSubmission = TestHelpers.CreateCaseSubmission(submissionState);
+            var worker = TestHelpers.CreateWorker();
+            const string stepId = "1";
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), stepId, request);
+
+            act.Should().Throw<UpdateSubmissionException>().WithMessage("Cannot update answers, submission state not 'in progress'");
         }
 
         [Test]
@@ -228,27 +488,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteFinishSubmissionThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
+        public void ExecuteUpdateSubmissionThrowsWorkerNotFoundExceptionWhenNoWorkerFoundFromRequest()
         {
-            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy));
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy));
 
-            Action act = () => _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request);
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
-            act.Should().Throw<WorkerNotFoundException>().WithMessage($"Worker with email {request.CreatedBy} not found");
+            act.Should().Throw<WorkerNotFoundException>().WithMessage($"Worker with email {request.EditedBy} not found");
         }
 
         [Test]
-        public void ExecuteFinishSubmissionThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
+        public void ExecuteUpdateSubmissionThrowsGetSubmissionExceptionWhenNoSubmissionFoundFromRequest()
         {
-            var request = TestHelpers.FinishCaseSubmissionRequest();
+            var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission();
             var worker = TestHelpers.CreateWorker();
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(worker);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, createdSubmission.SubmissionId));
 
-            Action act = () => _formSubmissionsUseCase.ExecuteFinishSubmission(createdSubmission.SubmissionId.ToString(), request);
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             act.Should().Throw<GetSubmissionException>().WithMessage($"Submission with ID {createdSubmission.SubmissionId} not found");
         }

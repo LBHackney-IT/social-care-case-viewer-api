@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
 using NUnit.Framework;
@@ -10,13 +6,16 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
-using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
-using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
+using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -432,66 +431,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void CanMapPersonRecordsAndRelationshipsToRelatedPersonsList()
-        {
-            var relatedPersonOne = TestHelpers.CreatePerson();
-            var relatedPersonTwo = TestHelpers.CreatePerson();
-
-            var personList = new List<Person>() {
-                TestHelpers.CreatePerson((int)relatedPersonOne.Id),
-                TestHelpers.CreatePerson((int)relatedPersonTwo.Id),
-                TestHelpers.CreatePerson(),
-                TestHelpers.CreatePerson()
-            };
-
-            var relationshipIds = new List<long>() { relatedPersonOne.Id, relatedPersonTwo.Id };
-
-            var expectedResult = personList
-                .Where(p => relationshipIds.Contains(p.Id))
-                .Select(x => new RelatedPersonV1()
-                {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName
-                }
-                ).ToList();
-
-            ResponseFactory.PersonsToRelatedPersonsList(personList, relationshipIds).Should().BeEquivalentTo(expectedResult);
-        }
-
-        [Test]
-        public void CanMapRelationshipsAndPersonRecordsToListRelationshipsResponse()
-        {
-            var person = TestHelpers.CreatePerson();
-
-            List<Person> children, others, parents, siblings;
-            RelationshipsV1 relationships;
-
-            (children, others, parents, siblings, relationships) = TestHelpers.CreatePersonsWithRelationshipsV1(person.Id);
-
-            var expectedResult = new ListRelationshipsV1Response()
-            {
-                PersonId = person.Id,
-                PersonalRelationships = new PersonalRelationshipsV1<RelatedPersonV1>()
-                {
-                    Children = AddRelatedPerson(children),
-                    Other = AddRelatedPerson(others),
-                    Parents = AddRelatedPerson(parents),
-                    Siblings = AddRelatedPerson(siblings)
-                }
-            };
-
-            List<Person> personRecords = new List<Person>();
-
-            personRecords.AddRange(children);
-            personRecords.AddRange(others);
-            personRecords.AddRange(parents);
-            personRecords.AddRange(siblings);
-
-            ResponseFactory.ToResponse(personRecords, relationships, personRecords.Select(x => x.Id).ToList(), person.Id).Should().BeEquivalentTo(expectedResult);
-        }
-
-        [Test]
         public void CanMapDomainCaseSubmissionToResponse()
         {
             var domainCaseSubmission = TestHelpers.CreateCaseSubmission().ToDomain();
@@ -575,16 +514,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var response = dbPhoneNumber.ToResponse();
 
             response.Should().BeEquivalentTo(expectedResponse);
-        }
-
-        private static List<RelatedPersonV1> AddRelatedPerson(List<Person> persons)
-        {
-            return persons.Select(x => new RelatedPersonV1()
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName
-            }).ToList();
         }
     }
 }

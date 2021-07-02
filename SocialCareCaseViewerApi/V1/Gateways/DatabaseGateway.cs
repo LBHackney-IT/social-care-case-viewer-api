@@ -5,6 +5,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -25,11 +26,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
+        private readonly ISystemTime _systemTime;
 
-        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway)
+        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
+            _systemTime = systemTime;
         }
 
         public List<Allocation> SelectAllocations(long mosaicId, long workerId)
@@ -830,7 +833,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.Status?.ToLower() == "closed")
             {
                 warningNote.Status = "closed";
-                warningNote.EndDate = request.EndedDate;
+                warningNote.EndDate = _systemTime.Now;
                 warningNote.NextReviewDate = null;
             }
 
@@ -900,6 +903,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var personWithRelationships = _databaseContext
                 .Persons
                 .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.Type)
+                .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.OtherPerson)
+                .Include(person => person.PersonalRelationships)
+                .ThenInclude(personalRelationship => personalRelationship.Details)
                 .FirstOrDefault(p => p.Id == personId);
 
             if (personWithRelationships == null) return null;
@@ -910,6 +918,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             return personWithRelationships;
+        }
+
+        public PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description)
+        {
+            return _databaseContext.PersonalRelationshipTypes
+                .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
+        }
+
+        public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)
+        {
+            var personalRelationship = new Infrastructure.PersonalRelationship()
+            {
+                PersonId = request.PersonId,
+                OtherPersonId = request.OtherPersonId,
+                TypeId = (long) request.TypeId,
+                IsMainCarer = request.IsMainCarer?.ToUpper(),
+                IsInformalCarer = request.IsInformalCarer?.ToUpper(),
+                StartDate = _systemTime.Now,
+                Details = new PersonalRelationshipDetail()
+                {
+                    Details = request.Details
+                }
+            };
+
+            _databaseContext.PersonalRelationships.Add(personalRelationship);
+            _databaseContext.SaveChanges();
+
+            return personalRelationship;
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)

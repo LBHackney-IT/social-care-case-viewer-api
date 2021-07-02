@@ -5,6 +5,8 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
+using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -13,11 +15,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     {
         private DatabaseGateway _databaseGateway;
         private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         [Test]
@@ -45,7 +50,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
 
-            response.PersonalRelationships.FirstOrDefault().Should().BeEquivalentTo(personalRelationship);
+            response.PersonalRelationships.FirstOrDefault().Id.Should().Be(personalRelationship.Id);
+            response.PersonalRelationships.FirstOrDefault().PersonId.Should().Be(personalRelationship.PersonId);
+            response.PersonalRelationships.FirstOrDefault().OtherPersonId.Should().Be(personalRelationship.OtherPersonId);
+            response.PersonalRelationships.FirstOrDefault().TypeId.Should().Be(personalRelationship.TypeId);
         }
 
         [Test]
@@ -56,7 +64,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
             var otherPersonInResponse = response.PersonalRelationships.FirstOrDefault().OtherPerson;
 
-            otherPersonInResponse.Should().BeEquivalentTo(otherPerson);
+            otherPersonInResponse.Id.Should().Be(otherPerson.Id);
+            otherPersonInResponse.FirstName.Should().Be(otherPerson.FirstName);
+            otherPersonInResponse.LastName.Should().Be(otherPerson.LastName);
+            otherPersonInResponse.Gender.Should().Be(otherPerson.Gender);
         }
 
         [Test]
@@ -97,7 +108,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
 
-            response.PersonalRelationships.FirstOrDefault().Details.Should().BeEquivalentTo(personalRelationshipDetail);
+            response.PersonalRelationships.FirstOrDefault().Details.Details.Should().BeEquivalentTo(personalRelationshipDetail.Details);
         }
 
         [Test]

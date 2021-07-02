@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -362,7 +361,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? nextReviewDate = null,
             string? startingStatus = "open",
             string? requestStatus = "open",
-            DateTime? endedDate = null,
             string? endedBy = null,
             string? reviewNotes = null,
             string? managerName = null,
@@ -381,7 +379,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.NextReviewDate, f => nextReviewDate ?? f.Date.Future())
                 .RuleFor(p => p.DisclosedWithIndividual, f => disclosedWithIndividual)
                 .RuleFor(p => p.Status, f => requestStatus)
-                .RuleFor(p => p.EndedDate, f => endedDate ?? f.Date.Recent())
                 .RuleFor(p => p.EndedBy, f => endedBy ?? worker.Email)
                 .RuleFor(p => p.ReviewNotes, f => reviewNotes ?? f.Random.String2(1, 1000))
                 .RuleFor(p => p.ManagerName, f => managerName ?? f.Random.String2(1, 100))
@@ -453,45 +450,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
 
-        public static RelationshipsV1 CreateRelationshipsV1(
-            long personId,
-            List<long>? childrenIds = null,
-            List<long>? parentsIds = null,
-            List<long>? siblingsIds = null,
-            List<long>? othersIds = null
-        )
-        {
-            return new RelationshipsV1()
-            {
-                PersonId = personId,
-                PersonalRelationships = new PersonalRelationshipsV1<long>()
-                {
-                    Children = childrenIds ?? new List<long>() { 1, 2 },
-                    Parents = parentsIds ?? new List<long>() { 3, 4 },
-                    Siblings = siblingsIds ?? new List<long>() { 5, 6 },
-                    Other = othersIds ?? new List<long>() { 7, 8 }
-                }
-            };
-        }
-
-        public static (List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, List<InfrastructurePerson>, RelationshipsV1) CreatePersonsWithRelationshipsV1(long personId)
-        {
-            List<InfrastructurePerson> children = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> others = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> parents = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-            List<InfrastructurePerson> siblings = new List<InfrastructurePerson>() { CreatePerson(), CreatePerson() };
-
-            RelationshipsV1 relationships = CreateRelationshipsV1(
-                    personId: personId,
-                    childrenIds: children.Select(x => x.Id).ToList(),
-                    othersIds: others.Select(x => x.Id).ToList(),
-                    parentsIds: parents.Select(x => x.Id).ToList(),
-                    siblingsIds: siblings.Select(x => x.Id).ToList()
-                );
-
-            return (children, others, parents, siblings, relationships);
-        }
-
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
             string? formId = null,
             int? residentId = null,
@@ -523,8 +481,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             worker ??= CreateWorker();
             resident ??= CreatePerson(residentId);
 
-            var submissionStates = new List<SubmissionState> { SubmissionState.InProgress, SubmissionState.Submitted };
-
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
@@ -536,7 +492,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 {
                     new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
                 })
-                .RuleFor(s => s.SubmissionState, f => submissionState ?? f.PickRandom(submissionStates))
+                .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
         }
 
@@ -546,12 +502,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
         }
 
-        public static FinishCaseSubmissionRequest FinishCaseSubmissionRequest(
-            string? createdBy = null
+        public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
+            string? updatedBy = null,
+            string? submissionState = null,
+            List<long>? residents = null,
+            string? rejectionReason = null
         )
         {
-            return new Faker<FinishCaseSubmissionRequest>()
-            .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
+            return new Faker<UpdateCaseSubmissionRequest>()
+                .RuleFor(s => s.EditedBy, f => updatedBy ?? f.Person.Email)
+                .RuleFor(s => s.SubmissionState, submissionState)
+                .RuleFor(s => s.Residents, residents)
+                .RuleFor(s => s.RejectionReason, rejectionReason);
         }
     }
 }

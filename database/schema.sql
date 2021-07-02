@@ -497,3 +497,6 @@ update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'neighbour') where id = (select id from dbo.sccv_personal_relationship_type where description = 'neighbour');
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'inContactWith') where id = (select id from dbo.sccv_personal_relationship_type where description = 'inContactWith');
 update dbo.sccv_personal_relationship_type set inverse_type_id = (select id from dbo.sccv_personal_relationship_type where description = 'acquaintance') where id = (select id from dbo.sccv_personal_relationship_type where description = 'acquaintance');
+
+ALTER TABLE dbo.sccv_personal_relationship
+  ADD COLUMN is_main_carer varchar(1);

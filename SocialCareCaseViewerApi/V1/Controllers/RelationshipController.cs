@@ -4,6 +4,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -13,35 +14,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [ApiVersion("1.0")]
     public class RelationshipController : BaseController
     {
-        private readonly IRelationshipsV1UseCase _relationshipsV1UseCase;
         private readonly IRelationshipsUseCase _relationshipsUseCase;
+        private readonly IPersonalRelationshipsUseCase _personalRelationshipsUseCase;
 
-        public RelationshipController(IRelationshipsV1UseCase relationshipsV1UseCase, IRelationshipsUseCase relationshipsUseCase)
+        public RelationshipController(IRelationshipsUseCase relationshipsUseCase, IPersonalRelationshipsUseCase personalRelationshipsUseCase)
         {
-            _relationshipsV1UseCase = relationshipsV1UseCase;
             _relationshipsUseCase = relationshipsUseCase;
-        }
-
-        /// <summary>
-        /// Get a list of relationships by person id (old)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <response code="200">Successful request. Relationships returned</response>
-        /// <response code="404">Person not found</response>
-        /// <response code="500">There was a problem getting the relationships</response>
-        [ProducesResponseType(typeof(ListRelationshipsV1Response), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents/{personId}/relationships-v1")]
-        public IActionResult ListRelationshipsV1([FromQuery] ListRelationshipsV1Request request)
-        {
-            try
-            {
-                return Ok(_relationshipsV1UseCase.ExecuteGet(request));
-            }
-            catch (GetRelationshipsException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            _personalRelationshipsUseCase = personalRelationshipsUseCase;
         }
 
         /// <summary>
@@ -62,6 +41,41 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (GetRelationshipsException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Create a personal relationship
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="201">Successfully created personal relationship.</response>
+        /// <response code="400">Invalid CreatePersonalRelationshipRequest received</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("relationships/personal")]
+        public IActionResult CreatePersonalRelationship([FromBody] CreatePersonalRelationshipRequest request)
+        {
+            var validator = new CreatePersonalRelationshipRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _personalRelationshipsUseCase.ExecutePost(request);
+
+                return CreatedAtAction("CreatePersonalRelationship", "Successfully created personal relationship.");
+            }
+            catch (Exception e) when (
+                e is PersonNotFoundException ||
+                e is PersonalRelationshipTypeNotFoundException ||
+                e is PersonalRelationshipAlreadyExistsException
+            )
+            {
+                return BadRequest(e.Message);
             }
         }
     }

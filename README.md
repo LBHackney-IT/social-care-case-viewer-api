@@ -14,6 +14,8 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Installation](#installation)
   - [Usage](#usage)
     - [Running the application](#running-the-application)
+      - [Using dotnet run](#using-dotnet-run)
+      - [Using docker](#using-docker)
     - [Running the tests](#running-the-tests)
       - [Using the terminal](#using-the-terminal)
       - [Using an IDE](#using-an-ide)
@@ -21,6 +23,9 @@ The Social Care Service API provides [service API](http://playbook.hackney.gov.u
     - [Architecture](#architecture)
     - [API design](#api-design)
     - [Databases](#databases)
+      - [MongoDB (DocumentDB in AWS)](#mongodb-documentdb-in-aws)
+      - [PostgreSQL (RDS PostgreSQL in AWS)](#postgresql-rds-postgresql-in-aws)
+      - [Connecting to a database](#connecting-to-a-database)
       - [Updating the database schema](#updating-the-database-schema)
       - [Making manual updates](#making-manual-updates)
     - [Deployment](#deployment)
@@ -53,13 +58,32 @@ $ git clone git@github.com:LBHackney-IT/social-care-case-viewer-api.git
 
 ### Running the application
 
-To serve the API locally, use:
+There are two ways of running the application: using dotnet or using docker.
+
+#### Using dotnet run
+Using the dotnet command will not automatically connect the API to any local database instances.
+
+To serve the API locally with dotnet,
+run `dotnet run` from within the [SocialCareCaseViewerApi](./SocialCareCaseViewerApi) project directory, i.e:
 
 ```sh
 $ cd SocialCareCaseViewerApi && dotnet run
 ```
 
-The application will be served at http://localhost:5000.
+**The application will be served at http://localhost:5000**.
+
+#### Using docker
+
+Run the API locally with connected local dev databases using this command:
+
+```sh
+$ make serve
+```
+**The application will be served at http://localhost:3000**.
+
+N.B: This would only spin up the Application, Postgres & MongoDB locally in docker.
+It doesn't include setup for spinning up other APIs that this service connects to in Staging or in Production.
+
 
 ### Running the tests
 
@@ -89,7 +113,7 @@ $ dotnet test --filter GivenHttpClientReturnsValidResponseThenGatewayReturnsList
 $ dotnet test --filter SocialCarePlatformAPIGatewayTests
 ```
 
-If your docker test database is out of sync with the schema on your current banch run
+If your docker test database is out of sync with the schema on your current branch run
 
 ```sh
 $ make restart-db
@@ -140,6 +164,11 @@ This database stores:
 
 1. Stores person data. E.g: Addresses, telephone number, worker allocations.
 
+#### Connecting to a database
+
+Sometimes we need to directly connect to a database for an environment to diagnose
+an issue or because we need to [make a manual update](#making-manual-updates).
+This is possible to do via the AWS console, see [Connecting to a database](docs/connecting-to-a-database.md) documentation.
 
 #### Updating the database schema
 
@@ -147,13 +176,13 @@ We currently don't have database migrations set up for the databases which means
 
 If you need to make changes e.g. add a new table to the PostgreSQL database, then see [Updating the database schema](./docs/updating-database-schema.md) for how we manage this and do this via the AWS console.
 
-### Making manual updates
+#### Making manual updates
 
 From time to time, we are required to make manual data updates because it's something that's not possible through the UI of the Social Care System. However, this is something we only want to do when really necessary as it requires directly connecting to the database and running SQL statements.
 
 To keep track of these changes, we document them in `/database/manual-updates`. If you need to make a manual data update, then:
 
-1. Duplicate [our template file](database/manual-updates/yyyy-mm-dd_1-<title>-template.md)
+1. Duplicate [our template file](database/manual-updates/yyyy-mm-dd_1-title-template.md)
 2. Rename the duplicated file by replacing the date and the title
 3. Fill in the sections of the file
 4. Commit, push and create a PR

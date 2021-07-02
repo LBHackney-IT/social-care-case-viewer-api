@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -125,9 +126,12 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<CreateTeamRequest>, CreateTeamRequestValidator>();
             services.AddTransient<IValidator<GetTeamsRequest>, GetTeamsRequestValidator>();
             services.AddTransient<IValidator<CreateCaseSubmissionRequest>, CreateCaseSubmissionRequestValidator>();
-            services.AddTransient<IValidator<FinishCaseSubmissionRequest>, FinishCaseSubmissionRequestValidator>();
+            services.AddTransient<IValidator<UpdateCaseSubmissionRequest>, UpdateCaseSubmissionRequestValidator>();
             services
                 .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
+            services.AddTransient<IValidator<CreatePersonalRelationshipRequest>, CreatePersonalRelationshipRequestValidator>();
+
+            services.AddScoped<ISystemTime, SystemTime>();
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -161,9 +165,9 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IGetVisitByVisitIdUseCase, GetVisitByVisitIdUseCase>();
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
             services.AddScoped<IPersonUseCase, PersonUseCase>();
-            services.AddScoped<IRelationshipsV1UseCase, RelationshipsV1UseCase>();
             services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
+            services.AddScoped<IPersonalRelationshipsUseCase, PersonalRelationshipsUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

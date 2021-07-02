@@ -563,16 +563,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void PatchWarningNoteReturns400WhenInvalidEndedDate()
-        {
-            var request = TestHelpers.CreatePatchWarningNoteRequest(endedDate: DateTime.Now.AddDays(1)).Item1;
-
-            var response = _classUnderTest.PatchWarningNote(request) as ObjectResult;
-
-            response?.StatusCode.Should().Be(400);
-        }
-
-        [Test]
         public void PatchWarningNoteReturns400WhenInvalidReviewNotes()
         {
             var request = TestHelpers.CreatePatchWarningNoteRequest(reviewNotes: "").Item1;
