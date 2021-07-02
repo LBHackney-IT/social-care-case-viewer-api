@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             limit = limit < 10 ? 10 : limit;
             limit = limit > 100 ? 100 : limit;
 
-            long? mosaicId = rqp.MosaicId != null ? Convert.ToInt64(rqp.MosaicId) : (long?)null;
+            long? mosaicId = rqp.MosaicId != null ? Convert.ToInt64(rqp.MosaicId) : (long?) null;
 
             var residents = _databaseGateway.GetResidentsBySearchCriteria(
                 cursor: cursor,

@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-               
+
         [Test]
         public void IfThereAreNoResidentsReturnsAnEmptyList()
         {
@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
                 .First()
                 .PhoneNumber
                 .Should().ContainEquivalentOf(phoneNumber.ToResponse());
-        }             
+        }
 
         [Test]
         public void WithFirstNameQueryParameterReturnsMatchingResident()
@@ -401,7 +401,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.SaveChanges();
 
-            var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person1.Id, address: "1 My Street, Hackney, London");      
+            var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person1.Id, address: "1 My Street, Hackney, London");
             var address2 = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person2.Id, address: "5 Another Street, Lambeth, London");
 
             DatabaseContext.Addresses.Add(address);
@@ -497,7 +497,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Addresses.Add(currentAddress);
             DatabaseContext.SaveChanges();
 
-            var response = _classUnderTest.GetResidentsBySearchCriteria(0,20);
+            var response = _classUnderTest.GetResidentsBySearchCriteria(0, 20);
             response.First().Uprn.Should().Be(currentAddress.Uprn.ToString());
         }
     }

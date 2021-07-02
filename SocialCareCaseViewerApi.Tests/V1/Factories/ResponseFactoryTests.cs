@@ -568,8 +568,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new Phone()
             {
-               PhoneNumber = dbPhoneNumber.Number,
-               PhoneType = dbPhoneNumber.Type
+                PhoneNumber = dbPhoneNumber.Number,
+                PhoneType = dbPhoneNumber.Type
             };
 
             var response = dbPhoneNumber.ToResponse();

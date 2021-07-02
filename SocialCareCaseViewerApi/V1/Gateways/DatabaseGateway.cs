@@ -176,7 +176,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             return $"%{str?.Replace(" ", "")}%";
         }
-                
+
         [SuppressMessage("Design", "CA1031:Do not catch general exception types",
             Justification =
                 "Include case note creation error as a message to the response until this is refactored to new pattern")]

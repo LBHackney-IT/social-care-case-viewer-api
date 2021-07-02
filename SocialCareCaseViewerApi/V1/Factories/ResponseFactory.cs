@@ -341,8 +341,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new Phone()
             {
-               PhoneNumber = phoneNumber.Number,
-               PhoneType = phoneNumber.Type
+                PhoneNumber = phoneNumber.Number,
+                PhoneType = phoneNumber.Type
             };
         }
 

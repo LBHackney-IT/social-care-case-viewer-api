@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(residentInformationList);
-        }       
+        }
 
         [Test]
         public void AddNewResidentReturns201WhenSuccessful()
