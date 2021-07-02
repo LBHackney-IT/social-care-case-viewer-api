@@ -169,13 +169,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static InfrastructurePerson CreatePerson(int? personId = null)
+        public static InfrastructurePerson CreatePerson(int? personId = null, string? firstName = null, string? lastName = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.Title, f => f.Name.Prefix())
-                .RuleFor(p => p.FirstName, f => f.Person.FirstName)
-                .RuleFor(p => p.LastName, f => f.Person.FirstName)
+                .RuleFor(p => p.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => lastName ?? f.Person.FirstName)
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
                 .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
@@ -194,7 +194,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Restricted, f => f.Random.String2(1));
         }
 
-        public static Address CreateAddress(long? personId = null)
+        public static Address CreateAddress(long? personId = null, string? postCode = null, string? address = null)
         {
             var person = CreatePerson();
 
@@ -203,9 +203,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.PersonAddressId, f => f.Random.Number(int.MaxValue))
                 .RuleFor(a => a.AddressId, f => f.Random.Number(999999999))
                 .RuleFor(a => a.PersonId, personId ?? person.Id)
-                .RuleFor(a => a.EndDate, f => f.Date.Recent())
-                .RuleFor(a => a.AddressLines, f => f.Address.FullAddress())
-                .RuleFor(a => a.PostCode, f => f.Address.ZipCode())
+                .RuleFor(a => a.EndDate, f => f.Date.Recent().Date)
+                .RuleFor(a => a.AddressLines, f => address ?? f.Address.FullAddress())
+                .RuleFor(a => a.PostCode, f => postCode ?? f.Address.ZipCode())
                 .RuleFor(a => a.Uprn, f => f.Random.Number(int.MaxValue))
                 .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1, "YN"))
                 .RuleFor(a => a.IsDisplayAddress, f => f.Random.String2(1, "YN"));

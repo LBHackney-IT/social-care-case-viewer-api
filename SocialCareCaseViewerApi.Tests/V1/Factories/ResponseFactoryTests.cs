@@ -15,6 +15,8 @@ using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
+using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -512,6 +514,67 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
+        }
+
+        [Test]
+        public void CanMapAPersonDatabaseRecordIntoResidentInformationResponseObject()
+        {
+            var personRecord = TestHelpers.CreatePerson();
+
+            var response = personRecord.ToResidentInformationResponse();
+
+            response.Should().BeEquivalentTo(new ResidentInformationResponse
+            {
+                MosaicId = personRecord.Id.ToString(),
+                FirstName = personRecord.FirstName,
+                LastName = personRecord.LastName,
+                NhsNumber = personRecord.NhsNumber.ToString(),
+                DateOfBirth = personRecord.DateOfBirth?.ToString("O"), //keep format for backwards compatibility
+                AgeContext = personRecord.AgeContext,
+                Nationality = personRecord.Nationality,
+                Gender = personRecord.Gender,
+                Restricted = personRecord.Restricted,
+                AddressList = null,
+                PhoneNumber = null,
+                Uprn = response.Uprn
+            });
+        }
+
+        [Test]
+        public void CanMapAddressFromInfrastructureToResponse()
+        {
+            var dbAddress = TestHelpers.CreateAddress();
+
+            var expectedResponse = new AddressResponse()
+            {
+                AddressLine1 = dbAddress.AddressLines,
+                DisplayAddressFlag = dbAddress.IsDisplayAddress,
+                EndDate = dbAddress.EndDate,
+                PostCode = dbAddress.PostCode,
+                AddressLine2 = null, //not used, left for backwards compatibility
+                AddressLine3 = null, //not used, left for backwards compatibility
+                ContactAddressFlag = null //not used, left for backwards compatibility
+            };
+
+            var response = dbAddress.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void CanMapPhoneNumberFromInfrastructureToResponse()
+        {
+            var dbPhoneNumber = TestHelpers.CreatePhoneNumber();
+
+            var expectedResponse = new Phone()
+            {
+               PhoneNumber = dbPhoneNumber.Number,
+               PhoneType = dbPhoneNumber.Type
+            };
+
+            var response = dbPhoneNumber.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
         }
 
         private static List<RelatedPersonV1> AddRelatedPerson(List<Person> persons)

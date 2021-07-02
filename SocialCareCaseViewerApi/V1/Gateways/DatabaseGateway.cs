@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -11,10 +6,15 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
-using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
+using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
@@ -99,69 +99,84 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
-        public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
-            string lastname = null, string dateOfBirth = null, string mosaicid = null, string agegroup = null)
+        public List<ResidentInformationResponse> GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
+          string lastname = null, string dateOfBirth = null, string postcode = null, string address = null, string contextflag = null)
         {
-            var peopleIds = PeopleIds(cursor, limit, firstname, lastname, dateOfBirth, mosaicid, agegroup);
+            var addressSearchPattern = GetSearchPattern(address);
+            var postcodeSearchPattern = GetSearchPattern(postcode);
+
+            var queryByAddress = postcode != null || address != null;
+
+            var peopleIds = queryByAddress
+                ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstname, lastname, postcode, address, contextflag)
+                : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstname, lastname, dateOfBirth, contextflag);
+
+            var var = _databaseContext.Persons
+                .Where(p => peopleIds.Contains(p.Id))
+                .Include(p => p.Addresses)
+                .Include(p => p.PhoneNumbers);
+
 
             var dbRecords = _databaseContext.Persons
                 .Where(p => peopleIds.Contains(p.Id))
-                .Select(p => new
-                {
-                    Person = p,
-                    Addresses = _databaseContext
-                        .Addresses
-                        .Where(add => add.PersonId == p.Id)
-                        .ToList(),
-                }).ToList();
+                .Include(p => p.Addresses)
+                .Include(p => p.PhoneNumbers)
+                .Select(x => x.ToResidentInformationResponse()).ToList();
 
-            return dbRecords.Select(x => MapPersonAndAddressesToResidentInformation(x.Person, x.Addresses)
-            ).ToList();
+            return dbRecords;
         }
 
-        private List<long> PeopleIds(int cursor, int limit, string firstname, string lastname,
-            string dateOfBirth = null, string mosaicid = null, string agegroup = null)
+        private List<long> GetPersonIdsBasedOnSearchCriteria(int cursor, int limit, long? id, string firstname, string lastname, string dateOfBirth, string contextflag)
         {
             var firstNameSearchPattern = GetSearchPattern(firstname);
             var lastNameSearchPattern = GetSearchPattern(lastname);
             var dateOfBirthSearchPattern = GetSearchPattern(dateOfBirth);
-            var mosaicIdSearchPattern = GetSearchPattern(mosaicid);
-            var ageGroupSearchPattern = GetSearchPattern(agegroup);
+            var contextFlagSearchPattern = GetSearchPattern(contextflag);
+
             return _databaseContext.Persons
                 .Where(person => person.Id > cursor)
-                .Where(person =>
-                    string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern))
-                .Where(person =>
-                    string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
-                .Where(person =>
-                    string.IsNullOrEmpty(dateOfBirth) ||
-                    EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
-                .Where(person =>
-                    string.IsNullOrEmpty(mosaicid) || EF.Functions.ILike(person.Id.ToString(), mosaicIdSearchPattern))
-                .Where(person =>
-                    string.IsNullOrEmpty(agegroup) || EF.Functions.ILike(person.AgeContext, ageGroupSearchPattern))
+                .Where(person => id == null || EF.Functions.ILike(person.Id.ToString(), id.ToString()))
+                .Where(person => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName.Replace(" ", ""), firstNameSearchPattern))
+                .Where(person => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
+                .Where(person => string.IsNullOrEmpty(dateOfBirth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
+                .Where(person => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(person.AgeContext, contextFlagSearchPattern))
+                .OrderBy(p => p.Id)
                 .Take(limit)
                 .Select(p => p.Id)
                 .ToList();
         }
 
-        private static ResidentInformation MapPersonAndAddressesToResidentInformation(Person person,
-            IEnumerable<Address> addresses)
+        private List<long> GetPersonIdsBasedOnAddressCriteria(int cursor, int limit, long? id, string firstname, string lastname,
+           string postcode, string address, string contextflag)
         {
-            var resident = person.ToDomain();
-            var addressesDomain = addresses.Select(address => address.ToDomain()).ToList();
-            resident.AddressList = addressesDomain;
-            resident.AddressList = addressesDomain.Any()
-                ? addressesDomain
-                : null;
-            return resident;
+            var firstNameSearchPattern = GetSearchPattern(firstname);
+            var lastNameSearchPattern = GetSearchPattern(lastname);
+            var addressSearchPattern = GetSearchPattern(address);
+            var postcodeSearchPattern = GetSearchPattern(postcode);
+            var contextFlagSearchPattern = GetSearchPattern(contextflag);
+
+            return _databaseContext.Addresses
+                .Where(add => id == null || EF.Functions.ILike(add.PersonId.ToString(), id.ToString()))
+                .Where(add => string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
+                .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern))
+                .Where(add => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(add.Person.FirstName.Replace(" ", ""), firstNameSearchPattern))
+                .Where(add => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(add.Person.LastName, lastNameSearchPattern))
+                .Where(add => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(add.Person.AgeContext, contextFlagSearchPattern))
+                .Include(add => add.Person)
+                .Where(add => add.PersonId > cursor)
+                .OrderBy(add => add.PersonId)
+                .GroupBy(add => add.PersonId)
+                .Where(p => p.Key != null)
+                .Take(limit)
+                .Select(p => (long) p.Key)
+                .ToList();
         }
 
         private static string GetSearchPattern(string str)
         {
             return $"%{str?.Replace(" ", "")}%";
         }
-
+                
         [SuppressMessage("Design", "CA1031:Do not catch general exception types",
             Justification =
                 "Include case note creation error as a message to the response until this is refactored to new pattern")]

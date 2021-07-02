@@ -12,6 +12,8 @@ using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
+using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
@@ -292,6 +294,65 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     ).ToList()
                 }
             ).ToList();
+        }
+
+        public static ResidentInformationResponse ToResidentInformationResponse(this Person person)
+        {
+            return new ResidentInformationResponse
+            {
+                MosaicId = person.Id.ToString(),
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                NhsNumber = person.NhsNumber?.ToString(),
+                DateOfBirth = person.DateOfBirth?.ToString("O"),
+                AgeContext = person.AgeContext,
+                Nationality = person.Nationality,
+                Gender = person.Gender,
+                Restricted = person.Restricted,
+                AddressList = person.Addresses?.Count > 0 ? person.Addresses.ToResponse() : null,
+                PhoneNumber = person.PhoneNumbers?.Count > 0 ? person.PhoneNumbers.ToResponse() : null,
+                Uprn = person.Addresses?.FirstOrDefault(a => a.EndDate == null)?.Uprn?.ToString() //use same logic as in legacy platform API for compatibility
+            };
+        }
+
+        public static AddressResponse ToResponse(this dbAddress address)
+        {
+            return new AddressResponse()
+            {
+                AddressLine1 = address.AddressLines,
+                DisplayAddressFlag = address.IsDisplayAddress,
+                EndDate = address.EndDate,
+                PostCode = address.PostCode
+            };
+        }
+
+        public static List<AddressResponse> ToResponse(this List<dbAddress> addresses)
+        {
+            return addresses.Select(address => new AddressResponse
+            {
+                EndDate = address.EndDate,
+                DisplayAddressFlag = address.IsDisplayAddress,
+                AddressLine1 = address.AddressLines,
+                PostCode = address.PostCode
+            }).ToList();
+        }
+
+        public static Phone ToResponse(this dbPhoneNumber phoneNumber)
+        {
+            return new Phone()
+            {
+               PhoneNumber = phoneNumber.Number,
+               PhoneType = phoneNumber.Type
+            };
+        }
+
+        public static List<Phone> ToResponse(this List<dbPhoneNumber> phoneNumbers)
+        {
+            return phoneNumbers.Select(phoneNumber => new Phone
+            {
+                PhoneNumber = phoneNumber.Number,
+                PhoneType = phoneNumber.Type
+            }).ToList();
         }
     }
 }
