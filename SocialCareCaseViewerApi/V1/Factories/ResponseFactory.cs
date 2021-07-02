@@ -252,7 +252,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         Id = relationship.OtherPerson.Id,
                         FirstName = relationship.OtherPerson.FirstName,
                         LastName = relationship.OtherPerson.LastName,
-                        Gender = relationship.OtherPerson.Gender
+                        Gender = relationship.OtherPerson.Gender,
+                        IsMainCarer = relationship.IsMainCarer,
+                        IsInformalCarer = relationship.IsInformalCarer,
+                        Details = relationship.Details?.Details
                     }
                     ).ToList()
                 }
