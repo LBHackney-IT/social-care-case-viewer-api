@@ -62,10 +62,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             person.PersonalRelationships = personalrelationships;
 
+            var details = CreatePersonalRelationshipDetail(personalrelationships[0].Id);
+
+            person.PersonalRelationships[0].Details = details;
+            person.PersonalRelationships[1].Details = details;
+            person.PersonalRelationships[2].Details = details;
+
             return (person, otherPersons, personalrelationships);
         }
 
-        public static (Person, List<Person>, List<PersonalRelationship>) CreatePersonWithPersonalRelationshipsOfSameType()
+        public static (Person, List<Person>, List<PersonalRelationship>, List<PersonalRelationshipDetail>) CreatePersonWithPersonalRelationshipsOfSameType()
         {
             var person = TestHelpers.CreatePerson();
             var otherPersons = new List<Person>()
@@ -84,7 +90,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             person.PersonalRelationships = personalrelationships;
 
-            return (person, otherPersons, personalrelationships);
+            var details = new List<PersonalRelationshipDetail>()
+            {
+                CreatePersonalRelationshipDetail(personalrelationships[0].Id),
+                CreatePersonalRelationshipDetail(personalrelationships[1].Id),
+            };
+
+            person.PersonalRelationships[0].Details = details[0];
+            person.PersonalRelationships[1].Details = details[1];
+
+            return (person, otherPersons, personalrelationships, details);
         }
 
         public static PersonalRelationship CreatePersonalRelationship(
