@@ -28,12 +28,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = createPersonalRelationshipRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
+            response.Errors.Should().HaveCount(3);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'personId' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'otherPersonId' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'type' must be provided.");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'isMainCarer' must be provided.");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'isInformalCarer' must be provided.");
-            response.Errors.Should().NotContain(e => e.ErrorMessage == "'details' must be less than or equal to 1,000 characters.");
         }
 
         [Test]
