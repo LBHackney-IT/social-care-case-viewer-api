@@ -310,7 +310,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, dateOfBirth: person1.DateOfBirth.Value.ToString("yyyy-MM-dd")).ToList(); //Format passed be FE
+            var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, dateOfBirth: person1.DateOfBirth.Value.ToString("yyyy-MM-dd")).ToList(); //Format passed by FE
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
