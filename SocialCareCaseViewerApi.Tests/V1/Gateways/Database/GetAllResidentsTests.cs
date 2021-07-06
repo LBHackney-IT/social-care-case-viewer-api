@@ -321,15 +321,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         public void WithContextFlagQueryParameterReturnsMatchingResidents()
         {
             var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person1.AgeContext = "A";
             var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person2.AgeContext = "C";
             var person3 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
-
-            person3.AgeContext = person1.AgeContext;
+            person3.AgeContext = "A";
 
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextflag: person1.AgeContext).ToList();
+            var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextflag: "A").ToList();
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
@@ -339,14 +340,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WithNameAndPostCodeQueryParameterReturnsMatchingResident()
         {
-            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
-            person1.FirstName = "ciasom";
+            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "ciasom");
 
-            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
-            person2.FirstName = "wrong name";
+            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "wrong name");
 
-            var person3 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
-            person3.FirstName = "ciasom";
+            var person3 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "ciasom");
 
             DatabaseContext.Persons.Add(person1);
             DatabaseContext.Persons.Add(person2);
