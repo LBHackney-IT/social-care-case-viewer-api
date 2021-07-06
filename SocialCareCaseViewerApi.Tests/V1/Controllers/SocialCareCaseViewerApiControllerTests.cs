@@ -67,18 +67,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void ListContactsReturns400WhenQueryParametersAreInvalid()
-        {
-            _mockGetAllUseCase.Setup(x => x.Execute(It.IsAny<ResidentQueryParam>(), 2, 3))
-                .Throws(new InvalidQueryParameterException("Invalid Parameters"));
-
-            var response = _classUnderTest.ListContacts(new ResidentQueryParam(), 2, 3) as BadRequestObjectResult;
-
-            response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be("Invalid Parameters");
-        }
-
-        [Test]
         public void AddNewResidentReturns201WhenSuccessful()
         {
             var addNewResidentResponse = _fixture.Create<AddNewResidentResponse>();

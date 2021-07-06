@@ -37,12 +37,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new WorkerTeam { Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId };
         }
 
-        public static dbPerson CreatePersonDatabaseEntity()
+        public static dbPerson CreatePersonDatabaseEntity(long? personId = null, string firstName = null, string lastName = null)
         {
-            string firstName = "First";
-            string lastName = "Last";
+            string fName = string.IsNullOrEmpty(firstName) ? "First" : firstName;
+            string lName = string.IsNullOrEmpty(lastName) ? "Last" : lastName;
 
             return new Faker<dbPerson>()
+                .RuleFor(p => p.Id, f => personId == null ? f.UniqueIndex : personId)
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
@@ -53,9 +54,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
-                .RuleFor(p => p.FirstName, firstName)
-                .RuleFor(p => p.LastName, f => lastName)
-                .RuleFor(p => p.FullName, $"{firstName} {lastName}") //TODO: how to combine two props?
+                .RuleFor(p => p.FirstName, fName)
+                .RuleFor(p => p.LastName, f => lName)
+                .RuleFor(p => p.FullName, $"{fName} {lName}") //TODO: how to combine two props?
                 .RuleFor(p => p.Title, f => f.Random.String2(2))
                 .RuleFor(p => p.Gender, f => f.Random.String2(1))
                 .RuleFor(p => p.LastModifiedAt, f => f.Date.Past())
@@ -71,11 +72,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static Address CreateAddressDatabaseEntity(
             long? personId = null,
             string isDisplayAddress = null,
-            DateTime? endDate = null
+            DateTime? endDate = null,
+            string postCode = null,
+            string address = null
         )
         {
             return new Faker<Address>()
-                 .RuleFor(a => a.AddressLines, f => f.Address.FullAddress())
+                 .RuleFor(a => a.AddressLines, f => string.IsNullOrEmpty(address) ? f.Address.FullAddress() : address)
                  .RuleFor(a => a.CreatedAt, f => f.Date.Past())
                  .RuleFor(a => a.CreatedBy, f => f.Internet.Email())
                  .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
@@ -85,7 +88,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                  .RuleFor(a => a.LastModifiedBy, f => f.Internet.Email())
                  .RuleFor(a => a.PersonAddressId, f => f.Random.Int())
                  .RuleFor(a => a.PersonId, personId)
-                 .RuleFor(a => a.PostCode, f => f.Address.ZipCode())
+                 .RuleFor(a => a.PostCode, f => string.IsNullOrEmpty(postCode) ? f.Address.ZipCode() : postCode)
                  .RuleFor(a => a.Uprn, f => f.Random.Int());
         }
 

@@ -45,25 +45,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Returns list of contacts who share the query search parameter
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
-        /// <response code="400">Invalid Query Parameter.</response>
-        [ProducesResponseType(typeof(CareCaseDataList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents")]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
         {
-            try
-            {
-                return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
-            }
-            //TODO: add better Mosaic API error handling
-            catch (MosaicApiException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.GetType().Name.ToString()} : {ex.Message}");
-            }
-            catch (InvalidQueryParameterException e)
-            {
-                return BadRequest(e.Message);
-            }
+            return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
         }
 
         /// <summary>
