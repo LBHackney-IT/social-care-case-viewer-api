@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -10,11 +11,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public class GetAllUseCase : IGetAllUseCase
     {
         private IDatabaseGateway _databaseGateway;
-        private IMosaicAPIGateway _mosaicAPIGateway;
-        public GetAllUseCase(IDatabaseGateway databaseGateway, IMosaicAPIGateway mosaicAPIGateway)
+        public GetAllUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
-            _mosaicAPIGateway = mosaicAPIGateway;
         }
 
         public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
@@ -33,13 +32,35 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (!string.IsNullOrEmpty(rqp.MosaicId))
             {
                 //ensure we have valid mosaic id, otherwise return no results
-                if (!Int64.TryParse(rqp.MosaicId, out _))
+                if (!long.TryParse(rqp.MosaicId, out _))
                 {
                     return new ResidentInformationList() { Residents = new List<ResidentInformation>() };
                 }
             }
 
-            return _mosaicAPIGateway.GetResidents(rqp, cursor, limit);
+            limit = limit < 10 ? 10 : limit;
+            limit = limit > 100 ? 100 : limit;
+
+            long? mosaicId = rqp.MosaicId != null ? Convert.ToInt64(rqp.MosaicId) : (long?) null;
+
+            var residents = _databaseGateway.GetResidentsBySearchCriteria(
+                cursor: cursor,
+                limit: limit,
+                id: mosaicId,
+                firstName: rqp.FirstName,
+                lastName: rqp.LastName,
+                dateOfBirth: rqp.DateOfBirth,
+                postcode: rqp.Postcode,
+                address: rqp.Address,
+                contextFlag: rqp.ContextFlag);
+
+            var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
+
+            return new ResidentInformationList
+            {
+                Residents = residents,
+                NextCursor = nextCursor
+            };
         }
     }
 }
