@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using FluentAssertions;
@@ -36,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories.Response
         [Test]
         public void WhenThereArePersonalRelationshipsOfSameTypeReturnsAllPersonsForThatType()
         {
-            var (person, otherPersons, personalRelationships) = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationshipsOfSameType();
+            var (person, otherPersons, personalRelationships, details) = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationshipsOfSameType();
 
             var response = personalRelationships.ToResponse();
 
@@ -45,10 +46,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories.Response
             response.FirstOrDefault().Persons.Should().Contain(p => p.FirstName == otherPersons[0].FirstName);
             response.FirstOrDefault().Persons.Should().Contain(p => p.LastName == otherPersons[0].LastName);
             response.FirstOrDefault().Persons.Should().Contain(p => p.Gender == otherPersons[0].Gender);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.IsMainCarer == personalRelationships[0].IsMainCarer);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.IsInformalCarer == personalRelationships[0].IsInformalCarer);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.Details == details[0].Details);
             response.FirstOrDefault().Persons.Should().Contain(p => p.Id == otherPersons[1].Id);
             response.FirstOrDefault().Persons.Should().Contain(p => p.FirstName == otherPersons[1].FirstName);
             response.FirstOrDefault().Persons.Should().Contain(p => p.LastName == otherPersons[1].LastName);
             response.FirstOrDefault().Persons.Should().Contain(p => p.Gender == otherPersons[1].Gender);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.IsMainCarer == personalRelationships[1].IsMainCarer);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.IsInformalCarer == personalRelationships[1].IsInformalCarer);
+            response.FirstOrDefault().Persons.Should().Contain(p => p.Details == details[1].Details);
+        }
+
+        [Test]
+        public void WhenDetailsIsNullDoesNotThrowNullReferenceException()
+        {
+            var (person, otherPersons, personalRelationships) = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationships();
+            person.PersonalRelationships[0].Details = null;
+            person.PersonalRelationships[1].Details = null;
+            person.PersonalRelationships[2].Details = null;
+
+            Action act = () => personalRelationships.ToResponse();
+
+            act.Should().NotThrow<NullReferenceException>();
         }
     }
 }

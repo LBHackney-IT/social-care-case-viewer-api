@@ -129,6 +129,7 @@ namespace SocialCareCaseViewerApi
             services.AddTransient<IValidator<UpdateCaseSubmissionRequest>, UpdateCaseSubmissionRequestValidator>();
             services
                 .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
+            services.AddTransient<IValidator<CreatePersonalRelationshipRequest>, CreatePersonalRelationshipRequestValidator>();
 
             services.AddScoped<ISystemTime, SystemTime>();
         }
@@ -167,6 +168,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IPersonUseCase, PersonUseCase>();
             services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
+            services.AddScoped<IPersonalRelationshipsUseCase, PersonalRelationshipsUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -905,6 +905,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return personWithRelationships;
         }
 
+        public PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description)
+        {
+            return _databaseContext.PersonalRelationshipTypes
+                .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
+        }
+
+        public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)
+        {
+            var personalRelationship = new Infrastructure.PersonalRelationship()
+            {
+                PersonId = request.PersonId,
+                OtherPersonId = request.OtherPersonId,
+                TypeId = (long) request.TypeId,
+                IsMainCarer = request.IsMainCarer?.ToUpper(),
+                IsInformalCarer = request.IsInformalCarer?.ToUpper(),
+                StartDate = _systemTime.Now,
+                Details = new PersonalRelationshipDetail()
+                {
+                    Details = request.Details
+                }
+            };
+
+            _databaseContext.PersonalRelationships.Add(personalRelationship);
+            _databaseContext.SaveChanges();
+
+            return personalRelationship;
+        }
+
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end

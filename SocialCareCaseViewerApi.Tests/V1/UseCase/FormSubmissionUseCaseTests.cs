@@ -265,7 +265,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id });
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
             var worker = TestHelpers.CreateWorker();
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 
@@ -283,7 +283,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.UpdateCaseSubmissionRequest(residents: new List<long> { resident.Id, resident.Id });
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
             var worker = TestHelpers.CreateWorker();
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
 

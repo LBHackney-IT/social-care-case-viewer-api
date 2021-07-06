@@ -62,10 +62,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             person.PersonalRelationships = personalrelationships;
 
+            var details = CreatePersonalRelationshipDetail(personalrelationships[0].Id);
+
+            person.PersonalRelationships[0].Details = details;
+            person.PersonalRelationships[1].Details = details;
+            person.PersonalRelationships[2].Details = details;
+
             return (person, otherPersons, personalrelationships);
         }
 
-        public static (Person, List<Person>, List<PersonalRelationship>) CreatePersonWithPersonalRelationshipsOfSameType()
+        public static (Person, List<Person>, List<PersonalRelationship>, List<PersonalRelationshipDetail>) CreatePersonWithPersonalRelationshipsOfSameType()
         {
             var person = TestHelpers.CreatePerson();
             var otherPersons = new List<Person>()
@@ -84,7 +90,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             person.PersonalRelationships = personalrelationships;
 
-            return (person, otherPersons, personalrelationships);
+            var details = new List<PersonalRelationshipDetail>()
+            {
+                CreatePersonalRelationshipDetail(personalrelationships[0].Id),
+                CreatePersonalRelationshipDetail(personalrelationships[1].Id),
+            };
+
+            person.PersonalRelationships[0].Details = details[0];
+            person.PersonalRelationships[1].Details = details[1];
+
+            return (person, otherPersons, personalrelationships, details);
         }
 
         public static PersonalRelationship CreatePersonalRelationship(
@@ -120,22 +135,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<PersonalRelationshipType>()
                 .RuleFor(prt => prt.Id, f => f.UniqueIndex)
-                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
+                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20))
+                .RuleFor(prt => prt.InverseTypeId, f => f.UniqueIndex);
         }
 
         public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(
+            long? personId = null,
+            long? otherPersonId = null,
+            long? typeId = null,
+            string type = "parent",
             string? isMainCarer = null,
             string? isInformalCarer = null,
             string? details = null
         )
         {
             return new Faker<CreatePersonalRelationshipRequest>()
-                .RuleFor(pr => pr.PersonId, f => f.UniqueIndex + 1)
-                .RuleFor(pr => pr.OtherPersonId, f => f.UniqueIndex + 1)
-                .RuleFor(pr => pr.Type, f => "parent")
+                .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(pr => pr.OtherPersonId, f => otherPersonId ?? f.UniqueIndex + 2)
+                .RuleFor(pr => pr.Type, type)
+                .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
                 .RuleFor(pr => pr.IsMainCarer, f => isMainCarer ?? f.Random.String2(1, "YNyn"))
                 .RuleFor(pr => pr.IsInformalCarer, f => isInformalCarer ?? f.Random.String2(1, "YNyn"))
-                .RuleFor(pr => pr.Details, f => details ?? f.Random.String(1000));
+                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000));
+        }
+
+        public static (Person, Person) SavePersonAndOtherPersonToDatabase(DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+            var otherPerson = TestHelpers.CreatePerson();
+
+            databaseContext.Persons.Add(person);
+            databaseContext.Persons.Add(otherPerson);
+            databaseContext.SaveChanges();
+
+            return (person, otherPerson);
         }
     }
 }

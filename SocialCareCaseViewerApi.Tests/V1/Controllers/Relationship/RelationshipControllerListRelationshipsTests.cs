@@ -1,30 +1,30 @@
 using AutoFixture;
-using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Controllers
+namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
 {
     [TestFixture]
-    public class RelationshipControllerTests
+    public class RelationshipControllerListRelationshipsTests
     {
         private RelationshipController _classUnderTest;
         private Mock<IRelationshipsUseCase> _mockRelationshipsUseCase;
+        private Mock<IPersonalRelationshipsUseCase> _mockPersonalRelationshipsUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockRelationshipsUseCase = new Mock<IRelationshipsUseCase>();
+            _mockPersonalRelationshipsUseCase = new Mock<IPersonalRelationshipsUseCase>();
 
-            _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object);
+            _classUnderTest = new RelationshipController(_mockRelationshipsUseCase.Object, _mockPersonalRelationshipsUseCase.Object);
         }
 
         [Test]

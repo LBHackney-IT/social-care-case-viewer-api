@@ -16,14 +16,17 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("type")]
         public string Type { get; set; } = null!;
 
+        [JsonIgnore]
+        public long? TypeId { get; set; }
+
         [JsonPropertyName("isMainCarer")]
-        public string IsMainCarer { get; set; } = null!;
+        public string? IsMainCarer { get; set; }
 
         [JsonPropertyName("isInformalCarer")]
-        public string IsInformalCarer { get; set; } = null!;
+        public string? IsInformalCarer { get; set; }
 
         [JsonPropertyName("details")]
-        public string Details { get; set; } = null!;
+        public string? Details { get; set; }
     }
 
     public class CreatePersonalRelationshipRequestValidator : AbstractValidator<CreatePersonalRelationshipRequest>
@@ -37,10 +40,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.Type)
                 .NotNull().WithMessage("'type' must be provided.");
             RuleFor(pr => pr.IsMainCarer)
-                .NotNull().WithMessage("'isMainCarer' must be provided.")
                 .Matches("(?i:^Y|N)$").WithMessage("'isMainCarer' must be 'Y' or 'N'.");
             RuleFor(pr => pr.IsInformalCarer)
-                .NotNull().WithMessage("'isInformalCarer' must be provided.")
                 .Matches("(?i:^Y|N)$").WithMessage("'isInformalCarer' must be 'Y' or 'N'.");
             RuleFor(pr => pr.Details)
                 .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
