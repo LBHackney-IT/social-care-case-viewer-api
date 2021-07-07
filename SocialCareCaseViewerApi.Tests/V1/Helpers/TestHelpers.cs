@@ -476,7 +476,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             InfrastructurePerson? resident = null,
             int? residentId = null,
             ObjectId? id = null,
-            string? formId = null)
+            string? formId = null,
+            List<string>? tags = null)
         {
             worker ??= CreateWorker();
             resident ??= CreatePerson(residentId);
@@ -484,16 +485,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
-                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
-                .RuleFor(s => s.Workers, new List<Worker> { worker })
+                .RuleFor(s => s.Residents, new List<InfrastructurePerson> {resident})
+                .RuleFor(s => s.Workers, new List<Worker> {worker})
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
-                .RuleFor(s => s.EditHistory, f => new List<EditHistory<Worker>>
-                {
-                    new EditHistory<Worker>{ Worker = worker,  EditTime = dateTime ?? f.Date.Recent() }
-                })
+                .RuleFor(s => s.EditHistory,
+                    f => new List<EditHistory<Worker>>
+                    {
+                        new EditHistory<Worker> {Worker = worker, EditTime = dateTime ?? f.Date.Recent()}
+                    })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>());
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
+                .RuleFor(s => s.Tags, tags);
         }
 
         public static ListCasesRequest CreateListCasesRequest(bool nullMosaicId = false)
@@ -506,14 +509,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? updatedBy = null,
             string? submissionState = null,
             List<long>? residents = null,
-            string? rejectionReason = null
+            string? rejectionReason = null,
+            List<string>? tags = null
         )
         {
             return new Faker<UpdateCaseSubmissionRequest>()
                 .RuleFor(s => s.EditedBy, f => updatedBy ?? f.Person.Email)
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
-                .RuleFor(s => s.RejectionReason, rejectionReason);
+                .RuleFor(s => s.RejectionReason, rejectionReason)
+                .RuleFor(s => s.Tags, tags);
         }
     }
 }
