@@ -79,6 +79,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
+            UpdateTags(updatedSubmission, request);
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -197,6 +198,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var newResident = residentsWithoutDuplicates.Select(GetSanitisedResident).ToList();
 
             caseSubmission.Residents = newResident;
+        }
+
+        private static void UpdateTags(CaseSubmission caseSubmission, UpdateCaseSubmissionRequest request)
+        {
+            if (request.Tags == null) return;
+
+            caseSubmission.Tags = request.Tags;
         }
 
         private Worker GetSanitisedWorker(string workerEmail)
