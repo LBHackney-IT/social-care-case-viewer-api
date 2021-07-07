@@ -485,8 +485,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
-                .RuleFor(s => s.Residents, new List<InfrastructurePerson> {resident})
-                .RuleFor(s => s.Workers, new List<Worker> {worker})
+                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
+                .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
                 .RuleFor(s => s.EditHistory,

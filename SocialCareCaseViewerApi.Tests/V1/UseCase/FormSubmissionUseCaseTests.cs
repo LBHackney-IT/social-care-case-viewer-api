@@ -546,7 +546,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteUpdateSubmissionUpdatesSubmissionsTagsIfTheRequestIncludesTags()
         {
-            var tags = new List<string> {"tag one", "tag two"};
+            var tags = new List<string> { "tag one", "tag two" };
 
             var resident = TestHelpers.CreatePerson();
             var request = TestHelpers.UpdateCaseSubmissionRequest(tags: tags);
