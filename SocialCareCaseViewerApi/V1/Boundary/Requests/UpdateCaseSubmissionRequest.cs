@@ -18,6 +18,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("rejectionReason")]
         public string? RejectionReason { get; set; }
+
+        [JsonPropertyName("tags")]
+        public List<string>? Tags { get; set; }
     }
 
     public class UpdateCaseSubmissionRequestValidator : AbstractValidator<UpdateCaseSubmissionRequest>
