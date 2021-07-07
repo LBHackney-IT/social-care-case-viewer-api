@@ -204,11 +204,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (request.Tags == null) return;
 
-            if (caseSubmission.SubmissionState != SubmissionState.InProgress)
-            {
-                throw new UpdateSubmissionException("Cannot update tags for submission, submission state not 'in progress'");
-            }
-
             caseSubmission.Tags = request.Tags;
         }
 
