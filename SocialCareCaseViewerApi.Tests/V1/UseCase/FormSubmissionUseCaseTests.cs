@@ -563,6 +563,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
             response.Tags.Should().BeEquivalentTo(tags);
         }
+
+        [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
+        public void ExecuteUpdateSubmissionUpdatesSubmissionsTagsThrowsExceptionIfNotInProgress(SubmissionState submissionState)
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(tags: new List<string> {"tag one", "tag two"});
+            var createdSubmission = TestHelpers.CreateCaseSubmission(submissionState);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>().WithMessage("Cannot update tags for submission, submission state not 'in progress'");
+        }
     }
 }
 
