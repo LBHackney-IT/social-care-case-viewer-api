@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
             DatabaseContext.PersonOtherNames.Add(otherName);
 
             //allocations
-            var allocation = TestHelpers.CreateAllocation(personId: (int)personToBeDeleted.Id);
+            var allocation = TestHelpers.CreateAllocation(personId: (int) personToBeDeleted.Id);
             DatabaseContext.Allocations.Add(allocation);
 
             //warning notes

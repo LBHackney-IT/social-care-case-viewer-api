@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             otherPersonInResponse.FirstName.Should().Be(otherPerson.FirstName);
             otherPersonInResponse.LastName.Should().Be(otherPerson.LastName);
             otherPersonInResponse.Gender.Should().Be(otherPerson.Gender);
-        }       
+        }
 
         [Test]
         public void WhenThereIsARelationshipReturnsTheDescriptionOfThePersonalRelationshipType()
