@@ -151,7 +151,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
         }
 
-        private static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
+        public static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
         {
             var caseStatusChoices = new List<string> { "open", "closed" };
 

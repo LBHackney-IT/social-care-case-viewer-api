@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             otherPersonInResponse.FirstName.Should().Be(otherPerson.FirstName);
             otherPersonInResponse.LastName.Should().Be(otherPerson.LastName);
             otherPersonInResponse.Gender.Should().Be(otherPerson.Gender);
-        }
+        }       
 
         [Test]
         public void WhenThereIsARelationshipReturnsTheDescriptionOfThePersonalRelationshipType()
@@ -121,6 +121,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var andAnotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person, andAnotherPerson, personalRelationshipType, hasEnded: true, id: 2);
             DatabaseContext.Persons.Add(anotherPerson);
             DatabaseContext.Persons.Add(andAnotherPerson);
+            DatabaseContext.PersonalRelationships.Add(anotherRelationship);
+            DatabaseContext.PersonalRelationships.Add(andAnotherRelationship);
+            DatabaseContext.SaveChanges();
+
+            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(person.Id);
+
+            response.PersonalRelationships.Should().HaveCount(2);
+        }
+
+        [Test]
+        public void WhenThereAreRelationshipsDoesNotReturnRelationshipsAgainstPersonsMarkedForDeletion()
+        {
+            var (person, _, _, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
+
+            var anotherPerson = TestHelpers.CreatePerson();
+            var anotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person, anotherPerson, personalRelationshipType, id: 1);
+
+            var personMarkedForDeletion = TestHelpers.CreatePerson();
+            personMarkedForDeletion.MarkedForDeletion = true;
+
+            var andAnotherRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(person, personMarkedForDeletion, personalRelationshipType, id: 2);
+
+            DatabaseContext.Persons.Add(anotherPerson);
+            DatabaseContext.Persons.Add(personMarkedForDeletion);
             DatabaseContext.PersonalRelationships.Add(anotherRelationship);
             DatabaseContext.PersonalRelationships.Add(andAnotherRelationship);
             DatabaseContext.SaveChanges();
