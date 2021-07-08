@@ -13,7 +13,6 @@ title Component diagram for Social Care Case Viewer Service API
 Container_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
 Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
 Container_Ext(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
-Container_Ext(mosaic_platform_api, "Mosaic Resident Information Platform API", "Lambda, C#", "Provides person search")
 
 Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(api_gateway, "API Gateway", "API Gateway", "Routing and auth via API keys")
@@ -21,7 +20,7 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(mongodb_import_lambda, "MongoDB Import Lambda", "Lambda", "Imports form data")
     Component(s3_bucket, "S3 Bucket", "S3 Bucket", "Stores form data and allocations")
 
-    Component(persons, "Persons", "GET, POST", "Returns and creates persons")
+    Component(persons, "Persons", "GET, POST", "Returns, creates and updates persons")
     Component(workers, "Workers", "GET", "Returns worker details")
     Component(allocations, "Allocations", "GET, POST", "Returns and creates cases")
     Component(cases, "Cases", "GET, POST", "Returns and creates allocations of workers")
@@ -41,8 +40,7 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Rel(social_care_front_end, api_gateway, "Uses", "JSON/HTTPS")
 
     Rel(api_lambda, persons, "Uses", "JSON/HTTPS")
-    Rel(persons, mosaic_platform_api, "Uses", "Entity Framework/SSL")
-    Rel_U(mosaic_platform_api, postgres, "Uses", "Entity Framework/SSL")
+    Rel(persons, postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, workers, "Uses", "JSON/HTTPS")
     Rel(workers, postgres, "Uses", "Entity Framework/SSL")

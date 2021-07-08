@@ -79,6 +79,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
+            UpdateTags(updatedSubmission, request.Tags);
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -107,6 +108,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Worker = worker,
                 EditTime = DateTime.Now
             });
+            UpdateTags(submission, request.Tags);
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
@@ -197,6 +199,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var newResident = residentsWithoutDuplicates.Select(GetSanitisedResident).ToList();
 
             caseSubmission.Residents = newResident;
+        }
+
+        private static void UpdateTags(CaseSubmission caseSubmission, List<string>? tags)
+        {
+            if (tags == null) return;
+
+            caseSubmission.Tags = tags;
         }
 
         private Worker GetSanitisedWorker(string workerEmail)

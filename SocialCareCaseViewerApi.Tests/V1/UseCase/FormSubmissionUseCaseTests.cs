@@ -542,5 +542,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             act.Should().Throw<WorkerNotFoundException>()
                 .WithMessage($"Worker with email {request.EditedBy} not found");
         }
+
+        [Test]
+        public void ExecuteUpdateSubmissionUpdatesSubmissionsTagsIfTheRequestIncludesTags()
+        {
+            var tags = new List<string> { "tag one", "tag two" };
+
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(tags: tags);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.Tags.Should().BeEquivalentTo(tags);
+        }
     }
 }
+
+

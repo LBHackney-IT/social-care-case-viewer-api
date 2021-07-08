@@ -18,6 +18,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string
         StepAnswers
         { get; set; } = null!;
+
+        [JsonPropertyName("tags")]
+        public List<string>? Tags { get; set; }
     }
 
     public class UpdateFormSubmissionAnswersValidator : AbstractValidator<UpdateFormSubmissionAnswersRequest>
