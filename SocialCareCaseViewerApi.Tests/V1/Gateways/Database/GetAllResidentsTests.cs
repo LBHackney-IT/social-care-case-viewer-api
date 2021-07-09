@@ -226,6 +226,43 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
+        public void GetAllResidentsWithPostCodeQueryParameterReturnsOnlyResidentsWithPostcodeInDisplayAddress()
+        {
+            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            DatabaseContext.Persons.Add(person1);
+            DatabaseContext.Persons.Add(person2);
+            DatabaseContext.SaveChanges();
+
+            var address1 = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person1.Id, postCode: "E83 AS");
+            var address2 = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person2.Id, postCode: "E83 AS", isDisplayAddress: "N");
+
+            DatabaseContext.Addresses.Add(address1);
+            DatabaseContext.Addresses.Add(address2);
+            DatabaseContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, postcode: "E83 AS");
+
+            listOfPersons.Count.Should().Be(1);
+            listOfPersons.First().MosaicId.Should().Be(person1.Id.ToString());
+        }
+
+        [Test]
+        public void GetAllResidentsWithPostCodeQueryParameterReturnsEmptyListWhenNoMatchingResidentsWithPostcodeInDisplayAddressAreFound()
+        {
+            var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person.Id, postCode: "E83 AS", isDisplayAddress: "N");
+
+            DatabaseContext.Addresses.Add(address);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, postcode: "E83 AS").Should().BeEmpty();
+        }
+
+        [Test]
         public void GetAllResidentsWithPostCodeQueryParameterReturnsMatchingResident()
         {
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();

@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static Address CreateAddressDatabaseEntity(
             long? personId = null,
-            string isDisplayAddress = null,
+            string isDisplayAddress = "Y",
             DateTime? endDate = null,
             string postCode = null,
             string address = null
