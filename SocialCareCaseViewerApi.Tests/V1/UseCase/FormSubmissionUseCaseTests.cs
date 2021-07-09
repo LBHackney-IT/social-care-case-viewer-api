@@ -563,7 +563,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
             response.Tags.Should().BeEquivalentTo(tags);
         }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToApprovedThrowsUpdateSubmissionExceptionIfApproverIsAlsoWorkerOnTheSubmission()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var worker = TestHelpers.CreateWorker();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: worker.Email, submissionState: "approved");
+            var createdSubmission = TestHelpers.CreateCaseSubmission(worker: worker, submissionState: SubmissionState.InProgress);
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+        }
     }
 }
-
 
