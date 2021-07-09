@@ -570,7 +570,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var resident = TestHelpers.CreatePerson();
             var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: worker.Email, submissionState: "approved");
-            var createdSubmission = TestHelpers.CreateCaseSubmission(worker: worker, submissionState: SubmissionState.InProgress);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(worker: worker, submissionState: SubmissionState.Submitted);
 
             _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);

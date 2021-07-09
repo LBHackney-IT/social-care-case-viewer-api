@@ -168,6 +168,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
+                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToLower().Equals(request.EditedBy.ToLower())))
+                    {
+                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+                    }
                     submission.ApprovedAt = DateTime.Now;
                     submission.ApprovedBy = worker;
                     break;
