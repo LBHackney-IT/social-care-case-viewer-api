@@ -12,12 +12,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates
         public int Id { get; set; }
 
         //id of the person marked for deletion
-        [Column("deleted_id")]
+        [Column("deleted_person_id")]
         [MaxLength(16)]
         public long DeletedId { get; set; }
 
         //person id used for merging records
-        [Column("master_id")]
+        [Column("master_person_id")]
         [MaxLength(16)]
         public long MasterId { get; set; }
 

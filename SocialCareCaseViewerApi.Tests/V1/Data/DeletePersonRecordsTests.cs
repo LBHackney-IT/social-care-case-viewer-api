@@ -1,4 +1,3 @@
-using Bogus;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -18,45 +17,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
                    UPDATE dbo.dm_persons p
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = p.person_id;
+                   WHERE d.fk_person_id_to_delete = p.person_id;
                   
                    UPDATE dbo.dm_addresses a
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = a.person_id;
+                   WHERE d.fk_person_id_to_delete = a.person_id;
 
                    UPDATE dbo.dm_telephone_numbers t
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = t.person_id;
+                   WHERE d.fk_person_id_to_delete = t.person_id;
 
                    UPDATE dbo.sccv_person_other_name o
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = o.person_id;
+                   WHERE d.fk_person_id_to_delete = o.person_id;
 
                    UPDATE dbo.sccv_allocations_combined al
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = al.mosaic_id;
+                   WHERE d.fk_person_id_to_delete = al.mosaic_id;
 
                    UPDATE dbo.sccv_warning_note w
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = w.person_id;
+                   WHERE d.fk_person_id_to_delete = w.person_id;
 
                    UPDATE dbo.sccv_personal_relationship r
                    SET marked_for_deletion = true     
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = r.fk_person_id;
+                   WHERE d.fk_person_id_to_delete = r.fk_person_id;
 
                    UPDATE dbo.sccv_personal_relationship ri
                    SET marked_for_deletion = true
                    FROM dbo.sccv_person_record_to_be_deleted d
-                   WHERE d.fk_id_to_delete = ri.fk_other_person_id;
+                   WHERE d.fk_person_id_to_delete = ri.fk_other_person_id;
 
-                   INSERT INTO dbo.sccv_deleted_person_record(deleted_id, master_id)
-                   SELECT fk_id_to_delete, fk_master_id
+                   INSERT INTO dbo.sccv_deleted_person_record(deleted_person_id, master_person_id)
+                   SELECT fk_person_id_to_delete, fk_master_person_id
                    FROM dbo.sccv_person_record_to_be_deleted;
                    ";
 
@@ -70,7 +69,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
         public void SetsTheMarkedForDeletionFlagForPersonAndRelatedEntitiesAndUpdatesTheDeletedPersonRecordsTableWithCorrectRecords()
         {
             //person to be deleted, new master record and relationship
-            var (personToBeDeleted, newMasterPersonRecord, personalRelationship, _, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
+            var (personToBeDeleted, newMasterPersonRecord, personalRelationship, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
 
             //address
             var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: personToBeDeleted.Id);
@@ -92,18 +91,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
             var warningNote = TestHelpers.CreateWarningNote(personId: personToBeDeleted.Id);
             DatabaseContext.WarningNotes.Add(warningNote);
 
-            //inverse relationship
-            var inversePersonalRelationship = new Faker<PersonalRelationship>()
-              .RuleFor(pr => pr.Id, f => f.UniqueIndex)
-              .RuleFor(pr => pr.PersonId, newMasterPersonRecord.Id)
-              .RuleFor(pr => pr.OtherPersonId, personToBeDeleted.Id)
-              .RuleFor(pr => pr.OtherPerson, personToBeDeleted)
-              .RuleFor(pr => pr.TypeId, personalRelationship.TypeId)
-              .RuleFor(pr => pr.StartDate, f => f.Date.Past())
-              .RuleFor(pr => pr.EndDate, f => f.Date.Future())
-              .RuleFor(pr => pr.IsInformalCarer, f => f.Random.String2(1, "YN"))
-              .RuleFor(pr => pr.ParentalResponsibility, f => f.Random.String2(1, "YN"));
-
+            //inverse relationship (type not handled for simplicity)
+            var inversePersonalRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(newMasterPersonRecord, personToBeDeleted, personalRelationshipType);
             DatabaseContext.PersonalRelationships.Add(inversePersonalRelationship);
 
             //record marked for deletion
@@ -112,7 +101,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
                 IdToDelete = personToBeDeleted.Id,
                 MasterId = newMasterPersonRecord.Id
             });
-
+                   
             DatabaseContext.SaveChanges();
 
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);
