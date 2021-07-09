@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
                 IdToDelete = personToBeDeleted.Id,
                 MasterId = newMasterPersonRecord.Id
             });
-                   
+
             DatabaseContext.SaveChanges();
 
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);
