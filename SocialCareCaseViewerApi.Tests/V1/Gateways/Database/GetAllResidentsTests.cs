@@ -413,7 +413,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person.Id, postCode: postcode, isDisplayAddress: "Y");
+            var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: person.Id, postCode: postcode);
 
             DatabaseContext.Addresses.Add(address);
             DatabaseContext.SaveChanges();
