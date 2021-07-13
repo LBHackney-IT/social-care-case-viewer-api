@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
@@ -1412,6 +1413,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var result = _classUnderTest.GetPersonByMosaicId(0L);
 
             result.Should().BeNull();
+        }
+
+        [Test]
+        public void GetPersonIdsByEmergencyIdReturnsEmptyListWhenNoMatchingRecordsFound()
+        {
+            _classUnderTest.GetPersonIdsByEmergencyId(123).Count.Should().Be(0);
+        }
+
+        [Test]
+        public void GetPersonIdsByEmergencyIdReturnsListOfMatchingPersonIds()
+        {
+            var person1 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33004455));
+            var person2 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33007788));
+            var person3 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33009900));
+
+            DatabaseContext.PersonLookups.Add(
+                new PersonIdLookup()
+                {
+                    MosaicId = person1.Id.ToString(),
+                    NCId = "NC123"
+                }
+            );
+
+            DatabaseContext.PersonLookups.Add(
+               new PersonIdLookup()
+               {
+                   MosaicId = person2.Id.ToString(),
+                   NCId = "TMP123"
+               }
+           );
+
+            DatabaseContext.SaveChanges();
+
+            var result = _classUnderTest.GetPersonIdsByEmergencyId(123);
+
+            result.Count.Should().Be(2);
+            result.Any(x => x == person1.Id).Should().BeTrue();
+            result.Any(x => x == person2.Id).Should().BeTrue();
+            result.Any(x => x == person3.Id).Should().BeFalse();
         }
 
         private Person SavePersonToDatabase(Person person)
