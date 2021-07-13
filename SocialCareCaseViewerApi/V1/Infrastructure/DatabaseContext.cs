@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -27,6 +28,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PersonalRelationshipType> PersonalRelationshipTypes { get; set; }
         public DbSet<PersonalRelationship> PersonalRelationships { get; set; }
         public DbSet<PersonalRelationshipDetail> PersonalRelationshipDetails { get; set; }
+        public DbSet<PersonRecordToBeDeleted> PersonRecordsToBeDeleted { get; set; }
+        public DbSet<DeletedPersonRecord> DeletedPersonRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -67,6 +67,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("date_manager_informed")]
         public DateTime? DiscussedWithManagerDate { get; set; }
 
+        [Column("marked_for_deletion")]
+        public bool MarkedForDeletion { get; set; }
+
         //nav props
         public Person Person { get; set; }
 
