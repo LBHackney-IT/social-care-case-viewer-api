@@ -161,7 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Addresses
                 .Where(add => id == null || EF.Functions.ILike(add.PersonId.ToString(), id.ToString()))
                 .Where(add => string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
-                .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern))
+                .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern) && add.IsDisplayAddress == "Y")
                 .Where(add => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(add.Person.FirstName.Replace(" ", ""), firstNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(add.Person.LastName, lastNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(add.Person.AgeContext, contextFlagSearchPattern))
