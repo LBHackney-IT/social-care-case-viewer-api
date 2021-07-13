@@ -545,7 +545,7 @@ ALTER TABLE dbo.sccv_warning_note
 ALTER TABLE dbo.sccv_personal_relationship
   ALTER COLUMN marked_for_deletion SET DEFAULT FALSE;   
 
---update existing recordsUPDATE dbo.dm_persons
+--update existing records
 UPDATE dbo.dm_persons
   SET marked_for_deletion = FALSE;  
   
