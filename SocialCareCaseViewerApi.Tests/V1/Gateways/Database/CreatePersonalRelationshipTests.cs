@@ -136,5 +136,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             details?.PersonalRelationshipId.Should().Be(response.Id);
             details?.Details.Should().Be(request.Details);
         }
+
+        [Test]
+        public void AuditsThePersonalRelationship()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description
+            );
+
+            var response = _databaseGateway.CreatePersonalRelationship(request);
+
+            var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault();
+            personalRelationship?.CreatedAt.Should().NotBeNull();
+        }
+
+        [Test]
+        public void AuditsThePersonalRelationshipDetails()
+        {
+            var (person, otherPerson) = PersonalRelationshipsHelper.SavePersonAndOtherPersonToDatabase(DatabaseContext);
+            var type = DatabaseContext.PersonalRelationshipTypes.FirstOrDefault(prt => prt.Description == "parent");
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(
+                person.Id, otherPerson.Id, type.Id, type.Description
+            );
+
+            var response = _databaseGateway.CreatePersonalRelationship(request);
+
+            var details = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault();
+            details?.CreatedAt.Should().NotBeNull();
+        }
     }
 }
