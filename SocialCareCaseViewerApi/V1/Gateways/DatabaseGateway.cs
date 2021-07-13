@@ -897,7 +897,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
-        }      
+        }
 
         public List<long> GetPersonIdsByEmergencyId(long id)
         {
@@ -1064,6 +1064,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 StartDate = DateTime.Now,
                 CreatedBy = createdBy
             };
-        }      
+        }
     }
 }

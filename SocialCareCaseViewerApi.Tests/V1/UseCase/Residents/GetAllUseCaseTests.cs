@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
                     x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
                 .Returns(residents.ToList());
 
-            _getAllUseCase.Execute(new ResidentQueryParam(), cursor: 0, limit:10).NextCursor.Should().Be(expectedNextCursor);
+            _getAllUseCase.Execute(new ResidentQueryParam(), cursor: 0, limit: 10).NextCursor.Should().Be(expectedNextCursor);
         }
 
         [Test]
@@ -181,5 +181,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _mockDatabaseGateway.Verify(x => x.GetPersonsByListOfIds(listOfMatchingIds));
         }
-    } 
+    }
 }

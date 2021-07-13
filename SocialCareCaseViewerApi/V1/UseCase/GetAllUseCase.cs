@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 rqp.MosaicId = Regex.Replace(rqp.MosaicId, "[^0-9.]", "");
                 mosaicId = long.TryParse(rqp.MosaicId, out long tmp) ? (long?) tmp : null;
 
-                if(mosaicId == null)
+                if (mosaicId == null)
                 {
                     return new ResidentInformationList() { Residents = new List<ResidentInformation>() };
                 }
@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 //check for individual
                 var resident = _databaseGateway.GetPersonByMosaicId(mosaicId.Value);
 
-                if(resident != null)
+                if (resident != null)
                 {
                     residents.Add(resident.ToResidentInformationResponse());
                 }
