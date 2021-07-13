@@ -583,4 +583,3 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
     }
 }
-
