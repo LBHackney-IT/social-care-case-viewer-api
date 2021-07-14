@@ -113,6 +113,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void WhenCreatedByIsNotAnEmailAddressReturnsErrorWithMessage()
+        {
+            var badRequest = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(createdBy: "foobar");
+
+            var response = createPersonalRelationshipRequestValidator.Validate(badRequest);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be an email address.");
+        }
+
+        [Test]
         public void WhenRequestIsValidReturnsItIsValid()
         {
             var validRequest = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest();

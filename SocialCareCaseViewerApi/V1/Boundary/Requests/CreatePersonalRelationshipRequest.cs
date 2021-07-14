@@ -49,7 +49,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.Details)
                 .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
             RuleFor(pr => pr.CreatedBy)
-                .NotNull().WithMessage("'createdBy' must be provided.");
+                .NotNull().WithMessage("'createdBy' must be provided.")
+                .EmailAddress().WithMessage("'createdBy' must be an email address.");
         }
     }
 }
