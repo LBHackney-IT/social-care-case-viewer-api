@@ -9,7 +9,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string Gender { get; set; }
         public string IsMainCarer { get; set; }
         public string IsInformalCarer { get; set; }
-
         #nullable enable
         public string? Details { get; set; }
     }
