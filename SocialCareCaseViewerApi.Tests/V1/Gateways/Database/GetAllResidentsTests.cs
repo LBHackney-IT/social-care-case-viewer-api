@@ -537,5 +537,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var response = _classUnderTest.GetResidentsBySearchCriteria(0, 20);
             response.First().Uprn.Should().Be(currentAddress.Uprn.ToString());
         }
+
+        [Test]
+        public void DoesNotReturnPersonRecordsMarkedForDeletion()
+        {
+            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true);
+            var person3 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+
+            DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20);
+
+            response.Count.Should().Be(2);
+
+            response.Any(x => x.MosaicId == person1.Id.ToString()).Should().BeTrue();
+            response.Any(x => x.MosaicId == person2.Id.ToString()).Should().BeFalse();
+            response.Any(x => x.MosaicId == person3.Id.ToString()).Should().BeTrue();
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new WorkerTeam { Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId };
         }
 
-        public static dbPerson CreatePersonDatabaseEntity(long? personId = null, string firstName = null, string lastName = null)
+        public static dbPerson CreatePersonDatabaseEntity(long? personId = null, string firstName = null, string lastName = null, bool markedForDeletion = false)
         {
             string fName = string.IsNullOrEmpty(firstName) ? "First" : firstName;
             string lName = string.IsNullOrEmpty(lastName) ? "Last" : lastName;
@@ -66,7 +66,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
-                .RuleFor(p => p.Restricted, f => f.Random.String2(1));
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.MarkedForDeletion, f => markedForDeletion);
         }
 
         public static Address CreateAddressDatabaseEntity(
