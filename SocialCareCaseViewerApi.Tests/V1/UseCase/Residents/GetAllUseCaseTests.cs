@@ -20,6 +20,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         private GetAllUseCase _getAllUseCase;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private Fixture _fixture = new Fixture();
+        private const int MinimumLimit = 10;
+        private const int MaximumLimit = 100;
 
         [SetUp]
         public void SetUp()
@@ -27,17 +29,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _getAllUseCase = new GetAllUseCase(_mockDatabaseGateway.Object);
 
-            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(
-                 It.IsAny<int>(),
-                 It.IsAny<int>(),
-                 It.IsAny<long>(),
-                 It.IsAny<string>(),
-                 It.IsAny<string>(),
-                 It.IsAny<string>(),
-                 It.IsAny<string>(),
-                 It.IsAny<string>(),
-                 It.IsAny<string>())
-            ).Returns(new List<ResidentInformation>());
+            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), It.IsAny<int>(), null, null, null, null, null, null, null))
+               .Returns(new List<ResidentInformation>());
         }
 
         [Test]
@@ -53,23 +46,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         [Test]
         public void IfLimitLessThanTheMinimumWillUseTheMinimumLimit()
         {
-            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
-                .Returns(new List<ResidentInformation>()).Verifiable();
-
             _getAllUseCase.Execute(new ResidentQueryParam(), 0, 4);
+            _mockDatabaseGateway.Verify(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), MinimumLimit, null, null, null, null, null, null, null));
+        }
 
-            _mockDatabaseGateway.Verify();
+        [Test]
+        public void IfLimitIsOnTheMinimumBoundaryWillUseTheMinimumLimit()
+        {
+            _getAllUseCase.Execute(new ResidentQueryParam(), 0, 10);
+            _mockDatabaseGateway.Verify(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), MinimumLimit, null, null, null, null, null, null, null));
         }
 
         [Test]
         public void IfLimitMoreThanTheMaximumWillUseTheMaximumLimit()
         {
-            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 100, null, null, null, null, null, null, null))
-                .Returns(new List<ResidentInformation>()).Verifiable();
-
             _getAllUseCase.Execute(new ResidentQueryParam(), 0, 400);
+            _mockDatabaseGateway.Verify(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), MaximumLimit, null, null, null, null, null, null, null));
+        }
 
-            _mockDatabaseGateway.Verify();
+        [Test]
+        public void IfLimitIsOnTheMaximumBoundaryWillUseTheMaxmumLimit()
+        {
+            _getAllUseCase.Execute(new ResidentQueryParam(), 0, 100);
+            _mockDatabaseGateway.Verify(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), MaximumLimit, null, null, null, null, null, null, null));
         }
 
         [Test]
@@ -142,9 +141,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         }
 
         [Test]
-        public void CallsGetPersonByMosaicIdWhenMosaicIdIsProvided()
+        [TestCase("42")]
+        [TestCase("NC42")]
+        [TestCase("ASC42")]
+        [TestCase("TMP42")]
+        [TestCase("42NC")]
+        [TestCase("A42SC")]
+        [TestCase("TM42P")]
+        public void CallsGetPersonByMosaicIdWhenMosaicIdIsProvided(string mosaicId)
         {
-            var request = new ResidentQueryParam() { MosaicId = "43" };
+            var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
             _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(new List<long> { 1, 2 });
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
@@ -155,9 +161,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         }
 
         [Test]
-        public void CallsGetPersonIdsByEmergencyIdWhenMosaicIdIsProvided()
+        [TestCase("42")]
+        [TestCase("NC42")]
+        [TestCase("ASC42")]
+        [TestCase("TMP42")]
+        [TestCase("42NC")]
+        [TestCase("A42SC")]
+        [TestCase("TM42P")]
+        public void CallsGetPersonIdsByEmergencyIdWhenMosaicIdIsProvided(string mosaicId)
         {
-            var request = new ResidentQueryParam() { MosaicId = "43" };
+            var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
             _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(new List<long>() { 1, 2 });
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
@@ -168,9 +181,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         }
 
         [Test]
-        public void CallsGetPersonsByListOfIdsWhenMatchingEmergencyIdsFound()
+        [TestCase("42")]
+        [TestCase("NC42")]
+        [TestCase("ASC42")]
+        [TestCase("TMP42")]
+        [TestCase("42NC")]
+        [TestCase("A42SC")]
+        [TestCase("TM42P")]
+        public void CallsGetPersonsByListOfIdsWhenMatchingEmergencyIdsFound(string mosaicId)
         {
-            var request = new ResidentQueryParam() { MosaicId = "43" };
+            var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
             var listOfMatchingIds = new List<long> { 1, 2 };
 
