@@ -937,9 +937,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 IsMainCarer = request.IsMainCarer?.ToUpper(),
                 IsInformalCarer = request.IsInformalCarer?.ToUpper(),
                 StartDate = _systemTime.Now,
+                CreatedBy = request.CreatedBy,
                 Details = new PersonalRelationshipDetail()
                 {
-                    Details = request.Details
+                    Details = request.Details,
+                    CreatedBy = request.CreatedBy
                 }
             };
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_personal_relationship_detail", Schema = "dbo")]
-    public class PersonalRelationshipDetail
+    public class PersonalRelationshipDetail : IAuditEntity
     {
         [Column("id")]
         [MaxLength(16)]
