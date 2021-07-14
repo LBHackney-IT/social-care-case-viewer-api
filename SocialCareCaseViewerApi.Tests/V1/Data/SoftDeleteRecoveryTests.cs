@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
         [Test]
         public void SetsTheMarkedForDeletionFlagToFalseForPersonAndRelatedEntitiesAndRemovesTheRecordFromDeletedPersonRecordTable()
         {
-            //person to be deleted, new master record and relationship
+            //person to be restored, new master record and relationship
             var (deletedPerson, newMasterPersonRecord, personalRelationship, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
 
             //address
@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
             inversePersonalRelationship.MarkedForDeletion = true;
             DatabaseContext.PersonalRelationships.Add(inversePersonalRelationship);
 
-            //record marked as deleted
+            //record marked as soft deleted
             DatabaseContext.DeletedPersonRecords.Add(new DeletedPersonRecord()
             {
                 DeletedId = deletedPerson.Id,
