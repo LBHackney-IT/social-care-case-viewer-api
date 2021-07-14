@@ -1477,7 +1477,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result.Any(x => x == person2.Id).Should().BeTrue();
             result.Any(x => x == person3.Id).Should().BeFalse();
         }
-        
+
         [Test]
         public void GetPersonByMosaicIdReturnsNullWhenPersonIsMarkedForDeletion()
         {
