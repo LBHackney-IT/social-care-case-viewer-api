@@ -21,7 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
         {
             //person to be deleted, new master record and relationship
             var (deletedPerson, newMasterPersonRecord, personalRelationship, personalRelationshipType, _) = PersonalRelationshipsHelper.SavePersonWithPersonalRelationshipToDatabase(DatabaseContext);
-          
+
             //address
             var address = DatabaseGatewayHelper.CreateAddressDatabaseEntity(personId: deletedPerson.Id);
             address.MarkedForDeletion = true;
