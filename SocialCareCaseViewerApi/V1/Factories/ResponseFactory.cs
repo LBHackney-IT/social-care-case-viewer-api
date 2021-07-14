@@ -259,6 +259,17 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         IsMainCarer = relationship.IsMainCarer,
                         IsInformalCarer = relationship.IsInformalCarer,
                         Details = relationship.Details?.Details
+                    }).ToList(),
+                    Relationships = relationships.Select(relationship => new RelatedRelationship()
+                    {
+                        Id = relationship.Id,
+                        PersonId = relationship.OtherPerson.Id,
+                        FirstName = relationship.OtherPerson.FirstName,
+                        LastName = relationship.OtherPerson.LastName,
+                        Gender = relationship.OtherPerson.Gender,
+                        IsMainCarer = relationship.IsMainCarer,
+                        IsInformalCarer = relationship.IsInformalCarer,
+                        Details = relationship.Details?.Details
                     }
                     ).ToList()
                 }
