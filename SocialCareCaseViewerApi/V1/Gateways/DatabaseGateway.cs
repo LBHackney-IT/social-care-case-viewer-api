@@ -120,9 +120,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(p => p.Addresses)
                 .Include(p => p.PhoneNumbers);
 
-
             var dbRecords = _databaseContext.Persons
-                .Where(p => peopleIds.Contains(p.Id))
+                .Where(p => peopleIds.Contains(p.Id) && p.MarkedForDeletion == false)
                 .Include(p => p.Addresses)
                 .Include(p => p.PhoneNumbers)
                 .Select(x => x.ToResidentInformationResponse()).ToList();
@@ -446,7 +445,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Person GetPersonByMosaicId(long mosaicId)
         {
-            return _databaseContext.Persons.FirstOrDefault(x => x.Id == mosaicId);
+            return _databaseContext.Persons.FirstOrDefault(x => x.Id == mosaicId && x.MarkedForDeletion == false);
         }
 
         public string GetNCReferenceByPersonId(string personId)
@@ -892,11 +891,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
-            return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
+            return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
         }
 
         public List<long> GetPersonIdsByEmergencyId(long id)
@@ -927,6 +926,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
             }
+
+            personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.OtherPerson.MarkedForDeletion == false).ToList();
 
             return personWithRelationships;
         }

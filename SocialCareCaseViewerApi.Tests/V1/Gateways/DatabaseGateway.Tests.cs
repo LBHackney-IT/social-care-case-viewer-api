@@ -1162,6 +1162,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetPersonDetailsByIdDoesNotReturnPersonMarkedForDeletion()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var response = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
         {
             Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
@@ -1388,6 +1398,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetPersonsByListOfIdsDoesNotReturnPersonRecordsMarkedForDeletion()
+        {
+            var personOne = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var personTwo = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var listOfPersonRecords = new List<Person>() { personOne, personTwo };
+
+            var result = _classUnderTest.GetPersonsByListOfIds(listOfPersonRecords.Select(x => x.Id).ToList());
+
+            result.Count.Should().Be(1);
+            result.First().Id.Should().Be(personOne.Id);
+        }
+
+        [Test]
         public void GetPersonsByListOfIdsReturnsEmptyListWhenNoMatchingPersonsFound()
         {
             var personIds = _fixture.Create<List<long>>();
@@ -1452,6 +1476,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result.Any(x => x == person1.Id).Should().BeTrue();
             result.Any(x => x == person2.Id).Should().BeTrue();
             result.Any(x => x == person3.Id).Should().BeFalse();
+        }
+        
+        [Test]
+        public void GetPersonByMosaicIdReturnsNullWhenPersonIsMarkedForDeletion()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var result = _classUnderTest.GetPersonByMosaicId(person.Id);
+
+            result.Should().BeNull();
         }
 
         private Person SavePersonToDatabase(Person person)
