@@ -51,6 +51,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
 
             _mockDatabaseGateway.Setup(x => x.CreatePersonalRelationship(It.IsAny<CreatePersonalRelationshipRequest>()))
                 .Returns(personalRelationship);
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
+                .Returns(TestHelpers.CreateWorker(email: _request.CreatedBy));
         }
 
         [Test]
@@ -140,7 +143,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
                         request.TypeId == _typeInRequest.Id &&
                         request.IsMainCarer == _request.IsMainCarer &&
                         request.IsInformalCarer == request.IsInformalCarer &&
-                        request.Details == _request.Details
+                        request.Details == _request.Details &&
+                        request.CreatedBy == _request.CreatedBy
                 )
             ));
         }
@@ -158,9 +162,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
                         request.TypeId == _typeInRequest.InverseTypeId &&
                         request.IsMainCarer == null &&
                         request.IsInformalCarer == null &&
-                        request.Details == null
+                        request.Details == null &&
+                        request.CreatedBy == _request.CreatedBy
                 )
             ));
+        }
+
+        [Test]
+        public void WhenCreatedByEmailDoesNotExistThrowsWorkerNotFoundException()
+        {
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
+                .Returns((Worker) null);
+
+            Action act = () => _personalRelationshipsUseCase.ExecutePost(_request);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"'createdBy' with '{_request.CreatedBy}' was not found as a worker.");
         }
     }
 }

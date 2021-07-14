@@ -146,7 +146,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string type = "parent",
             string? isMainCarer = null,
             string? isInformalCarer = null,
-            string? details = null
+            string? details = null,
+            string? createdBy = null
         )
         {
             return new Faker<CreatePersonalRelationshipRequest>()
@@ -156,7 +157,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
                 .RuleFor(pr => pr.IsMainCarer, f => isMainCarer ?? f.Random.String2(1, "YNyn"))
                 .RuleFor(pr => pr.IsInformalCarer, f => isInformalCarer ?? f.Random.String2(1, "YNyn"))
-                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000));
+                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000))
+                .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
         }
 
         public static (Person, Person) SavePersonAndOtherPersonToDatabase(DatabaseContext databaseContext)

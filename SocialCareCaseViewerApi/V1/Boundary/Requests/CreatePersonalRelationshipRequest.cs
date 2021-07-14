@@ -27,6 +27,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("details")]
         public string? Details { get; set; }
+
+        [JsonPropertyName("createdBy")]
+        public string CreatedBy { get; set; } = null!;
     }
 
     public class CreatePersonalRelationshipRequestValidator : AbstractValidator<CreatePersonalRelationshipRequest>
@@ -45,6 +48,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .Matches("(?i:^Y|N)$").WithMessage("'isInformalCarer' must be 'Y' or 'N'.");
             RuleFor(pr => pr.Details)
                 .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
+            RuleFor(pr => pr.CreatedBy)
+                .NotNull().WithMessage("'createdBy' must be provided.")
+                .EmailAddress().WithMessage("'createdBy' must be an email address.");
         }
     }
 }
