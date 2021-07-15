@@ -25,6 +25,10 @@ namespace MongoDBImport
         [BsonElement("form_name")]
         public string FormName { get; set; }
 
+        [Name("form_name_overall")]
+        [BsonElement("form_name_overall")]
+        public string FormNameOverall { get; set; }
+
         [Name("mosaic_id")]
         [BsonElement("mosaic_id")]
         public string PersonId { get; set; }
