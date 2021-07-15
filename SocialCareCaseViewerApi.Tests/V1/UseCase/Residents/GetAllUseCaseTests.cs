@@ -211,7 +211,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             var expectedIdParameter = Regex.Replace(mosaicId, "[^0-9.]", "");
 
-            _mockDatabaseGateway.Verify(x => x.GetPersonIdsByEmergencyId(request.MosaicId));
+            _mockDatabaseGateway.Verify(x => x.GetPersonIdsByEmergencyId(expectedIdParameter));
         }
 
         [Test]
