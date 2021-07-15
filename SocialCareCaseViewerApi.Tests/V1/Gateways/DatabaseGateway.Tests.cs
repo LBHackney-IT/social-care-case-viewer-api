@@ -1442,7 +1442,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void GetPersonIdsByEmergencyIdReturnsEmptyListWhenNoMatchingRecordsFound()
         {
-            _classUnderTest.GetPersonIdsByEmergencyId(123).Count.Should().Be(0);
+            _classUnderTest.GetPersonIdsByEmergencyId("123").Count.Should().Be(0);
         }
 
         [Test]
@@ -1470,12 +1470,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             DatabaseContext.SaveChanges();
 
-            var result = _classUnderTest.GetPersonIdsByEmergencyId(123);
+            var result = _classUnderTest.GetPersonIdsByEmergencyId("123");
 
             result.Count.Should().Be(2);
             result.Any(x => x == person1.Id).Should().BeTrue();
             result.Any(x => x == person2.Id).Should().BeTrue();
             result.Any(x => x == person3.Id).Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase("041")]
+        [TestCase("0041")]
+        [TestCase("00041")]
+        [TestCase("000041")]
+        public void GetPersonIdsByEmergencyIdReturnsListOfMatchingPersonIdsWhenEmergencyIdHasLeadingZerosInId(string id)
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33004455));
+
+            DatabaseContext.PersonLookups.Add(
+                new PersonIdLookup()
+                {
+                    MosaicId = person.Id.ToString(),
+                    NCId = id
+                });
+
+            DatabaseContext.SaveChanges();
+
+            var result = _classUnderTest.GetPersonIdsByEmergencyId(id);
+
+            result.Count.Should().Be(1);
         }
 
         [Test]

@@ -11,6 +11,7 @@ using SocialCareCaseViewerApi.V1.UseCase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 {
@@ -123,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
               .Returns(new List<ResidentInformation>());
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(new List<long>());
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long>());
 
             _getAllUseCase.Execute(request, cursor: 0, limit: 4);
 
@@ -148,16 +149,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         [TestCase("42NC")]
         [TestCase("A42SC")]
         [TestCase("TM42P")]
-        public void CallsGetPersonByMosaicIdWhenMosaicIdIsProvided(string mosaicId)
+        public void CallsGetPersonByMosaicIdWhenMosaicIdIsProvidedWithoutZeroPrefix(string mosaicId)
         {
             var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(new List<long> { 1, 2 });
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long> { 1, 2 });
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
 
             _getAllUseCase.Execute(request, cursor: 0, limit: 4);
 
             _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(Convert.ToInt64(request.MosaicId)));
+        }
+
+        [Test]
+        [TestCase("042")]
+        [TestCase("0042")]
+        public void DoesNotCallGetPersonByMosaicIdWhenMosaicIdContainsLeadingZeros(string mosaicId)
+        {
+            var request = new ResidentQueryParam() { MosaicId = mosaicId };
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long> { 1, 2 });
+            _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
+
+            _getAllUseCase.Execute(request, cursor: 0, limit: 4);
+
+            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(It.IsAny<long>()), Times.Never);
         }
 
         [Test]
@@ -172,12 +188,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         {
             var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(new List<long>() { 1, 2 });
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long>() { 1, 2 });
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
 
             _getAllUseCase.Execute(request, cursor: 0, limit: 4);
 
-            _mockDatabaseGateway.Verify(x => x.GetPersonIdsByEmergencyId(Convert.ToInt64(request.MosaicId)));
+            _mockDatabaseGateway.Verify(x => x.GetPersonIdsByEmergencyId(request.MosaicId));
+        }
+
+        [Test]
+        [TestCase("NC042")]
+        [TestCase("NC0042")]
+        [TestCase("NC00042")]
+        public void CallsGetPersonIdsByEmergencyIdWithLettersRemovedLeavingLeadingZerosWhenMosaicIdIsProvided(string mosaicId)
+        {
+            var request = new ResidentQueryParam() { MosaicId = mosaicId };
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long>() { 1, 2 });
+            _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
+
+            _getAllUseCase.Execute(request, cursor: 0, limit: 4);
+
+            var expectedIdParameter = Regex.Replace(mosaicId, "[^0-9.]", "");
+
+            _mockDatabaseGateway.Verify(x => x.GetPersonIdsByEmergencyId(request.MosaicId));
         }
 
         [Test]
@@ -194,7 +228,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             var listOfMatchingIds = new List<long> { 1, 2 };
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<long>())).Returns(listOfMatchingIds);
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(listOfMatchingIds);
             _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(It.IsAny<List<long>>())).Returns(new List<Person>() { TestHelpers.CreatePerson() });
 
             _getAllUseCase.Execute(request, cursor: 0, limit: 4);
