@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         void UpdatePerson(UpdatePersonRequest request);
         List<Person> GetPersonsByListOfIds(List<long> ids);
         Person GetPersonByMosaicId(long mosaicId);
-        List<long> GetPersonIdsByEmergencyId(long id);
+        List<long> GetPersonIdsByEmergencyId(string id);
         Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false);
         PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description);
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);

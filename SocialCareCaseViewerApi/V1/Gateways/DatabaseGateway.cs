@@ -898,13 +898,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
         }
 
-        public List<long> GetPersonIdsByEmergencyId(long id)
+        public List<long> GetPersonIdsByEmergencyId(string id)
         {
             return _databaseContext
                .PersonLookups
                .AsNoTracking()
                .AsEnumerable()
-               .Where(x => Regex.Replace(x.NCId, "[^0-9.]", "") == id.ToString())
+               .Where(x => Regex.Replace(x.NCId, "[^0-9.]", "") == id)
                .Select(x => Convert.ToInt64(x.MosaicId)).ToList();
         }
 

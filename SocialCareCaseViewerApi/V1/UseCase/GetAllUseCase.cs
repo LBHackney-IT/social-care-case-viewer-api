@@ -38,17 +38,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //if Mosaic ID is provided, use that as a search criteria ignoring other parameters
             if (mosaicId != null)
             {
-                //check for individual
-                var resident = _databaseGateway.GetPersonByMosaicId(mosaicId.Value);
-
-                if (resident != null)
+                //check for individual. Ignore if provided id contains leading zeros as those won't be system Ids
+                if (!rqp.MosaicId.StartsWith("0"))
                 {
-                    residents.Add(resident.ToResidentInformationResponse());
+                    var resident = _databaseGateway.GetPersonByMosaicId(mosaicId.Value);
+
+                    if (resident != null)
+                    {
+                        residents.Add(resident.ToResidentInformationResponse());
+                    }
                 }
 
                 //check for matching emergency Ids
                 //This enables overlapping Mosaic and emergency IDs to be included in the results set
-                var residentsWithMatchingEmergencyIds = _databaseGateway.GetPersonIdsByEmergencyId(mosaicId.Value);
+                var residentsWithMatchingEmergencyIds = _databaseGateway.GetPersonIdsByEmergencyId(rqp.MosaicId);
 
                 //if IDs found, get the person records
                 if (residentsWithMatchingEmergencyIds.Any())
