@@ -30,6 +30,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new PersonalRelationshipTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+            var workerDoesNotExist = worker == null;
+            if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
+
             var personWithPersonalRelationships = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(request.PersonId);
 
             var personalRelationships = personWithPersonalRelationships.PersonalRelationships;
@@ -47,7 +51,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 TypeId = type.InverseTypeId,
                 IsMainCarer = null,
                 IsInformalCarer = null,
-                Details = null
+                Details = null,
+                CreatedBy = request.CreatedBy
             });
         }
     }

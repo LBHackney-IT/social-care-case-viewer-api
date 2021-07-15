@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -897,6 +898,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
         }
 
+        public List<long> GetPersonIdsByEmergencyId(string id)
+        {
+            return _databaseContext
+               .PersonLookups
+               .AsNoTracking()
+               .AsEnumerable()
+               .Where(x => Regex.Replace(x.NCId, "[^0-9.]", "") == id)
+               .Select(x => Convert.ToInt64(x.MosaicId)).ToList();
+        }
+
         public Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false)
         {
             var personWithRelationships = _databaseContext
@@ -937,9 +948,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 IsMainCarer = request.IsMainCarer?.ToUpper(),
                 IsInformalCarer = request.IsInformalCarer?.ToUpper(),
                 StartDate = _systemTime.Now,
+                CreatedBy = request.CreatedBy,
                 Details = new PersonalRelationshipDetail()
                 {
-                    Details = request.Details
+                    Details = request.Details,
+                    CreatedBy = request.CreatedBy
                 }
             };
 
