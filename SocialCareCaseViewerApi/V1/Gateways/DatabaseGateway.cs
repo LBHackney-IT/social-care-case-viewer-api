@@ -935,13 +935,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void DeleteRelationships(Infrastructure.PersonalRelationship relationship)
         {
-            var opposite_type = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == relationship.TypeId);
+            var type = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == relationship.TypeId);
+            var inverseType = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == type.InverseTypeId);
 
             var secondRelationship = _databaseContext.PersonalRelationships
-                .FirstOrDefault(prt => prt.PersonId == relationship.OtherPersonId && prt.TypeId == opposite_type.Id);
+                .FirstOrDefault(prt => prt.PersonId == relationship.OtherPersonId && prt.TypeId == inverseType.Id);
 
             var relationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
-            var secondRelationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
+            var secondRelationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == secondRelationship.Id);
 
             if (relationshipDetails != null)
             {
