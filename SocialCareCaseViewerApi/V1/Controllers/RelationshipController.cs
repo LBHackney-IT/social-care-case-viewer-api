@@ -89,7 +89,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete]
         [Route("relationships/personal/{id:long}")]
-        public IActionResult RemovePersonalRelationshipRequest(long id)
+        public IActionResult RemovePersonalRelationship(long id)
         {
             if (id == 0)
             {
@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return Ok();
             }
             catch (Exception e) when (
-                e is RelationshipNotFoundException
+                e is PersonalRelationshipNotFoundException
             )
             {
                 return BadRequest(e.Message);

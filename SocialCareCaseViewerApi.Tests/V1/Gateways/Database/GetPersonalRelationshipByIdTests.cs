@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WhenNoMatchingIDReturnsNull()
         {
-            var response = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(123456789);
+            var response = _databaseGateway.GetPersonalRelationshipById(123456789);
             response.Should().BeNull();
         }
 

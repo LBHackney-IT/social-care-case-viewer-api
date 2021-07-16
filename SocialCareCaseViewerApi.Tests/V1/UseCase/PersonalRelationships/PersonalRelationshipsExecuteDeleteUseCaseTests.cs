@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.PersonalRelationships
         {
             Action act = () => _personalRelationshipsUseCase.ExecuteDelete(0);
 
-            act.Should().Throw<RelationshipNotFoundException>()
+            act.Should().Throw<PersonalRelationshipNotFoundException>()
                 .WithMessage($"'relationshipId' with '{0}' was not found.");
         }
 

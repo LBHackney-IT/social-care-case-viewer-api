@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var relationship = _databaseGateway.GetPersonalRelationshipById(id);
             var relationshipDoesNotExist = relationship == null;
-            if (relationshipDoesNotExist) throw new RelationshipNotFoundException($"'relationshipId' with '{id}' was not found.");
+            if (relationshipDoesNotExist) throw new PersonalRelationshipNotFoundException($"'relationshipId' with '{id}' was not found.");
 
             _databaseGateway.DeleteRelationships(relationship);
         }
