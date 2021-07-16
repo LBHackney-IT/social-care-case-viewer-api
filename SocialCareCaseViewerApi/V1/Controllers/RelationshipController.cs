@@ -79,5 +79,33 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        /// <summary>
+        /// Delete a personal relationship
+        /// </summary>
+        /// <param name="id"></param>
+        /// <response code="200">Successfully removed a relationship.</response>
+        /// <response code="400">Invalid DeletePersonalRelationshipRequest received</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpDelete]
+        [Route("relationships/personal/{id:long}")]
+        public IActionResult RemovePersonalRelationshipRequest(long id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                _personalRelationshipsUseCase.ExecuteDelete(id);
+                return Ok();
+            }
+            catch (Exception e) when (
+                e is RelationshipNotFoundException
+            )
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

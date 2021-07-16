@@ -63,6 +63,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public PersonNotFoundException(string message) : base(message) { }
     }
 
+    public class RelationshipNotFoundException : Exception
+    {
+        public RelationshipNotFoundException(string message) : base(message) { }
+    }
+
     public class UpdatePersonException : Exception
     {
         public UpdatePersonException(string message) : base(message) { }

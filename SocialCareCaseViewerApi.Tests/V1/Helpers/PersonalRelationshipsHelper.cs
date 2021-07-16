@@ -134,9 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static PersonalRelationshipType CreatePersonalRelationshipType(string description = "parent")
         {
             return new Faker<PersonalRelationshipType>()
-                .RuleFor(prt => prt.Id, f => f.UniqueIndex)
-                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20))
-                .RuleFor(prt => prt.InverseTypeId, f => f.UniqueIndex);
+                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
         }
 
         public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(

@@ -39,5 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false);
         PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description);
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
+        PersonalRelationship GetPersonalRelationshipById(long relationshipId);
+        void DeleteRelationships(PersonalRelationship relationship);
     }
 }
