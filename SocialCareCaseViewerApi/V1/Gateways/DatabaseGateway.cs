@@ -943,8 +943,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var relationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
             var secondRelationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
 
-            _databaseContext.PersonalRelationshipDetails.Remove(relationshipDetails);
-            _databaseContext.PersonalRelationshipDetails.Remove(secondRelationshipDetails);
+            if (relationshipDetails != null)
+            {
+                _databaseContext.PersonalRelationshipDetails.Remove(relationshipDetails);
+            }
+            if (secondRelationshipDetails != null)
+            {
+                _databaseContext.PersonalRelationshipDetails.Remove(secondRelationshipDetails);
+            }
 
             _databaseContext.PersonalRelationships.Remove(relationship);
             _databaseContext.PersonalRelationships.Remove(secondRelationship);
