@@ -3,12 +3,14 @@ using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {
@@ -115,6 +117,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _caseController.GetCaseByRecordId(getCaseNotesRequest);
 
             _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()));
+        }
+
+
+        [Test]
+        public void GetCaseByRecordIdCallsTheCreateRequestAuditUseCaseWithCorrectValuesWhenAuditingIsEnabled()
+        {
+            var getCaseNotesRequest = new GetCaseNotesRequest()
+            {
+                AuditingEnabled = true,
+                UserId = _faker.Person.Email,
+                Id = "tyut67t89t876t",
+                ResidentId = "4"
+            };
+
+            var auditRequest = new CreateRequestAuditRequest()
+            {
+                ActionName = "view_case_note",
+                UserName = getCaseNotesRequest.UserId,
+                Metadata = new Dictionary<string, object>() {
+                        { "residentId", getCaseNotesRequest.ResidentId },
+                        { "casenoteId", getCaseNotesRequest.Id }
+                    }
+            };
+
+            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(auditRequest)).Verifiable();           
+
+            _caseController.GetCaseByRecordId(getCaseNotesRequest);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.Is<CreateRequestAuditRequest>(
+                x => x.ActionName == auditRequest.ActionName
+                && x.UserName == auditRequest.UserName
+                && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(auditRequest.Metadata)
+                )), Times.Once);
         }
     }
 }

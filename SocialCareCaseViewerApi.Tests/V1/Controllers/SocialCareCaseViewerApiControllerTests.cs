@@ -137,6 +137,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetPersonByIdCallsTheCreateRequestAuditUseCaseWithCorrectValuesWhenAuditingIsEnabledIsTrueAndUserIdIsProvided()
+        {
+            var getPersonRequest = new GetPersonRequest() { AuditingEnabled = true, UserId = _faker.Person.Email, Id = 1 };
+
+            var request = new CreateRequestAuditRequest()
+            {
+                ActionName = "view_resident",
+                UserName = getPersonRequest.UserId,
+                Metadata = new Dictionary<string, object>() { { "residentId", getPersonRequest.Id } }
+            };
+
+            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(request)).Verifiable();
+
+            _classUnderTest.GetPerson(getPersonRequest);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.Is<CreateRequestAuditRequest>(
+                x => x.ActionName == request.ActionName
+                && x.UserName == request.UserName
+                && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(request.Metadata)
+                )), Times.Once);
+        }
+
+        [Test]
         public void GetPersonByIdReturns404WhenPersonNotFound()
         {
             var request = new GetPersonRequest();
