@@ -970,10 +970,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 UserName = request.UserName,
                 Metadata = request.Metadata,
                 Timestamp = DateTime.Now
-        });
+            });
 
             _databaseContext.RequestAudits.Add(requestAudit);
-            _databaseContext.SaveChanges();            
+            _databaseContext.SaveChanges();
         }
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {

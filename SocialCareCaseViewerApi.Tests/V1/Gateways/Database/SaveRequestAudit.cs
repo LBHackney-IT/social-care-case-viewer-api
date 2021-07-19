@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void CreatesRequestAudit()
         {
-            var metadata = new Dictionary<string, object>() { { "residentId", 333 }, { "caseNoteId", 555 }};
+            var metadata = new Dictionary<string, object>() { { "residentId", 333 }, { "caseNoteId", 555 } };
 
             CreateRequestAuditRequest requestAuditRequest = new CreateRequestAuditRequest()
             {

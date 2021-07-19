@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             _caseRecordsUseCase = caseRecordsUseCase;
             _createRequestAuditUseCase = createRequestAuditUseCase;
-    }
+        }
 
         /// <summary>
         /// Find cases by Mosaic ID or officer email
