@@ -44,8 +44,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DatabaseContext databaseContext,
             bool withRelationship = true,
             string relationshipType = "relationship_one",
-            int relationshipTypeId = 1,
-            int oppositeRelationshipTypeId = 2,
+            int relationshipTypeId = 100,
+            int oppositeRelationshipTypeId = 101,
             string oppositeRelationshipType = "relationship_two",
             bool hasEnded = false,
             string? details = null
