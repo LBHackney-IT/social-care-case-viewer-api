@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             _databaseGateway.DeleteRelationships(_relationship);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _relationship.Id);
+
             personalRelationship.Should().BeNull();
         }
 
@@ -43,32 +44,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             _databaseGateway.DeleteRelationships(_relationship);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
+
             personalRelationship.Should().BeNull();
         }
 
         [Test]
-        public void DeletesAPersonalRelationshipInverseAndDetails()
+        public void DeletesAPersonalRelationshipDetails()
         {
             _databaseGateway.DeleteRelationships(_relationship);
 
-            var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
             var personalRelationshipDetails = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault(pr => pr.Id == _relationship.Id);
 
-            personalRelationship.Should().BeNull();
             personalRelationshipDetails.Should().BeNull();
         }
 
         [Test]
-        public void DeletesAPersonalRelationshipInverseAndBothDetails()
+        public void DeletesAPersonalRelationshipInverseDetails()
         {
             _databaseGateway.DeleteRelationships(_relationship);
 
-            var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
-            var personalRelationshipDetails = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault(pr => pr.Id == _relationship.Id);
             var reverseRelationshipDetails = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
 
-            personalRelationship.Should().BeNull();
-            personalRelationshipDetails.Should().BeNull();
             reverseRelationshipDetails.Should().BeNull();
         }
     }
