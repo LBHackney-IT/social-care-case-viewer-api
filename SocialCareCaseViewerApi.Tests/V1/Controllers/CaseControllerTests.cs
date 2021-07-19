@@ -141,7 +141,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                     }
             };
 
-            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(auditRequest)).Verifiable();           
+            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(auditRequest)).Verifiable();
 
             _caseController.GetCaseByRecordId(getCaseNotesRequest);
 
