@@ -585,5 +585,3 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_deleted_person_record (
     master_person_id bigint,
     timestamp timestamp NOT NULL DEFAULT now()
 );
-
-SELECT SETVAL('dbo.sccv_personal_relationship_type_id_seq', COALESCE(MAX(id), 1) ) FROM dbo.sccv_personal_relationship_type;
