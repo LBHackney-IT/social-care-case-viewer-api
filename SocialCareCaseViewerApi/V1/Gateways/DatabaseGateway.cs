@@ -944,28 +944,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(prt => prt.Id == relationshipId);
         }
 
-        public void DeleteRelationships(Infrastructure.PersonalRelationship relationship)
+        public void DeleteRelationship(long id)
         {
-            var type = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == relationship.TypeId);
+            var relationship = _databaseContext.PersonalRelationships
+                .Where(prt => prt.Id == id)
+                .Include(pr => pr.Type)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
 
-            var inverseType = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == type.InverseTypeId);
-
-            var secondRelationship = _databaseContext.PersonalRelationships.Where(prt => prt.PersonId == relationship.OtherPersonId && prt.TypeId == inverseType.Id).FirstOrDefault();
-
-            var relationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
-            var secondRelationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == secondRelationship.Id);
-
-            if (relationshipDetails != null)
-            {
-                _databaseContext.PersonalRelationshipDetails.Remove(relationshipDetails);
-            }
-            if (secondRelationshipDetails != null)
-            {
-                _databaseContext.PersonalRelationshipDetails.Remove(secondRelationshipDetails);
-            }
+            var inverseRelationship = _databaseContext.PersonalRelationships
+                .Where(pr => pr.PersonId == relationship.OtherPersonId && pr.TypeId == relationship.Type.InverseTypeId)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
 
             _databaseContext.PersonalRelationships.Remove(relationship);
-            _databaseContext.PersonalRelationships.Remove(secondRelationship);
+            _databaseContext.PersonalRelationships.Remove(inverseRelationship);
 
             _databaseContext.SaveChanges();
         }
