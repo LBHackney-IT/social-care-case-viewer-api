@@ -55,13 +55,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.PersonalRelationships
         }
 
         [Test]
-        public void WhenPersonHasPersonalRelationshipsDeleteThem()
+        public void CheckIfPersonalRelationshipExists()
         {
             _mockDatabaseGateway.Setup(x => x.GetPersonalRelationshipById(It.IsAny<long>())).Returns(_relationship);
 
             _personalRelationshipsUseCase.ExecuteDelete(_relationship.Id);
 
             _mockDatabaseGateway.Verify(gateway => gateway.GetPersonalRelationshipById(_relationship.Id));
+        }
+
+        [Test]
+        public void WhenPersonHasPersonalRelationshipsDeleteThem()
+        {
+            _mockDatabaseGateway.Setup(x => x.GetPersonalRelationshipById(It.IsAny<long>())).Returns(_relationship);
+
+            _personalRelationshipsUseCase.ExecuteDelete(_relationship.Id);
+
             _mockDatabaseGateway.Verify(gateway => gateway.DeleteRelationships(_relationship));
         }
     }
