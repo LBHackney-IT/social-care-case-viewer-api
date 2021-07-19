@@ -15,6 +15,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+        public void ExecuteDelete(long id)
+        {
+            var relationship = _databaseGateway.GetPersonalRelationshipById(id);
+            var relationshipDoesNotExist = relationship == null;
+            if (relationshipDoesNotExist) throw new PersonalRelationshipNotFoundException($"'relationshipId' with '{id}' was not found.");
+
+            _databaseGateway.DeleteRelationships(relationship);
+        }
+
         public void ExecutePost(CreatePersonalRelationshipRequest request)
         {
             var persons = _databaseGateway.GetPersonsByListOfIds(new List<long>() { request.PersonId, request.OtherPersonId });

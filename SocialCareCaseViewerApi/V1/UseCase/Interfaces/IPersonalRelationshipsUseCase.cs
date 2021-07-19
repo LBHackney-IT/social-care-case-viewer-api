@@ -4,5 +4,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     public interface IPersonalRelationshipsUseCase
     {
         void ExecutePost(CreatePersonalRelationshipRequest request);
+        void ExecuteDelete(long id);
     }
 }

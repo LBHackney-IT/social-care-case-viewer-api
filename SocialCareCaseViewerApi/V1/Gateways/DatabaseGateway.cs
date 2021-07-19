@@ -938,6 +938,38 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
         }
 
+        public Infrastructure.PersonalRelationship GetPersonalRelationshipById(long relationshipId)
+        {
+            return _databaseContext.PersonalRelationships
+                .FirstOrDefault(prt => prt.Id == relationshipId);
+        }
+
+        public void DeleteRelationships(Infrastructure.PersonalRelationship relationship)
+        {
+            var type = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == relationship.TypeId);
+
+            var inverseType = _databaseContext.PersonalRelationshipTypes.FirstOrDefault(tp => tp.Id == type.InverseTypeId);
+
+            var secondRelationship = _databaseContext.PersonalRelationships.Where(prt => prt.PersonId == relationship.OtherPersonId && prt.TypeId == inverseType.Id).FirstOrDefault();
+
+            var relationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == relationship.Id);
+            var secondRelationshipDetails = _databaseContext.PersonalRelationshipDetails.FirstOrDefault(prd => prd.PersonalRelationshipId == secondRelationship.Id);
+
+            if (relationshipDetails != null)
+            {
+                _databaseContext.PersonalRelationshipDetails.Remove(relationshipDetails);
+            }
+            if (secondRelationshipDetails != null)
+            {
+                _databaseContext.PersonalRelationshipDetails.Remove(secondRelationshipDetails);
+            }
+
+            _databaseContext.PersonalRelationships.Remove(relationship);
+            _databaseContext.PersonalRelationships.Remove(secondRelationship);
+
+            _databaseContext.SaveChanges();
+        }
+
         public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)
         {
             var personalRelationship = new Infrastructure.PersonalRelationship()
