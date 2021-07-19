@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +26,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
         private readonly IPersonUseCase _personUseCase;
+        private readonly ICreateRequestAuditUseCase _createRequestAuditUseCase;
 
         public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
             IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
             IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase)
+            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, ICreateRequestAuditUseCase createRequestAuditUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _addNewResidentUseCase = addNewResidentUseCase;
@@ -39,6 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
             _personUseCase = personUseCase;
+            _createRequestAuditUseCase = createRequestAuditUseCase;
         }
 
         /// <summary>
@@ -92,6 +95,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("residents/{id}")]
         public IActionResult GetPerson([FromQuery] GetPersonRequest request)
         {
+            if (request.AuditingEnabled && !string.IsNullOrEmpty(request.UserId))
+            {
+                var auditRequest = new CreateRequestAuditRequest()
+                {
+                    ActionName = "view_resident",
+                    UserName = request.UserId,
+                    Metadata = new Dictionary<string, object>() { { "residentId", request.Id } }
+                };
+
+                _createRequestAuditUseCase.Execute(auditRequest);
+            }
+
             var response = _personUseCase.ExecuteGet(request);
 
             if (response == null)
