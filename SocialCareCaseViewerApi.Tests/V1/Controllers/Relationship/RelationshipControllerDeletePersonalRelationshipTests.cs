@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
             createdAtAction.StatusCode.Should().Be(201);
             createdAtAction.Value.Should().Be("Successfully created personal relationship.");
 
-            var response = _relationshipController.RemovePersonalRelationship(1) as BadRequestObjectResult;
+            var response = _relationshipController.RemovePersonalRelationship(1) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
