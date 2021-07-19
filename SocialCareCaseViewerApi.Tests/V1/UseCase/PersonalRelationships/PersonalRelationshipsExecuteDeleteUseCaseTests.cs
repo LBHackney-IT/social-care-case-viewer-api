@@ -7,7 +7,6 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System.Collections.Generic;
 using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.PersonalRelationships
@@ -71,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.PersonalRelationships
 
             _personalRelationshipsUseCase.ExecuteDelete(_relationship.Id);
 
-            _mockDatabaseGateway.Verify(gateway => gateway.DeleteRelationships(_relationship));
+            _mockDatabaseGateway.Verify(gateway => gateway.DeleteRelationship(_relationship.Id));
         }
     }
 }

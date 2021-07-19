@@ -41,6 +41,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationshipType GetPersonalRelationshipTypeByDescription(string description);
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
-        void DeleteRelationships(PersonalRelationship relationship);
+        void DeleteRelationship(long relationshipId);
     }
 }

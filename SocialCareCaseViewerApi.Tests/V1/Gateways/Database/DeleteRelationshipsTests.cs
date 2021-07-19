@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using FluentAssertions;
 using Moq;
@@ -7,7 +6,6 @@ using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -31,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void DeletesAPersonalRelationship()
         {
-            _databaseGateway.DeleteRelationships(_relationship);
+            _databaseGateway.DeleteRelationship(_relationship.Id);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _relationship.Id);
 
@@ -41,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void DeletesAPersonalRelationshipInverse()
         {
-            _databaseGateway.DeleteRelationships(_relationship);
+            _databaseGateway.DeleteRelationship(_relationship.Id);
 
             var personalRelationship = DatabaseContext.PersonalRelationships.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
 
@@ -51,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void DeletesAPersonalRelationshipDetails()
         {
-            _databaseGateway.DeleteRelationships(_relationship);
+            _databaseGateway.DeleteRelationship(_relationship.Id);
 
             var personalRelationshipDetails = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault(pr => pr.Id == _relationship.Id);
 
@@ -61,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void DeletesAPersonalRelationshipInverseDetails()
         {
-            _databaseGateway.DeleteRelationships(_relationship);
+            _databaseGateway.DeleteRelationship(_relationship.Id);
 
             var reverseRelationshipDetails = DatabaseContext.PersonalRelationshipDetails.FirstOrDefault(pr => pr.Id == _oppositeRelationship.Id);
 
