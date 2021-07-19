@@ -9,5 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Range(1, long.MaxValue, ErrorMessage = "Invalid id")]
         [FromRoute]
         public long Id { get; set; }
+        public string UserId { get; set; }
+        public bool AuditingEnabled { get; set; }
     }
 }

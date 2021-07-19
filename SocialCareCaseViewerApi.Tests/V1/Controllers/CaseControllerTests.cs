@@ -1,4 +1,5 @@
 using AutoFixture;
+using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -16,13 +17,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     {
         private CaseController _caseController;
         private Mock<ICaseRecordsUseCase> _mockProcessDataUseCase;
+        private Mock<ICreateRequestAuditUseCase> _mockCreateRequestAuditUseCase;
         private Fixture _fixture;
+        private Faker _faker = new Faker();
 
         [SetUp]
         public void SetUp()
         {
             _mockProcessDataUseCase = new Mock<ICaseRecordsUseCase>();
-            _caseController = new CaseController(_mockProcessDataUseCase.Object);
+            _mockCreateRequestAuditUseCase = new Mock<ICreateRequestAuditUseCase>();
+            _caseController = new CaseController(_mockProcessDataUseCase.Object, _mockCreateRequestAuditUseCase.Object);
             _fixture = new Fixture();
         }
 
@@ -30,9 +34,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetCaseByIdReturns200WhenSuccessful()
         {
             var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var stubbedRequest = _fixture.Create<GetCaseNotesRequest>();
 
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
-            var response = _caseController.GetCaseByRecordId("caseString") as OkObjectResult;
+            var response = _caseController.GetCaseByRecordId(stubbedRequest) as OkObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
@@ -41,9 +46,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetCaseByIdReturnsCareCaseDataWhenSuccessful()
         {
             var stubbedCaseData = _fixture.Create<CareCaseData>();
+            var stubbedRequest = _fixture.Create<GetCaseNotesRequest>();
 
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedCaseData);
-            var response = _caseController.GetCaseByRecordId("caseString") as OkObjectResult;
+            var response = _caseController.GetCaseByRecordId(stubbedRequest) as OkObjectResult;
 
             response?.Value.Should().BeEquivalentTo(stubbedCaseData);
         }
@@ -52,8 +58,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetCaseByIdReturnsNotFoundWhenNullIsReturned()
         {
             _mockProcessDataUseCase.Setup(x => x.Execute(It.IsAny<string>()));
+            var stubbedRequest = _fixture.Create<GetCaseNotesRequest>();
 
-            var response = _caseController.GetCaseByRecordId("caseString") as ObjectResult;
+            var response = _caseController.GetCaseByRecordId(stubbedRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Document Not Found");
@@ -82,6 +89,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Document Not Found");
+        }
+
+        [Test]
+        public void GetCaseByRecordIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
+        {
+            var request = new GetCaseNotesRequest();
+
+            _caseController.GetCaseByRecordId(request);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()), Times.Never);
+        }
+
+        [Test]
+        public void GetCaseByRecordIdCallsTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsTrueAndUserIdAndResidentIdAreProvided()
+        {
+            var getCaseNotesRequest = new GetCaseNotesRequest()
+            {
+                AuditingEnabled = true,
+                UserId = _faker.Person.Email,
+                Id = "tyut67t89t876t",
+                ResidentId = "4"
+            };
+
+            _caseController.GetCaseByRecordId(getCaseNotesRequest);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()));
         }
     }
 }

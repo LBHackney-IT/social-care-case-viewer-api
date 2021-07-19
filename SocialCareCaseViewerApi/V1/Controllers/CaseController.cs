@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,10 +19,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class CaseController : BaseController
     {
         private readonly ICaseRecordsUseCase _caseRecordsUseCase;
+        private readonly ICreateRequestAuditUseCase _createRequestAuditUseCase;
 
-        public CaseController(ICaseRecordsUseCase caseRecordsUseCase)
+        public CaseController(ICaseRecordsUseCase caseRecordsUseCase, ICreateRequestAuditUseCase createRequestAuditUseCase)
         {
             _caseRecordsUseCase = caseRecordsUseCase;
+            _createRequestAuditUseCase = createRequestAuditUseCase;
         }
 
         /// <summary>
@@ -51,10 +54,25 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">No cases found for the specified ID or officer email</response>
         [ProducesResponseType(typeof(CareCaseData), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{caseId}")]
-        public IActionResult GetCaseByRecordId(string caseId)
+        [Route("{Id}")]
+        public IActionResult GetCaseByRecordId([FromQuery] GetCaseNotesRequest request)
         {
-            var caseRecord = _caseRecordsUseCase.Execute(caseId);
+            if (request.AuditingEnabled && !string.IsNullOrEmpty(request.UserId) && !string.IsNullOrEmpty(request.ResidentId))
+            {
+                var auditRequest = new CreateRequestAuditRequest()
+                {
+                    ActionName = "view_case_note",
+                    UserName = request.UserId,
+                    Metadata = new Dictionary<string, object>() {
+                        { "residentId", request.ResidentId },
+                        { "casenoteId", request.Id }
+                    }
+                };
+
+                _createRequestAuditUseCase.Execute(auditRequest);
+            }
+
+            var caseRecord = _caseRecordsUseCase.Execute(request.Id);
 
             if (caseRecord == null)
             {
