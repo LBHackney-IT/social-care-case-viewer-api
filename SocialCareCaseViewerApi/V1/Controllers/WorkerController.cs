@@ -32,11 +32,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
             var workers = _workersUseCase.ExecuteGet(request);
-
             if (workers.Count == 0)
             {
                 return NotFound();
             }
+
             return Ok(workers);
         }
 

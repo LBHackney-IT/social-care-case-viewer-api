@@ -468,11 +468,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public Worker GetWorkerByEmail(string email)
         {
             return _databaseContext.Workers
-                .Where(worker => worker.Email.ToLower() == email.ToLower())
-                .Include(x => x.Allocations)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(y => y.Team)
-                .FirstOrDefault();
+                    .Where(worker => worker.Email.ToLower() == email.ToLower())
+                    .Include(x => x.Allocations)
+                    .Include(x => x.WorkerTeams)
+                    .ThenInclude(y => y.Team)
+                    .FirstOrDefault();
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
@@ -938,6 +938,31 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
         }
 
+        public Infrastructure.PersonalRelationship GetPersonalRelationshipById(long relationshipId)
+        {
+            return _databaseContext.PersonalRelationships
+                .FirstOrDefault(prt => prt.Id == relationshipId);
+        }
+
+        public void DeleteRelationship(long id)
+        {
+            var relationship = _databaseContext.PersonalRelationships
+                .Where(prt => prt.Id == id)
+                .Include(pr => pr.Type)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
+
+            var inverseRelationship = _databaseContext.PersonalRelationships
+                .Where(pr => pr.PersonId == relationship.OtherPersonId && pr.TypeId == relationship.Type.InverseTypeId)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
+
+            _databaseContext.PersonalRelationships.Remove(relationship);
+            _databaseContext.PersonalRelationships.Remove(inverseRelationship);
+
+            _databaseContext.SaveChanges();
+        }
+
         public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)
         {
             var personalRelationship = new Infrastructure.PersonalRelationship()
@@ -962,6 +987,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return personalRelationship;
         }
 
+        public void CreateRequestAudit(CreateRequestAuditRequest request)
+        {
+            var requestAudit = (new RequestAudit()
+            {
+                ActionName = request.ActionName,
+                UserName = request.UserName,
+                Metadata = request.Metadata,
+                Timestamp = DateTime.Now
+            });
+
+            _databaseContext.RequestAudits.Add(requestAudit);
+            _databaseContext.SaveChanges();
+        }
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
