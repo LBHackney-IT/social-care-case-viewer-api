@@ -23,38 +23,31 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public List<WorkerResponse> ExecuteGet(GetWorkersRequest request)
         {
-            try
+            List<Worker> domainWorkers = new List<Worker>();
+
+            var workerById = GetByWorkerId(request.WorkerId);
+            if (workerById != null)
             {
-                List<Worker> domainWorkers = new List<Worker>();
-
-                var workerById = GetByWorkerId(request.WorkerId);
-                if (workerById != null)
-                {
-                    domainWorkers.Add(workerById);
-                }
-
-                var workerByEmail = GetByWorkerEmail(request.Email);
-                if (workerByEmail != null)
-                {
-                    domainWorkers.Add(workerByEmail);
-                }
-
-                var workersByTeamId = GetByWorkerTeamId(request.TeamId);
-                if (workersByTeamId != null)
-                {
-                    domainWorkers.AddRange(workersByTeamId);
-                }
-
-                var distinctWorkers = domainWorkers
-                    .GroupBy(worker => worker.Id)
-                    .Select(worker => worker.First());
-
-                return distinctWorkers.Select(worker => worker.ToResponse()).ToList();
+                domainWorkers.Add(workerById);
             }
-            catch (Exception e)
+
+            var workerByEmail = GetByWorkerEmail(request.Email);
+            if (workerByEmail != null)
             {
-                throw new CustomException(e.StackTrace);
+                domainWorkers.Add(workerByEmail);
             }
+
+            var workersByTeamId = GetByWorkerTeamId(request.TeamId);
+            if (workersByTeamId != null)
+            {
+                domainWorkers.AddRange(workersByTeamId);
+            }
+
+            var distinctWorkers = domainWorkers
+                .GroupBy(worker => worker.Id)
+                .Select(worker => worker.First());
+
+            return distinctWorkers.Select(worker => worker.ToResponse()).ToList();
         }
 
         public WorkerResponse ExecutePost(CreateWorkerRequest createWorkerRequest)
