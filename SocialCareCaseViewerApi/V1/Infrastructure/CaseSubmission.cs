@@ -41,6 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         InProgress,
         Submitted,
         Approved,
-        Discarded
+        Discarded,
+        PanelApproved
     }
 }

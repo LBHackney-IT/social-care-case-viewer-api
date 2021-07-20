@@ -365,21 +365,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             new object[] { SubmissionState.Discarded, SubmissionState.InProgress, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Approved, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.InProgress, SubmissionState.Discarded, true },
             new object[] { SubmissionState.InProgress, SubmissionState.InProgress, false },
             new object[] { SubmissionState.InProgress, SubmissionState.Submitted, true },
             new object[] { SubmissionState.InProgress, SubmissionState.Approved, false },
+            new object[] { SubmissionState.InProgress, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.Submitted, SubmissionState.Discarded, false },
             new object[] { SubmissionState.Submitted, SubmissionState.InProgress, true },
             new object[] { SubmissionState.Submitted, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Submitted, SubmissionState.Approved, true },
+            new object[] { SubmissionState.Submitted, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.Approved, SubmissionState.Discarded, false },
-            new object[] { SubmissionState.Approved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.Approved, SubmissionState.InProgress, true },
             new object[] { SubmissionState.Approved, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Approved, SubmissionState.Approved, false },
+            new object[] { SubmissionState.Approved, SubmissionState.PanelApproved, true },
+
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Approved, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.PanelApproved, false },
         };
 
         [TestCaseSource(nameof(_allSubmissionChangePermutations))]
@@ -389,14 +399,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 { SubmissionState.InProgress, "in_progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                {SubmissionState.PanelApproved, "panelApproved"}
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                {SubmissionState.PanelApproved, "Panel Approved"}
             };
 
             var resident = TestHelpers.CreatePerson();
