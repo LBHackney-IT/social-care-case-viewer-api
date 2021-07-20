@@ -400,7 +400,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
                 { SubmissionState.Discarded, "Discarded" },
-                {SubmissionState.PanelApproved, "panelApproved"}
+                { SubmissionState.PanelApproved, "panel-approved" }
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
@@ -408,7 +408,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
                 { SubmissionState.Discarded, "Discarded" },
-                {SubmissionState.PanelApproved, "Panel Approved"}
+                { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
             var resident = TestHelpers.CreatePerson();

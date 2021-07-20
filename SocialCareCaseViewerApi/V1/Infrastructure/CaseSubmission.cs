@@ -22,6 +22,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? SubmittedAt { get; set; }
         public Worker? ApprovedBy { get; set; }
         public DateTime? ApprovedAt { get; set; }
+        public Worker? PanelApprovedBy { get; set; }
+        public DateTime? PanelApprovedAt { get; set; }
         public string? RejectionReason { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<Worker> Workers { get; set; } = null!;
