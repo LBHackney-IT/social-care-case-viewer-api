@@ -467,19 +467,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker GetWorkerByEmail(string email)
         {
-            try
-            {
-                return _databaseContext.Workers
+            return _databaseContext.Workers
                     .Where(worker => worker.Email.ToLower() == email.ToLower())
                     .Include(x => x.Allocations)
                     .Include(x => x.WorkerTeams)
                     .ThenInclude(y => y.Team)
                     .FirstOrDefault();
-            }
-            catch (Exception e)
-            {
-                throw new CustomException(e.ToString());
-            }
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)

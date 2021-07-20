@@ -31,22 +31,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult GetWorkers([FromQuery] GetWorkersRequest request)
         {
-            try
+            var workers = _workersUseCase.ExecuteGet(request);
+            if (workers.Count == 0)
             {
-                var workers = _workersUseCase.ExecuteGet(request);
-                if (workers.Count == 0)
-                {
-                    return NotFound();
-                }
-
-                return Ok(workers);
-            }
-            catch (CustomException e)
-            {
-                return BadRequest(e.ToString());
+                return NotFound();
             }
 
-
+            return Ok(workers);
         }
 
         /// <summary>
