@@ -250,16 +250,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 (type, relationships) => new Domain.PersonalRelationship()
                 {
                     Type = type.Description,
-                    Persons = relationships.Select(relationship => new RelatedPerson()
-                    {
-                        Id = relationship.OtherPerson.Id,
-                        FirstName = relationship.OtherPerson.FirstName,
-                        LastName = relationship.OtherPerson.LastName,
-                        Gender = relationship.OtherPerson.Gender,
-                        IsMainCarer = relationship.IsMainCarer,
-                        IsInformalCarer = relationship.IsInformalCarer,
-                        Details = relationship.Details?.Details
-                    }).ToList(),
                     Relationships = relationships.Select(relationship => new RelatedRelationship()
                     {
                         Id = relationship.Id,
