@@ -112,4 +112,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     {
         public PersonalRelationshipAlreadyExistsException(string message) : base(message) { }
     }
+
+    public class CustomException : Exception
+    {
+        public CustomException(string message) : base(message)
+        {
+        }
+    }
 }

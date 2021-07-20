@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -22,31 +23,38 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public List<WorkerResponse> ExecuteGet(GetWorkersRequest request)
         {
-            List<Worker> domainWorkers = new List<Worker>();
-
-            var workerById = GetByWorkerId(request.WorkerId);
-            if (workerById != null)
+            try
             {
-                domainWorkers.Add(workerById);
-            }
+                List<Worker> domainWorkers = new List<Worker>();
 
-            var workerByEmail = GetByWorkerEmail(request.Email);
-            if (workerByEmail != null)
+                var workerById = GetByWorkerId(request.WorkerId);
+                if (workerById != null)
+                {
+                    domainWorkers.Add(workerById);
+                }
+
+                var workerByEmail = GetByWorkerEmail(request.Email);
+                if (workerByEmail != null)
+                {
+                    domainWorkers.Add(workerByEmail);
+                }
+
+                var workersByTeamId = GetByWorkerTeamId(request.TeamId);
+                if (workersByTeamId != null)
+                {
+                    domainWorkers.AddRange(workersByTeamId);
+                }
+
+                var distinctWorkers = domainWorkers
+                    .GroupBy(worker => worker.Id)
+                    .Select(worker => worker.First());
+
+                return distinctWorkers.Select(worker => worker.ToResponse()).ToList();
+            }
+            catch (Exception e)
             {
-                domainWorkers.Add(workerByEmail);
+                throw new CustomException(e.Message);
             }
-
-            var workersByTeamId = GetByWorkerTeamId(request.TeamId);
-            if (workersByTeamId != null)
-            {
-                domainWorkers.AddRange(workersByTeamId);
-            }
-
-            var distinctWorkers = domainWorkers
-                .GroupBy(worker => worker.Id)
-                .Select(worker => worker.First());
-
-            return distinctWorkers.Select(worker => worker.ToResponse()).ToList();
         }
 
         public WorkerResponse ExecutePost(CreateWorkerRequest createWorkerRequest)
