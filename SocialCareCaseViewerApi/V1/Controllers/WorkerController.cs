@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (CustomException e)
             {
-                return BadRequest(e.StackTrace);
+                return BadRequest(e.ToString());
             }
 
 
