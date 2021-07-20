@@ -97,12 +97,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetCaseByRecordIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
         {
             var request = new GetCaseNotesRequest()
-             {
-                 AuditingEnabled = false,
-                 UserId = _faker.Person.Email,
-                 Id = "tyut67t89t876t",
-                 ResidentId = "4"
-             };
+            {
+                AuditingEnabled = false,
+                UserId = _faker.Person.Email,
+                Id = "tyut67t89t876t",
+                ResidentId = "4"
+            };
 
             _caseController.GetCaseByRecordId(request);
 
