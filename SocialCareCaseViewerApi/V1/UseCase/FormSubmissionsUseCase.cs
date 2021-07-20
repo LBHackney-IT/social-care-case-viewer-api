@@ -186,7 +186,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
                     }
-                    submission.PanelApprovedAt  = DateTime.Now;
+                    submission.PanelApprovedAt = DateTime.Now;
                     submission.PanelApprovedBy = worker;
                     break;
 
