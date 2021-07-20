@@ -119,7 +119,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetPersonByIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
         {
-            var request = new GetPersonRequest();
+            var request = new GetPersonRequest() {
+                AuditingEnabled = false,
+                UserId = _faker.Person.Email,
+                Id = 7
+            };
 
             _classUnderTest.GetPerson(request);
 
@@ -157,6 +161,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 && x.UserName == request.UserName
                 && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(request.Metadata)
                 )), Times.Once);
+        }
+
+        [Test]
+        public void GetPersonByIdCallsPersonUseCaseWhenOnlyIdIsProvidedToEnsureBackwardsCompatibility()
+        {
+            var getPersonRequest = new GetPersonRequest() { Id = 1 };
+
+            _classUnderTest.GetPerson(getPersonRequest);
+
+            _mockPersonUseCase.Verify(x => x.ExecuteGet(getPersonRequest));
         }
 
         [Test]

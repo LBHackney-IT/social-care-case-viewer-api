@@ -157,5 +157,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(auditRequest.Metadata)
                 )), Times.Once);
         }
+
+        [Test]
+        public void GetCaseByRecordIdCallsTheCaseRecordsUseCaseWhenOnlyIdIsProvidedToEnsureBackwardsCompatibility()
+        {
+            var getCaseNotesRequest = new GetCaseNotesRequest()
+            {
+                Id = "tyut67t89t876t"
+            };
+
+            _caseController.GetCaseByRecordId(getCaseNotesRequest);
+
+            _mockProcessDataUseCase.Verify(x => x.Execute(It.IsAny<string>()));
+        }
     }
 }
