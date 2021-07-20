@@ -167,8 +167,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
                 ApprovedAt = caseSubmission.ApprovedAt,
                 ApprovedBy = caseSubmission.ApprovedBy?.ToDomain(false),
-                PanelApprovedAt = caseSubmission.ApprovedAt,
-                PanelApprovedBy = caseSubmission.ApprovedBy?.ToDomain(false),
+                PanelApprovedAt = caseSubmission.PanelApprovedAt,
+                PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToDomain(false),
                 RejectionReason = caseSubmission.RejectionReason,
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {

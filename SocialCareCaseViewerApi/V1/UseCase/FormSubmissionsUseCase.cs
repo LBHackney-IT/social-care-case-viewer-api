@@ -151,7 +151,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     }
                     break;
                 case SubmissionState.InProgress:
-                    if (submission.SubmissionState != SubmissionState.Submitted || submission.SubmissionState != SubmissionState.Approved)
+                    if (submission.SubmissionState != SubmissionState.Submitted && submission.SubmissionState != SubmissionState.Approved)
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
@@ -170,7 +170,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
-                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToLower().Equals(request.EditedBy.ToLower())))
+                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToUpperInvariant().Equals(request.EditedBy.ToUpperInvariant(), StringComparison.InvariantCulture)))
                     {
                         throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
                     }
@@ -182,7 +182,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
-                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToLower().Equals(request.EditedBy.ToLower())))
+                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToUpperInvariant().Equals(request.EditedBy.ToUpperInvariant(), StringComparison.InvariantCulture)))
                     {
                         throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
                     }
