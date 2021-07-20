@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             catch (Exception e)
             {
-                throw new CustomException(e.Message);
+                throw new CustomException(e.StackTrace);
             }
         }
 
