@@ -627,7 +627,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             act.Should().Throw<UpdateSubmissionException>()
-                .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+                .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
         }
     }
 }
