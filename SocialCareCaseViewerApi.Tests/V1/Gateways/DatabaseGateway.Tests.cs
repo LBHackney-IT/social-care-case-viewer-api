@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
@@ -1161,6 +1162,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetPersonDetailsByIdDoesNotReturnPersonMarkedForDeletion()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var response = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public void UpdatePersonThrowsUpdatePersonExceptionWhenPersonNotFound()
         {
             Action act = () => _classUnderTest.UpdatePerson(new UpdatePersonRequest() { Id = _faker.Random.Long() });
@@ -1387,6 +1398,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetPersonsByListOfIdsDoesNotReturnPersonRecordsMarkedForDeletion()
+        {
+            var personOne = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var personTwo = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var listOfPersonRecords = new List<Person>() { personOne, personTwo };
+
+            var result = _classUnderTest.GetPersonsByListOfIds(listOfPersonRecords.Select(x => x.Id).ToList());
+
+            result.Count.Should().Be(1);
+            result.First().Id.Should().Be(personOne.Id);
+        }
+
+        [Test]
         public void GetPersonsByListOfIdsReturnsEmptyListWhenNoMatchingPersonsFound()
         {
             var personIds = _fixture.Create<List<long>>();
@@ -1410,6 +1435,78 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void GetPersonByMosaicIdReturnsNullWhenPersonNotFound()
         {
             var result = _classUnderTest.GetPersonByMosaicId(0L);
+
+            result.Should().BeNull();
+        }
+
+        [Test]
+        public void GetPersonIdsByEmergencyIdReturnsEmptyListWhenNoMatchingRecordsFound()
+        {
+            _classUnderTest.GetPersonIdsByEmergencyId("123").Count.Should().Be(0);
+        }
+
+        [Test]
+        public void GetPersonIdsByEmergencyIdReturnsListOfMatchingPersonIds()
+        {
+            var person1 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33004455));
+            var person2 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33007788));
+            var person3 = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33009900));
+
+            DatabaseContext.PersonLookups.Add(
+                new PersonIdLookup()
+                {
+                    MosaicId = person1.Id.ToString(),
+                    NCId = "NC123"
+                }
+            );
+
+            DatabaseContext.PersonLookups.Add(
+               new PersonIdLookup()
+               {
+                   MosaicId = person2.Id.ToString(),
+                   NCId = "TMP123"
+               }
+           );
+
+            DatabaseContext.SaveChanges();
+
+            var result = _classUnderTest.GetPersonIdsByEmergencyId("123");
+
+            result.Count.Should().Be(2);
+            result.Any(x => x == person1.Id).Should().BeTrue();
+            result.Any(x => x == person2.Id).Should().BeTrue();
+            result.Any(x => x == person3.Id).Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase("041")]
+        [TestCase("0041")]
+        [TestCase("00041")]
+        [TestCase("000041")]
+        public void GetPersonIdsByEmergencyIdReturnsListOfMatchingPersonIdsWhenEmergencyIdHasLeadingZerosInId(string id)
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(personId: 33004455));
+
+            DatabaseContext.PersonLookups.Add(
+                new PersonIdLookup()
+                {
+                    MosaicId = person.Id.ToString(),
+                    NCId = id
+                });
+
+            DatabaseContext.SaveChanges();
+
+            var result = _classUnderTest.GetPersonIdsByEmergencyId(id);
+
+            result.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void GetPersonByMosaicIdReturnsNullWhenPersonIsMarkedForDeletion()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(markedForDeletion: true));
+
+            var result = _classUnderTest.GetPersonByMosaicId(person.Id);
 
             result.Should().BeNull();
         }

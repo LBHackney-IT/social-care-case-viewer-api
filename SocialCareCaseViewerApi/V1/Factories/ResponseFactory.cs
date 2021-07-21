@@ -230,6 +230,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToResponse(),
                 ApprovedAt = caseSubmission.ApprovedAt,
+                PanelApprovedAt = caseSubmission.PanelApprovedAt,
+                PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToResponse(),
                 ApprovedBy = caseSubmission.ApprovedBy?.ToResponse(),
                 RejectionReason = caseSubmission.RejectionReason,
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
@@ -253,6 +255,17 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Persons = relationships.Select(relationship => new RelatedPerson()
                     {
                         Id = relationship.OtherPerson.Id,
+                        FirstName = relationship.OtherPerson.FirstName,
+                        LastName = relationship.OtherPerson.LastName,
+                        Gender = relationship.OtherPerson.Gender,
+                        IsMainCarer = relationship.IsMainCarer,
+                        IsInformalCarer = relationship.IsInformalCarer,
+                        Details = relationship.Details?.Details
+                    }).ToList(),
+                    Relationships = relationships.Select(relationship => new RelatedRelationship()
+                    {
+                        Id = relationship.Id,
+                        PersonId = relationship.OtherPerson.Id,
                         FirstName = relationship.OtherPerson.FirstName,
                         LastName = relationship.OtherPerson.LastName,
                         Gender = relationship.OtherPerson.Gender,

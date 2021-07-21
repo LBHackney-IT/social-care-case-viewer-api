@@ -30,6 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
         private Mock<IPersonUseCase> _mockPersonUseCase;
+        private Mock<ICreateRequestAuditUseCase> _mockCreateRequestAuditUseCase;
         private Fixture _fixture;
         private Faker _faker;
 
@@ -44,10 +45,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
             _mockPersonUseCase = new Mock<IPersonUseCase>();
+            _mockCreateRequestAuditUseCase = new Mock<ICreateRequestAuditUseCase>();
 
             _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
                     _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
-            _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object);
+            _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object, _mockCreateRequestAuditUseCase.Object);
 
             _fixture = new Fixture();
             _faker = new Faker();
@@ -112,6 +114,64 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _classUnderTest.GetPerson(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
+        }
+
+        [Test]
+        public void GetPersonByIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
+        {
+            var request = new GetPersonRequest()
+            {
+                AuditingEnabled = false,
+                UserId = _faker.Person.Email,
+                Id = 7
+            };
+
+            _classUnderTest.GetPerson(request);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()), Times.Never);
+        }
+
+        [Test]
+        public void GetPersonByIdCallsTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsTrueAndUserIdIsProvided()
+        {
+            var getPersonRequest = new GetPersonRequest() { AuditingEnabled = true, UserId = _faker.Person.Email, Id = 1 };
+
+            _classUnderTest.GetPerson(getPersonRequest);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()));
+        }
+
+        [Test]
+        public void GetPersonByIdCallsTheCreateRequestAuditUseCaseWithCorrectValuesWhenAuditingIsEnabledIsTrueAndUserIdIsProvided()
+        {
+            var getPersonRequest = new GetPersonRequest() { AuditingEnabled = true, UserId = _faker.Person.Email, Id = 1 };
+
+            var request = new CreateRequestAuditRequest()
+            {
+                ActionName = "view_resident",
+                UserName = getPersonRequest.UserId,
+                Metadata = new Dictionary<string, object>() { { "residentId", getPersonRequest.Id } }
+            };
+
+            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(request)).Verifiable();
+
+            _classUnderTest.GetPerson(getPersonRequest);
+
+            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.Is<CreateRequestAuditRequest>(
+                x => x.ActionName == request.ActionName
+                && x.UserName == request.UserName
+                && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(request.Metadata)
+                )), Times.Once);
+        }
+
+        [Test]
+        public void GetPersonByIdCallsPersonUseCaseWhenOnlyIdIsProvidedToEnsureBackwardsCompatibility()
+        {
+            var getPersonRequest = new GetPersonRequest() { Id = 1 };
+
+            _classUnderTest.GetPerson(getPersonRequest);
+
+            _mockPersonUseCase.Verify(x => x.ExecuteGet(getPersonRequest));
         }
 
         [Test]

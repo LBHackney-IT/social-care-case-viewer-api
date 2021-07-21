@@ -63,6 +63,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public PersonNotFoundException(string message) : base(message) { }
     }
 
+    public class PersonalRelationshipNotFoundException : Exception
+    {
+        public PersonalRelationshipNotFoundException(string message) : base(message) { }
+    }
+
     public class UpdatePersonException : Exception
     {
         public UpdatePersonException(string message) : base(message) { }
@@ -106,5 +111,12 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class PersonalRelationshipAlreadyExistsException : Exception
     {
         public PersonalRelationshipAlreadyExistsException(string message) : base(message) { }
+    }
+
+    public class CustomException : Exception
+    {
+        public CustomException(string message) : base(message)
+        {
+        }
     }
 }

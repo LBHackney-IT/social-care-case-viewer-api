@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -119,9 +120,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(p => p.Addresses)
                 .Include(p => p.PhoneNumbers);
 
-
             var dbRecords = _databaseContext.Persons
-                .Where(p => peopleIds.Contains(p.Id))
+                .Where(p => peopleIds.Contains(p.Id) && p.MarkedForDeletion == false)
                 .Include(p => p.Addresses)
                 .Include(p => p.PhoneNumbers)
                 .Select(x => x.ToResidentInformationResponse()).ToList();
@@ -161,7 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Addresses
                 .Where(add => id == null || EF.Functions.ILike(add.PersonId.ToString(), id.ToString()))
                 .Where(add => string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
-                .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern))
+                .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern) && add.IsDisplayAddress == "Y")
                 .Where(add => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(add.Person.FirstName.Replace(" ", ""), firstNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(add.Person.LastName, lastNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(add.Person.AgeContext, contextFlagSearchPattern))
@@ -445,7 +445,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Person GetPersonByMosaicId(long mosaicId)
         {
-            return _databaseContext.Persons.FirstOrDefault(x => x.Id == mosaicId);
+            return _databaseContext.Persons.FirstOrDefault(x => x.Id == mosaicId && x.MarkedForDeletion == false);
         }
 
         public string GetNCReferenceByPersonId(string personId)
@@ -468,11 +468,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public Worker GetWorkerByEmail(string email)
         {
             return _databaseContext.Workers
-                .Where(worker => worker.Email.ToLower() == email.ToLower())
-                .Include(x => x.Allocations)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(y => y.Team)
-                .FirstOrDefault();
+                    .Where(worker => worker.Email.ToLower() == email.ToLower())
+                    .Include(x => x.Allocations)
+                    .Include(x => x.WorkerTeams)
+                    .ThenInclude(y => y.Team)
+                    .FirstOrDefault();
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
@@ -891,11 +891,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
-            return _databaseContext.Persons.Where(x => ids.Contains(x.Id)).ToList();
+            return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
+        }
+
+        public List<long> GetPersonIdsByEmergencyId(string id)
+        {
+            return _databaseContext
+               .PersonLookups
+               .AsNoTracking()
+               .AsEnumerable()
+               .Where(x => Regex.Replace(x.NCId, "[^0-9.]", "") == id)
+               .Select(x => Convert.ToInt64(x.MosaicId)).ToList();
         }
 
         public Person GetPersonWithPersonalRelationshipsByPersonId(long personId, bool includeEndedRelationships = false)
@@ -917,6 +927,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.EndDate == null).ToList();
             }
 
+            personWithRelationships.PersonalRelationships = personWithRelationships.PersonalRelationships.Where(pr => pr.OtherPerson.MarkedForDeletion == false).ToList();
+
             return personWithRelationships;
         }
 
@@ -924,6 +936,31 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             return _databaseContext.PersonalRelationshipTypes
                 .FirstOrDefault(prt => prt.Description.ToLower() == description.ToLower());
+        }
+
+        public Infrastructure.PersonalRelationship GetPersonalRelationshipById(long relationshipId)
+        {
+            return _databaseContext.PersonalRelationships
+                .FirstOrDefault(prt => prt.Id == relationshipId);
+        }
+
+        public void DeleteRelationship(long id)
+        {
+            var relationship = _databaseContext.PersonalRelationships
+                .Where(prt => prt.Id == id)
+                .Include(pr => pr.Type)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
+
+            var inverseRelationship = _databaseContext.PersonalRelationships
+                .Where(pr => pr.PersonId == relationship.OtherPersonId && pr.TypeId == relationship.Type.InverseTypeId)
+                .Include(pr => pr.Details)
+                .FirstOrDefault();
+
+            _databaseContext.PersonalRelationships.Remove(relationship);
+            _databaseContext.PersonalRelationships.Remove(inverseRelationship);
+
+            _databaseContext.SaveChanges();
         }
 
         public Infrastructure.PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request)
@@ -936,9 +973,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 IsMainCarer = request.IsMainCarer?.ToUpper(),
                 IsInformalCarer = request.IsInformalCarer?.ToUpper(),
                 StartDate = _systemTime.Now,
+                CreatedBy = request.CreatedBy,
                 Details = new PersonalRelationshipDetail()
                 {
-                    Details = request.Details
+                    Details = request.Details,
+                    CreatedBy = request.CreatedBy
                 }
             };
 
@@ -948,6 +987,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return personalRelationship;
         }
 
+        public void CreateRequestAudit(CreateRequestAuditRequest request)
+        {
+            var requestAudit = (new RequestAudit()
+            {
+                ActionName = request.ActionName,
+                UserName = request.UserName,
+                Metadata = request.Metadata,
+                Timestamp = DateTime.Now
+            });
+
+            _databaseContext.RequestAudits.Add(requestAudit);
+            _databaseContext.SaveChanges();
+        }
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end

@@ -28,10 +28,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = createPersonalRelationshipRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().HaveCount(3);
+            response.Errors.Should().HaveCount(4);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'personId' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'otherPersonId' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'type' must be provided.");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided.");
         }
 
         [Test]
@@ -109,6 +110,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = createPersonalRelationshipRequestValidator.Validate(validRequest);
 
             response.IsValid.Should().BeTrue();
+        }
+
+        [Test]
+        public void WhenCreatedByIsNotAnEmailAddressReturnsErrorWithMessage()
+        {
+            var badRequest = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(createdBy: "foobar");
+
+            var response = createPersonalRelationshipRequestValidator.Validate(badRequest);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be an email address.");
         }
 
         [Test]
