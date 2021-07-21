@@ -122,7 +122,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 { "submitted", SubmissionState.Submitted },
                 { "approved", SubmissionState.Approved },
                 { "discarded", SubmissionState.Discarded },
-                { "panel-approved", SubmissionState.PanelApproved }
+                { "panel_approved", SubmissionState.PanelApproved }
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {

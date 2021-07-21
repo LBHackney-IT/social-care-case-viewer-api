@@ -436,7 +436,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
                 { SubmissionState.Discarded, "Discarded" },
-                { SubmissionState.PanelApproved, "panel-approved" }
+                { SubmissionState.PanelApproved, "panel_approved" }
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
