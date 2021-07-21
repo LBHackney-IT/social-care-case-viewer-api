@@ -8,5 +8,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromRoute]
         [Required]
         public string Id { get; set; }
+
+        public string UserId { get; set; }
+
+        public bool AuditingEnabled { get; set; }
+
+        public string ResidentId { get; set; }
     }
 }

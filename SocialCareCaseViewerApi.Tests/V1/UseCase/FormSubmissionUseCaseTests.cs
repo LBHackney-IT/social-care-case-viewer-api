@@ -29,7 +29,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             SubmissionState.Discarded,
             SubmissionState.Submitted,
-            SubmissionState.Approved
+            SubmissionState.Approved,
+            SubmissionState.PanelApproved
         };
 
         [SetUp]
@@ -162,11 +163,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteUpdateSubmissionToInProgressWithRejectionSuccessfullyUpdatesSubmissionStateAndRejectionMessage()
+        public void ExecuteUpdateSubmissionToInProgressFromSubmittedWithRejectionSuccessfullyUpdatesSubmissionStateAndRejectionMessage()
         {
             const string rejectionReason = "rejected";
             var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "in_progress", rejectionReason: rejectionReason);
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.InProgress);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.RejectionReason.Should().Be(rejectionReason);
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToInProgressFromApprovedWithRejectionSuccessfullyUpdatesSubmissionStateAndRejectionMessage()
+        {
+            const string rejectionReason = "rejected";
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "in_progress", rejectionReason: rejectionReason);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Approved);
             var worker = TestHelpers.CreateWorker();
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
             _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
@@ -211,6 +230,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             createdSubmission.SubmissionState.Should().Be(SubmissionState.Approved);
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
             response.ApprovedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
+        }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToPanelApprovedSuccessfullyUpdatesSubmissionState()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "panel_approved");
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Approved);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.SubmissionState.Should().Be(SubmissionState.PanelApproved);
+            response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
+            response.PanelApprovedBy.Should().BeEquivalentTo(worker.ToDomain(false).ToResponse());
         }
 
         [Test]
@@ -365,21 +401,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             new object[] { SubmissionState.Discarded, SubmissionState.InProgress, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Discarded, SubmissionState.Approved, false },
+            new object[] { SubmissionState.Discarded, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.InProgress, SubmissionState.Discarded, true },
             new object[] { SubmissionState.InProgress, SubmissionState.InProgress, false },
             new object[] { SubmissionState.InProgress, SubmissionState.Submitted, true },
             new object[] { SubmissionState.InProgress, SubmissionState.Approved, false },
+            new object[] { SubmissionState.InProgress, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.Submitted, SubmissionState.Discarded, false },
             new object[] { SubmissionState.Submitted, SubmissionState.InProgress, true },
             new object[] { SubmissionState.Submitted, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Submitted, SubmissionState.Approved, true },
+            new object[] { SubmissionState.Submitted, SubmissionState.PanelApproved, false },
 
             new object[] { SubmissionState.Approved, SubmissionState.Discarded, false },
-            new object[] { SubmissionState.Approved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.Approved, SubmissionState.InProgress, true },
             new object[] { SubmissionState.Approved, SubmissionState.Submitted, false },
             new object[] { SubmissionState.Approved, SubmissionState.Approved, false },
+            new object[] { SubmissionState.Approved, SubmissionState.PanelApproved, true },
+
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Discarded, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.InProgress, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Submitted, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.Approved, false },
+            new object[] { SubmissionState.PanelApproved, SubmissionState.PanelApproved, false },
         };
 
         [TestCaseSource(nameof(_allSubmissionChangePermutations))]
@@ -389,14 +435,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 { SubmissionState.InProgress, "in_progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                { SubmissionState.PanelApproved, "panel_approved" }
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
             var resident = TestHelpers.CreatePerson();
@@ -563,7 +611,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
             response.Tags.Should().BeEquivalentTo(tags);
         }
+
+        [Test]
+        public void ExecuteUpdateSubmissionToApprovedThrowsUpdateSubmissionExceptionIfApproverIsAlsoWorkerOnTheSubmission()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var worker = TestHelpers.CreateWorker();
+            var request = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: worker.Email, submissionState: "approved");
+            var createdSubmission = TestHelpers.CreateCaseSubmission(worker: worker, submissionState: SubmissionState.Submitted);
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(resident.Id)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UpdateSubmissionException>()
+                .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
+        }
     }
 }
-
 

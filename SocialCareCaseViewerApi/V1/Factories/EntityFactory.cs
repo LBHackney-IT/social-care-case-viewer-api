@@ -151,7 +151,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                {SubmissionState.PanelApproved, "Panel Approved"}
             };
 
             return new Domain.CaseSubmission
@@ -166,6 +167,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
                 ApprovedAt = caseSubmission.ApprovedAt,
                 ApprovedBy = caseSubmission.ApprovedBy?.ToDomain(false),
+                PanelApprovedAt = caseSubmission.PanelApprovedAt,
+                PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToDomain(false),
                 RejectionReason = caseSubmission.RejectionReason,
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {

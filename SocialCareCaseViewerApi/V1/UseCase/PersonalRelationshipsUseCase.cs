@@ -15,6 +15,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+        public void ExecuteDelete(long id)
+        {
+            var relationship = _databaseGateway.GetPersonalRelationshipById(id);
+
+            var relationshipDoesNotExist = relationship == null;
+            if (relationshipDoesNotExist) throw new PersonalRelationshipNotFoundException($"'relationshipId' with '{id}' was not found.");
+
+            _databaseGateway.DeleteRelationship(relationship.Id);
+        }
+
         public void ExecutePost(CreatePersonalRelationshipRequest request)
         {
             var persons = _databaseGateway.GetPersonsByListOfIds(new List<long>() { request.PersonId, request.OtherPersonId });
@@ -29,6 +39,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new PersonalRelationshipTypeNotFoundException($"'type' with '{request.Type}' was not found.");
+
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+            var workerDoesNotExist = worker == null;
+            if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
 
             var personWithPersonalRelationships = _databaseGateway.GetPersonWithPersonalRelationshipsByPersonId(request.PersonId);
 
@@ -47,7 +61,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 TypeId = type.InverseTypeId,
                 IsMainCarer = null,
                 IsInformalCarer = null,
-                Details = null
+                Details = null,
+                CreatedBy = request.CreatedBy
             });
         }
     }

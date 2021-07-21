@@ -34,9 +34,51 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.PersonalRelationshipTypes.Add(personalRelationshipType);
             databaseContext.PersonalRelationships.Add(personalRelationship);
             databaseContext.PersonalRelationshipDetails.Add(personalRelationshipDetail);
+
             databaseContext.SaveChanges();
 
             return (person, otherPerson, personalRelationship, personalRelationshipType, personalRelationshipDetail);
+        }
+
+        public static (Person, Person, PersonalRelationship?, PersonalRelationshipType?, PersonalRelationshipDetail?, PersonalRelationship?) SavePersonWithPersonalRelationshipAndOppositeToDatabase(
+            DatabaseContext databaseContext,
+            bool withRelationship = true,
+            string relationshipType = "relationship_one",
+            int relationshipTypeId = 100,
+            int oppositeRelationshipTypeId = 101,
+            string oppositeRelationshipType = "relationship_two",
+            bool hasEnded = false,
+            string? details = null
+        )
+        {
+            var person = TestHelpers.CreatePerson();
+            var otherPerson = TestHelpers.CreatePerson();
+
+            databaseContext.Persons.Add(person);
+            databaseContext.Persons.Add(otherPerson);
+            databaseContext.SaveChanges();
+
+            if (withRelationship == false) return (person, otherPerson, null, null, null, null);
+
+            var personalRelationshipType = CreatePersonalRelationshipType(relationshipType, relationshipTypeId, oppositeRelationshipTypeId);
+            var personalRelationship = CreatePersonalRelationship(person, otherPerson, personalRelationshipType, hasEnded);
+            var personalRelationshipDetail = CreatePersonalRelationshipDetail(personalRelationship.Id, details);
+
+            var oppositePersonalRelationshipType = CreatePersonalRelationshipType(oppositeRelationshipType, oppositeRelationshipTypeId, relationshipTypeId);
+            var inversePersonalRelationship = CreatePersonalRelationship(otherPerson, person, oppositePersonalRelationshipType, hasEnded);
+            personalRelationshipType.InverseTypeId = oppositePersonalRelationshipType.Id;
+
+            databaseContext.PersonalRelationships.Add(personalRelationship);
+            databaseContext.PersonalRelationshipDetails.Add(personalRelationshipDetail);
+
+            databaseContext.PersonalRelationshipTypes.Add(personalRelationshipType);
+            databaseContext.PersonalRelationshipTypes.Add(oppositePersonalRelationshipType);
+
+            databaseContext.PersonalRelationships.Add(inversePersonalRelationship);
+
+            databaseContext.SaveChanges();
+
+            return (person, otherPerson, personalRelationship, personalRelationshipType, personalRelationshipDetail, inversePersonalRelationship);
         }
 
         public static (Person, List<Person>, List<PersonalRelationship>) CreatePersonWithPersonalRelationships()
@@ -131,12 +173,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(prd => prd.Details, f => details ?? f.Random.String2(1000));
         }
 
-        public static PersonalRelationshipType CreatePersonalRelationshipType(string description = "parent")
+        public static PersonalRelationshipType CreatePersonalRelationshipType(string description = "parent", long? id = null, long? inverseTypeId = null)
         {
             return new Faker<PersonalRelationshipType>()
-                .RuleFor(prt => prt.Id, f => f.UniqueIndex)
-                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20))
-                .RuleFor(prt => prt.InverseTypeId, f => f.UniqueIndex);
+                .RuleFor(prt => prt.Id, f => id ?? f.UniqueIndex)
+                .RuleFor(prt => prt.InverseTypeId, f => inverseTypeId ?? f.UniqueIndex)
+                .RuleFor(prt => prt.Description, f => description ?? f.Random.String2(20));
         }
 
         public static CreatePersonalRelationshipRequest CreatePersonalRelationshipRequest(
@@ -146,7 +188,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string type = "parent",
             string? isMainCarer = null,
             string? isInformalCarer = null,
-            string? details = null
+            string? details = null,
+            string? createdBy = null
         )
         {
             return new Faker<CreatePersonalRelationshipRequest>()
@@ -156,7 +199,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
                 .RuleFor(pr => pr.IsMainCarer, f => isMainCarer ?? f.Random.String2(1, "YNyn"))
                 .RuleFor(pr => pr.IsInformalCarer, f => isInformalCarer ?? f.Random.String2(1, "YNyn"))
-                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000));
+                .RuleFor(pr => pr.Details, f => details ?? f.Random.String2(1000))
+                .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
         }
 
         public static (Person, Person) SavePersonAndOtherPersonToDatabase(DatabaseContext databaseContext)

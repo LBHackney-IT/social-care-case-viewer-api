@@ -35,6 +35,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("closure_date_if_closed")]
         public DateTime? CaseClosureDate { get; set; }
 
+        [Column("marked_for_deletion")]
+        public bool MarkedForDeletion { get; set; }
 
         //nav props
         public Worker Worker { get; set; }

@@ -1,10 +1,8 @@
-using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -72,6 +70,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
             var exceptionMessage = "error message";
             _mockPersonalRelationshipsUseCase.Setup(x => x.ExecutePost(It.IsAny<CreatePersonalRelationshipRequest>()))
                 .Throws(new PersonalRelationshipAlreadyExistsException(exceptionMessage));
+            var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest();
+
+            var response = _relationshipController.CreatePersonalRelationship(request) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
+
+        [Test]
+        public void WhenWorkerNotFoundExceptionIsThrownReturns400WithMessage()
+        {
+            var exceptionMessage = "error message";
+            _mockPersonalRelationshipsUseCase.Setup(x => x.ExecutePost(It.IsAny<CreatePersonalRelationshipRequest>()))
+                .Throws(new WorkerNotFoundException(exceptionMessage));
             var request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest();
 
             var response = _relationshipController.CreatePersonalRelationship(request) as BadRequestObjectResult;

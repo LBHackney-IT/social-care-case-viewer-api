@@ -52,6 +52,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         public string IsDisplayAddress { get; set; }
 
+        [Column("marked_for_deletion")]
+        public bool MarkedForDeletion { get; set; }
+
         //audit props
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }
