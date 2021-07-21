@@ -12,7 +12,6 @@ The bug makes it so that the record for this worker is not visible (therefore no
 
 1. update the is_active field to true for the record
 
-
 ## Link to Jira ticket
 
 https://hackney.atlassian.net/browse/SCT-791
@@ -21,7 +20,7 @@ https://hackney.atlassian.net/browse/SCT-791
 
 ```sql
 -- update statement
-update dbo.sccv_worker set is_active = true where id = 1009;
+update dbo.sccv_worker set is_active = true where id = <worker_id>;
 ```
 
 ## Useful resources
