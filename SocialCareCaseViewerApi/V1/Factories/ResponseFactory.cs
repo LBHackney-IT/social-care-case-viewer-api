@@ -230,6 +230,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToResponse(),
                 ApprovedAt = caseSubmission.ApprovedAt,
+                PanelApprovedAt = caseSubmission.PanelApprovedAt,
+                PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToResponse(),
                 ApprovedBy = caseSubmission.ApprovedBy?.ToResponse(),
                 RejectionReason = caseSubmission.RejectionReason,
                 EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>

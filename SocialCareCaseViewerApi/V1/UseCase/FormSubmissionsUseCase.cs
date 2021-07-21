@@ -121,14 +121,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 { "in_progress", SubmissionState.InProgress },
                 { "submitted", SubmissionState.Submitted },
                 { "approved", SubmissionState.Approved },
-                { "discarded", SubmissionState.Discarded }
+                { "discarded", SubmissionState.Discarded },
+                { "panel_approved", SubmissionState.PanelApproved }
             };
 
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
-                { SubmissionState.Discarded, "Discarded" }
+                { SubmissionState.Discarded, "Discarded" },
+                { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
             if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
@@ -149,7 +151,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     }
                     break;
                 case SubmissionState.InProgress:
-                    if (submission.SubmissionState != SubmissionState.Submitted)
+                    if (submission.SubmissionState != SubmissionState.Submitted && submission.SubmissionState != SubmissionState.Approved)
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
@@ -168,14 +170,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
-                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToLower().Equals(request.EditedBy.ToLower())))
+                    if (submission.CreatedBy.Email.Equals(request.EditedBy, StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
                     }
                     submission.ApprovedAt = DateTime.Now;
                     submission.ApprovedBy = worker;
                     break;
-
+                case SubmissionState.PanelApproved:
+                    if (submission.SubmissionState != SubmissionState.Approved)
+                    {
+                        throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
+                    }
+                    if (submission.CreatedBy.Email.Equals(request.EditedBy, StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot panel approve the submission as they created the submission");
+                    }
+                    submission.PanelApprovedAt = DateTime.Now;
+                    submission.PanelApprovedBy = worker;
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(request));
