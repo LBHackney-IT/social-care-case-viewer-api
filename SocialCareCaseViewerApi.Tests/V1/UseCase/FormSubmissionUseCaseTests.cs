@@ -235,7 +235,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteUpdateSubmissionToPanelApprovedSuccessfullyUpdatesSubmissionState()
         {
-            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "panel-approved");
+            var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "panel_approved");
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.Approved);
             var worker = TestHelpers.CreateWorker();
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
