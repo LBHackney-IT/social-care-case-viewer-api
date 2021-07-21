@@ -170,9 +170,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
-                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToUpperInvariant().Equals(request.EditedBy.ToUpperInvariant(), StringComparison.InvariantCulture)))
+                    if (submission.CreatedBy.Email.Equals(request.EditedBy, StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
                     }
                     submission.ApprovedAt = DateTime.Now;
                     submission.ApprovedBy = worker;
@@ -182,9 +182,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     {
                         throw new UpdateSubmissionException($"Invalid submission state change from {mapSubmissionStateToResponseString[submission.SubmissionState]} to {mapSubmissionStateToResponseString[newSubmissionState]}");
                     }
-                    if (submission.Workers.Any(submissionWorker => submissionWorker.Email.ToUpperInvariant().Equals(request.EditedBy.ToUpperInvariant(), StringComparison.InvariantCulture)))
+                    if (submission.CreatedBy.Email.Equals(request.EditedBy, StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot approve the submission as they have worked on the submission");
+                        throw new UpdateSubmissionException($"Worker with email {request.EditedBy} cannot panel approve the submission as they created the submission");
                     }
                     submission.PanelApprovedAt = DateTime.Now;
                     submission.PanelApprovedBy = worker;
