@@ -35,27 +35,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories.Response
         }
 
         [Test]
-        public void WhenThereArePersonalRelationshipsOfSameTypeReturnsAllPersonsForThatType()
+        public void WhenThereArePersonalRelationshipsOfSameTypeReturnsAllPelationshipsForThatType()
         {
             var (person, otherPersons, personalRelationships, details) = PersonalRelationshipsHelper.CreatePersonWithPersonalRelationshipsOfSameType();
 
             var response = personalRelationships.ToResponse();
-
-            response.FirstOrDefault().Persons.Should().HaveCount(2);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Id == otherPersons[0].Id);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.FirstName == otherPersons[0].FirstName);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.LastName == otherPersons[0].LastName);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Gender == otherPersons[0].Gender);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.IsMainCarer == personalRelationships[0].IsMainCarer);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.IsInformalCarer == personalRelationships[0].IsInformalCarer);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Details == details[0].Details);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Id == otherPersons[1].Id);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.FirstName == otherPersons[1].FirstName);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.LastName == otherPersons[1].LastName);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Gender == otherPersons[1].Gender);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.IsMainCarer == personalRelationships[1].IsMainCarer);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.IsInformalCarer == personalRelationships[1].IsInformalCarer);
-            response.FirstOrDefault().Persons.Should().Contain(p => p.Details == details[1].Details);
 
             response.FirstOrDefault().Relationships.Should().HaveCount(2);
             response.FirstOrDefault().Relationships.Should().Contain(r => r.Id == personalRelationships[0].Id);
