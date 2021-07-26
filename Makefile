@@ -26,8 +26,8 @@ test:
 start-test-dbs:
 	docker-compose up -d sccv-api-test-postgresql && docker-compose up -d sccv-api-test-mongo-db
 
-.PHONY: restart-db
-restart-db:
+.PHONY: restart-test-pg-db
+restart-test-pg-db:
 	docker stop $$(docker ps -q --filter ancestor=sccv-api-test-postgresql -a)
 	-docker rm $$(docker ps -q --filter ancestor=sccv-api-test-postgresql -a)
 	docker rmi sccv-api-test-postgresql

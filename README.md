@@ -113,10 +113,10 @@ $ dotnet test --filter GivenHttpClientReturnsValidResponseThenGatewayReturnsList
 $ dotnet test --filter SocialCarePlatformAPIGatewayTests
 ```
 
-If your docker test database is out of sync with the schema on your current branch run
+If your docker test postgres database is out of sync with the schema on your current branch run
 
 ```sh
-$ make restart-db
+$ make restart-test-pg-db
 ```
 
 See [Microsoft's documentation on running selective unit tests](https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=mstest) for more information.
