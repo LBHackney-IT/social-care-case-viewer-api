@@ -28,10 +28,10 @@ start-test-dbs:
 
 .PHONY: restart-db
 restart-db:
-	docker stop $$(docker ps -q --filter ancestor=test-database -a)
-	-docker rm $$(docker ps -q --filter ancestor=test-database -a)
-	docker rmi test-database
-	docker-compose up -d test-database
+	docker stop $$(docker ps -q --filter ancestor=sccv-api-test-postgresql -a)
+	-docker rm $$(docker ps -q --filter ancestor=sccv-api-test-postgresql -a)
+	docker rmi sccv-api-test-postgresql
+	docker-compose up -d sccv-api-test-postgresql
 
 .PHONY: lint
 lint:
