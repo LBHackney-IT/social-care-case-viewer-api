@@ -104,9 +104,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
             string mosaicIdTwo = "556677";
             string masterPersonId = "77889900";
 
-            var casenoteOne = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).Create();
-            var casenoteTwo = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).Create();
-            var casenoteThree = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicIdTwo).Create();
+            var casenoteOneForMosaicId = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).Create();
+            var casenoteTwoForMosaicId = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).Create();
+            var casenoteThreeForMosaicIdTwo = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicIdTwo).Create();
 
             var collection = _mongoDatabase?.GetCollection<MongoDBTestObject>(MainFormCollection);
 
