@@ -15,6 +15,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data
     {
         private readonly Fixture _fixture = new Fixture();
 
+        /// <summary>
+        /// Imports emergency ID person records from sccv_persons_import to dm_persons table and adds lookup records to sccv_persons_lookup table
+        /// Must be run manually on the db server after sccv_persons_import table has been populated with the data from the service
+        /// </summary>
         private static readonly FormattableString _queryUnderTest = $@"
                    do
                     $$
