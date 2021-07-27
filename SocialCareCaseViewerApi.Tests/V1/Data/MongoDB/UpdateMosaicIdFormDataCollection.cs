@@ -91,7 +91,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
             var filterByNewId = Builders<MongoDBTestObject>.Filter.Eq("MosaicId", masterPersonId);
             var recordsWithNewId = collection.Find(filterByNewId).ToList();
             recordsWithNewId.Count.Should().Be(3);
-            
+
             var filterByOldId = Builders<MongoDBTestObject>.Filter.Eq("MosaicId", mosaicId);
             var recordsWithOldId = collection.Find(filterByOldId).ToList();
             recordsWithOldId.Count.Should().Be(0);
