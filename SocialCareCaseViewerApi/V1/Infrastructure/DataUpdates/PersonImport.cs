@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates
         [Column("last_name")]
         [MaxLength(100)]
         public string LastName { get; set; }
-    
+
         [Column("date_of_birth")]
         public DateTime? DateOfBirth { get; set; }
 
