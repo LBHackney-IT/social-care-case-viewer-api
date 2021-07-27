@@ -31,6 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PersonRecordToBeDeleted> PersonRecordsToBeDeleted { get; set; }
         public DbSet<DeletedPersonRecord> DeletedPersonRecords { get; set; }
         public DbSet<RequestAudit> RequestAudits { get; set; }
+        public DbSet<PersonImport> PersonImport { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WorkerTeam>().HasKey(wt => new { wt.WorkerId, wt.TeamId });
