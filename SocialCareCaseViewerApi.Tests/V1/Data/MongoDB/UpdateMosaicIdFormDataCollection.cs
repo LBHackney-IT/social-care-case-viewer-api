@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
+using System.Linq;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
@@ -110,9 +111,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
 
             var collection = _mongoDatabase?.GetCollection<MongoDBTestObject>(MainFormCollection);
 
-            collection?.InsertOne(casenoteOne);
-            collection?.InsertOne(casenoteTwo);
-            collection?.InsertOne(casenoteThree);
+            collection?.InsertOne(casenoteOneForMosaicId);
+            collection?.InsertOne(casenoteTwoForMosaicId);
+            collection?.InsertOne(casenoteThreeForMosaicIdTwo);
 
             var result = _mongoDatabase?.RunCommand(_dbCommandUnderTest);
 
@@ -129,7 +130,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
         public void DoesNotUpdateAuditTypeRecordsThatHaveAPIInTheFormNameOverallField()
         {
             string mosaicId = "334445566";
-            string masterPersonId = "77889900";
 
             var casenoteOne = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).With(x => x.FormNameOverall, "API_Event").Create();
             var casenoteTwo = _fixture.Build<MongoDBTestObject>().With(x => x.MosaicId, mosaicId).Create();
@@ -143,9 +143,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
 
             var result = _mongoDatabase?.RunCommand(_dbCommandUnderTest);
 
-            var filterByNewId = Builders<MongoDBTestObject>.Filter.Eq("MosaicId", masterPersonId);
-            var recordsWithNewId = collection.Find(filterByNewId).ToList();
-            recordsWithNewId.Count.Should().Be(2);
+            var filterByFormNameOverall = Builders<MongoDBTestObject>.Filter.Eq("FormNameOverall", "API_Event");
+            var filteredRecords = collection.Find(filterByFormNameOverall).ToList();
+
+            filteredRecords.Count.Should().Be(1);
+            filteredRecords.First().MosaicId.Should().Be(mosaicId);
         }
     }
 
