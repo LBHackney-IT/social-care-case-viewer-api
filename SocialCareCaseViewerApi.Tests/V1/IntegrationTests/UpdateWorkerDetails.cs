@@ -60,6 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
 
             updatedWorkerResponse.Count.Should().Be(1);
+            updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
             updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeam.Id);
             updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeam.Name);
         }
