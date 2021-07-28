@@ -14,16 +14,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
     [TestFixture]
     public class UpdateWorkerDetails: IntegrationTestSetup<Startup>
     {
-        [SetUp]
-        public void SetUp()
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT","Development");
-            Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");
-            Environment.SetEnvironmentVariable("SCCV_MONGO_DB_NAME", "social_care_db_test");
-            Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL", "https://mockBase");
-        }
-
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
