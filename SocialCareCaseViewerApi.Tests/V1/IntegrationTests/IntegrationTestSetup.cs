@@ -1,26 +1,32 @@
+using System.Data;
+using System.Data.Common;
 using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using Npgsql;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
-    [NonParallelizable]
-    [TestFixture]
     public class IntegrationTestSetup<TStartup> where TStartup : class
     {
         private HttpClient _client;
         private DatabaseContext _databaseContext;
+        private ISccvDbContext _mongoDbContext;
 
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
-        private IDbContextTransaction _transaction;
+        private NpgsqlTransaction _transaction;
         private DbContextOptionsBuilder _builder;
+
 
         protected HttpClient Client => _client;
         protected DatabaseContext DatabaseContext => _databaseContext;
+        protected ISccvDbContext MongoDbTestContext => _mongoDbContext;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -40,9 +46,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             _client = _factory.CreateClient();
-            _databaseContext = new DatabaseContext(_builder.Options);
-            _databaseContext.Database.EnsureCreated();
-            _transaction = DatabaseContext.Database.BeginTransaction();
+
+            _databaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
+            _mongoDbContext = new MongoDbTestContext();
+
+            _transaction = _connection.BeginTransaction(IsolationLevel.RepeatableRead);
+
+            _databaseContext.Database.UseTransaction(_transaction);
         }
 
         [TearDown]
@@ -52,6 +62,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             _factory.Dispose();
             _transaction.Rollback();
             _transaction.Dispose();
+            _mongoDbContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
+        }
+
+        [OneTimeTearDown]
+        public void AfterAllTests()
+        {
+            _connection.Dispose();
         }
     }
 }
