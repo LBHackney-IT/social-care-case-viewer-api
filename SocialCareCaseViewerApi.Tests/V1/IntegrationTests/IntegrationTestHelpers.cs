@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
+                .RuleFor(t => t.Name, f => f.Random.String2(10, 100)).Generate();
 
             context.Teams.Add(team);
             context.SaveChanges();
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
+                .RuleFor(t => t.Name, f => f.Random.String2(10, 100)).Generate();
 
             context.Teams.Add(team);
             context.SaveChanges();
