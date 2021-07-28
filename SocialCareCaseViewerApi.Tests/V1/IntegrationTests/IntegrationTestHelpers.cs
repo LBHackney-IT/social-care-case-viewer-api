@@ -1,16 +1,13 @@
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using DomainWorker = SocialCareCaseViewerApi.V1.Domain.Worker;
-using DomainTeam = SocialCareCaseViewerApi.V1.Domain.Team;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static (DomainWorker, Team) SetupExistingWorker(DatabaseContext context)
+        public static Worker SetupExistingWorker(DatabaseContext context)
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
@@ -21,14 +18,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
 
             context.Teams.Add(team);
-            context.SaveChanges();
-
-            var newTeam = new Faker<Team>()
-                .RuleFor(t => t.Id, f => f.UniqueIndex + team.Id)
-                .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
-
-            context.Teams.Add(newTeam);
             context.SaveChanges();
 
             var workerTeam = new Faker<WorkerTeam>()
@@ -58,23 +47,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             context.Workers.Add(worker);
             context.SaveChanges();
 
-            var domainWorker = new DomainWorker
+            return worker;
+        }
+
+        public static Team CreateAnotherTeam(DatabaseContext context, string workerContext)
+        {
+            var team = new Faker<Team>()
+                .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
+                .RuleFor(t => t.Context, f => workerContext)
+                .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
+
+            context.Teams.Add(team);
+            context.SaveChanges();
+
+            return team;
+        }
+
+        public static UpdateWorkerRequest CreatePatchRequest(Worker worker, WorkerTeamRequest teamRequest)
+        {
+            return new UpdateWorkerRequest
             {
-                Id = worker.Id,
-                Email = worker.Email,
+                WorkerId = worker.Id,
+                ModifiedBy = new Faker().Person.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
+                ContextFlag = worker.ContextFlag ?? string.Empty,
+                Teams = new List<WorkerTeamRequest> { teamRequest },
                 Role = worker.Role,
-                ContextFlag = worker.ContextFlag,
-                CreatedBy = worker.CreatedBy,
-                DateStart = worker.DateStart,
-                AllocationCount = worker.Allocations?.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count() ?? 0,
-                Teams = (worker.WorkerTeams?.Select(x =>
-                            new DomainTeam { Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context }).ToList()) ??
-                        new List<DomainTeam>()
+                DateStart = new Faker().Date.Recent()
             };
-
-            return (domainWorker, newTeam);
         }
     }
 }

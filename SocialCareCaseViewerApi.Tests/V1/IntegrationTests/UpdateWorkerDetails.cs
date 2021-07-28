@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
@@ -20,41 +21,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
-            var (existingWorker, newTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+            // Get request to get an existing worker
+            var existingWorker = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+
+            var newTeam = IntegrationTestHelpers.CreateAnotherTeam(DatabaseContext, existingWorker.ContextFlag);
+
+            var getWorkersUri = new Uri($"/api/v1/workers?email={existingWorker.Email}", UriKind.Relative);
+
+            var getWorkersResponse = await Client.GetAsync(getWorkersUri).ConfigureAwait(true);
+            getWorkersResponse.StatusCode.Should().Be(200);
+
+            var initialContent = await getWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var initialWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(initialContent).ToList();
+
+            initialWorkerResponse.Count.Should().Be(1);
+            initialWorkerResponse.Single().Teams.Single().Id.Should().NotBe(newTeam.Id);
+            initialWorkerResponse.Single().Teams.Single().Name.Should().NotBe(newTeam.Name);
+
+            // Patch request to update team
+
+            var newTeamRequest = new WorkerTeamRequest { Id = newTeam.Id, Name = newTeam.Name };
 
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
-            var patchRequest = new UpdateWorkerRequest
-            {
-                WorkerId = existingWorker.Id,
-                ModifiedBy = new Faker().Person.Email,
-                FirstName = existingWorker.FirstName,
-                LastName = existingWorker.LastName,
-                ContextFlag = existingWorker.ContextFlag,
-                Teams = new List<WorkerTeamRequest>
-                {
-                    new WorkerTeamRequest{Id = newTeam.Id, Name = newTeam.Name}
-                },
-                Role = existingWorker.Role,
-                DateStart = new Faker().Date.Recent()
-            };
+            var patchRequest = IntegrationTestHelpers.CreatePatchRequest(existingWorker, newTeamRequest);
 
             var serializedRequest = JsonSerializer.Serialize(patchRequest);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
-            var patchResponse = await Client.PatchAsync(patchUri, requestContent).ConfigureAwait(true);
-            var patchStatusCode = patchResponse.StatusCode;
-            patchStatusCode.Should().Be(204);
 
-            var getUri = new Uri($"/api/v1/workers?id={existingWorker.Id}",UriKind.Relative);
-            var getResponse = Client.GetAsync(getUri);
+            var patchWorkerResponse = await Client.PatchAsync(patchUri, requestContent).ConfigureAwait(true);
+            patchWorkerResponse.StatusCode.Should().Be(204);
 
-            var getStatusCode = getResponse.Result.StatusCode;
-            getStatusCode.Should().Be(200);
+            // Get request to check team has been updated
 
-            var content = getResponse.Result.Content;
-            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
-            var convertedResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(stringContent);
+            var getUpdatedWorkersResponse = await Client.GetAsync(getWorkersUri).ConfigureAwait(true);
+            getUpdatedWorkersResponse.StatusCode.Should().Be(200);
 
-            convertedResponse.FirstOrDefault().Teams.Count.Should().Be(1);
+            var updatedContent = await getUpdatedWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
+
+            updatedWorkerResponse.Count.Should().Be(1);
+            updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeam.Id);
+            updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeam.Name);
         }
     }
 }
