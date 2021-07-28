@@ -12,7 +12,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     [TestFixture]
-    public class UpdateWorkerDetails: IntegrationTestSetup<Startup>
+    public class UpdateWorkerDetails : IntegrationTestSetup<Startup>
     {
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var serializedRequest = JsonSerializer.Serialize(patchRequest);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json-patch+json");
-            var patchResponse = await Client.PatchAsync(patchUri,requestContent).ConfigureAwait(true);
+            var patchResponse = await Client.PatchAsync(patchUri, requestContent).ConfigureAwait(true);
             var patchStatusCode = patchResponse.StatusCode;
             patchStatusCode.Should().Be(204);
 

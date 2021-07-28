@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [SetUp]
         public void BaseSetup()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT","Development");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
             Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");
             Environment.SetEnvironmentVariable("SCCV_MONGO_DB_NAME", "social_care_db_test");
             Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");

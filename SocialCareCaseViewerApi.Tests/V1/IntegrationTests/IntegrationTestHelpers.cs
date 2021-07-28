@@ -10,14 +10,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static (DomainWorker,Team) SetupExistingWorker(DatabaseContext context)
+        public static (DomainWorker, Team) SetupExistingWorker(DatabaseContext context)
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
 
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
-                .RuleFor(t => t.Context, f => workerContext )
+                .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
 
             context.Teams.Add(team);
@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var newTeam = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + team.Id)
-                .RuleFor(t => t.Context, f => workerContext )
+                .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Name.JobType()).Generate();
 
             context.Teams.Add(newTeam);
@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var workerTeam = new Faker<WorkerTeam>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
-                .RuleFor(t => t.WorkerId, f => workerId )
+                .RuleFor(t => t.WorkerId, f => workerId)
                 .RuleFor(t => t.TeamId, f => team.Id)
                 .RuleFor(t => t.Team, team).Generate();
 
@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 DateStart = worker.DateStart,
                 AllocationCount = worker.Allocations?.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count() ?? 0,
                 Teams = (worker.WorkerTeams?.Select(x =>
-                            new DomainTeam {Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context}).ToList()) ??
+                            new DomainTeam { Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context }).ToList()) ??
                         new List<DomainTeam>()
             };
 
