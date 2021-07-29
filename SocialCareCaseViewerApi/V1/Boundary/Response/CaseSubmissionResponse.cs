@@ -12,6 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string FormId { get; set; } = null!;
         public WorkerResponse CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public DateTime? DateOfEvent { get; set; }
         public WorkerResponse? SubmittedBy { get; set; }
         public DateTime? SubmittedAt { get; set; }
         public WorkerResponse? ApprovedBy { get; set; }
