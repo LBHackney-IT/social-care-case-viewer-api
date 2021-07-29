@@ -483,8 +483,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? dateOfEvent = null,
             DateTime? submittedAt = null)
         {
-            workers ??= new List<Worker> {CreateWorker()};
-            residents ??= new List<InfrastructurePerson> {CreatePerson(residentId)};
+            workers ??= new List<Worker> { CreateWorker() };
+            residents ??= new List<InfrastructurePerson> { CreatePerson(residentId) };
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))

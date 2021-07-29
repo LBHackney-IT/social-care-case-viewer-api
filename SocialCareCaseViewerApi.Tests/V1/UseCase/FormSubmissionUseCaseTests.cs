@@ -47,8 +47,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecutePostSuccessfully()
         {
             var request = TestHelpers.CreateCaseSubmissionRequest();
-            var workers = new List<Worker> {TestHelpers.CreateWorker()};
-            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var workers = new List<Worker> { TestHelpers.CreateWorker() };
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers[0]);
             _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents[0]);
@@ -367,7 +367,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteUpdateSubmissionDoesNotChangeResidentsIfNoListIsPassed()
         {
-            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
             var request = TestHelpers.UpdateCaseSubmissionRequest();
             var createdSubmission = TestHelpers.CreateCaseSubmission(residents: residents);
             var worker = TestHelpers.CreateWorker();
@@ -537,7 +537,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void UpdateAnswersSetsTheWorkersTeamsAndAllocationsToNull()
         {
             var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest();
-            var workers = new List<Worker> {TestHelpers.CreateWorker()};
+            var workers = new List<Worker> { TestHelpers.CreateWorker() };
             var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, null, workers);
             const string stepId = "1";
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(workers[0]);
@@ -615,7 +615,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteUpdateSubmissionToApprovedThrowsUpdateSubmissionExceptionIfApproverIsAlsoWorkerOnTheSubmission()
         {
             var resident = TestHelpers.CreatePerson();
-            var workers = new List<Worker>() {TestHelpers.CreateWorker()};
+            var workers = new List<Worker>() { TestHelpers.CreateWorker() };
             var request = TestHelpers.UpdateCaseSubmissionRequest(updatedBy: workers[0].Email, submissionState: "approved");
             var createdSubmission = TestHelpers.CreateCaseSubmission(workers: workers, submissionState: SubmissionState.Submitted);
 

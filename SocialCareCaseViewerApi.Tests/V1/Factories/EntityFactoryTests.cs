@@ -465,7 +465,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CaseSubmissionToCareCaseDataReturnsAssociatedResidentInformation()
         {
-            var residents = new List<Person> {TestHelpers.CreatePerson(), TestHelpers.CreatePerson()};
+            var residents = new List<Person> { TestHelpers.CreatePerson(), TestHelpers.CreatePerson() };
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
             var submission = TestHelpers.CreateCaseSubmission(residents: residents);
 
@@ -479,7 +479,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CaseSubmissionToCareCaseDataReturnsOfficeEmailOfFirstWorkerAssociatedWithCaseSubmission()
         {
-            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
             var workers = new List<dbWorker> { TestHelpers.CreateWorker(), TestHelpers.CreateWorker() };
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
             var submission = TestHelpers.CreateCaseSubmission(workers: workers, residents: residents);
@@ -492,7 +492,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampFromSubmittedAtIfNotNull()
         {
-            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
             var submittedAt = new DateTime(2021, 07, 20, 14, 40, 30);
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
             var submission = TestHelpers.CreateCaseSubmission(submittedAt: submittedAt, residents: residents);
@@ -518,7 +518,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CaseSubmissionToCareCaseDataReturnsDateOfEventIfNotNull()
         {
-            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
             var dateOfEvent = new DateTime(2021, 07, 19, 14, 40, 30);
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
             var submission = TestHelpers.CreateCaseSubmission(dateOfEvent: dateOfEvent, residents: residents);
