@@ -499,7 +499,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var response = submission.ToCareCaseData(request);
 
-            response.CaseFormTimestamp.Should().Be(submittedAt.ToString("yyyy-MM-dd"));
+            response.CaseFormTimestamp.Should().Be("2021-07-20");
         }
 
         [Test]
@@ -515,8 +515,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             response.CaseFormTimestamp.Should().Be(DateTime.Now.ToString("yyyy-MM-dd"));
         }
 
-        // need a datetime provider class
-        // date of event uses dateofevent property if not null otherwise uses created at
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDateOfEventIfNotNull()
+        {
+            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var dateOfEvent = new DateTime(2021, 07, 19, 14, 40, 30);
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(dateOfEvent: dateOfEvent, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DateOfEvent.Should().Be("2021-07-19");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDateOfEventAsCreatedAtIfDateOfEventNull()
+        {
+            var createdAt = new DateTime(2021, 07, 18, 14, 40, 30);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, dateOfEvent: null, createdAt: createdAt);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DateOfEvent.Should().Be("2021-07-18");
+        }
     }
 }
 

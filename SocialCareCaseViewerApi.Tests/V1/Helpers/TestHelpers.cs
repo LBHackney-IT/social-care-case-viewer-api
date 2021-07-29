@@ -474,7 +474,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
-            DateTime? dateTime = null,
+            DateTime? createdAt = null,
             List<Worker>? workers = null,
             List<InfrastructurePerson>? residents = null,
             int? residentId = null,
@@ -491,12 +491,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.Workers, workers)
-                .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
+                .RuleFor(s => s.CreatedAt, f => createdAt ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, workers[0])
                 .RuleFor(s => s.EditHistory,
                     f => new List<EditHistory<Worker>>
                     {
-                        new EditHistory<Worker> {Worker = workers[0], EditTime = dateTime ?? f.Date.Recent()}
+                        new EditHistory<Worker> {Worker = workers[0], EditTime = createdAt ?? f.Date.Recent()}
                     })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
