@@ -506,9 +506,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampAsDateTimeNowIfSubmittedAtNull()
         {
             var residents = new List<Person> { TestHelpers.CreatePerson() };
-            var workers = new List<dbWorker> { TestHelpers.CreateWorker(), TestHelpers.CreateWorker() };
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
-            var submission = TestHelpers.CreateCaseSubmission(workers: workers, residents: residents, submittedAt: null);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, submittedAt: null);
 
             var response = submission.ToCareCaseData(request);
 
