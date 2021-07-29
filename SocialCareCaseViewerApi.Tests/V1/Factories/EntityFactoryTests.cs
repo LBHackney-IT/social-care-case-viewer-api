@@ -8,7 +8,6 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -380,7 +379,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var infrastructurePhoneNumber = new dbPhoneNumber()
             {
-                Number = phoneNumber.ToString(),
+                Number = phoneNumber,
                 PersonId = personId,
                 Type = phoneNumberType,
                 CreatedBy = createdBy
@@ -467,21 +466,56 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         public void CaseSubmissionToCareCaseDataReturnsAssociatedResidentInformation()
         {
             var residents = new List<Person> {TestHelpers.CreatePerson(), TestHelpers.CreatePerson()};
-            var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
-            var submission = TestHelpers.CreateCaseSubmission(worker: worker, residents: residents);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents);
 
             var response = submission.ToCareCaseData(request);
 
             response.PersonId.Should().Be(residents[0].Id);
             response.FirstName.Should().Be(residents[0].FirstName);
             response.LastName.Should().Be(residents[0].LastName);
-
-            // it returns the resident associated with the request
         }
 
-        // it only returns the email for the first worker associated with the case submission
-        // caseformtimestamp uses submittedAt if not null otherwise uses now
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsOfficeEmailOfFirstWorkerAssociatedWithCaseSubmission()
+        {
+            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var workers = new List<dbWorker> { TestHelpers.CreateWorker(), TestHelpers.CreateWorker() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(workers: workers, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.OfficerEmail.Should().Be(workers[0].Email);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampFromSubmittedAtIfNotNull()
+        {
+            var residents = new List<Person> {TestHelpers.CreatePerson()};
+            var submittedAt = new DateTime(2021, 07, 20, 14, 40, 30);
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(submittedAt: submittedAt, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.CaseFormTimestamp.Should().Be(submittedAt.ToString("yyyy-MM-dd"));
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampAsDateTimeNowIfSubmittedAtNull()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var workers = new List<dbWorker> { TestHelpers.CreateWorker(), TestHelpers.CreateWorker() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(workers: workers, residents: residents, submittedAt: null);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.CaseFormTimestamp.Should().Be(DateTime.Now.ToString("yyyy-MM-dd"));
+        }
+
+        // need a datetime provider class
         // date of event uses dateofevent property if not null otherwise uses created at
     }
 }

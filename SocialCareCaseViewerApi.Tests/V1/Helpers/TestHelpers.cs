@@ -475,31 +475,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
             DateTime? dateTime = null,
-            Worker? worker = null,
+            List<Worker>? workers = null,
             List<InfrastructurePerson>? residents = null,
             int? residentId = null,
             ObjectId? id = null,
             string? formId = null,
-            DateTime? dateOfEvent = null)
+            DateTime? dateOfEvent = null,
+            DateTime? submittedAt = null)
         {
-            worker ??= CreateWorker();
+            workers ??= new List<Worker> {CreateWorker()};
             residents ??= new List<InfrastructurePerson> {CreatePerson(residentId)};
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
                 .RuleFor(s => s.Residents, residents)
-                .RuleFor(s => s.Workers, new List<Worker> { worker })
+                .RuleFor(s => s.Workers, workers)
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
-                .RuleFor(s => s.CreatedBy, worker)
+                .RuleFor(s => s.CreatedBy, workers[0])
                 .RuleFor(s => s.EditHistory,
                     f => new List<EditHistory<Worker>>
                     {
-                        new EditHistory<Worker> {Worker = worker, EditTime = dateTime ?? f.Date.Recent()}
+                        new EditHistory<Worker> {Worker = workers[0], EditTime = dateTime ?? f.Date.Recent()}
                     })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
-                .RuleFor(s => s.DateOfEvent, dateOfEvent);
+                .RuleFor(s => s.DateOfEvent, dateOfEvent)
+                .RuleFor(s => s.SubmittedAt, submittedAt);
         }
 
         public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
