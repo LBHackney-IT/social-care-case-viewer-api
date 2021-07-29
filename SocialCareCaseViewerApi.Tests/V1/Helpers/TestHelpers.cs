@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
+using Bogus.DataSets;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -461,13 +462,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, string? stepAnswers = null)
+        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null,
+            string? stepAnswers = null,
+            DateTime? dateOfEvent = null)
         {
             stepAnswers ??= "{\"1\":\"one\"}";
 
             return new Faker<UpdateFormSubmissionAnswersRequest>()
                 .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
-                .RuleFor(u => u.StepAnswers, stepAnswers);
+                .RuleFor(u => u.StepAnswers, stepAnswers)
+                .RuleFor(u => u.DateOfEvent, dateOfEvent);
         }
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,

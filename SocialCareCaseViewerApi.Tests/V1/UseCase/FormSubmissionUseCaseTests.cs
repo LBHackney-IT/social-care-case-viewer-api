@@ -496,6 +496,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, createdSubmission.SubmissionId, It.IsAny<CaseSubmission>()), Times.Once);
         }
 
+        [Test]
+        public void UpdateAnswersSuccessfullyUpdatesDateOfEventWhenProvided()
+        {
+            var dateOfEvent = new DateTime(2021, 07, 29);
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest(dateOfEvent: dateOfEvent);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<ObjectId>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
+
+            response.DateOfEvent.Should().Be(dateOfEvent);
+        }
+
         [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]
         public void UpdateAnswersThrowsUpdateSubmissionExceptionWhenSubmissionIsNotInProgress(SubmissionState submissionState)
         {
