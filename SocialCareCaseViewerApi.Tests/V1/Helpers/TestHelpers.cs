@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
-using Bogus.DataSets;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -477,19 +476,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
             DateTime? dateTime = null,
             Worker? worker = null,
-            InfrastructurePerson? resident = null,
+            List<InfrastructurePerson>? residents = null,
             int? residentId = null,
             ObjectId? id = null,
             string? formId = null,
             DateTime? dateOfEvent = null)
         {
             worker ??= CreateWorker();
-            resident ??= CreatePerson(residentId);
+            residents ??= new List<InfrastructurePerson> {CreatePerson(residentId)};
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
-                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
+                .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.Workers, new List<Worker> { worker })
                 .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, worker)
@@ -503,10 +502,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.DateOfEvent, dateOfEvent);
         }
 
-        public static ListCasesRequest CreateListCasesRequest(bool nullMosaicId = false)
+        public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
         {
             return new Faker<ListCasesRequest>()
-                .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
+                .RuleFor(r => r.MosaicId, f => mosaicId?.ToString() ?? f.Random.Long(0, 100000).ToString());
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(

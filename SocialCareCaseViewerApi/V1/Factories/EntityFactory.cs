@@ -196,7 +196,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
-                DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
+                DateOfEvent = caseSubmission.DateOfEvent?.ToString("yyyy-MM-dd") ?? caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }

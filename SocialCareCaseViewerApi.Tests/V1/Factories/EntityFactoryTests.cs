@@ -8,6 +8,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -24,6 +25,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using DomainCaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
+using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -460,6 +462,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             (DateTime.TryParseExact(timestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)).Should().BeTrue();
         }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsAssociatedResidentInformation()
+        {
+            var residents = new List<Person> {TestHelpers.CreatePerson(), TestHelpers.CreatePerson()};
+            var worker = TestHelpers.CreateWorker();
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(worker: worker, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.PersonId.Should().Be(residents[0].Id);
+            response.FirstName.Should().Be(residents[0].FirstName);
+            response.LastName.Should().Be(residents[0].LastName);
+
+            // it returns the resident associated with the request
+        }
+
+        // it only returns the email for the first worker associated with the case submission
+        // caseformtimestamp uses submittedAt if not null otherwise uses now
+        // date of event uses dateofevent property if not null otherwise uses created at
     }
 }
 
