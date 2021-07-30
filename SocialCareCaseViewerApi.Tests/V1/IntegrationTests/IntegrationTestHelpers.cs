@@ -79,50 +79,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 DateStart = worker.DateStart
             };
         }
-
-        public static Worker UpdateWorkerWithRequest(DatabaseContext databaseContext, Worker worker, UpdateWorkerRequest request)
-        {
-            worker.LastModifiedBy = request.ModifiedBy;
-            worker.FirstName = request.FirstName;
-            worker.LastName = request.LastName;
-            worker.ContextFlag = request.ContextFlag;
-            worker.Role = request.Role;
-            worker.DateStart = request.DateStart;
-            worker.IsActive = true;
-
-            var workerTeams = GetTeams(request.Teams, databaseContext);
-
-            worker.WorkerTeams = new List<WorkerTeam>();
-            foreach (var team in workerTeams)
-            {
-                worker.WorkerTeams.Add(new WorkerTeam { Team = team, Worker = worker });
-            }
-
-            databaseContext.SaveChanges();
-
-            return worker;
-        }
-
-        public static ICollection<Team> GetTeams(List<WorkerTeamRequest> request, DatabaseContext context)
-        {
-            var teamsWorkerBelongsIn = new List<Team>();
-            foreach (var requestTeam in request)
-            {
-                var team = GetTeamByTeamId(context, requestTeam.Id);
-                teamsWorkerBelongsIn.Add(team);
-            }
-
-            return teamsWorkerBelongsIn;
-        }
-
-        public static Team GetTeamByTeamId(DatabaseContext databaseContext, int teamId)
-        {
-            return databaseContext.Teams
-                .Where(x => x.Id == teamId)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(x => x.Worker)
-                .ThenInclude(x => x.Allocations)
-                .FirstOrDefault();
-        }
     }
 }

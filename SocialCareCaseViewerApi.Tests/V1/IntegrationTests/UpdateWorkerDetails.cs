@@ -23,28 +23,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
-            // Get request to get an existing worker
-            var existingWorker = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-
-            var newTeam = IntegrationTestHelpers.CreateAnotherTeam(DatabaseContext, existingWorker.ContextFlag);
-
-            var getWorkersUri = new Uri($"/api/v1/workers?email={existingWorker.Email}", UriKind.Relative);
-
-            var getWorkersResponse = await Client.GetAsync(getWorkersUri).ConfigureAwait(true);
-            getWorkersResponse.StatusCode.Should().Be(200);
-
-            var initialContent = await getWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-            var initialWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(initialContent).ToList();
-
-            initialWorkerResponse.Count.Should().Be(1);
-            initialWorkerResponse.Single().Teams.Single().Id.Should().NotBe(newTeam.Id);
-            initialWorkerResponse.Single().Teams.Single().Name.Should().NotBe(newTeam.Name);
+            var newTeamRequest = new WorkerTeamRequest { Id = 20, Name = "Tristique" };
+            var getUri = new Uri("/api/v1/workers?email=bhadfield5@example.com", UriKind.Relative);
 
             // Patch request to update team
 
-            var newTeamRequest = new WorkerTeamRequest { Id = newTeam.Id, Name = newTeam.Name };
-
-            var patchRequest = IntegrationTestHelpers.CreatePatchRequest(existingWorker, newTeamRequest);
+            var patchRequest = new UpdateWorkerRequest
+            {
+                WorkerId = 91,
+                ModifiedBy = new Faker().Person.Email,
+                FirstName = "Basilio",
+                LastName = "Hadfield",
+                ContextFlag = "C",
+                Teams = new List<WorkerTeamRequest> { newTeamRequest },
+                Role = "non",
+                DateStart = new Faker().Date.Past()
+            };
 
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
 
@@ -55,8 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             patchWorkerResponse.StatusCode.Should().Be(204);
 
             // Get request to check team has been updated
-
-            var getUpdatedWorkersResponse = await Client.GetAsync(getWorkersUri).ConfigureAwait(true);
+            var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
             getUpdatedWorkersResponse.StatusCode.Should().Be(200);
 
             var updatedContent = await getUpdatedWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -67,8 +60,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             // NOTE: This should fail to replicate current bug
             updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
 
-            updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeam.Id);
-            updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeam.Name);
+            updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
+            updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
         }
     }
 }
