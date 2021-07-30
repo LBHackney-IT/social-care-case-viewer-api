@@ -524,7 +524,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var response = submission.ToCareCaseData(request);
 
-            response.DateOfEvent.Should().Be("2021-07-19");
+            response.DateOfEvent.Should().Be("2021-07-19T14:40:30");
         }
 
         [Test]
@@ -537,7 +537,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var response = submission.ToCareCaseData(request);
 
-            response.DateOfEvent.Should().Be("2021-07-18");
+            response.DateOfEvent.Should().Be("2021-07-18T14:40:30");
         }
     }
 }
