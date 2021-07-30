@@ -58,8 +58,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             _mongoDbContext = new MongoDbTestContext();
 
             _transaction = _connection.BeginTransaction(IsolationLevel.RepeatableRead);
-
             _databaseContext.Database.UseTransaction(_transaction);
+            // _transaction.Commit();
+            // var whatIsTheString = _databaseContext.Database.GetDbConnection();
+
         }
 
         [TearDown]
