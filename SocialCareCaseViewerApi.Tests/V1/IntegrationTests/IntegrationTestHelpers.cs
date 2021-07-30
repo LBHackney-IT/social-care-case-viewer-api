@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
@@ -9,7 +10,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static Worker SetupExistingWorker(DatabaseContext context)
+        public static (Worker, string, string, string) SetupExistingWorker()
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
@@ -17,10 +18,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Random.String2(10, 100)).Generate();
+                .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
-            context.Teams.Add(team);
-            context.SaveChanges();
+            var insertTeam = SeedTeam(team);
 
             var workerTeam = new Faker<WorkerTeam>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
@@ -28,8 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.TeamId, f => team.Id)
                 .RuleFor(t => t.Team, team).Generate();
 
-            context.WorkerTeams.Add(workerTeam);
-            context.SaveChanges();
+            var insertWorkerTeam = SeedWorkerTeam(workerTeam);
 
             var worker = new Faker<Worker>().RuleFor(w => w.Id, workerId)
                 .RuleFor(w => w.FirstName, f => f.Person.FirstName)
@@ -46,23 +45,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(w => w.WorkerTeams, new List<WorkerTeam> { workerTeam })
                 .RuleFor(w => w.LastModifiedBy, f => f.Person.Email).Generate();
 
-            context.Workers.Add(worker);
-            context.SaveChanges();
+            var insertWorker = SeedWorker(worker);
 
-            return worker;
+            return (worker, insertTeam, insertWorkerTeam, insertWorker);
         }
 
-        public static Team CreateAnotherTeam(DatabaseContext context, string workerContext)
+        public static (Team, string) CreateAnotherTeam(string workerContext)
         {
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Random.String2(10, 100)).Generate();
+                .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
-            context.Teams.Add(team);
-            context.SaveChanges();
+            var insertTeam = SeedTeam(team);
 
-            return team;
+            return (team, insertTeam);
         }
 
         public static UpdateWorkerRequest CreatePatchRequest(Worker worker, WorkerTeamRequest teamRequest)
@@ -78,6 +75,89 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 Role = worker.Role,
                 DateStart = worker.DateStart
             };
+        }
+
+        private static string SeedWorker(Worker worker)
+        {
+            // var seedCommand = new NpgsqlCommand();
+            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
+            // seedCommand.Connection.Open();
+
+            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
+            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
+            // npgsqlCommand.ExecuteNonQuery();
+
+            //             var insertWorkerQuery = @"insert into dbo.sccv_worker 
+            // (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) 
+            // values (@Id, @Email, @FirstName, @LastName, @Role, @ContextFlag, @CreatedBy, @DateStart, @DateEnd, @LastModifiedBy, @CreatedAt, @LastModifiedAt, @IsActive);";
+
+            var insertWorkerQuery = $@"insert into dbo.sccv_worker (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', '{worker.ContextFlag}', '{worker.CreatedBy}', NULL, NULL, '{worker.LastModifiedBy}', NULL, NULL, {worker.IsActive});";
+
+
+            // seedCommand.CommandText = insertWorkerQuery;
+
+            // seedCommand.Parameters.AddWithValue("@Id", worker.Id);
+            // seedCommand.Parameters.AddWithValue("@Email", $"{worker.Email}");
+            // seedCommand.Parameters.AddWithValue("@FirstName", $"{worker.FirstName}");
+            // seedCommand.Parameters.AddWithValue("@LastName", $"{worker.LastName}");
+            // seedCommand.Parameters.AddWithValue("@Role", $"{worker.Role}");
+            // seedCommand.Parameters.AddWithValue("@ContextFlag", $"{worker.ContextFlag}");
+            // seedCommand.Parameters.AddWithValue("@CreatedBy", $"{worker.CreatedBy}");
+            // seedCommand.Parameters.AddWithValue("@DateStart", worker.DateStart);
+            // seedCommand.Parameters.AddWithValue("@DateEnd", worker.DateEnd);
+            // seedCommand.Parameters.AddWithValue("@LastModifiedBy", $"{worker.LastModifiedBy}");
+            // seedCommand.Parameters.AddWithValue("@CreatedAt", worker.CreatedAt);
+            // seedCommand.Parameters.AddWithValue("@LastModifiedAt", worker.LastModifiedAt);
+            // seedCommand.Parameters.AddWithValue("@IsActive", worker.IsActive);
+
+            return insertWorkerQuery;
+        }
+
+        private static string SeedTeam(Team team)
+        {
+            // var seedCommand = new NpgsqlCommand();
+            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
+            // seedCommand.Connection.Open();
+
+            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
+            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
+            // npgsqlCommand.ExecuteNonQuery();
+
+            // var insertTeamQuery = "insert into dbo.sccv_team (id, name, context) values (@Id, @Name, @Context);";
+
+            var insertTeamQuery = $"insert into dbo.sccv_team (id, name, context) values ({team.Id}, '{team.Name}', '{team.Context}');";
+
+
+            // seedCommand.CommandText = insertTeamQuery;
+
+            // seedCommand.Parameters.AddWithValue("@Id", team.Id);
+            // seedCommand.Parameters.AddWithValue("@Name", $"{team.Name}");
+            // seedCommand.Parameters.AddWithValue("@Context", $"{team.Context}");
+
+            return insertTeamQuery;
+        }
+
+        private static string SeedWorkerTeam(WorkerTeam workerTeam)
+        {
+            // var seedCommand = new NpgsqlCommand();
+            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
+            // seedCommand.Connection.Open();
+
+            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
+            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
+            // npgsqlCommand.ExecuteNonQuery();
+
+            // var insertWorkerTeamQuery = "insert into dbo.sccv_workerteam (id, worker_id, team_id) values (@Id, @WorkerId, @TeamId);";
+
+            var insertWorkerTeamQuery = $"insert into dbo.sccv_workerteam (id, worker_id, team_id) values ({workerTeam.Id}, {workerTeam.WorkerId}, {workerTeam.TeamId});";
+
+            // seedCommand.CommandText = insertWorkerTeamQuery;
+
+            // seedCommand.Parameters.AddWithValue("@Id", workerTeam.Id);
+            // seedCommand.Parameters.AddWithValue("@WorkerId", workerTeam.WorkerId);
+            // seedCommand.Parameters.AddWithValue("@TeamId", workerTeam.TeamId);
+
+            return insertWorkerTeamQuery;
         }
     }
 }

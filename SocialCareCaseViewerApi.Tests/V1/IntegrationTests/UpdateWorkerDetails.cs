@@ -19,26 +19,52 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
     [TestFixture]
     public class UpdateWorkerDetails : IntegrationTestSetup<Startup>
     {
+        private SocialCareCaseViewerApi.V1.Infrastructure.Worker _existingDbWorker;
+        private SocialCareCaseViewerApi.V1.Infrastructure.Team _differentDbTeam;
+
+        [SetUp]
+        public void Setup()
+        {
+            (var existingDbWorker, var insertTeamQuery, var insertWorkerTeamQuery, var insertWorkerQuery) = IntegrationTestHelpers.SetupExistingWorker();
+            (var differentDbTeam, var insertDifferentTeamQuery) = IntegrationTestHelpers.CreateAnotherTeam(existingDbWorker.ContextFlag);
+
+            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_team;");
+            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_worker;");
+            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_workerteam;");
+
+            DatabaseContext.Database.ExecuteSqlRaw(insertTeamQuery);
+            DatabaseContext.Database.ExecuteSqlRaw(insertDifferentTeamQuery);
+
+            DatabaseContext.Database.ExecuteSqlRaw(insertWorkerTeamQuery);
+            DatabaseContext.Database.ExecuteSqlRaw(insertWorkerQuery);
+
+            _existingDbWorker = existingDbWorker;
+            _differentDbTeam = differentDbTeam;
+
+            // DatabaseContext.Database
+            // .ExecuteSqlRaw("insert into dbo.sccv_worker (id, email, first_name, last_name, role, context_flag) values (91, 'bhadfield5@example.com', 'Basilio', 'Hadfield', 'non', 'C');");
+
+            // DatabaseContext.Database.ExecuteSqlRaw("UPDATE DBO.SCCV_WORKER SET is_active = true WHERE is_active isnull;");
+
+            // DatabaseContext.Database
+            // .ExecuteSqlRaw("insert into dbo.sccv_team (id, name, context) values (35, 'Aenean', 'C');");
+
+            // DatabaseContext.Database
+            // .ExecuteSqlRaw("insert into dbo.sccv_team (id, name, context) values (20, 'Tristique', 'C');");
+
+            // DatabaseContext.Database
+            // .ExecuteSqlRaw("insert into dbo.sccv_workerteam (id, worker_id, team_id) values (29, 91, 35);");
+        }
+
 
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
-            var newTeamRequest = new WorkerTeamRequest { Id = 20, Name = "Tristique" };
-            var getUri = new Uri("/api/v1/workers?email=bhadfield5@example.com", UriKind.Relative);
+            var newTeamRequest = new WorkerTeamRequest { Id = _differentDbTeam.Id, Name = _differentDbTeam.Name };
 
             // Patch request to update team
 
-            var patchRequest = new UpdateWorkerRequest
-            {
-                WorkerId = 91,
-                ModifiedBy = new Faker().Person.Email,
-                FirstName = "Basilio",
-                LastName = "Hadfield",
-                ContextFlag = "C",
-                Teams = new List<WorkerTeamRequest> { newTeamRequest },
-                Role = "non",
-                DateStart = new Faker().Date.Past()
-            };
+            var patchRequest = IntegrationTestHelpers.CreatePatchRequest(_existingDbWorker, newTeamRequest);
 
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
 
@@ -49,6 +75,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             patchWorkerResponse.StatusCode.Should().Be(204);
 
             // Get request to check team has been updated
+            var getUri = new Uri($"/api/v1/workers?email={_existingDbWorker.Email}", UriKind.Relative);
+
             var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
             getUpdatedWorkersResponse.StatusCode.Should().Be(200);
 

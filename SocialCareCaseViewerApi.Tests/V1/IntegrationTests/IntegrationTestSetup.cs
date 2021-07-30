@@ -58,34 +58,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             _client = _factory.CreateClient();
 
             _databaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
-
             _databaseContext.ChangeTracker.LazyLoadingEnabled = false;
-
-            _databaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_team;");
-            _databaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_worker;");
-            _databaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_workerteam;");
-
-            _databaseContext.Database
-            .ExecuteSqlRaw("insert into dbo.sccv_worker (id, email, first_name, last_name, role, context_flag) values (91, 'bhadfield5@example.com', 'Basilio', 'Hadfield', 'non', 'C');");
-
-            _databaseContext.Database.ExecuteSqlRaw("UPDATE DBO.SCCV_WORKER SET is_active = true WHERE is_active isnull;");
-
-            _databaseContext.Database
-            .ExecuteSqlRaw("insert into dbo.sccv_team (id, name, context) values (35, 'Aenean', 'C');");
-
-            _databaseContext.Database
-            .ExecuteSqlRaw("insert into dbo.sccv_team (id, name, context) values (20, 'Tristique', 'C');");
-
-            _databaseContext.Database
-            .ExecuteSqlRaw("insert into dbo.sccv_workerteam (id, worker_id, team_id) values (29, 91, 35);");
 
             _mongoDbContext = new MongoDbTestContext();
 
             _transaction = _connection.BeginTransaction(IsolationLevel.ReadCommitted);
             _databaseContext.Database.UseTransaction(_transaction);
-            // _transaction.Commit();
-            // var whatIsTheString = _databaseContext.Database.GetDbConnection();
-
         }
 
         [TearDown]
