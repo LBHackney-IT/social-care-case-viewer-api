@@ -31,6 +31,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
 
+        public List<string>? Tags { get; set; }
+
         // outer hashset string represents step id for form
         // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
         // either string, string[] or List<Dictionary<string,string>>
