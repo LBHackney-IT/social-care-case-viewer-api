@@ -50,16 +50,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult ListAllSubmissionsInProgress()
         {
-            try
-            {
-                var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
-
-                return Ok(submissions);
-            }
-            catch (CustomException e)
-            {
-                return BadRequest(e.ToString());
-            }
+            var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
+            return Ok(submissions);
         }
 
         /// <summary>

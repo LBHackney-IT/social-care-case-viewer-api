@@ -58,21 +58,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public List<CaseSubmissionResponse> ExecuteListBySubmissionStatus(SubmissionState state)
         {
+            var foundSubmissions = _mongoGateway
+                .LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(_collectionName, "SubmissionState",
+                    state);
 
-            try
-            {
-                var foundSubmissions = _mongoGateway
-                    .LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(_collectionName, "SubmissionState",
-                        state);
-
-                return foundSubmissions == null
-                    ? new List<CaseSubmissionResponse>()
-                    : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
-            }
-            catch (Exception e)
-            {
-                throw new CustomException(e.ToString());
-            }
+            return foundSubmissions == null
+                ? new List<CaseSubmissionResponse>()
+                : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
         }
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
