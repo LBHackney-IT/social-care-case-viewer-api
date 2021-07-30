@@ -187,18 +187,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             var resident = caseSubmission.Residents
                 .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? ""));
 
-
-            string dateOfEvent;
-
-            try
-            {
-                dateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s");
-            }
-            catch (Exception e)
-            {
-                throw new CustomException(e.ToString());
-            }
-
             return new CareCaseData
             {
                 RecordId = caseSubmission.SubmissionId.ToString(),
@@ -209,7 +197,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
-                DateOfEvent = dateOfEvent,
+                DateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }
