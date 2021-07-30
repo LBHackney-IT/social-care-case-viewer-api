@@ -85,11 +85,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var createdSubmission = _formSubmissionsUseCase.ExecutePost(request).Item1;
 
-                if (createdSubmission.SubmissionId == null)
-                {
-                    return StatusCode(500, "Case submission created with a null submission ID");
-                }
-
                 return CreatedAtAction(nameof(CreateSubmission), createdSubmission);
             }
             catch (WorkerNotFoundException e)

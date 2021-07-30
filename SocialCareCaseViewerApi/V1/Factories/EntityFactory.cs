@@ -153,7 +153,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
                 { SubmissionState.Discarded, "Discarded" },
-                {SubmissionState.PanelApproved, "Panel Approved"}
+                { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
             return new Domain.CaseSubmission
@@ -163,6 +163,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
+                DateOfEvent = caseSubmission.DateOfEvent,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
@@ -177,7 +178,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
-                Tags = caseSubmission.Tags,
                 FormAnswers = caseSubmission.FormAnswers
             };
         }
@@ -209,11 +209,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
+<<<<<<< HEAD
 <<<<<<< Updated upstream
                 DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
 =======
                 DateOfEvent = dateOfEvent,
 >>>>>>> Stashed changes
+=======
+                DateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s"),
+>>>>>>> 3894ca389b075ca0d819904d0c23f11abccf3514
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }
