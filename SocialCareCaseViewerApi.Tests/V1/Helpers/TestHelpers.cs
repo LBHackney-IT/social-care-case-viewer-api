@@ -461,64 +461,67 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.CreatedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null, string? stepAnswers = null)
+        public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null,
+            string? stepAnswers = null,
+            DateTime? dateOfEvent = null)
         {
             stepAnswers ??= "{\"1\":\"one\"}";
 
             return new Faker<UpdateFormSubmissionAnswersRequest>()
                 .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
-                .RuleFor(u => u.StepAnswers, stepAnswers);
+                .RuleFor(u => u.StepAnswers, stepAnswers)
+                .RuleFor(u => u.DateOfEvent, dateOfEvent);
         }
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,
-            DateTime? dateTime = null,
-            Worker? worker = null,
-            InfrastructurePerson? resident = null,
+            DateTime? createdAt = null,
+            List<Worker>? workers = null,
+            List<InfrastructurePerson>? residents = null,
             int? residentId = null,
             ObjectId? id = null,
             string? formId = null,
-            List<string>? tags = null)
+            DateTime? dateOfEvent = null,
+            DateTime? submittedAt = null)
         {
-            worker ??= CreateWorker();
-            resident ??= CreatePerson(residentId);
+            workers ??= new List<Worker> { CreateWorker() };
+            residents ??= new List<InfrastructurePerson> { CreatePerson(residentId) };
 
             return new Faker<CaseSubmission>()
                 .RuleFor(s => s.SubmissionId, f => id ?? ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(s => s.FormId, f => formId ?? f.Random.String2(20))
-                .RuleFor(s => s.Residents, new List<InfrastructurePerson> { resident })
-                .RuleFor(s => s.Workers, new List<Worker> { worker })
-                .RuleFor(s => s.CreatedAt, f => dateTime ?? f.Date.Recent())
-                .RuleFor(s => s.CreatedBy, worker)
+                .RuleFor(s => s.Residents, residents)
+                .RuleFor(s => s.Workers, workers)
+                .RuleFor(s => s.CreatedAt, f => createdAt ?? f.Date.Recent())
+                .RuleFor(s => s.CreatedBy, workers[0])
                 .RuleFor(s => s.EditHistory,
                     f => new List<EditHistory<Worker>>
                     {
-                        new EditHistory<Worker> {Worker = worker, EditTime = dateTime ?? f.Date.Recent()}
+                        new EditHistory<Worker> {Worker = workers[0], EditTime = createdAt ?? f.Date.Recent()}
                     })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
-                .RuleFor(s => s.Tags, tags);
+                .RuleFor(s => s.DateOfEvent, dateOfEvent)
+                .RuleFor(s => s.SubmittedAt, submittedAt);
         }
 
-        public static ListCasesRequest CreateListCasesRequest(bool nullMosaicId = false)
+        public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
         {
             return new Faker<ListCasesRequest>()
-                .RuleFor(r => r.MosaicId, f => nullMosaicId ? null : f.Random.Long(0, 100000).ToString());
+                .RuleFor(r => r.MosaicId, f => mosaicId?.ToString() ?? f.Random.Long(0, 100000).ToString());
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
             string? updatedBy = null,
             string? submissionState = null,
             List<long>? residents = null,
-            string? rejectionReason = null,
-            List<string>? tags = null
+            string? rejectionReason = null
         )
         {
             return new Faker<UpdateCaseSubmissionRequest>()
                 .RuleFor(s => s.EditedBy, f => updatedBy ?? f.Person.Email)
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
-                .RuleFor(s => s.RejectionReason, rejectionReason)
-                .RuleFor(s => s.Tags, tags);
+                .RuleFor(s => s.RejectionReason, rejectionReason);
         }
     }
 }

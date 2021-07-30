@@ -15,12 +15,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromBody]
         [JsonPropertyName("stepAnswers")]
-        public string
-        StepAnswers
-        { get; set; } = null!;
+        public string StepAnswers { get; set; } = null!;
 
-        [JsonPropertyName("tags")]
-        public List<string>? Tags { get; set; }
+        [JsonPropertyName("dateOfEvent")]
+        public DateTime? DateOfEvent { get; set; }
     }
 
     public class UpdateFormSubmissionAnswersValidator : AbstractValidator<UpdateFormSubmissionAnswersRequest>
