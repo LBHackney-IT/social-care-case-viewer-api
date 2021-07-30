@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
@@ -186,6 +187,18 @@ namespace SocialCareCaseViewerApi.V1.Factories
             var resident = caseSubmission.Residents
                 .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? ""));
 
+
+            string dateOfEvent;
+
+            try
+            {
+                dateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s");
+            }
+            catch (Exception e)
+            {
+                throw new CustomException(e.ToString());
+            }
+
             return new CareCaseData
             {
                 RecordId = caseSubmission.SubmissionId.ToString(),
@@ -196,7 +209,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
+<<<<<<< Updated upstream
                 DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
+=======
+                DateOfEvent = dateOfEvent,
+>>>>>>> Stashed changes
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }
