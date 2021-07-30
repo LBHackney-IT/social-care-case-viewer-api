@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
@@ -79,83 +76,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         private static string SeedWorker(Worker worker)
         {
-            // var seedCommand = new NpgsqlCommand();
-            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
-            // seedCommand.Connection.Open();
-
-            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
-            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
-            // npgsqlCommand.ExecuteNonQuery();
-
-            //             var insertWorkerQuery = @"insert into dbo.sccv_worker 
-            // (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) 
-            // values (@Id, @Email, @FirstName, @LastName, @Role, @ContextFlag, @CreatedBy, @DateStart, @DateEnd, @LastModifiedBy, @CreatedAt, @LastModifiedAt, @IsActive);";
-
-            var insertWorkerQuery = $@"insert into dbo.sccv_worker (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', '{worker.ContextFlag}', '{worker.CreatedBy}', NULL, NULL, '{worker.LastModifiedBy}', NULL, NULL, {worker.IsActive});";
-
-
-            // seedCommand.CommandText = insertWorkerQuery;
-
-            // seedCommand.Parameters.AddWithValue("@Id", worker.Id);
-            // seedCommand.Parameters.AddWithValue("@Email", $"{worker.Email}");
-            // seedCommand.Parameters.AddWithValue("@FirstName", $"{worker.FirstName}");
-            // seedCommand.Parameters.AddWithValue("@LastName", $"{worker.LastName}");
-            // seedCommand.Parameters.AddWithValue("@Role", $"{worker.Role}");
-            // seedCommand.Parameters.AddWithValue("@ContextFlag", $"{worker.ContextFlag}");
-            // seedCommand.Parameters.AddWithValue("@CreatedBy", $"{worker.CreatedBy}");
-            // seedCommand.Parameters.AddWithValue("@DateStart", worker.DateStart);
-            // seedCommand.Parameters.AddWithValue("@DateEnd", worker.DateEnd);
-            // seedCommand.Parameters.AddWithValue("@LastModifiedBy", $"{worker.LastModifiedBy}");
-            // seedCommand.Parameters.AddWithValue("@CreatedAt", worker.CreatedAt);
-            // seedCommand.Parameters.AddWithValue("@LastModifiedAt", worker.LastModifiedAt);
-            // seedCommand.Parameters.AddWithValue("@IsActive", worker.IsActive);
+            var insertWorkerQuery = $@"insert into dbo.sccv_worker 
+            (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) 
+            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', '{worker.ContextFlag}', '{worker.CreatedBy}', NULL, NULL, '{worker.LastModifiedBy}', NULL, NULL, {worker.IsActive});";
 
             return insertWorkerQuery;
         }
 
         private static string SeedTeam(Team team)
         {
-            // var seedCommand = new NpgsqlCommand();
-            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
-            // seedCommand.Connection.Open();
-
-            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
-            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
-            // npgsqlCommand.ExecuteNonQuery();
-
-            // var insertTeamQuery = "insert into dbo.sccv_team (id, name, context) values (@Id, @Name, @Context);";
-
             var insertTeamQuery = $"insert into dbo.sccv_team (id, name, context) values ({team.Id}, '{team.Name}', '{team.Context}');";
-
-
-            // seedCommand.CommandText = insertTeamQuery;
-
-            // seedCommand.Parameters.AddWithValue("@Id", team.Id);
-            // seedCommand.Parameters.AddWithValue("@Name", $"{team.Name}");
-            // seedCommand.Parameters.AddWithValue("@Context", $"{team.Context}");
 
             return insertTeamQuery;
         }
 
         private static string SeedWorkerTeam(WorkerTeam workerTeam)
         {
-            // var seedCommand = new NpgsqlCommand();
-            // seedCommand.Connection = new NpgsqlConnection(ConnectionString.TestDatabase());
-            // seedCommand.Connection.Open();
-
-            // var npgsqlCommand = seedCommand.Connection.CreateCommand();
-            // npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
-            // npgsqlCommand.ExecuteNonQuery();
-
-            // var insertWorkerTeamQuery = "insert into dbo.sccv_workerteam (id, worker_id, team_id) values (@Id, @WorkerId, @TeamId);";
-
             var insertWorkerTeamQuery = $"insert into dbo.sccv_workerteam (id, worker_id, team_id) values ({workerTeam.Id}, {workerTeam.WorkerId}, {workerTeam.TeamId});";
-
-            // seedCommand.CommandText = insertWorkerTeamQuery;
-
-            // seedCommand.Parameters.AddWithValue("@Id", workerTeam.Id);
-            // seedCommand.Parameters.AddWithValue("@WorkerId", workerTeam.WorkerId);
-            // seedCommand.Parameters.AddWithValue("@TeamId", workerTeam.TeamId);
 
             return insertWorkerTeamQuery;
         }
