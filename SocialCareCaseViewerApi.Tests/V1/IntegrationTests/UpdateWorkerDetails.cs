@@ -31,6 +31,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_worker;");
             DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_workerteam;");
             DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.dm_persons;");
+            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_allocations;");
+
 
             // Create an existing workers,teams and worker teams and associated insert statements
             (var existingDbWorker, var existingDbTeam, var existingDbWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
@@ -92,6 +94,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var allocationResponse = await Client.PostAsync(CreateAllocationUri, requestContent).ConfigureAwait(true);
             allocationResponse.StatusCode.Should().Be(201);
 
+            // Create Another allocation request for test worker
+            var secondAllocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
+            var secondSerializedRequest = JsonSerializer.Serialize(secondAllocationRequest);
+
+            var secondRequestContent = new StringContent(secondSerializedRequest, Encoding.UTF8, "application/json");
+
+            var allocationTwoResponse = await Client.PostAsync(CreateAllocationUri, secondRequestContent).ConfigureAwait(true);
+            allocationTwoResponse.StatusCode.Should().Be(201);
+
             // Patch request to update team
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
 
@@ -111,10 +122,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var allocationsContent = await getAllocationsResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
             var updatedAllocationResponse = JsonConvert.DeserializeObject<AllocationList>(allocationsContent);
 
-            updatedAllocationResponse.Allocations.Count.Should().Be(1);
-            updatedAllocationResponse.Allocations.Single().AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
-            updatedAllocationResponse.Allocations.Single().PersonId.Should().Be(_resident.Id);
-            updatedAllocationResponse.Allocations.Single().AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
+            updatedAllocationResponse.Allocations.Count.Should().Be(2);
+
+            var firstAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(0);
+
+            firstAllocation.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            firstAllocation.PersonId.Should().Be(_resident.Id);
+            firstAllocation.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
+
+            var secondAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(1);
+
+            secondAllocation.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            secondAllocation.PersonId.Should().Be(_resident.Id);
+            secondAllocation.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
         }
     }
 }

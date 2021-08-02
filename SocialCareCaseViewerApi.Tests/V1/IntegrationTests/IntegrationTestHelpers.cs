@@ -10,13 +10,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string ageContext = null, string restricted = null, string firstName = null, string lastName = null)
+        public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string ageContext = null, string restricted = null)
         {
             var person = new Faker<DbPerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.Title, f => f.Name.Prefix())
-                .RuleFor(p => p.FirstName, f => firstName ?? f.Person.FirstName)
-                .RuleFor(p => p.LastName, f => lastName ?? f.Person.FirstName)
+                .RuleFor(p => p.FirstName, f => f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => f.Person.FirstName)
                 .RuleFor(p => p.FullName, f => f.Person.FullName)
                 .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(p => p.NhsNumber, f => f.Random.Number(int.MaxValue))
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
                 .RuleFor(p => p.AgeContext, f => ageContext ?? f.Random.String2(1, "AC"))
-                .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
+                .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1, "YN"))
                 .RuleFor(p => p.SexualOrientation, f => f.Random.String2(10))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(10))
                 .RuleFor(p => p.Restricted, f => restricted ?? f.Random.String2(1, "YN")).Generate();
@@ -69,12 +69,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(w => w.FirstName, f => f.Person.FirstName)
                 .RuleFor(w => w.LastName, f => f.Person.LastName)
                 .RuleFor(w => w.Email, f => f.Person.Email)
-                .RuleFor(w => w.Role, f => f.Random.Word())
+                .RuleFor(w => w.Role, f => f.Name.JobTitle())
                 .RuleFor(w => w.ContextFlag, f => workerContext)
                 .RuleFor(w => w.CreatedBy, f => f.Person.Email)
                 .RuleFor(w => w.CreatedAt, f => f.Date.Soon())
                 .RuleFor(w => w.DateStart, f => f.Date.Recent())
                 .RuleFor(w => w.DateEnd, f => f.Date.Soon())
+                .RuleFor(w => w.CreatedAt, f => f.Date.Soon())
+                .RuleFor(w => w.LastModifiedAt, f => f.Date.Soon())
                 .RuleFor(w => w.IsActive, true)
                 .RuleFor(w => w.Allocations, new List<AllocationSet>())
                 .RuleFor(w => w.WorkerTeams, new List<WorkerTeam> { workerTeam })
@@ -149,7 +151,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         {
             var insertWorkerQuery = $@"insert into dbo.sccv_worker 
             (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) 
-            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', '{worker.ContextFlag}', '{worker.CreatedBy}', NULL, NULL, '{worker.LastModifiedBy}', NULL, NULL, {worker.IsActive});";
+            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', 
+            '{worker.ContextFlag}', '{worker.CreatedBy}', '{worker.DateStart?.ToString("s")}', '{worker.DateEnd?.ToString("s")}', 
+            '{worker.LastModifiedBy}', '{worker.CreatedAt?.ToString("s")}', '{worker.LastModifiedAt?.ToString("s")}', {worker.IsActive});";
 
             return insertWorkerQuery;
         }
