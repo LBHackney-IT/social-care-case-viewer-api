@@ -463,14 +463,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static UpdateFormSubmissionAnswersRequest CreateUpdateFormSubmissionAnswersRequest(string? editedBy = null,
             string? stepAnswers = null,
-            DateTime? dateOfEvent = null)
+            DateTime? dateOfEvent = null,
+            string? title = null)
         {
             stepAnswers ??= "{\"1\":\"one\"}";
 
             return new Faker<UpdateFormSubmissionAnswersRequest>()
                 .RuleFor(u => u.EditedBy, f => editedBy ?? f.Person.Email)
                 .RuleFor(u => u.StepAnswers, stepAnswers)
-                .RuleFor(u => u.DateOfEvent, dateOfEvent);
+                .RuleFor(u => u.DateOfEvent, dateOfEvent)
+                .RuleFor(u => u.Title, title);
         }
 
         public static CaseSubmission CreateCaseSubmission(SubmissionState? submissionState = null,

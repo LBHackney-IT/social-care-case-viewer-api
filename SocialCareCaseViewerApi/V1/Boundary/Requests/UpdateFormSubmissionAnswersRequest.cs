@@ -17,8 +17,13 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("stepAnswers")]
         public string StepAnswers { get; set; } = null!;
 
+        [FromBody]
         [JsonPropertyName("dateOfEvent")]
         public DateTime? DateOfEvent { get; set; }
+
+        [FromBody]
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }
     }
 
     public class UpdateFormSubmissionAnswersValidator : AbstractValidator<UpdateFormSubmissionAnswersRequest>
@@ -30,6 +35,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .EmailAddress().WithMessage("Provide a valid email address for who edited the submission");
             RuleFor(u => u.StepAnswers)
                 .NotNull().WithMessage("Provide form answers");
+            RuleFor(u => u.Title)
+                .MinimumLength(1).When(u => u.Title != null).WithMessage("Title must have a length of at least 1");
         }
     }
 }
