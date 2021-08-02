@@ -528,6 +528,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var workerTeams = GetTeams(request.Teams);
 
+            // Remove any previous associations in the worker teams table
+            _databaseContext.WorkerTeams.RemoveRange(_databaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(worker.Id)));
+            _databaseContext.SaveChanges();
+
             worker.WorkerTeams = new List<WorkerTeam>();
             foreach (var team in workerTeams)
             {
