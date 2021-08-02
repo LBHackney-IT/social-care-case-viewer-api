@@ -483,7 +483,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             ObjectId? id = null,
             string? formId = null,
             DateTime? dateOfEvent = null,
-            DateTime? submittedAt = null)
+            DateTime? submittedAt = null,
+            string? title = null)
         {
             workers ??= new List<Worker> { CreateWorker() };
             residents ??= new List<InfrastructurePerson> { CreatePerson(residentId) };
@@ -503,7 +504,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
                 .RuleFor(s => s.DateOfEvent, dateOfEvent)
-                .RuleFor(s => s.SubmittedAt, submittedAt);
+                .RuleFor(s => s.SubmittedAt, submittedAt)
+                .RuleFor(s => s.Title, title);
         }
 
         public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)

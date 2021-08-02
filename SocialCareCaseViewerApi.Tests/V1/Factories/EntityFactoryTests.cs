@@ -269,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -284,10 +284,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "In progress",
-                FormAnswers = databaseCaseSubmission1.FormAnswers
+                FormAnswers = databaseCaseSubmission1.FormAnswers,
+                Title = null
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -302,7 +303,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "Submitted",
-                FormAnswers = databaseCaseSubmission2.FormAnswers
+                FormAnswers = databaseCaseSubmission2.FormAnswers,
+                Title = "test-title"
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
