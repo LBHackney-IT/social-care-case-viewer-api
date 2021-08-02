@@ -541,6 +541,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             response.DateOfEvent.Should().Be("2021-07-18T14:40:30");
         }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsTitleAndFormIdForFormNameWhenTitleProvided()
+        {
+            var formId = _faker.Random.String2(100);
+            var title = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: title);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be($"{formId} - {title}");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsFormIdForFormNameWhenTitleIsNull()
+        {
+            var formId = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: null);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be(formId);
+        }
     }
 }
 
