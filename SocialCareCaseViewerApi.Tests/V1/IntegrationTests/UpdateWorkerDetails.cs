@@ -18,8 +18,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
     public class UpdateWorkerDetails : IntegrationTestSetup<Startup>
     {
         private SocialCareCaseViewerApi.V1.Infrastructure.Worker _existingDbWorker;
-        private SocialCareCaseViewerApi.V1.Infrastructure.Worker _anotherWorker;
-        private SocialCareCaseViewerApi.V1.Infrastructure.Team _existingTeam;
+        private SocialCareCaseViewerApi.V1.Infrastructure.Worker _allocationWorker;
+        private SocialCareCaseViewerApi.V1.Infrastructure.Team _existingDbTeam;
         private SocialCareCaseViewerApi.V1.Infrastructure.Team _differentDbTeam;
         private SocialCareCaseViewerApi.V1.Infrastructure.Person _resident;
 
@@ -33,32 +33,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.dm_persons;");
 
             // Create an existing workers,teams and worker teams and associated insert statements
-            (var existingDbWorker, var existingTeam, var insertTeamQuery, var insertWorkerTeamQuery, var insertWorkerQuery) = IntegrationTestHelpers.SetupExistingWorker();
-            (var anotherWorker, _, var insertAnotherTeamQuery, var insertAnotherWorkerTeamQuery, var insertAnotherWorkerQuery) = IntegrationTestHelpers.SetupExistingWorker();
+            (var existingDbWorker, var existingDbTeam, var existingDbWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+            (var allocationWorker, var allocatorTeam, var allocatorWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
 
-            (var differentDbTeam, var insertDifferentTeamQuery) = IntegrationTestHelpers.CreateAnotherTeam(existingDbWorker.ContextFlag);
+            var differentDbTeam = IntegrationTestHelpers.CreateAnotherTeam(DatabaseContext, existingDbWorker.ContextFlag);
 
             //Create existing resident with same context as worker
-            (var resident, var insertResidentQuery) = IntegrationTestHelpers.CreateExistingPerson(ageContext: existingDbWorker.ContextFlag);
-
-            // Seed fake data into the test database before running tests
-            DatabaseContext.Database.ExecuteSqlRaw(insertDifferentTeamQuery);
-
-            //Exisiting worker
-            DatabaseContext.Database.ExecuteSqlRaw(insertTeamQuery);
-            DatabaseContext.Database.ExecuteSqlRaw(insertWorkerTeamQuery);
-            DatabaseContext.Database.ExecuteSqlRaw(insertWorkerQuery);
-
-            // Another worker
-            DatabaseContext.Database.ExecuteSqlRaw(insertAnotherTeamQuery);
-            DatabaseContext.Database.ExecuteSqlRaw(insertAnotherWorkerTeamQuery);
-            DatabaseContext.Database.ExecuteSqlRaw(insertAnotherWorkerQuery);
-
-            DatabaseContext.Database.ExecuteSqlRaw(insertResidentQuery);
+            var resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: existingDbWorker.ContextFlag);
 
             _existingDbWorker = existingDbWorker;
-            _existingTeam = existingTeam;
-            _anotherWorker = anotherWorker;
+            _existingDbTeam = existingDbTeam;
+            _allocationWorker = allocationWorker;
             _differentDbTeam = differentDbTeam;
             _resident = resident;
         }
@@ -99,7 +84,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             // Create Allocation request for test worker
             var CreateAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
 
-            var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingTeam.Id, _existingDbWorker.Id, _anotherWorker);
+            var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
             var serializedRequest = JsonSerializer.Serialize(allocationRequest);
 
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");

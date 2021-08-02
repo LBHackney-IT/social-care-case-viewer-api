@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bogus;
+using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using DbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -9,7 +10,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static (DbPerson, string) CreateExistingPerson(int? personId = null, string ageContext = null, string restricted = null, string firstName = null, string lastName = null)
+        public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string ageContext = null, string restricted = null, string firstName = null, string lastName = null)
         {
             var person = new Faker<DbPerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -33,24 +34,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(10))
                 .RuleFor(p => p.Restricted, f => restricted ?? f.Random.String2(1, "YN")).Generate();
 
-            var insertPerson = SeedPerson(person);
+            var insertPersonQuery = SeedPerson(person);
 
-            return (person, insertPerson);
+            context.Database.ExecuteSqlRaw(insertPersonQuery);
+
+            return person;
         }
 
-        public static CreateAllocationRequest CreateAllocationRequest(long personId, int teamId, int workerId, Worker createdByWorker)
-        {
-            var createAllocationRequest = new Faker<CreateAllocationRequest>()
-                .RuleFor(c => c.MosaicId, f => personId)
-                .RuleFor(c => c.AllocatedTeamId, f => teamId)
-                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
-                .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
-                .RuleFor(c => c.AllocationStartDate, DateTime.Now);
-
-            return createAllocationRequest;
-        }
-
-        public static (Worker, Team, string, string, string) SetupExistingWorker()
+        public static (Worker, Team, WorkerTeam) SetupExistingWorker(DatabaseContext context)
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
@@ -60,7 +51,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
-            var insertTeam = SeedTeam(team);
+            var insertTeamQuery = SeedTeam(team);
+
+            context.Database.ExecuteSqlRaw(insertTeamQuery);
 
             var workerTeam = new Faker<WorkerTeam>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
@@ -68,7 +61,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.TeamId, f => team.Id)
                 .RuleFor(t => t.Team, team).Generate();
 
-            var insertWorkerTeam = SeedWorkerTeam(workerTeam);
+            var insertWorkerTeamQuery = SeedWorkerTeam(workerTeam);
+
+            context.Database.ExecuteSqlRaw(insertWorkerTeamQuery);
 
             var worker = new Faker<Worker>().RuleFor(w => w.Id, workerId)
                 .RuleFor(w => w.FirstName, f => f.Person.FirstName)
@@ -85,21 +80,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(w => w.WorkerTeams, new List<WorkerTeam> { workerTeam })
                 .RuleFor(w => w.LastModifiedBy, f => f.Person.Email).Generate();
 
-            var insertWorker = SeedWorker(worker);
+            var insertWorkerQuery = SeedWorker(worker);
 
-            return (worker, team, insertTeam, insertWorkerTeam, insertWorker);
+            context.Database.ExecuteSqlRaw(insertWorkerQuery);
+
+            return (worker, team, workerTeam);
         }
 
-        public static (Team, string) CreateAnotherTeam(string workerContext)
+        public static Team CreateAnotherTeam(DatabaseContext context, string workerContext)
         {
             var team = new Faker<Team>()
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
-            var insertTeam = SeedTeam(team);
+            var insertTeamQuery = SeedTeam(team);
 
-            return (team, insertTeam);
+            context.Database.ExecuteSqlRaw(insertTeamQuery);
+
+            return team;
         }
 
         public static UpdateWorkerRequest CreatePatchRequest(Worker worker, WorkerTeamRequest teamRequest)
@@ -115,6 +114,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 Role = worker.Role,
                 DateStart = worker.DateStart
             };
+        }
+
+        public static CreateAllocationRequest CreateAllocationRequest(long personId, int teamId, int workerId, Worker createdByWorker)
+        {
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => personId)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
+                .RuleFor(c => c.AllocationStartDate, DateTime.Now);
+
+            return createAllocationRequest;
         }
 
         private static string SeedPerson(DbPerson person)
