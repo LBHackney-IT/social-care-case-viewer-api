@@ -548,11 +548,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 return;
             };
 
-            var updatedTeamId = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id)).TeamId;
+            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id)).Team;
 
             foreach (var allocation in allocations)
             {
-                allocation.TeamId = updatedTeamId;
+                allocation.TeamId = updatedTeam.Id;
+                allocation.Team = updatedTeam;
                 _databaseContext.SaveChanges();
             };
         }

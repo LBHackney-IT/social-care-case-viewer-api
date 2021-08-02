@@ -42,10 +42,10 @@ namespace SocialCareCaseViewerApi.Tests
                 localTrustStore.Close();
             }
 
-            string MONGO_CONN_STRING = Environment.GetEnvironmentVariable("MONGO_CONN_STRING") ??
+            string MONGO_DB_TEST_CONN_STRING = Environment.GetEnvironmentVariable("MONGO_DB_TEST_CONN_STRING") ??
                                 @"mongodb://localhost:1433/";
 
-            _mongoClient = new MongoClient(new MongoUrl(MONGO_CONN_STRING));
+            _mongoClient = new MongoClient(new MongoUrl(MONGO_DB_TEST_CONN_STRING));
             //create a new blank database if database does not exist, otherwise get existing database
             _mongoDatabase = _mongoClient.GetDatabase("social_care_db_test");
             //create collection to hold the documents if it does not exist, otherwise retrieve existing
