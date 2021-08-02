@@ -92,6 +92,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var allocationResponse = await Client.PostAsync(CreateAllocationUri, requestContent).ConfigureAwait(true);
             allocationResponse.StatusCode.Should().Be(201);
 
+            // Patch request to update team
+            var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
+
+            var newTeamRequest = new WorkerTeamRequest { Id = _differentDbTeam.Id, Name = _differentDbTeam.Name };
+            var patchRequest = IntegrationTestHelpers.CreatePatchRequest(_existingDbWorker, newTeamRequest);
+            var patchTeamSerializedRequest = JsonSerializer.Serialize(patchRequest);
+
+            var patchRequestContent = new StringContent(patchTeamSerializedRequest, Encoding.UTF8, "application/json");
+            var patchWorkerResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
+            patchWorkerResponse.StatusCode.Should().Be(204);
+
             // // Get request to check team has been updated
             // var getUri = new Uri($"/api/v1/workers?email={_existingDbWorker.Email}", UriKind.Relative);
             // var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
