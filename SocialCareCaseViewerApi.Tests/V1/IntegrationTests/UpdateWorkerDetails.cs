@@ -113,6 +113,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             updatedAllocationResponse.Allocations.Count.Should().Be(1);
             updatedAllocationResponse.Allocations.Single().AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            updatedAllocationResponse.Allocations.Single().PersonId.Should().Be(_resident.Id);
+            updatedAllocationResponse.Allocations.Single().AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
         }
     }
 }
