@@ -1,13 +1,56 @@
+using System;
 using System.Collections.Generic;
 using Bogus;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using DbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public static class IntegrationTestHelpers
     {
-        public static (Worker, string, string, string) SetupExistingWorker()
+        public static (DbPerson, string) CreateExistingPerson(int? personId = null, string ageContext = null, string restricted = null, string firstName = null, string lastName = null)
+        {
+            var person = new Faker<DbPerson>()
+                .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.Title, f => f.Name.Prefix())
+                .RuleFor(p => p.FirstName, f => firstName ?? f.Person.FirstName)
+                .RuleFor(p => p.LastName, f => lastName ?? f.Person.FirstName)
+                .RuleFor(p => p.FullName, f => f.Person.FullName)
+                .RuleFor(p => p.DateOfBirth, f => f.Person.DateOfBirth)
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
+                .RuleFor(p => p.Ethnicity, f => f.Commerce.Color())
+                .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.Religion, f => f.Random.String2(1, 5))
+                .RuleFor(p => p.EmailAddress, f => f.Person.Email)
+                .RuleFor(p => p.Gender, f => f.Random.String2(1, "MF"))
+                .RuleFor(p => p.Nationality, f => f.Address.Country())
+                .RuleFor(p => p.NhsNumber, f => f.Random.Number(int.MaxValue))
+                .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
+                .RuleFor(p => p.AgeContext, f => ageContext ?? f.Random.String2(1, "AC"))
+                .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
+                .RuleFor(p => p.SexualOrientation, f => f.Random.String2(10))
+                .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(10))
+                .RuleFor(p => p.Restricted, f => restricted ?? f.Random.String2(1, "YN")).Generate();
+
+            var insertPerson = SeedPerson(person);
+
+            return (person, insertPerson);
+        }
+
+        public static CreateAllocationRequest CreateAllocationRequest(long personId, int teamId, int workerId, Worker createdByWorker)
+        {
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => personId)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
+                .RuleFor(c => c.AllocationStartDate, DateTime.Now);
+
+            return createAllocationRequest;
+        }
+
+        public static (Worker, Team, string, string, string) SetupExistingWorker()
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
@@ -44,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var insertWorker = SeedWorker(worker);
 
-            return (worker, insertTeam, insertWorkerTeam, insertWorker);
+            return (worker, team, insertTeam, insertWorkerTeam, insertWorker);
         }
 
         public static (Team, string) CreateAnotherTeam(string workerContext)
@@ -72,6 +115,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 Role = worker.Role,
                 DateStart = worker.DateStart
             };
+        }
+
+        private static string SeedPerson(DbPerson person)
+        {
+            var insertPersonQuery = $@"insert into dbo.dm_persons 
+            (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, 
+            title, first_name, last_name, date_of_birth, date_of_death, gender, 
+            restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, 
+            nationality, religion, marital_status, first_language, fluency_in_english, email_address, 
+            context_flag, scra_id, interpreter_required, from_dm_person) 
+            values ({person.Id}, NULL, {person.NhsNumber}, NULL, NULL, NULL, '{person.FullName}', 
+            '{person.Title}', '{person.FirstName}', '{person.LastName}', '{person.DateOfBirth?.ToString("s")}', '{person.DateOfDeath?.ToString("s")}', '{person.Gender}', 
+            '{person.Restricted}', '{person.PersonIdLegacy}', '{person.Ethnicity}', NULL, 'Y', 'Y', 
+            '{person.Nationality}', '{person.Religion}', NULL, '{person.FirstLanguage}', 'N', '{person.EmailAddress}', 
+            '{person.AgeContext}', NULL, 'N', '{person.DataIsFromDmPersonsBackup}');";
+
+            return insertPersonQuery;
         }
 
         private static string SeedWorker(Worker worker)
