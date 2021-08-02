@@ -104,18 +104,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             patchWorkerResponse.StatusCode.Should().Be(204);
 
             // Get request to check team has been updated on the allocation
-            var getUri = new Uri($"/api/v1/allocations?mosaic_id={_resident.Id}", UriKind.Relative);
-            var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
-            getUpdatedWorkersResponse.StatusCode.Should().Be(200);
+            var getAllocationsUri = new Uri($"/api/v1/allocations?mosaic_id={_resident.Id}", UriKind.Relative);
+            var getAllocationsResponse = await Client.GetAsync(getAllocationsUri).ConfigureAwait(true);
+            getAllocationsResponse.StatusCode.Should().Be(200);
 
-            // var updatedContent = await getUpdatedWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-            // var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
-            // updatedWorkerResponse.Count.Should().Be(1);
+            var allocationsContent = await getAllocationsResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var updatedAllocationResponse = JsonConvert.DeserializeObject<AllocationList>(allocationsContent);
 
-            // // NOTE: This should fail to replicate current bug
-            // updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
-            // updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
-            // updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
+            updatedAllocationResponse.Allocations.Count.Should().Be(1);
+            updatedAllocationResponse.Allocations.Single().AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
         }
     }
 }
