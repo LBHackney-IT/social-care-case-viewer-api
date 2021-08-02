@@ -103,10 +103,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var patchWorkerResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
             patchWorkerResponse.StatusCode.Should().Be(204);
 
-            // // Get request to check team has been updated
-            // var getUri = new Uri($"/api/v1/workers?email={_existingDbWorker.Email}", UriKind.Relative);
-            // var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
-            // getUpdatedWorkersResponse.StatusCode.Should().Be(200);
+            // Get request to check team has been updated on the allocation
+            var getUri = new Uri($"/api/v1/allocations?mosaic_id={_resident.Id}", UriKind.Relative);
+            var getUpdatedWorkersResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
+            getUpdatedWorkersResponse.StatusCode.Should().Be(200);
 
             // var updatedContent = await getUpdatedWorkersResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
             // var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
