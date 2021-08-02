@@ -34,27 +34,27 @@ services:
     env_file:
       - database.env
 
-
   social-care-case-viewer-api-test:
     image: social-care-case-viewer-api-test
     build:
       context: .
       dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
     environment:
-            - MONGO_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
-            - DB_HOST=sccv-api-test-postgresql
-            - DB_USERNAME=postgres
-            - DB_PASSWORD=mypassword
-            - DB_DATABASE=testdb
-            - DB_PORT=5432
+      - CONTAINER_ENV=DockerTest
+      - MONGO_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
+      - DB_HOST=sccv-api-test-postgresql
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=mypassword
+      - DB_DATABASE=testdb
+      - DB_PORT=5432
     links:
-        - sccv-api-test-mongo-db
-        - sccv-api-test-postgresql
+      - sccv-api-test-mongo-db
+      - sccv-api-test-postgresql
 
   sccv-api-test-mongo-db:
-      image: mongo:3.6
-      ports:
-        - 1433:27017
+    image: mongo:3.6
+    ports:
+      - 1433:27017
 
   sccv-api-test-postgresql:
     image: sccv-api-test-postgresql
