@@ -1,10 +1,8 @@
 using AutoFixture;
 using FluentAssertions;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Linq;
 
@@ -149,10 +147,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
             filteredRecords.Count.Should().Be(1);
             filteredRecords.First().MosaicId.Should().Be(mosaicId);
         }
-    }
-
-    [BsonIgnoreExtraElements]
-    public class MongoDBTestObject : CaseNoteBase
-    {
     }
 }
