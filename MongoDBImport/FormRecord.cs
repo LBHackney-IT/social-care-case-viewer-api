@@ -52,5 +52,9 @@ namespace MongoDBImport
         [Name("date_of_event")]
         [BsonElement("date_of_event")]
         public string DateOfEvent { get; set; }
+
+        [Name("marked_for_deletion")]
+        [BsonElement("marked_for_deletion")]
+        public string MarkedForDeletion { get; set; }
     }
 }
