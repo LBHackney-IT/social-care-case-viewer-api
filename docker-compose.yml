@@ -41,7 +41,8 @@ services:
       dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
     environment:
       - CONTAINER_ENV=DockerTest
-      - MONGO_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
+      - MONGO_DB_TEST_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
+      - SCCV_MONGO_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb
       - DB_HOST=sccv-api-test-postgresql
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
