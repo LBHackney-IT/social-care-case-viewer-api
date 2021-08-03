@@ -15,7 +15,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var badRequests = new List<(UpdateFormSubmissionAnswersRequest, string)>
             {
-                (TestHelpers.CreateUpdateFormSubmissionAnswersRequest(editedBy: "invalid_email"), "Provide a valid email address for who edited the submission")
+                (TestHelpers.CreateUpdateFormSubmissionAnswersRequest(editedBy: "invalid_email"), "Provide a valid email address for who edited the submission"),
+                (TestHelpers.CreateUpdateFormSubmissionAnswersRequest(title: ""), "Title must have a length of at least 1")
             };
 
             var validator = new UpdateFormSubmissionAnswersValidator();

@@ -178,7 +178,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
-                FormAnswers = caseSubmission.FormAnswers
+                FormAnswers = caseSubmission.FormAnswers,
+                Title = caseSubmission.Title
             };
         }
 
@@ -195,7 +196,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
-                FormName = caseSubmission.FormId,
+                FormName = caseSubmission.Title != null ? $"{caseSubmission.FormId} - {caseSubmission.Title}" : caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
                 DateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()

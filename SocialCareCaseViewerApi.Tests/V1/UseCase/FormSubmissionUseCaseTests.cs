@@ -309,7 +309,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
-            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<Person> { resident });
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
@@ -327,7 +327,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
-            createdSubmission.Residents.Should().BeEquivalentTo(new List<SocialCareCaseViewerApi.V1.Infrastructure.Person> { resident });
+            createdSubmission.Residents.Should().BeEquivalentTo(new List<Person> { resident });
             response.Should().BeEquivalentTo(createdSubmission.ToDomain().ToResponse());
         }
 
@@ -473,7 +473,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             }
         }
 
-
         [Test]
         public void UpdateAnswersSuccessfullyChangesSubmissionAnswers()
         {
@@ -514,6 +513,73 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
 
             response.DateOfEvent.Should().Be(dateOfEvent);
+        }
+
+        [Test]
+        public void UpdateAnswersSuccessfullyUpdatesTitleFromNullWhenProvided()
+        {
+            var title = _faker.Random.String2(100);
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest(title: title);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
+
+            createdSubmission.Title.Should().BeNull();
+
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<ObjectId>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
+
+            response.Title.Should().Be(title);
+        }
+
+        [Test]
+        public void UpdateAnswersSuccessfullyUpdatesTitleFromPreviousTitleWhenProvided()
+        {
+            var title1 = _faker.Random.String2(100);
+            var title2 = _faker.Random.String2(100);
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest(title: title2);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: title1);
+
+            createdSubmission.Title.Should().Be(title1);
+
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<ObjectId>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
+
+            response.Title.Should().Be(title2);
+        }
+
+        [Test]
+        public void UpdateAnswersDoesNotUpdateTitleWhenNullValueProvided()
+        {
+            var title = _faker.Random.String2(100);
+            var request = TestHelpers.CreateUpdateFormSubmissionAnswersRequest(title: null);
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: title);
+
+            createdSubmission.Title.Should().Be(title);
+
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString())))
+                .Returns(createdSubmission);
+            _mockMongoGateway.Setup(x =>
+                x.UpsertRecord(It.IsAny<string>(), It.IsAny<ObjectId>(), It.IsAny<CaseSubmission>()));
+
+            var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
+
+            response.Title.Should().Be(title);
         }
 
         [TestCaseSource(nameof(_invalidSubmissionStateForUpdates))]

@@ -108,6 +108,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 EditTime = DateTime.Now
             });
             UpdateDateOfEvent(submission, request.DateOfEvent);
+            UpdateTitle(submission, request.Title);
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
@@ -222,6 +223,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (dateOfEvent == null) return;
 
             caseSubmission.DateOfEvent = dateOfEvent;
+        }
+
+        private static void UpdateTitle(CaseSubmission caseSubmission, string? title)
+        {
+            if (title == null) return;
+
+            caseSubmission.Title = title;
         }
 
         private Worker GetSanitisedWorker(string workerEmail)

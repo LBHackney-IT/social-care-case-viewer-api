@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using CaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -449,7 +450,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToResponse()
                 }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
-                FormAnswers = domainCaseSubmission.FormAnswers
+                FormAnswers = domainCaseSubmission.FormAnswers,
+                Title = domainCaseSubmission.Title
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);

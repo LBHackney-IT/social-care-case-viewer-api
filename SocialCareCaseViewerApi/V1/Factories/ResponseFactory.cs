@@ -241,7 +241,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Worker = e.Worker.ToResponse()
                 }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
-                FormAnswers = caseSubmission.FormAnswers
+                FormAnswers = caseSubmission.FormAnswers,
+                Title = caseSubmission.Title
             };
         }
 

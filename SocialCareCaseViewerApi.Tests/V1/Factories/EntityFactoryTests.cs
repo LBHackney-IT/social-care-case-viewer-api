@@ -269,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -284,10 +284,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "In progress",
-                FormAnswers = databaseCaseSubmission1.FormAnswers
+                FormAnswers = databaseCaseSubmission1.FormAnswers,
+                Title = null
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -302,7 +303,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "Submitted",
-                FormAnswers = databaseCaseSubmission2.FormAnswers
+                FormAnswers = databaseCaseSubmission2.FormAnswers,
+                Title = "test-title"
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
@@ -538,6 +540,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var response = submission.ToCareCaseData(request);
 
             response.DateOfEvent.Should().Be("2021-07-18T14:40:30");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsTitleAndFormIdForFormNameWhenTitleProvided()
+        {
+            var formId = _faker.Random.String2(100);
+            var title = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: title);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be($"{formId} - {title}");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsFormIdForFormNameWhenTitleIsNull()
+        {
+            var formId = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: null);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be(formId);
         }
     }
 }
