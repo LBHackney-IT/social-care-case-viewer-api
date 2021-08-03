@@ -48,6 +48,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [SetUp]
         public void BaseSetup()
         {
+            // Set up MongoDB connection string depending on whether the tests are run locally or in docker
+
             if (Environment.GetEnvironmentVariable("CONTAINER_ENV") != "DockerTest")
             {
                 Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");

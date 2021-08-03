@@ -34,13 +34,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_allocations;");
 
 
-            // Create an existing workers,teams and worker teams and associated insert statements
+            // Create existing workers,teams and worker teams
             (var existingDbWorker, var existingDbTeam, var existingDbWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
             (var allocationWorker, var allocatorTeam, var allocatorWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
 
             var differentDbTeam = IntegrationTestHelpers.CreateAnotherTeam(DatabaseContext, existingDbWorker.ContextFlag);
 
-            //Create existing resident with same context as worker
+            // Create an existing resident that shares the same age context as existingDbWorker
             var resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: existingDbWorker.ContextFlag);
 
             _existingDbWorker = existingDbWorker;
@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
-            // Patch request to update team
+            // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
 
             var newTeamRequest = new WorkerTeamRequest { Id = _differentDbTeam.Id, Name = _differentDbTeam.Name };
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
             updatedWorkerResponse.Count.Should().Be(1);
 
-            // NOTE: This should fail to replicate current bug
+            // Worker's initial team should be replaced with the new team
             updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
             updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
             updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamUpdatesAnyAllocationsAssociated()
         {
-            // Create Allocation request for test worker
+            // Create an allocation request for existingDbWorker
             var CreateAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
 
             var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
@@ -94,7 +94,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var allocationResponse = await Client.PostAsync(CreateAllocationUri, requestContent).ConfigureAwait(true);
             allocationResponse.StatusCode.Should().Be(201);
 
-            // Create Another allocation request for test worker
+            // Create another allocation request for existingDbWorker
             var secondAllocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
             var secondSerializedRequest = JsonSerializer.Serialize(secondAllocationRequest);
 
@@ -103,7 +103,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var allocationTwoResponse = await Client.PostAsync(CreateAllocationUri, secondRequestContent).ConfigureAwait(true);
             allocationTwoResponse.StatusCode.Should().Be(201);
 
-            // Patch request to update team
+            // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
 
             var newTeamRequest = new WorkerTeamRequest { Id = _differentDbTeam.Id, Name = _differentDbTeam.Name };
@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var patchWorkerResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
             patchWorkerResponse.StatusCode.Should().Be(204);
 
-            // Get request to check team has been updated on the allocation
+            // Get request to check team has been updated on existingDbWorker's allocations
             var getAllocationsUri = new Uri($"/api/v1/allocations?mosaic_id={_resident.Id}", UriKind.Relative);
             var getAllocationsResponse = await Client.GetAsync(getAllocationsUri).ConfigureAwait(true);
             getAllocationsResponse.StatusCode.Should().Be(200);

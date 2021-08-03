@@ -540,7 +540,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             _databaseContext.SaveChanges();
 
-            //Update any assigned allocations to reflect the worker's new team
+            // Update any assigned allocations to reflect the worker's new team
             var allocations = _databaseContext.Allocations.Where(x => x.WorkerId == request.WorkerId).ToList();
 
             if (allocations == null || !allocations.Any())
