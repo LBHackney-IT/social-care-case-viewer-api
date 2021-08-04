@@ -533,7 +533,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 worker.WorkerTeams.Add(new WorkerTeam { Team = team, Worker = worker });
             }
-
             _databaseContext.SaveChanges();
         }
 

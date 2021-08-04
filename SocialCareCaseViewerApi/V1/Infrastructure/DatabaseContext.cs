@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
@@ -32,6 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<DeletedPersonRecord> DeletedPersonRecords { get; set; }
         public DbSet<RequestAudit> RequestAudits { get; set; }
         public DbSet<PersonImport> PersonImport { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WorkerTeam>().HasKey(wt => new { wt.WorkerId, wt.TeamId });

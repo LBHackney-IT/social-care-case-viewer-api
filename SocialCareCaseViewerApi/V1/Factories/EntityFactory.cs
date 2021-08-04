@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
@@ -40,11 +39,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 NhsNumber = databaseEntity.NhsNumber?.ToString(),
 
             };
-        }
-
-        public static List<ResidentInformation> ToDomain(this IEnumerable<Person> people)
-        {
-            return people.Select(p => p.ToDomain()).ToList();
         }
 
         public static Address ToDomain(this DbAddress address)
@@ -83,11 +77,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers, bool includeTeamData)
-        {
-            return workers.Select(w => w.ToDomain(includeTeamData)).ToList();
-        }
-
         public static Team ToDomain(this DbTeam team)
         {
             return new Team
@@ -96,11 +85,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Name = team.Name,
                 Context = team.Context
             };
-        }
-
-        public static List<Team> ToDomain(this IEnumerable<DbTeam> teams)
-        {
-            return teams.Select(t => t.ToDomain()).ToList();
         }
 
         public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview>? reviews = null)
