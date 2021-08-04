@@ -286,7 +286,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             DatabaseContext.SaveChanges();
 
-            (var createAllocationRequest, _, var createdByWorker, var person, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            var (createAllocationRequest, _, createdByWorker, person, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
             DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
@@ -294,10 +294,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
             var originalWorker = _classUnderTest.GetWorkerByWorkerId(worker.Id);
-            var originalTeam = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == originalWorker.Id).Single().Team;
+            var originalTeam = DatabaseContext.WorkerTeams.Single(x => x.WorkerId == originalWorker.Id).Team;
 
             originalWorker.WorkerTeams?.Count.Should().Be(1);
-            originalWorker.Allocations.Count.Should().Be(1);
+            originalWorker.Allocations?.Count.Should().Be(1);
 
             var originalAllocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id);
 

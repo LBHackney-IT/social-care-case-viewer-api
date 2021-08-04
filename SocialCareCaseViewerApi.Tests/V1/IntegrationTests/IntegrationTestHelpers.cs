@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string ageContext = null, string restricted = null)
         {
             var person = new Faker<DbPerson>()
-                .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.Id, f => personId ?? f.IndexGlobal + f.Random.Int(0))
                 .RuleFor(p => p.Title, f => f.Name.Prefix())
                 .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                 .RuleFor(p => p.LastName, f => f.Person.FirstName)
@@ -41,22 +40,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             return person;
         }
 
-        public static (Worker, Team, WorkerTeam) SetupExistingWorker(DatabaseContext context)
+        public static (Worker, Team) SetupExistingWorker(DatabaseContext context)
         {
             var workerId = new Faker().Random.Int(1, 100);
             var workerContext = new Faker().Random.String2(1, "AC");
 
-            var team = new Faker<Team>()
-                .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
-                .RuleFor(t => t.Context, f => workerContext)
-                .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
-
-            var insertTeamQuery = SeedTeam(team);
-
-            context.Database.ExecuteSqlRaw(insertTeamQuery);
+            var team = CreateTeam(context, workerContext);
 
             var workerTeam = new Faker<WorkerTeam>()
-                .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
+                .RuleFor(t => t.Id, f => f.IndexGlobal + f.Random.Int(0))
                 .RuleFor(t => t.WorkerId, f => workerId)
                 .RuleFor(t => t.TeamId, f => team.Id)
                 .RuleFor(t => t.Team, team).Generate();
@@ -86,13 +78,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             context.Database.ExecuteSqlRaw(insertWorkerQuery);
 
-            return (worker, team, workerTeam);
+            return (worker, team);
         }
 
-        public static Team CreateAnotherTeam(DatabaseContext context, string workerContext)
+        public static Team CreateTeam(DatabaseContext context, string workerContext)
         {
             var team = new Faker<Team>()
-                .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
+                .RuleFor(t => t.Id, f => f.IndexGlobal + f.Random.Int(0))
                 .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
@@ -105,17 +97,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         public static UpdateWorkerRequest CreatePatchRequest(Worker worker, WorkerTeamRequest teamRequest)
         {
-            return new UpdateWorkerRequest
-            {
-                WorkerId = worker.Id,
-                ModifiedBy = new Faker().Person.Email,
-                FirstName = worker.FirstName,
-                LastName = worker.LastName,
-                ContextFlag = worker.ContextFlag,
-                Teams = new List<WorkerTeamRequest> { teamRequest },
-                Role = worker.Role,
-                DateStart = worker.DateStart
-            };
+            var updateWorkerRequest = new Faker<UpdateWorkerRequest>()
+                .RuleFor(f => f.WorkerId, f => worker.Id)
+                .RuleFor(f => f.ModifiedBy, f => f.Person.Email)
+                .RuleFor(f => f.FirstName, f => worker.FirstName)
+                .RuleFor(f => f.LastName, f => worker.LastName)
+                .RuleFor(f => f.ContextFlag, f => worker.ContextFlag)
+                .RuleFor(f => f.Teams, f => new List<WorkerTeamRequest> { teamRequest })
+                .RuleFor(f => f.Role, f => worker.Role)
+                .RuleFor(f => f.DateStart, f => worker.DateStart).Generate();
+
+            return updateWorkerRequest;
         }
 
         public static CreateAllocationRequest CreateAllocationRequest(long personId, int teamId, int workerId, Worker createdByWorker)
@@ -125,23 +117,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(c => c.AllocatedTeamId, f => teamId)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId)
                 .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
-                .RuleFor(c => c.AllocationStartDate, DateTime.Now);
+                .RuleFor(c => c.AllocationStartDate, f => f.Date.Recent()).Generate();
 
             return createAllocationRequest;
         }
 
         private static string SeedPerson(DbPerson person)
         {
-            var insertPersonQuery = $@"insert into dbo.dm_persons 
-            (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, 
-            title, first_name, last_name, date_of_birth, date_of_death, gender, 
-            restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, 
-            nationality, religion, marital_status, first_language, fluency_in_english, email_address, 
-            context_flag, scra_id, interpreter_required, from_dm_person) 
-            values ({person.Id}, NULL, {person.NhsNumber}, NULL, NULL, NULL, '{person.FullName}', 
-            '{person.Title}', '{person.FirstName}', '{person.LastName}', '{person.DateOfBirth?.ToString("s")}', '{person.DateOfDeath?.ToString("s")}', '{person.Gender}', 
-            '{person.Restricted}', '{person.PersonIdLegacy}', '{person.Ethnicity}', NULL, 'Y', 'Y', 
-            '{person.Nationality}', '{person.Religion}', NULL, '{person.FirstLanguage}', 'N', '{person.EmailAddress}', 
+            var insertPersonQuery = $@"insert into dbo.dm_persons
+            (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name,
+            title, first_name, last_name, date_of_birth, date_of_death, gender,
+            restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy,
+            nationality, religion, marital_status, first_language, fluency_in_english, email_address,
+            context_flag, scra_id, interpreter_required, from_dm_person)
+            values ({person.Id}, NULL, {person.NhsNumber}, NULL, NULL, NULL, '{person.FullName}',
+            '{person.Title}', '{person.FirstName}', '{person.LastName}', '{person.DateOfBirth?.ToString("s")}', '{person.DateOfDeath?.ToString("s")}', '{person.Gender}',
+            '{person.Restricted}', '{person.PersonIdLegacy}', '{person.Ethnicity}', NULL, 'Y', 'Y',
+            '{person.Nationality}', '{person.Religion}', NULL, '{person.FirstLanguage}', 'N', '{person.EmailAddress}',
             '{person.AgeContext}', NULL, 'N', '{person.DataIsFromDmPersonsBackup}');";
 
             return insertPersonQuery;
@@ -149,10 +141,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         private static string SeedWorker(Worker worker)
         {
-            var insertWorkerQuery = $@"insert into dbo.sccv_worker 
-            (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active ) 
-            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}', 
-            '{worker.ContextFlag}', '{worker.CreatedBy}', '{worker.DateStart?.ToString("s")}', '{worker.DateEnd?.ToString("s")}', 
+            var insertWorkerQuery = $@"insert into dbo.sccv_worker
+            (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active )
+            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}',
+            '{worker.ContextFlag}', '{worker.CreatedBy}', '{worker.DateStart?.ToString("s")}', '{worker.DateEnd?.ToString("s")}',
             '{worker.LastModifiedBy}', '{worker.CreatedAt?.ToString("s")}', '{worker.LastModifiedAt?.ToString("s")}', {worker.IsActive});";
 
             return insertWorkerQuery;

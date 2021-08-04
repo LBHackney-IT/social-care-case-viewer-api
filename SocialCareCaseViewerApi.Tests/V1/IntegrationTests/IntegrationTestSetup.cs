@@ -1,9 +1,7 @@
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -15,41 +13,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public class IntegrationTestSetup<TStartup> where TStartup : class
     {
-        private HttpClient _client;
-        private DatabaseContext _databaseContext;
         private ISccvDbContext _mongoDbContext;
-
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
         private NpgsqlTransaction _transaction;
-        private DbContextOptionsBuilder _builder;
-
-
-        protected HttpClient Client => _client;
-        protected DatabaseContext DatabaseContext => _databaseContext;
-        protected ISccvDbContext MongoDbTestContext => _mongoDbContext;
+        protected HttpClient Client { get; private set; }
+        protected DatabaseContext DatabaseContext { get; private set; }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            var serviceProvider = new ServiceCollection().AddDbContext<DatabaseContext>().AddEntityFrameworkNpgsql().BuildServiceProvider();
-
             _connection = new NpgsqlConnection(ConnectionString.TestDatabase());
             _connection.Open();
 
             var npgsqlCommand = _connection.CreateCommand();
             npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
             npgsqlCommand.ExecuteNonQuery();
-
-            _builder = new DbContextOptionsBuilder<DatabaseContext>();
-            _builder.UseNpgsql(_connection).UseInternalServiceProvider(serviceProvider);
         }
 
         [SetUp]
         public void BaseSetup()
         {
             // Set up MongoDB connection string depending on whether the tests are run locally or in docker
-
             if (Environment.GetEnvironmentVariable("CONTAINER_ENV") != "DockerTest")
             {
                 Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");
@@ -61,21 +46,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
 
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
-            _client = _factory.CreateClient();
+            Client = _factory.CreateClient();
 
-            _databaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
-            _databaseContext.ChangeTracker.LazyLoadingEnabled = false;
-
+            DatabaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
             _mongoDbContext = new MongoDbTestContext();
 
             _transaction = _connection.BeginTransaction(IsolationLevel.ReadCommitted);
-            _databaseContext.Database.UseTransaction(_transaction);
+            DatabaseContext.Database.UseTransaction(_transaction);
         }
 
         [TearDown]
         public void BaseTearDown()
         {
-            _client.Dispose();
+            Client.Dispose();
             _factory.Dispose();
             _transaction.Rollback();
             _transaction.Dispose();

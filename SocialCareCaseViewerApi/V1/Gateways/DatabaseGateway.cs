@@ -543,19 +543,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             // Update any assigned allocations to reflect the worker's new team
             var allocations = _databaseContext.Allocations.Where(x => x.WorkerId == request.WorkerId).ToList();
 
-            if (allocations == null || !allocations.Any())
-            {
-                return;
-            };
+            if (!allocations.Any()) return;
 
-            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id)).Team;
+            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id))?.Team;
 
             foreach (var allocation in allocations)
             {
-                allocation.TeamId = updatedTeam.Id;
+                allocation.TeamId = updatedTeam?.Id;
                 allocation.Team = updatedTeam;
                 _databaseContext.SaveChanges();
-            };
+            }
         }
 
         private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)

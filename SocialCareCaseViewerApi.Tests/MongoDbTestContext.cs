@@ -8,8 +8,6 @@ namespace SocialCareCaseViewerApi.Tests
 {
     public class MongoDbTestContext : ISccvDbContext
     {
-        private MongoClient _mongoClient;
-        private IMongoDatabase _mongoDatabase;
         public IMongoCollection<BsonDocument> matProcessCollection { get; set; }
         public MongoDbTestContext()
         {
@@ -42,14 +40,14 @@ namespace SocialCareCaseViewerApi.Tests
                 localTrustStore.Close();
             }
 
-            string MONGO_DB_TEST_CONN_STRING = Environment.GetEnvironmentVariable("MONGO_DB_TEST_CONN_STRING") ??
+            string mongoDbTestConnString = Environment.GetEnvironmentVariable("MONGO_DB_TEST_CONN_STRING") ??
                                 @"mongodb://localhost:1433/";
 
-            _mongoClient = new MongoClient(new MongoUrl(MONGO_DB_TEST_CONN_STRING));
+            var mongoClient = new MongoClient(new MongoUrl(mongoDbTestConnString));
             //create a new blank database if database does not exist, otherwise get existing database
-            _mongoDatabase = _mongoClient.GetDatabase("social_care_db_test");
+            var mongoDatabase = mongoClient.GetDatabase("social_care_db_test");
             //create collection to hold the documents if it does not exist, otherwise retrieve existing
-            matProcessCollection = _mongoDatabase.GetCollection<BsonDocument>("form_data_test");
+            matProcessCollection = mongoDatabase.GetCollection<BsonDocument>("form_data_test");
         }
         public IMongoCollection<BsonDocument> getCollection()
         {

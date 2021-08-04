@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -27,18 +26,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         public void Setup()
         {
             // Clear test database of any rows in the database
-            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_team;");
-            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_worker;");
-            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_workerteam;");
-            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.dm_persons;");
-            DatabaseContext.Database.ExecuteSqlRaw("DELETE from dbo.sccv_allocations;");
+            DatabaseContext.Teams.RemoveRange(DatabaseContext.Teams);
+            DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
+            DatabaseContext.WorkerTeams.RemoveRange(DatabaseContext.WorkerTeams);
+            DatabaseContext.Persons.RemoveRange(DatabaseContext.Persons);
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
 
+            // Create existing workers with teams
+            var (existingDbWorker, existingDbTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+            var (allocationWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
 
-            // Create existing workers,teams and worker teams
-            (var existingDbWorker, var existingDbTeam, var existingDbWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-            (var allocationWorker, var allocatorTeam, var allocatorWorkerTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-
-            var differentDbTeam = IntegrationTestHelpers.CreateAnotherTeam(DatabaseContext, existingDbWorker.ContextFlag);
+            var differentDbTeam = IntegrationTestHelpers.CreateTeam(DatabaseContext, existingDbWorker.ContextFlag);
 
             // Create an existing resident that shares the same age context as existingDbWorker
             var resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: existingDbWorker.ContextFlag);
@@ -84,14 +82,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         public async Task UpdateWorkerWithNewTeamUpdatesAnyAllocationsAssociated()
         {
             // Create an allocation request for existingDbWorker
-            var CreateAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
+            var createAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
 
             var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
             var serializedRequest = JsonSerializer.Serialize(allocationRequest);
 
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
 
-            var allocationResponse = await Client.PostAsync(CreateAllocationUri, requestContent).ConfigureAwait(true);
+            var allocationResponse = await Client.PostAsync(createAllocationUri, requestContent).ConfigureAwait(true);
             allocationResponse.StatusCode.Should().Be(201);
 
             // Create another allocation request for existingDbWorker
@@ -100,7 +98,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var secondRequestContent = new StringContent(secondSerializedRequest, Encoding.UTF8, "application/json");
 
-            var allocationTwoResponse = await Client.PostAsync(CreateAllocationUri, secondRequestContent).ConfigureAwait(true);
+            var allocationTwoResponse = await Client.PostAsync(createAllocationUri, secondRequestContent).ConfigureAwait(true);
             allocationTwoResponse.StatusCode.Should().Be(201);
 
             // Patch request to update team of existingDbWorker
@@ -126,15 +124,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var firstAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(0);
 
-            firstAllocation.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
-            firstAllocation.PersonId.Should().Be(_resident.Id);
-            firstAllocation.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
+            firstAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            firstAllocation?.PersonId.Should().Be(_resident.Id);
+            firstAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
 
             var secondAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(1);
 
-            secondAllocation.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
-            secondAllocation.PersonId.Should().Be(_resident.Id);
-            secondAllocation.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
+            secondAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            secondAllocation?.PersonId.Should().Be(_resident.Id);
+            secondAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
         }
     }
 }
