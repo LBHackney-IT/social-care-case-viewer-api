@@ -79,7 +79,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
-            UpdateTags(updatedSubmission, request.Tags);
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -108,7 +107,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Worker = worker,
                 EditTime = DateTime.Now
             });
-            UpdateTags(submission, request.Tags);
+            UpdateDateOfEvent(submission, request.DateOfEvent);
+            UpdateTitle(submission, request.Title);
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submission);
             return submission.ToDomain().ToResponse();
         }
@@ -218,11 +218,18 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             caseSubmission.Residents = newResident;
         }
 
-        private static void UpdateTags(CaseSubmission caseSubmission, List<string>? tags)
+        private static void UpdateDateOfEvent(CaseSubmission caseSubmission, DateTime? dateOfEvent)
         {
-            if (tags == null) return;
+            if (dateOfEvent == null) return;
 
-            caseSubmission.Tags = tags;
+            caseSubmission.DateOfEvent = dateOfEvent;
+        }
+
+        private static void UpdateTitle(CaseSubmission caseSubmission, string? title)
+        {
+            if (title == null) return;
+
+            caseSubmission.Title = title;
         }
 
         private Worker GetSanitisedWorker(string workerEmail)

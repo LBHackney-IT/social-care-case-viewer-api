@@ -41,11 +41,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<ResidentInformation> ToDomain(this IEnumerable<Person> people)
-        {
-            return people.Select(p => p.ToDomain()).ToList();
-        }
-
         public static Address ToDomain(this DbAddress address)
         {
             return new Address
@@ -82,11 +77,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<Worker> ToDomain(this IEnumerable<DbWorker> workers, bool includeTeamData)
-        {
-            return workers.Select(w => w.ToDomain(includeTeamData)).ToList();
-        }
-
         public static Team ToDomain(this DbTeam team)
         {
             return new Team
@@ -95,11 +85,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Name = team.Name,
                 Context = team.Context
             };
-        }
-
-        public static List<Team> ToDomain(this IEnumerable<DbTeam> teams)
-        {
-            return teams.Select(t => t.ToDomain()).ToList();
         }
 
         public static WarningNote ToDomain(this dbWarningNote dbWarningNote, List<WarningNoteReview>? reviews = null)
@@ -152,7 +137,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 { SubmissionState.Submitted, "Submitted" },
                 { SubmissionState.Approved, "Approved" },
                 { SubmissionState.Discarded, "Discarded" },
-                {SubmissionState.PanelApproved, "Panel Approved"}
+                { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
             return new Domain.CaseSubmission
@@ -162,6 +147,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
+                DateOfEvent = caseSubmission.DateOfEvent,
                 CreatedBy = caseSubmission.CreatedBy.ToDomain(false),
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToDomain(false),
@@ -176,8 +162,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
-                Tags = caseSubmission.Tags,
-                FormAnswers = caseSubmission.FormAnswers
+                FormAnswers = caseSubmission.FormAnswers,
+                Title = caseSubmission.Title
             };
         }
 
@@ -194,9 +180,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
-                FormName = caseSubmission.FormId,
+                FormName = caseSubmission.Title != null ? $"{caseSubmission.FormId} - {caseSubmission.Title}" : caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
-                DateOfEvent = caseSubmission.CreatedAt.ToString("yyyy-MM-dd"),
+                DateOfEvent = caseSubmission.DateOfEvent?.ToString("s") ?? caseSubmission.CreatedAt.ToString("s"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString()
             };
         }

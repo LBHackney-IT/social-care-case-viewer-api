@@ -24,6 +24,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using DomainCaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
+using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Factories
 {
@@ -268,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -283,10 +284,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "In progress",
-                FormAnswers = databaseCaseSubmission1.FormAnswers
+                FormAnswers = databaseCaseSubmission1.FormAnswers,
+                Title = null
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted);
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -301,7 +303,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                     Worker = e.Worker.ToDomain(false)
                 }).ToList(),
                 SubmissionState = "Submitted",
-                FormAnswers = databaseCaseSubmission2.FormAnswers
+                FormAnswers = databaseCaseSubmission2.FormAnswers,
+                Title = "test-title"
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
@@ -378,7 +381,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var infrastructurePhoneNumber = new dbPhoneNumber()
             {
-                Number = phoneNumber.ToString(),
+                Number = phoneNumber,
                 PersonId = personId,
                 Type = phoneNumberType,
                 CreatedBy = createdBy
@@ -459,6 +462,111 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             string timestamp = formData["timestamp"];
 
             (DateTime.TryParseExact(timestamp, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)).Should().BeTrue();
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsAssociatedResidentInformation()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson(), TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.PersonId.Should().Be(residents[0].Id);
+            response.FirstName.Should().Be(residents[0].FirstName);
+            response.LastName.Should().Be(residents[0].LastName);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsOfficeEmailOfFirstWorkerAssociatedWithCaseSubmission()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var workers = new List<dbWorker> { TestHelpers.CreateWorker(), TestHelpers.CreateWorker() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(workers: workers, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.OfficerEmail.Should().Be(workers[0].Email);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampFromSubmittedAtIfNotNull()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var submittedAt = new DateTime(2021, 07, 20, 14, 40, 30);
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(submittedAt: submittedAt, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.CaseFormTimestamp.Should().Be("2021-07-20");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsCaseFormTimeStampAsDateTimeNowIfSubmittedAtNull()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, submittedAt: null);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.CaseFormTimestamp.Should().Be(DateTime.Now.ToString("yyyy-MM-dd"));
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDateOfEventIfNotNull()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var dateOfEvent = new DateTime(2021, 07, 19, 14, 40, 30);
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(dateOfEvent: dateOfEvent, residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DateOfEvent.Should().Be("2021-07-19T14:40:30");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDateOfEventAsCreatedAtIfDateOfEventNull()
+        {
+            var createdAt = new DateTime(2021, 07, 18, 14, 40, 30);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, dateOfEvent: null, createdAt: createdAt);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DateOfEvent.Should().Be("2021-07-18T14:40:30");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsTitleAndFormIdForFormNameWhenTitleProvided()
+        {
+            var formId = _faker.Random.String2(100);
+            var title = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: title);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be($"{formId} - {title}");
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsFormIdForFormNameWhenTitleIsNull()
+        {
+            var formId = _faker.Random.String2(100);
+            var residents = new List<Person> { TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest(residents[0].Id);
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents, formId: formId, title: null);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.FormName.Should().Be(formId);
         }
     }
 }

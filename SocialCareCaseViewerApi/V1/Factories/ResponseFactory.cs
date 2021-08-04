@@ -226,6 +226,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Residents = caseSubmission.Residents,
                 Workers = caseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
                 CreatedAt = caseSubmission.CreatedAt,
+                DateOfEvent = caseSubmission.DateOfEvent,
                 CreatedBy = caseSubmission.CreatedBy.ToResponse(),
                 SubmittedAt = caseSubmission.SubmittedAt,
                 SubmittedBy = caseSubmission.SubmittedBy?.ToResponse(),
@@ -240,8 +241,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     Worker = e.Worker.ToResponse()
                 }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
-                Tags = caseSubmission.Tags,
-                FormAnswers = caseSubmission.FormAnswers
+                FormAnswers = caseSubmission.FormAnswers,
+                Title = caseSubmission.Title
             };
         }
 

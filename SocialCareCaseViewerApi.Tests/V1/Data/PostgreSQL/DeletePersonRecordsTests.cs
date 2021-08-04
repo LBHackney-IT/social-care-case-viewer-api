@@ -7,7 +7,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 using System;
 using System.Linq;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Data
+namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 {
     [TestFixture]
     public class DeletePersonRecordsTests : DatabaseTests

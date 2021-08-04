@@ -18,6 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string FormId { get; set; } = null!;
         public Worker CreatedBy { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public DateTime? DateOfEvent { get; set; }
         public Worker? SubmittedBy { get; set; }
         public DateTime? SubmittedAt { get; set; }
         public Worker? ApprovedBy { get; set; }
@@ -29,6 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<Worker> Workers { get; set; } = null!;
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
+        public string? Title { get; set; }
 
         public List<string>? Tags { get; set; }
 

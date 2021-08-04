@@ -6,7 +6,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 using System.Linq;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Data
+namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 {
     public class SoftDeleteRecoveryTests : DatabaseTests
     {

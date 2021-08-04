@@ -49,6 +49,7 @@ functions:
     name: social-care-case-viewer-mongodb-import-${self:provider.stage}
     handler: MongoDBImport::MongoDBImport.Handler::ImportFormData
     role: lambdaExecutionRole
+    memorySize: 2048
     timeout: 900
     package:
       artifact: ./MongoDBImport/bin/release/netcoreapp3.1/mongodb-import.zip
