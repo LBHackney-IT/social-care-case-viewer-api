@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
@@ -270,6 +269,62 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedWorker.Should().NotBeEquivalentTo(originalWorker);
 
             UpdatedWorkerShouldBeEquivalentToRequest(updatedWorker, request, worker, team);
+        }
+
+        [Test]
+        public void UpdateWorkerUpdatesTheTeamSetOnAnyAllocations()
+        {
+            // Create worker and teams
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var differentTeam = TestHelpers.CreateTeam(name: "different team X", context: worker.ContextFlag);
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Teams.Add(differentTeam);
+            DatabaseContext.SaveChanges();
+
+            // Check worker's details before updating
+            var originalWorker = _classUnderTest.GetWorkerByWorkerId(worker.Id);
+            var currentTeam = DatabaseContext.WorkerTeams.Single(x => x.WorkerId == originalWorker.Id).Team;
+
+            originalWorker.WorkerTeams?.Count.Should().Be(1);
+            originalWorker.WorkerTeams?.Single().TeamId.Should().Be(currentTeam.Id);
+            originalWorker.Allocations?.Count.Should().Be(0);
+
+            var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.SaveChanges();
+
+            // Check allocations assigned to the worker
+            _classUnderTest.CreateAllocation(createAllocationRequest);
+            originalWorker.Allocations?.Count.Should().Be(1);
+
+            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id);
+
+            allocation.Count.Should().Be(1);
+            allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
+
+            // Update worker to be in a new team
+            var updateTeamRequest = TestHelpers.CreateUpdateWorkersRequest(teamId: differentTeam.Id, teamName: differentTeam.Name,
+                workerId: originalWorker.Id, firstName: originalWorker.FirstName,
+                lastName: originalWorker.LastName, role: originalWorker.Role, contextFlag: originalWorker.ContextFlag);
+
+            _classUnderTest.UpdateWorker(updateTeamRequest);
+
+            // Check worker's details after updating
+            var getUpdatedWorker = _classUnderTest.GetWorkerByWorkerId(originalWorker.Id);
+
+            getUpdatedWorker.WorkerTeams?.Count.Should().Be(1);
+            getUpdatedWorker.WorkerTeams?.Single().TeamId.Should().Be(differentTeam.Id);
+            getUpdatedWorker.Allocations?.Count.Should().Be(1);
+
+            // Check allocations assigned to the worker have been updated
+            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id);
+            updatedAllocations.Count.Should().Be(1);
+            updatedAllocations.Single().AllocatedWorkerTeam.Should().Be(differentTeam.Name);
         }
 
         private static void UpdatedWorkerShouldBeEquivalentToRequest(Worker updatedWorker, UpdateWorkerRequest request,
