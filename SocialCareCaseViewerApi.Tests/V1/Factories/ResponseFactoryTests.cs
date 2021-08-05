@@ -442,7 +442,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormId = domainCaseSubmission.FormId,
                 Residents = domainCaseSubmission.Residents,
                 Workers = domainCaseSubmission.Workers.Select(w => w.ToResponse()).ToList(),
-                CreatedAt = domainCaseSubmission.CreatedAt.ToString("O"),
+                CreatedAt = domainCaseSubmission.CreatedAt,
                 CreatedBy = domainCaseSubmission.CreatedBy.ToResponse(),
                 EditHistory = domainCaseSubmission.EditHistory.Select(e => new EditHistory<WorkerResponse>
                 {

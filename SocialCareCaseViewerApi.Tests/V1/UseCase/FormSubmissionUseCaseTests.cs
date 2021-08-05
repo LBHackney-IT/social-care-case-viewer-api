@@ -512,7 +512,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.UpdateAnswers(createdSubmission.SubmissionId.ToString(), "", request);
 
-            response.DateOfEvent.Should().Be(dateOfEvent.ToString("O"));
+            response.DateOfEvent.Should().Be(dateOfEvent);
         }
 
         [Test]
