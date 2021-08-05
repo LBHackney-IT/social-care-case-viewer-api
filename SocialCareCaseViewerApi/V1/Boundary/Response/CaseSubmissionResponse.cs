@@ -11,14 +11,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string SubmissionId { get; set; } = null!;
         public string FormId { get; set; } = null!;
         public WorkerResponse CreatedBy { get; set; } = null!;
-        public string CreatedAt { get; set; } = null!;
-        public string? DateOfEvent { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? DateOfEvent { get; set; }
         public WorkerResponse? SubmittedBy { get; set; }
-        public string? SubmittedAt { get; set; }
+        public DateTime? SubmittedAt { get; set; }
         public WorkerResponse? ApprovedBy { get; set; }
-        public string? ApprovedAt { get; set; }
+        public DateTime? ApprovedAt { get; set; }
         public WorkerResponse? PanelApprovedBy { get; set; }
-        public string? PanelApprovedAt { get; set; }
+        public DateTime? PanelApprovedAt { get; set; }
         public string? RejectionReason { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<WorkerResponse> Workers { get; set; } = null!;
