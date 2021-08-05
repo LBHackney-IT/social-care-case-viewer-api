@@ -148,7 +148,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     var success = DateTime.TryParseExact(x.DateOfEvent, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEvent);
                     if (success) return dateOfEvent;
 
-                    var successForIsoDateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "s", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateTimeFormat);
+                    var successForIsoDateTimeFormat = DateTime.TryParseExact(x.DateOfEvent, "O", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateTimeFormat);
                     if (successForIsoDateTimeFormat) return dateOfEventIsoDateTimeFormat;
 
                     var successForIsoDateFormat = DateTime.TryParseExact(x.DateOfEvent, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfEventIsoDateFormat);
