@@ -4,6 +4,7 @@ using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -23,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
         private Mock<IMongoGateway> _mockMongoGateway = null!;
         private FormSubmissionsUseCase _formSubmissionsUseCase = null!;
-        private Faker _faker = null!;
+        private readonly Faker _faker = new Faker();
         private const string CollectionName = "resident-case-submissions";
 
         private static object[] _invalidSubmissionStateForUpdates =
@@ -37,7 +38,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [SetUp]
         public void SetUp()
         {
-            _faker = new Faker();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _mockMongoGateway = new Mock<IMongoGateway>();
             _formSubmissionsUseCase = new FormSubmissionsUseCase(_mockDatabaseGateway.Object, _mockMongoGateway.Object);
@@ -130,37 +130,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), ObjectId.Parse(objectId)), Times.Once);
             response.Should().BeNull();
-        }
-
-        [Test]
-        public void ExecuteListBySubmissionStatusSuccessfully()
-        {
-            var firstSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
-            var secondSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
-
-            var submissionResponse = new List<CaseSubmission> { firstSubmission, secondSubmission };
-
-            _mockMongoGateway
-                .Setup(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress))
-                .Returns(submissionResponse);
-
-            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
-
-            _mockMongoGateway
-                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress), Times.Once);
-
-            response.Should().BeEquivalentTo(submissionResponse.Select(x => x.ToDomain().ToResponse()));
-        }
-
-        [Test]
-        public void ExecuteListBySubmissionStatusShouldReturnAnEmptyListIfNoMatchesWereFound()
-        {
-            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.Submitted);
-
-            _mockMongoGateway
-                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.Submitted), Times.Once);
-
-            response.Should().BeEmpty();
         }
 
         [Test]
@@ -693,6 +662,75 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             act.Should().Throw<UpdateSubmissionException>()
                 .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
+        }
+
+        [Test]
+        public void ExecuteByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound() {
+            var request = TestHelpers.CreateQueryCaseSubmissions();
+
+            Action act = () => _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            act.Should().Throw<QueryCaseSubmissionsException>()
+                .WithMessage("Provide at minimum one query parameter");
+        }
+
+        [Test]
+        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormId() {
+            const string testFormId = "foo";
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteByQueryOnlyGetsFormsWithQueriedSubmissionState()
+        {
+            var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
+            var submissionStatesRequest = new List<string>() { "in_progress" };
+            var request = TestHelpers.CreateQueryCaseSubmissions(submissionStates: submissionStatesRequest);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormIdAndSubmissionState() {
+            const string testFormId = "foo";
+            var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
+            var submissionStatesRequest = new List<string>() { "in_progress" };
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId, submissionStates: submissionStatesRequest);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
+            filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
         }
     }
 }
