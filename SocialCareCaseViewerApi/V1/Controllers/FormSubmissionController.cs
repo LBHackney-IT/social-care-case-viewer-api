@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -51,9 +49,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpGet]
         public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissions request)
         {
-            var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request, null);
+            try
+            {
+                var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request, null);
 
-            return Ok(forms);
+                return Ok(forms);
+            }
+            catch (QueryCaseSubmissionsException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         /// <summary>
