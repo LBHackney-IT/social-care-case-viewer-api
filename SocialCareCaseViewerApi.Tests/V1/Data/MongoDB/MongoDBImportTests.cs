@@ -35,11 +35,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
         /// - pass it to the db.runCommand() like this:
         ///
         /// db.runCommand({
-        /// delete: ""form_data"",
+        /// delete: "form_data",
         ///            deletes:
         ///                [
         ///                    {
-        ///                        q: { marked_for_deletion: ""TRUE"" }, limit: 0
+        ///                        q: { marked_for_deletion: "TRUE" }, limit: 0
         ///                    }
         ///                ]
         ///        });
