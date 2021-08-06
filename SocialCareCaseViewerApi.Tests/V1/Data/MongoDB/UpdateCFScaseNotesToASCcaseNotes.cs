@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.MongoDB
             string databaseName = Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME") ?? "social_care_db_name";
 
             var mongoClient = new MongoClient(new MongoUrl(mongoConnectionString));
-            _mongoDatabase = mongoClient.GetDatabase(databaseName);        
+            _mongoDatabase = mongoClient.GetDatabase(databaseName);
         }
 
         [TearDown]
