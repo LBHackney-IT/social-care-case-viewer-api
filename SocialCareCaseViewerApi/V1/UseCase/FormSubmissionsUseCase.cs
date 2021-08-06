@@ -65,7 +65,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissions request, FilterDefinition<CaseSubmission>? filter2 = null)
+        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request, FilterDefinition<CaseSubmission>? filter2 = null)
         {
             if (request.FormId == null && request.SubmissionStates == null)
             {

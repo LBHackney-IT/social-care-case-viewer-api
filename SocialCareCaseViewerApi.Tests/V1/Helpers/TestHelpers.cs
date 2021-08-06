@@ -528,11 +528,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.RejectionReason, rejectionReason);
         }
 
-        public static QueryCaseSubmissions CreateQueryCaseSubmissions(
+        public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
             string? formId = null,
             IEnumerable<string>? submissionStates = null)
         {
-            return new Faker<QueryCaseSubmissions>()
+            return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
                 .RuleFor(q => q.SubmissionStates, submissionStates);
         }
