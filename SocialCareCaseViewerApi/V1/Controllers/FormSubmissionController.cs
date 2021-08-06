@@ -47,8 +47,16 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case submission not found</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissions request)
+        public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissionsRequest request)
         {
+            var validator = new QueryCaseSubmissionsValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             try
             {
                 var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request, null);
