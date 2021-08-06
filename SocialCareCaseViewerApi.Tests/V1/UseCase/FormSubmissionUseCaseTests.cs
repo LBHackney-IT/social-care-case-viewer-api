@@ -665,7 +665,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound() {
+        public void ExecuteByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound()
+        {
             var request = TestHelpers.CreateQueryCaseSubmissions();
 
             Action act = () => _formSubmissionsUseCase.ExecuteGetByQuery(request);
@@ -675,7 +676,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormId() {
+        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormId()
+        {
             const string testFormId = "foo";
             var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId);
 
@@ -713,7 +715,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormIdAndSubmissionState() {
+        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormIdAndSubmissionState()
+        {
             const string testFormId = "foo";
             var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
             var submissionStatesRequest = new List<string>() { "in_progress" };
