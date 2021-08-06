@@ -201,5 +201,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             retrievedObject.Count.Should().Be(1);
             retrievedObject[0].Should().BeEquivalentTo(_testObjectForMongo);
         }
+
+        [Test]
+        public void CanLoadRecordsByFilterWithComplexQuery()
+        {
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+
+            var filter1 = Builders<TestObjectForMongo>
+                .Filter.Empty;
+            filter1 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Id, _testObjectForMongo.Id);
+            filter1 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Property1, _testObjectForMongo.Property1);
+            var retrievedObject1 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter1);
+
+            var filter2 = Builders<TestObjectForMongo>
+                .Filter.Empty;
+            filter2 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Id, _testObjectForMongo.Id);
+            filter2 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Property1, "invalid-property-name");
+            var retrievedObject2 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter2);
+
+            retrievedObject1.Count.Should().Be(1);
+            retrievedObject2.Count.Should().Be(0);
+        }
     }
 }
