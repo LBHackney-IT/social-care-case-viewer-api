@@ -43,15 +43,17 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Lists all in-progress case submissions
+        /// Get submissions via query parameters
         /// </summary>
-        /// <response code="200">Success. Returns a list of any in progress case submissions</response>
-        [ProducesResponseType(typeof(List<CaseSubmissionResponse>), StatusCodes.Status200OK)]
+        /// <response code="200">Case submission successfully found</response>
+        /// <response code="404">Case submission not found</response>
+        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult ListAllSubmissionsInProgress()
+        public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissions request)
         {
-            var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
-            return Ok(submissions);
+            var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request, null);
+
+            return Ok(forms);
         }
 
         /// <summary>
