@@ -11,6 +11,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -685,6 +686,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
 
+            var expectedJsonFilter = filter.RenderToJson();
+
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
 
@@ -704,6 +707,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+
+            var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
@@ -726,6 +731,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+
+            var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));

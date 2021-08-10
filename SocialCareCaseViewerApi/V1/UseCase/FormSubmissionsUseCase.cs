@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -63,6 +64,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
             return foundSubmission?.ToDomain().ToResponse();
+        }
+
+        public static string RenderToJson<TDocument>(FilterDefinition<TDocument> filter)
+        {
+            var serializerRegistry = BsonSerializer.SerializerRegistry;
+            var documentSerializer = serializerRegistry.GetSerializer<TDocument>();
+            return filter.Render(documentSerializer, serializerRegistry).ToJson();
         }
 
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
