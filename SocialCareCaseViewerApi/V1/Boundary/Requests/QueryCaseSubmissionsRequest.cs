@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using FluentValidation;
+using Newtonsoft.Json;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
@@ -8,12 +10,16 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class QueryCaseSubmissionsRequest
     {
+        [JsonPropertyName("formId")]
         public string? FormId { get; set; }
 
+        [JsonPropertyName("submissionStates")]
         public IEnumerable<string>? SubmissionStates { get; set; }
 
+        [JsonPropertyName("createdAfter")]
         public DateTime? CreatedAfter { get; set; }
 
+        [JsonPropertyName("createdBefore")]
         public DateTime? CreatedBefore { get; set; }
     }
 
