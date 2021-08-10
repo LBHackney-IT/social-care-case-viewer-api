@@ -13,6 +13,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -526,6 +527,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.RejectionReason, rejectionReason);
+        }
+
+        public static CaseStatusType CreateCaseStatusType(
+            long? id = null,
+            string? typeName = "CIN",
+            string? typeDescription = "Child in need")
+        {
+            return new Faker<CaseStatusType>()
+                .RuleFor(cst => cst.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(cst => cst.Name, f => typeName)
+                .RuleFor(cst => cst.Description, f => typeDescription);
+        }
+
+
+        public static CaseStatusSubtype CreateCaseStatusSubtype(
+            long typeId,
+            long? id = null,
+            string? typeName = "N8",
+            string? typeDescription = "Some description")
+        {
+            return new Faker<CaseStatusSubtype>()
+                .RuleFor(css => css.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(css => css.TypeID, f => typeId)
+                .RuleFor(css => css.Name, f => typeName)
+                .RuleFor(css => css.Description, f => typeDescription);
+        }
+
+        public static CaseStatus CreateCaseStatus(
+            long? personId = null,
+            long? typeId = null,
+            long? subtypeId = null,
+            string? notes = null,
+            DateTime? startDate = null,
+            DateTime? endDate = null)
+        {
+
+            return new Faker<CaseStatus>()
+                .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.TypeId, f => typeId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.SubTypeId, f => subtypeId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.Notes, f => notes)
+                .RuleFor(p => p.StartDate, f => startDate)
+                .RuleFor(p => p.EndDate, f => endDate);
         }
     }
 }

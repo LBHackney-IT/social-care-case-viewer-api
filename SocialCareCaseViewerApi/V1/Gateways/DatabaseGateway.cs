@@ -1017,6 +1017,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.RequestAudits.Add(requestAudit);
             _databaseContext.SaveChanges();
         }
+        
+        public List<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId)
+        {
+            var caseStatuses = _databaseContext.CaseStatuses.Where(prt => prt.PersonId == personId)
+                .Include(prt => prt.SubType)
+                .Include(prt => prt.Type);
+
+            return caseStatuses.ToList();
+        }
+
+
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
