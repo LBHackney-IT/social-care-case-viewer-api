@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
                 throw new GetCaseStatusesException("Case status for person not found");
             }
 
-            var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse()};
+            var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse() };
 
             return response;
         }

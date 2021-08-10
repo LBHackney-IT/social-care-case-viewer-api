@@ -1017,7 +1017,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.RequestAudits.Add(requestAudit);
             _databaseContext.SaveChanges();
         }
-        
+
         public List<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId)
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(prt => prt.PersonId == personId)
@@ -1026,7 +1026,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses.ToList();
         }
-
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
