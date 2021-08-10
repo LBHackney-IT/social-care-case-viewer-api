@@ -694,7 +694,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
         }
 
         [Test]
@@ -716,7 +716,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
         }
 
         [Test]
@@ -740,7 +740,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
         }
     }
 }
