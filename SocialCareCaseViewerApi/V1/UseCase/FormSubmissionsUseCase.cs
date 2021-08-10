@@ -66,13 +66,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public static string RenderToJson<TDocument>(FilterDefinition<TDocument> filter)
-        {
-            var serializerRegistry = BsonSerializer.SerializerRegistry;
-            var documentSerializer = serializerRegistry.GetSerializer<TDocument>();
-            return filter.Render(documentSerializer, serializerRegistry).ToJson();
-        }
-
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
         {
             if (request.FormId == null && request.SubmissionStates == null)
