@@ -183,7 +183,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormName = caseSubmission.Title != null ? $"{caseSubmission.FormId} - {caseSubmission.Title}" : caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
                 DateOfEvent = caseSubmission.DateOfEvent?.ToString("O") ?? caseSubmission.CreatedAt.ToString("O"),
-                CaseFormUrl = caseSubmission.SubmissionId.ToString()
+                CaseFormUrl = caseSubmission.SubmissionId.ToString(),
+                FormType = "flexible-form",
+                Title = caseSubmission.Title
             };
         }
 
