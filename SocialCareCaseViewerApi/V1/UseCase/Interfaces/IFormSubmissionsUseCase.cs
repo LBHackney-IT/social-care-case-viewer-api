@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 
         CaseSubmissionResponse ExecuteGetById(string submissionId);
 
-        IEnumerable<CaseSubmissionResponse> ExecuteGetByQuery(QueryCaseSubmissionsRequest request, FilterDefinition<CaseSubmission> filter);
+        IEnumerable<CaseSubmissionResponse> ExecuteGetByQuery(QueryCaseSubmissionsRequest request);
 
         CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request);
         CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId,

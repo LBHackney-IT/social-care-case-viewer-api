@@ -688,7 +688,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
 
-            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
                 x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
@@ -708,7 +708,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
 
-            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
                 x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
@@ -730,7 +730,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Setup(m =>
                 m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
 
-            _formSubmissionsUseCase.ExecuteGetByQuery(request, filter);
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
                 x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Once);
