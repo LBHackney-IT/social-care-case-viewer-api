@@ -252,7 +252,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Type = cs.Type?.Name,
                 SubType = cs.SubType?.Name,
-                StartDate = cs.StartDate?.ToString("s"),
+                StartDate = cs.StartDate.ToString("s"),
                 EndDate = cs.EndDate?.ToString("s"),
                 Notes = cs.Notes
             }).ToList();
