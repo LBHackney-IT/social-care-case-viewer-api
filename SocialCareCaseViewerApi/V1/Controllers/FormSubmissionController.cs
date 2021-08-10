@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request, null);
+                var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
                 return Ok(forms);
             }
