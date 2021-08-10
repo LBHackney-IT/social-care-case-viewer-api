@@ -6,6 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class CaseStatus
     {
+        public long? Id { get; set; } = null!;
         public string? Type { get; set; } = null!;
         public string? SubType { get; set; } = null!;
         public string? StartDate { get; set; } = null!;

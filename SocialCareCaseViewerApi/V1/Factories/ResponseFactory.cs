@@ -250,6 +250,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return caseStatuses.Select(cs => new Domain.CaseStatus
             {
+                Id = cs.Id,
                 Type = cs.Type?.Name,
                 SubType = cs.SubType?.Name,
                 StartDate = cs.StartDate.ToString("s"),
