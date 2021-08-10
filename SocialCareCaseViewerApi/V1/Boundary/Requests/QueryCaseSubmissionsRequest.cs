@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Newtonsoft.Json;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 #nullable enable

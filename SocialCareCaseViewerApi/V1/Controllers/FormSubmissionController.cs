@@ -41,10 +41,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get submissions via query parameters
+        /// Get case submissions via query parameters
         /// </summary>
         /// <response code="200">Case submission successfully found</response>
-        /// <response code="404">Case submission not found</response>
+        /// <response code="400">Invalid query made</response>
         [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissionsRequest request)

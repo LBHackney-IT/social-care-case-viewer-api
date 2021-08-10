@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
         {
-            if (request.FormId == null && request.SubmissionStates == null)
+            if (request.FormId == null && request.SubmissionStates == null && request.CreatedAfter != null && request.CreatedBefore != null)
             {
                 throw new QueryCaseSubmissionsException("Provide at minimum one query parameter");
             }
@@ -97,6 +97,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, requestSubmissionStates);
             }
 
+            if (request.CreatedAfter != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, request.CreatedAfter);
+            }
+
+            if (request.CreatedBefore != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, request.CreatedBefore);
+            }
 
             var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter);
 

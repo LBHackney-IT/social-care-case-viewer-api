@@ -666,7 +666,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound()
+        public void ExecuteGetByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound()
         {
             var request = TestHelpers.CreateQueryCaseSubmissions();
 
@@ -677,7 +677,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormId()
+        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedFormId()
         {
             const string testFormId = "foo";
             var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId);
@@ -698,7 +698,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryOnlyGetsFormsWithQueriedSubmissionState()
+        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedSubmissionState()
         {
             var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
             var submissionStatesRequest = new List<string>() { "in_progress" };
@@ -720,17 +720,63 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryOnlyGetsFormsWithQueriedFormIdAndSubmissionState()
+        public void ExecuteGetByQueryOnlyGetsFormsAfterCreatedAtQueriedDate()
+        {
+            var createdAfterTime = DateTime.Now;
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdAfter: createdAfterTime);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfterTime);
+
+            var expectedJsonFilter = filter.RenderToJson();
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsBeforeCreatedAtQueriedDate()
+        {
+            var createdBeforeTime = DateTime.Now;
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdBefore: createdBeforeTime);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBeforeTime);
+
+            var expectedJsonFilter = filter.RenderToJson();
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryGetsFormsUsingAllQueryOptions()
         {
             const string testFormId = "foo";
             var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
             var submissionStatesRequest = new List<string>() { "in_progress" };
-            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId, submissionStates: submissionStatesRequest);
+            var createdBefore = DateTime.Now.AddDays(1);
+            var createdAfter = DateTime.Now.AddDays(-1);
+            var request = TestHelpers.CreateQueryCaseSubmissions(testFormId, submissionStatesRequest, createdBefore, createdAfter);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+            filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfter);
+            filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBefore);
 
             var expectedJsonFilter = filter.RenderToJson();
 
