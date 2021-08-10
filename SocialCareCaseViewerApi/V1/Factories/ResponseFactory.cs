@@ -246,7 +246,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<Domain.CaseStatus> ToResponse(this List<Infrastructure.CaseStatus> caseStatuses)
+        public static List<Domain.CaseStatus> ToResponse(this IEnumerable<Infrastructure.CaseStatus> caseStatuses)
         {
             return caseStatuses.Select(cs => new Domain.CaseStatus
             {

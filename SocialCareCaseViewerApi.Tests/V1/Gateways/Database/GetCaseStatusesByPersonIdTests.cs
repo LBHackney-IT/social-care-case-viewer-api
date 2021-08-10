@@ -27,7 +27,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WhenNoMatchingIDReturnsNull()
         {
-            var response = _databaseGateway.GetCaseStatusesByPersonId(123456789);
+            var (person, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
             response.Should().BeEmpty();
         }
     }

@@ -24,21 +24,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void CallsDatabaseGateway()
-        {
-            var person = TestHelpers.CreatePerson();
-            var caseStatusType = TestHelpers.CreateCaseStatusType();
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id);
-            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, endDate: DateTime.Now);
-
-            _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(It.IsAny<long>())).Returns(new List<CaseStatus>() { csus });
-
-            var result = _caseStatusesUseCase.ExecuteGet(It.IsAny<long>());
-
-            _mockDatabaseGateway.Verify(x => x.GetCaseStatusesByPersonId(It.IsAny<long>()));
-        }
-
-        [Test]
         public void WhenCaseStatusIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetRelationshipsExceptionWithMessage()
         {
             var person = TestHelpers.CreatePerson();
@@ -47,23 +32,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _caseStatusesUseCase.Invoking(x => x.ExecuteGet(person.Id))
                 .Should().Throw<GetCaseStatusesException>()
-                .WithMessage("Case status for person not found");
+                .WithMessage("Person not found");
 
-        }
-
-        [Test]
-        public void WhenPersonHasCaseStatusReturnsCaseStatuses()
-        {
-            var person = TestHelpers.CreatePerson();
-            var caseStatusType = TestHelpers.CreateCaseStatusType();
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id);
-            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, endDate: DateTime.Now);
-
-            _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(It.IsAny<long>())).Returns(new List<CaseStatus>() { csus });
-
-            var result = _caseStatusesUseCase.ExecuteGet(It.IsAny<long>());
-
-            result.CaseStatuses.Should().HaveCount(1);
         }
     }
 }

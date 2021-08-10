@@ -19,12 +19,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 
         public ListCaseStatusesResponse ExecuteGet(long personId)
         {
-            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId);
+            var person = _databaseGateway.GetPersonByMosaicId(personId);
 
-            if (caseStatus == null || caseStatus.Count == 0)
+            if (person == null)
             {
-                throw new GetCaseStatusesException("Case status for person not found");
+                throw new GetCaseStatusesException("Person not found");
             }
+
+            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId);
 
             var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse() };
 
