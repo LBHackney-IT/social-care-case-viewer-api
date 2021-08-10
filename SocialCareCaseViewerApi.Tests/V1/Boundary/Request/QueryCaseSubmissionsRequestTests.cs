@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,7 +16,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(), false, "Must provide at least one query parameter"},
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(formId: "form-id"), true, null},
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(submissionStates: new List<string>{"submission-state"}), true, null},
-            new object?[] { TestHelpers.CreateQueryCaseSubmissions(formId: "form-id", submissionStates: new List<string>{"submission-state"}), true, null}
+            new object?[] { TestHelpers.CreateQueryCaseSubmissions(createdBefore: DateTime.Now), true, null},
+            new object?[] { TestHelpers.CreateQueryCaseSubmissions(createdAfter: DateTime.Now), true, null}
         };
 
         [TestCaseSource(nameof(_queryCaseSubmissionRequests))]
