@@ -11,7 +11,8 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
-    public class CaseTypesUseCaseTests{
+    public class CaseTypesUseCaseTests
+    {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private CaseStatusesUseCase _caseStatusesUseCase;
 
@@ -65,6 +66,4 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             result.CaseStatuses.Should().HaveCount(1);
         }
     }
-
-
 }
