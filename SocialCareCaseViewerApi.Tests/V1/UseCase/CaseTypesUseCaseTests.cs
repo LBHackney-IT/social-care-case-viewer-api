@@ -24,13 +24,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void WhenCaseStatusIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetRelationshipsExceptionWithMessage()
+        public void WhenCaseStatusIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetCaseStatusExceptionWithMessage()
         {
-            var person = TestHelpers.CreatePerson();
+            _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(1234));
 
-            _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(person.Id));
-
-            _caseStatusesUseCase.Invoking(x => x.ExecuteGet(person.Id))
+            _caseStatusesUseCase.Invoking(x => x.ExecuteGet(1234))
                 .Should().Throw<GetCaseStatusesException>()
                 .WithMessage("Person not found");
 
