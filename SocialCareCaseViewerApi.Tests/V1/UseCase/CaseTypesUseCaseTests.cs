@@ -41,15 +41,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var person = TestHelpers.CreatePerson();
             var emptyResponse = new List<CaseStatus>() { };
-            
+
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(person.Id)).Returns(person);
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(person.Id)).Returns(emptyResponse);
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
-            result.Should().BeEquivalentTo(new ListCaseStatusesResponse() { PersonId = person.Id, CaseStatuses = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus>(){} });
+            result.Should().BeEquivalentTo(new ListCaseStatusesResponse() { PersonId = person.Id, CaseStatuses = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus>() { } });
         }
-        
+
         [Test]
         public void WhenPersonIsFoundWithCaseStatusesReturnsCaseStatusesList()
         {
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, notes: "Testing");
 
             var response = new List<CaseStatus>() { csus };
-            
+
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(person.Id)).Returns(person);
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(person.Id)).Returns(response);
 
