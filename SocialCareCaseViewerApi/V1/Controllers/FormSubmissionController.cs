@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -43,15 +41,32 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Lists all in-progress case submissions
+        /// Get case submissions via query parameters
         /// </summary>
-        /// <response code="200">Success. Returns a list of any in progress case submissions</response>
-        [ProducesResponseType(typeof(List<CaseSubmissionResponse>), StatusCodes.Status200OK)]
+        /// <response code="200">Case submission successfully found</response>
+        /// <response code="400">Invalid query made</response>
+        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult ListAllSubmissionsInProgress()
+        public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissionsRequest request)
         {
-            var submissions = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
-            return Ok(submissions);
+            var validator = new QueryCaseSubmissionsValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                var forms = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+                return Ok(forms);
+            }
+            catch (QueryCaseSubmissionsException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         /// <summary>

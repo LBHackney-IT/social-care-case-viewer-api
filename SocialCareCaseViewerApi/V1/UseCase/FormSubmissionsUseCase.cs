@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -18,6 +20,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
         private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions];
+
+        private static readonly Dictionary<string, SubmissionState> _stringToSubmissionState = new Dictionary<string, SubmissionState> {
+            { "in_progress", SubmissionState.InProgress },
+            { "submitted", SubmissionState.Submitted },
+            { "approved", SubmissionState.Approved },
+            { "discarded", SubmissionState.Discarded },
+            { "panel_approved", SubmissionState.PanelApproved }
+        };
 
         public FormSubmissionsUseCase(IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
         {
@@ -56,15 +66,52 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public List<CaseSubmissionResponse> ExecuteListBySubmissionStatus(SubmissionState state)
+        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
         {
-            var foundSubmissions = _mongoGateway
-                .LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(_collectionName, "SubmissionState",
-                    state);
+            if (request.FormId == null && request.SubmissionStates == null && request.CreatedAfter == null && request.CreatedBefore == null)
+            {
+                throw new QueryCaseSubmissionsException("Provide at minimum one query parameter");
+            }
 
-            return foundSubmissions == null
-                ? new List<CaseSubmissionResponse>()
-                : foundSubmissions.Select(x => x.ToDomain().ToResponse()).ToList();
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+
+            if (request.FormId != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, request.FormId);
+            }
+
+            if (request.SubmissionStates != null)
+            {
+                var requestSubmissionStates = new List<SubmissionState>();
+
+                foreach (var submissionState in request.SubmissionStates)
+                {
+                    if (_stringToSubmissionState.ContainsKey(submissionState.ToLower()))
+                    {
+                        var state = _stringToSubmissionState[submissionState.ToLower()];
+                        requestSubmissionStates.Add(state);
+                    }
+                }
+
+                filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, requestSubmissionStates);
+            }
+
+            if (request.CreatedAfter != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, request.CreatedAfter);
+            }
+
+            if (request.CreatedBefore != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, request.CreatedBefore);
+            }
+
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
+
+            return foundSubmission?.Select(s => s.ToDomain().ToResponse());
         }
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
@@ -117,14 +164,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (request.SubmissionState == null) return;
 
-            var stringToSubmissionState = new Dictionary<string, SubmissionState> {
-                { "in_progress", SubmissionState.InProgress },
-                { "submitted", SubmissionState.Submitted },
-                { "approved", SubmissionState.Approved },
-                { "discarded", SubmissionState.Discarded },
-                { "panel_approved", SubmissionState.PanelApproved }
-            };
-
             var mapSubmissionStateToResponseString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
                 { SubmissionState.Submitted, "Submitted" },
@@ -133,12 +172,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 { SubmissionState.PanelApproved, "Panel Approved" }
             };
 
-            if (!stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
+            if (!_stringToSubmissionState.ContainsKey(request.SubmissionState.ToLower()))
             {
                 throw new UpdateSubmissionException($"Invalid submission state supplied {request.SubmissionState}");
             }
 
-            var newSubmissionState = stringToSubmissionState[request.SubmissionState.ToLower()];
+            var newSubmissionState = _stringToSubmissionState[request.SubmissionState.ToLower()];
 
             // We should never hit the default but C# compiler complains if we don't provide a default case
             // https://stackoverflow.com/questions/1098644/switch-statement-without-default-when-dealing-with-enumerations
