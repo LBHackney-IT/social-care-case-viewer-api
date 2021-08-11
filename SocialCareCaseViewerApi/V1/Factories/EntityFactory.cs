@@ -180,10 +180,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
-                FormName = caseSubmission.Title != null ? $"{caseSubmission.FormId} - {caseSubmission.Title}" : caseSubmission.FormId,
+                FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
                 DateOfEvent = caseSubmission.DateOfEvent?.ToString("O") ?? caseSubmission.CreatedAt.ToString("O"),
-                CaseFormUrl = caseSubmission.SubmissionId.ToString()
+                CaseFormUrl = caseSubmission.SubmissionId.ToString(),
+                FormType = "flexible-form",
+                Title = caseSubmission.Title
             };
         }
 
