@@ -130,6 +130,7 @@ namespace SocialCareCaseViewerApi
             services
                 .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
             services.AddTransient<IValidator<CreatePersonalRelationshipRequest>, CreatePersonalRelationshipRequestValidator>();
+            services.AddTransient<IValidator<QueryCaseSubmissionsRequest>, QueryCaseSubmissionsValidator>();
 
             services.AddScoped<ISystemTime, SystemTime>();
         }
