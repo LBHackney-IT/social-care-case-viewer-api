@@ -1,4 +1,5 @@
 using System;
+using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Exceptions
 {
@@ -116,6 +117,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class PersonalRelationshipAlreadyExistsException : Exception
     {
         public PersonalRelationshipAlreadyExistsException(string message) : base(message) { }
+    }
+
+    public class QueryCaseSubmissionsException : Exception
+    {
+        public QueryCaseSubmissionsException(string message) : base(message) { }
     }
 
     public class CustomException : Exception

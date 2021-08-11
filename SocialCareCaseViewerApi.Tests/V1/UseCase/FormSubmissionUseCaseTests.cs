@@ -4,12 +4,14 @@ using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -23,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
         private Mock<IMongoGateway> _mockMongoGateway = null!;
         private FormSubmissionsUseCase _formSubmissionsUseCase = null!;
-        private Faker _faker = null!;
+        private readonly Faker _faker = new Faker();
         private const string CollectionName = "resident-case-submissions";
 
         private static object[] _invalidSubmissionStateForUpdates =
@@ -37,7 +39,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [SetUp]
         public void SetUp()
         {
-            _faker = new Faker();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _mockMongoGateway = new Mock<IMongoGateway>();
             _formSubmissionsUseCase = new FormSubmissionsUseCase(_mockDatabaseGateway.Object, _mockMongoGateway.Object);
@@ -130,37 +131,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Verify(x => x.LoadRecordById<CaseSubmission>(It.IsAny<string>(), ObjectId.Parse(objectId)), Times.Once);
             response.Should().BeNull();
-        }
-
-        [Test]
-        public void ExecuteListBySubmissionStatusSuccessfully()
-        {
-            var firstSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
-            var secondSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
-
-            var submissionResponse = new List<CaseSubmission> { firstSubmission, secondSubmission };
-
-            _mockMongoGateway
-                .Setup(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress))
-                .Returns(submissionResponse);
-
-            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.InProgress);
-
-            _mockMongoGateway
-                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.InProgress), Times.Once);
-
-            response.Should().BeEquivalentTo(submissionResponse.Select(x => x.ToDomain().ToResponse()));
-        }
-
-        [Test]
-        public void ExecuteListBySubmissionStatusShouldReturnAnEmptyListIfNoMatchesWereFound()
-        {
-            var response = _formSubmissionsUseCase.ExecuteListBySubmissionStatus(SubmissionState.Submitted);
-
-            _mockMongoGateway
-                .Verify(x => x.LoadMultipleRecordsByProperty<CaseSubmission, SubmissionState>(It.IsAny<string>(), "SubmissionState", SubmissionState.Submitted), Times.Once);
-
-            response.Should().BeEmpty();
         }
 
         [Test]
@@ -693,6 +663,135 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             act.Should().Throw<UpdateSubmissionException>()
                 .WithMessage($"Worker with email {request.EditedBy} cannot approve the submission as they created the submission");
+        }
+
+        [Test]
+        public void ExecuteGetByQueryThrowsQueryCaseSubmissionsExceptionIfNoParametersFound()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions();
+
+            Action act = () => _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            act.Should().Throw<QueryCaseSubmissionsException>()
+                .WithMessage("Provide at minimum one query parameter");
+        }
+
+        [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedFormId()
+        {
+            const string testFormId = "foo";
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedSubmissionState()
+        {
+            var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
+            var submissionStatesRequest = new List<string>() { "in_progress" };
+            var request = TestHelpers.CreateQueryCaseSubmissions(submissionStates: submissionStatesRequest);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsAfterCreatedAtQueriedDate()
+        {
+            var createdAfterTime = DateTime.Now;
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdAfter: createdAfterTime);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfterTime);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsBeforeCreatedAtQueriedDate()
+        {
+            var createdBeforeTime = DateTime.Now;
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdBefore: createdBeforeTime);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBeforeTime);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryGetsFormsUsingAllQueryOptions()
+        {
+            const string testFormId = "foo";
+            var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
+            var submissionStatesRequest = new List<string>() { "in_progress" };
+            var createdBefore = DateTime.Now.AddDays(1);
+            var createdAfter = DateTime.Now.AddDays(-1);
+            var request = TestHelpers.CreateQueryCaseSubmissions(testFormId, submissionStatesRequest, createdBefore, createdAfter);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
+            filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+            filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfter);
+            filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBefore);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
     }
 }
