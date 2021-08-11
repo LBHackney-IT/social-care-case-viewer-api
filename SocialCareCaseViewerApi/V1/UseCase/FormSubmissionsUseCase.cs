@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
         {
-            if (request.FormId == null && request.SubmissionStates == null && request.CreatedAfter != null && request.CreatedBefore != null)
+            if (request.FormId == null && request.SubmissionStates == null && request.CreatedAfter == null && request.CreatedBefore == null)
             {
                 throw new QueryCaseSubmissionsException("Provide at minimum one query parameter");
             }
