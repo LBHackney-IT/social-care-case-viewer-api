@@ -689,12 +689,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
         }
 
         [Test]
@@ -711,12 +711,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
         }
 
         [Test]
@@ -732,12 +732,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
         }
 
         [Test]
@@ -753,12 +753,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
         }
 
         [Test]
@@ -781,12 +781,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
         }
     }
 }

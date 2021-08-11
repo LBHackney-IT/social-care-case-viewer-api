@@ -107,7 +107,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, request.CreatedBefore);
             }
 
-            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter);
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
             return foundSubmission?.Select(s => s.ToDomain().ToResponse());
         }

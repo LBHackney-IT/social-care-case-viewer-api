@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using SocialCareCaseViewerApi.V1.Helpers;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public interface IMongoGateway
@@ -15,6 +17,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<T1> LoadMultipleRecordsByProperty<T1, T2>(string collectionName, string propertyName,
             T2 propertyValue);
         public T1 LoadRecordByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue);
-        public List<T1> LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter);
+        public List<T1> LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter, Pagination? pagination);
     }
 }

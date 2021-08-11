@@ -532,13 +532,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? formId = null,
             IEnumerable<string>? submissionStates = null,
             DateTime? createdBefore = null,
-            DateTime? createdAfter = null)
+            DateTime? createdAfter = null,
+            int page = 0,
+            int size = 100)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
                 .RuleFor(q => q.SubmissionStates, submissionStates)
                 .RuleFor(q => q.CreatedBefore, createdBefore)
-                .RuleFor(q => q.CreatedAfter, createdAfter);
+                .RuleFor(q => q.CreatedAfter, createdAfter)
+                .RuleFor(q => q.Page, page)
+                .RuleFor(q => q.Size, size);
         }
     }
 }
