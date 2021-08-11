@@ -200,7 +200,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .Filter
                 .ElemMatch(x => x.Property2, y => y.Id == id);
 
-            var retrievedObject = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedObject = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             retrievedObject.Count.Should().Be(1);
             retrievedObject[0].Should().BeEquivalentTo(_testObjectForMongo);
@@ -215,13 +215,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .Filter.Empty;
             filter1 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Id, _testObjectForMongo.Id);
             filter1 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Property1, _testObjectForMongo.Property1);
-            var retrievedObject1 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter1);
+            var retrievedObject1 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter1, null);
 
             var filter2 = Builders<TestObjectForMongo>
                 .Filter.Empty;
             filter2 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Id, _testObjectForMongo.Id);
             filter2 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Property1, "invalid-property-name");
-            var retrievedObject2 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter2);
+            var retrievedObject2 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter2, null);
 
             retrievedObject1.Count.Should().Be(1);
             retrievedObject2.Count.Should().Be(0);
@@ -239,23 +239,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.Gte(s => s.TimeProperty, beforeDate);
-            var retrievedAfterCorrect = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedAfterCorrect = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.Gte(s => s.TimeProperty, afterDate);
-            var retrievedAfterWrong = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedAfterWrong = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.Lte(s => s.TimeProperty, beforeDate);
-            var retrievedBeforeWrong = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedBeforeWrong = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.Lte(s => s.TimeProperty, afterDate);
-            var retrievedBeforeCorrect = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedBeforeCorrect = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.Eq(s => s.TimeProperty, _dateTimeValue);
-            var retrievedSameTime = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter);
+            var retrievedSameTime = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
             retrievedAfterCorrect.Count.Should().Be(1);
             retrievedBeforeCorrect.Count.Should().Be(1);

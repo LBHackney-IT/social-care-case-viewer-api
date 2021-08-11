@@ -687,14 +687,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
 
             var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
 
         [Test]
@@ -709,14 +710,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
 
             var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
 
         [Test]
@@ -730,14 +732,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfterTime);
 
             var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
 
         [Test]
@@ -751,14 +754,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBeforeTime);
 
             var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
 
         [Test]
@@ -779,14 +783,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBefore);
 
             var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), null));
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
 
             _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), null), Times.Once);
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
     }
 }

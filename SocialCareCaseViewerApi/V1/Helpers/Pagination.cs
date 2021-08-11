@@ -1,3 +1,5 @@
+using System;
+
 namespace SocialCareCaseViewerApi.V1.Helpers
 
 #nullable enable
