@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("fk_case_status_type_id")]
         [MaxLength(16)]
         public long TypeID { get; set; }
-        public CaseStatusType Type { get; set; } = null!;
+        public CaseStatusType Type { get; set; }
 
         [Column("name")]
         [MaxLength(300)]
