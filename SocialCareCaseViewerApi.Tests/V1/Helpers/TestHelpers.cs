@@ -571,7 +571,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.StartDate, f => startDate)
                 .RuleFor(p => p.EndDate, f => endDate);
         }
-        
+
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
             string? formId = null,
             IEnumerable<string>? submissionStates = null,
