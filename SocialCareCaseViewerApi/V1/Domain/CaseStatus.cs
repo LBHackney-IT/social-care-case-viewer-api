@@ -1,15 +1,12 @@
-using System;
-using SocialCareCaseViewerApi.V1.Infrastructure;
-
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class CaseStatus
     {
-        public long? Id { get; set; } = null!;
-        public string? Type { get; set; } = null!;
-        public string? SubType { get; set; } = null!;
-        public string? StartDate { get; set; } = null!;
+        public long Id { get; set; }
+        public string? Type { get; set; }
+        public string? SubType { get; set; }
+        public string? StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Notes { get; set; }
     }

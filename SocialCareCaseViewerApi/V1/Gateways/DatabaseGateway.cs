@@ -1024,7 +1024,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(cs => cs.SubType)
                 .Include(cs => cs.Type);
 
-            return caseStatuses.ToList();
+            return caseStatuses;
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)

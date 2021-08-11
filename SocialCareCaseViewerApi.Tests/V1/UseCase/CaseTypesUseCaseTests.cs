@@ -1,7 +1,6 @@
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -9,6 +8,7 @@ using System;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {

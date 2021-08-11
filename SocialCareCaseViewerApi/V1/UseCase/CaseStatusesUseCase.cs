@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
-namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
+namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
     {
