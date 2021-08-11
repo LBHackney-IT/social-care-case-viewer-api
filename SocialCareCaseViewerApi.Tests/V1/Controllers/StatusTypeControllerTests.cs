@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCaseStatusesReturns200WhenPersonIsFound()
         {
-            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new SocialCareCaseViewerApi.V1.Boundary.Response.ListCaseStatusesResponse());
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new ListCaseStatusesResponse());
 
             var response = _statusTypeController.ListCaseStatuses(123456789) as ObjectResult;
 

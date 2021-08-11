@@ -564,7 +564,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
 
             return new Faker<CaseStatus>()
-                .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(p => p.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.TypeId, f => typeId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.SubTypeId, f => subtypeId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.Notes, f => notes)

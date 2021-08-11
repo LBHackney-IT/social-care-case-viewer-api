@@ -5,7 +5,6 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -25,11 +24,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void WhenNoMatchingIDReturnsNull()
+        public void WhenNoMatchingIDReturnsEmptyList()
         {
-            var (person, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
             var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
             response.Should().BeEmpty();
+        }
+
+        [Test]
+        public void WhenMatchingIDReturnsCaseStatuses()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
+
+            response.Should().NotBeEmpty();
         }
     }
 }

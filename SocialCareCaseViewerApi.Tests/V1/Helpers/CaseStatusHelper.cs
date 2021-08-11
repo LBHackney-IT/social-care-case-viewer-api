@@ -26,20 +26,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithCaseStatusToDatabase(
           DatabaseContext databaseContext)
         {
-            var person = TestHelpers.CreatePerson();
-
             var caseStatusType = TestHelpers.CreateCaseStatusType();
+            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id);
+            var person = TestHelpers.CreatePerson(3);
+            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, notes: "Testing");
 
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(caseStatusType.Id);
-
-            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, endDate: DateTime.Now, notes: "Testing");
-
-            databaseContext.Persons.Add(person);
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
-
             databaseContext.CaseStatusSubtypes.Add(caseStatusSubtype);
-
+            databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(csus);
 
             databaseContext.SaveChanges();

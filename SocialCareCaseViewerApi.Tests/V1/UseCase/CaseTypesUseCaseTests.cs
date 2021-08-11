@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using System;
+using SocialCareCaseViewerApi.V1.Infrastructure;
+using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
@@ -24,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void WhenCaseStatusIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetCaseStatusExceptionWithMessage()
+        public void WhenPersonIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetCaseStatusExceptionWithMessage()
         {
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusesByPersonId(1234));
 
