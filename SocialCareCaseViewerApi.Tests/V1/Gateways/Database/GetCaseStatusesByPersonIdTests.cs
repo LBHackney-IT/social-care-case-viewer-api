@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void WhenMatchingIDReturnsActiveCaseStatuses()
+        public void WhenMatchingIDAndPastCaseStatusReturnEmptyList()
         {
             var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
 
