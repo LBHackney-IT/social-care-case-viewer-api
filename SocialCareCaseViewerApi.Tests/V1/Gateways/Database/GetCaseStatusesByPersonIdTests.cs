@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using System.Linq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
@@ -42,6 +43,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
 
             response.Should().NotBeEmpty();
+        }
+
+        [Test]
+        public void WhenMatchingIDReturnsActiveCaseStatuses()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
+
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
+
+            response.Should().BeEmpty();
+        }
+
+        [Test]
+        public void WhenMatchingIDReturnsActiveCaseStatusesWhenMultiple()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithMultipleCaseStatusToDatabase(DatabaseContext);
+
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
+
+            response.Count().Should().Be(1);
         }
     }
 }
