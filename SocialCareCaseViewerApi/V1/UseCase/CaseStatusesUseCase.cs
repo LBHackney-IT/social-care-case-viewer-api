@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListCaseStatusesResponse ExecuteGet(long personId, string? endDateString)
+        public ListCaseStatusesResponse ExecuteGet(long personId, string endDateString)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);
 
@@ -31,7 +31,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 var cultureInfo = new CultureInfo("en-GB");
                 endDate = DateTime.ParseExact(endDateString, "dd-MM-yyyy", cultureInfo);
             }
-
 
             var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId, endDate);
 
