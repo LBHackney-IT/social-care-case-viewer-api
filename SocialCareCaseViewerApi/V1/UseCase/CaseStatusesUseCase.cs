@@ -3,6 +3,8 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
+using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
@@ -15,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListCaseStatusesResponse ExecuteGet(long personId)
+        public ListCaseStatusesResponse ExecuteGet(long personId, string endDateString)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);
 
@@ -24,7 +26,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId);
+            var cultureInfo = new CultureInfo("en-GB");
+            var endDate = DateTime.ParseExact(endDateString, "dd-MM-yyyy", cultureInfo);
+
+            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId, endDate);
 
             var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse() };
 

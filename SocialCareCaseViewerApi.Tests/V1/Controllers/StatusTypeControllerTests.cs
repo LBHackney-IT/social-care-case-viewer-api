@@ -29,9 +29,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCaseStatusesReturns200WhenPersonIsFound()
         {
-            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new ListCaseStatusesResponse());
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>(), It.IsAny<string>())).Returns(new ListCaseStatusesResponse());
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as ObjectResult;
+            var response = _statusTypeController.ListCaseStatuses(123456789, null) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
@@ -39,9 +39,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCaseStatuses404WithCorrectErrorMessageWhenPersonIsNotFound()
         {
-            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Throws(new GetCaseStatusesException("Person not found"));
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>(), It.IsAny<string>())).Throws(new GetCaseStatusesException("Person not found"));
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as NotFoundObjectResult;
+            var response = _statusTypeController.ListCaseStatuses(123456789, null) as NotFoundObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Person not found");
@@ -51,9 +51,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void ListCaseStatuses200AndCaseStatusesWhenSuccessful()
         {
             var listRelationShipsResponse = _fixture.Create<ListCaseStatusesResponse>();
-            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(listRelationShipsResponse);
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>(), It.IsAny<string>())).Returns(listRelationShipsResponse);
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as ObjectResult;
+            var response = _statusTypeController.ListCaseStatuses(123456789, null) as ObjectResult;
 
             response?.Value.Should().BeOfType<ListCaseStatusesResponse>();
             response?.Value.Should().BeEquivalentTo(listRelationShipsResponse);
