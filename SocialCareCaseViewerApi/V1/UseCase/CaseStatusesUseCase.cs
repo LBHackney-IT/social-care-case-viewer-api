@@ -27,7 +27,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             var endDate = DateTime.Now;
-            if (endDateString != null){
+            if (endDateString != null)
+            {
                 var cultureInfo = new CultureInfo("en-GB");
                 endDate = DateTime.ParseExact(endDateString, "dd-MM-yyyy", cultureInfo);
             }
