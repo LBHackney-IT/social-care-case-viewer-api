@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
-            
+
 
             var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Today, DateTime.Now);
             response.Should().BeEmpty();

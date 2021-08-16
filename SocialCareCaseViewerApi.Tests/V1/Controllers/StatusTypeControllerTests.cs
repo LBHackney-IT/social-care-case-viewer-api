@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new GetCaseStatusesException("Person not found"));
 
-            var response = _statusTypeController.ListCaseStatuses(123456789,  DateTime.Today.ToString("dd-MM-yyyy"), DateTime.Today.ToString("dd-MM-yyyy")) as NotFoundObjectResult;
+            var response = _statusTypeController.ListCaseStatuses(123456789, DateTime.Today.ToString("dd-MM-yyyy"), DateTime.Today.ToString("dd-MM-yyyy")) as NotFoundObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Person not found");
