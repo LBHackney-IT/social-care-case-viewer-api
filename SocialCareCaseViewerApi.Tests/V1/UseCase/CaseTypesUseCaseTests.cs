@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var caseStatusType = TestHelpers.CreateCaseStatusType();
             var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id);
             var person = TestHelpers.CreatePerson();
-            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, notes: "Testing");
+            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today, notes: "Testing");
 
             var response = new List<CaseStatus>() { csus };
 

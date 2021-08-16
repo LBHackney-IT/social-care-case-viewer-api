@@ -1021,6 +1021,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public IEnumerable<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId)
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
+                .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
                 .Include(cs => cs.SubType)
                 .Include(cs => cs.Type);
 
