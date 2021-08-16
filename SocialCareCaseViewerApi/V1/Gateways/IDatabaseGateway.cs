@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
-        IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId, DateTime startDate, DateTime endDate);
+        IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId);
         void CreateRequestAudit(CreateRequestAuditRequest request);
     }
 }

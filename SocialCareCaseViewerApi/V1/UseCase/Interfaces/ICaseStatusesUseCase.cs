@@ -4,6 +4,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface ICaseStatusesUseCase
     {
-        ListCaseStatusesResponse ExecuteGet(long personId, string startDate, string endDate);
+        ListCaseStatusesResponse ExecuteGet(long personId);
     }
 }

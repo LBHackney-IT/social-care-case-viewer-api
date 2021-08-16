@@ -1018,11 +1018,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
-        public IEnumerable<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId, DateTime startDate, DateTime endDate)
+        public IEnumerable<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId)
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
-                .Where(cs => cs.EndDate == null || cs.EndDate >= endDate)
-                .Where(cs => cs.StartDate <= startDate)
+                .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
                 .Include(cs => cs.SubType)
                 .Include(cs => cs.Type);
 

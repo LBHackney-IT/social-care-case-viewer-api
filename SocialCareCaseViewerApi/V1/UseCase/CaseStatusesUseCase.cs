@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public ListCaseStatusesResponse ExecuteGet(long personId, string startDateString, string endDateString)
+        public ListCaseStatusesResponse ExecuteGet(long personId)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);
 
@@ -26,20 +26,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var endDate = DateTime.Now;
-            if (endDateString != null)
-            {
-                var cultureInfo = new CultureInfo("en-GB");
-                endDate = DateTime.ParseExact(endDateString, "dd-MM-yyyy", cultureInfo);
-            }
-            var startDate = DateTime.Now;
-            if (startDateString != null)
-            {
-                var cultureInfo = new CultureInfo("en-GB");
-                startDate = DateTime.ParseExact(startDateString, "dd-MM-yyyy", cultureInfo);
-            }
-
-            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId, startDate, endDate);
+            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId);
 
             var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse() };
 
