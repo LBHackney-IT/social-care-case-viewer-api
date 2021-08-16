@@ -7,7 +7,6 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using AutoFixture;
-using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
 {

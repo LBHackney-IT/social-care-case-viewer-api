@@ -3,8 +3,6 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using System;
-using System.Globalization;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {

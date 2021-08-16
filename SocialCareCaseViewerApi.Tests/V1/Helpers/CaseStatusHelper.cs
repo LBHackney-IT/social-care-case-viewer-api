@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using Bogus;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {

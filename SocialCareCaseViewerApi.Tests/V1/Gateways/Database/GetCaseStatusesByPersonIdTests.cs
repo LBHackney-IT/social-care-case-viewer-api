@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Moq;
-using System;
 using System.Linq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
