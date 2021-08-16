@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
             var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id, id: 20);
             var person = TestHelpers.CreatePerson(3);
-            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Now, notes: "Testing");
+            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today, notes: "Testing");
 
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);

@@ -31,8 +31,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
+            
 
-            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Now);
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Today, DateTime.Now);
             response.Should().BeEmpty();
         }
 
@@ -41,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             var (_, person) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
-            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Now);
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Today, DateTime.Now);
 
             response.Should().NotBeEmpty();
         }
@@ -51,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
 
-            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Now);
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Today, DateTime.Now);
 
             response.Should().BeEmpty();
         }
@@ -61,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             var (_, person) = CaseStatusHelper.SavePersonWithMultipleCaseStatusToDatabase(DatabaseContext);
 
-            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Now);
+            var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id, DateTime.Today, DateTime.Now);
 
             response.Count().Should().Be(1);
         }

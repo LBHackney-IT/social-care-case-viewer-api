@@ -29,11 +29,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId:long}/casestatuses")]
-        public IActionResult ListCaseStatuses(long personId, [FromQuery(Name = "end_date")] string? end_date)
+        public IActionResult ListCaseStatuses(long personId, 
+            [FromQuery(Name = "start_date")] string? startDate,
+            [FromQuery(Name = "end_date")] string? endDate)
         {
             try
             {
-                return Ok(_caseStatusesUseCase.ExecuteGet(personId, end_date));
+                return Ok(_caseStatusesUseCase.ExecuteGet(personId, startDate, endDate));
             }
             catch (GetCaseStatusesException ex)
             {
