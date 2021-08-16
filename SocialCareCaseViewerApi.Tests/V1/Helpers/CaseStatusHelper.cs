@@ -31,11 +31,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.CaseStatusSubtypes.Add(caseStatusSubtype);
             databaseContext.Persons.Add(person);
-            databaseContext.CaseStatuses.Add(csus);
+            databaseContext.CaseStatuses.Add(caseStatus);
 
             databaseContext.SaveChanges();
 
-            return (csus, person);
+            return (caseStatus, person);
         }
 
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithPastCaseStatusToDatabase(
