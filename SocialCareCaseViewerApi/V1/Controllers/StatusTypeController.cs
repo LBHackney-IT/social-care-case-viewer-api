@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status not found</response>
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("residents/{personId:long}/casestatuses/{endDate:string}")]
+        [Route("residents/{personId:long}/casestatuses?{endDate:string}")]
         public IActionResult ListCaseStatuses(long personId, string endDate)
         {
             try
