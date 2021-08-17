@@ -32,8 +32,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<RequestAudit> RequestAudits { get; set; }
         public DbSet<PersonImport> PersonImport { get; set; }
         public DbSet<CaseStatus> CaseStatuses { get; set; }
+        public DbSet<CaseStatusFieldOption> CaseStatusFieldOptions { get; set; }
         public DbSet<CaseStatusType> CaseStatusTypes { get; set; }
-        public DbSet<CaseStatusSubtype> CaseStatusSubtypes { get; set; }
+        public DbSet<CaseStatusTypeField> CaseStatusTypeFields { get; set; }
+        public DbSet<CaseStatusTypeFieldOption> CaseStatusTypeFieldOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

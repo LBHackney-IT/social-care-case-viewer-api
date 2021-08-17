@@ -5,7 +5,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class CaseStatusHelper
     {
-        public static (CaseStatusType, CaseStatusSubtype) SaveCaseStatusTypeToDatabase(
+        public static (CaseStatusType, CaseStatusTypeField) SaveCaseStatusTypeToDatabase(
             DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType();
@@ -23,13 +23,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id, id: 20);
             var person = TestHelpers.CreatePerson(3);
-            var caseStatus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today, notes: "Testing");
+            var caseStatus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today, notes: "Testing");
 
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
-            databaseContext.CaseStatusSubtypes.Add(caseStatusSubtype);
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(caseStatus);
 
@@ -42,12 +40,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id, id: 20);
             var person = TestHelpers.CreatePerson(3);
-            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
+            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
-            databaseContext.CaseStatusSubtypes.Add(caseStatusSubtype);
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(csus);
 
@@ -60,14 +56,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusSubtype = TestHelpers.CreateCaseStatusSubtype(typeId: caseStatusType.Id, id: 20);
             var person = TestHelpers.CreatePerson(3);
-            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
-            var csus2 = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, subtypeId: caseStatusSubtype.Id, startDate: DateTime.Today.AddDays(-1), notes: "Testing");
+            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
+            var csus2 = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-1), notes: "Testing");
 
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
-            databaseContext.CaseStatusSubtypes.Add(caseStatusSubtype);
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(csus);
             databaseContext.CaseStatuses.Add(csus2);

@@ -541,13 +541,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
 
-        public static CaseStatusSubtype CreateCaseStatusSubtype(
+        public static CaseStatusTypeField CreateCaseStatusSubtype(
             long typeId,
             long? id = null,
             string? typeName = "N8",
             string? typeDescription = "Some description")
         {
-            return new Faker<CaseStatusSubtype>()
+            return new Faker<CaseStatusTypeField>()
                 .RuleFor(css => css.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(css => css.TypeID, f => typeId)
                 .RuleFor(css => css.Name, f => typeName)
@@ -557,7 +557,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseStatus CreateCaseStatus(
             long? personId = null,
             long? typeId = null,
-            long? subtypeId = null,
             string? notes = null,
             DateTime? startDate = null,
             DateTime? endDate = null)
@@ -566,7 +565,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseStatus>()
                 .RuleFor(p => p.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.TypeId, f => typeId ?? f.UniqueIndex + 1)
-                .RuleFor(p => p.SubTypeId, f => subtypeId ?? f.UniqueIndex + 1)
                 .RuleFor(p => p.Notes, f => notes)
                 .RuleFor(p => p.StartDate, f => startDate)
                 .RuleFor(p => p.EndDate, f => endDate);

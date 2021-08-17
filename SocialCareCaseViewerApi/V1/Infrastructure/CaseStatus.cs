@@ -22,11 +22,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long TypeId { get; set; }
         public CaseStatusType Type { get; set; }
 
-        [Column("fk_case_status_subtype_id")]
-        [MaxLength(16)]
-        public long SubTypeId { get; set; }
-        public CaseStatusSubtype SubType { get; set; }
-
         [Column("start_date")]
         public DateTime StartDate { get; set; }
 

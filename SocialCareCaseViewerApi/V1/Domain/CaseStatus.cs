@@ -5,7 +5,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
     {
         public long Id { get; set; }
         public string? Type { get; set; }
-        public string? SubType { get; set; }
         public string? StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Notes { get; set; }
