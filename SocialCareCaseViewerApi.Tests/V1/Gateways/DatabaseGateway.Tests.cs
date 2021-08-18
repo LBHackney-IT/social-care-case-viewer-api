@@ -18,6 +18,8 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
+using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
+using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;

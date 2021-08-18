@@ -70,7 +70,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
 
-            response.Fields.First().Type.Name.Should().Be("Test");
             response.Fields.First().Name.Should().Be("someThing");
             response.Fields.First().Options.First().Name.Should().Be("One");
             response.Fields.First().Options.Last().Name.Should().Be("Two");

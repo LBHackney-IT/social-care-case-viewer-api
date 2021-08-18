@@ -7,6 +7,10 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
+    [ApiController]
+    [Route("api/v1")]
+    [Produces("application/json")]
+    [ApiVersion("1.0")]
     public class CaseStatusTypeFieldsController : BaseController
     {
         private readonly IGetCaseStatusFieldsUseCase _getCaseStatusFieldsUseCase;
@@ -23,11 +27,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status type not found, or no fields exist</response>
         [ProducesResponseType(typeof(GetCaseStatusFieldsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("/case-status/form-options/{type}")]
+        [Route("/case-status/form-options/{type:alpha}")]
         public IActionResult GetCaseStatusTypeFields(string type)
         {
             GetCaseStatusFieldsResponse response =
-                _getCaseStatusFieldsUseCase.Execute(new GetCaseStatusFieldsRequest() { Type = type });
+                _getCaseStatusFieldsUseCase.Execute(new GetCaseStatusFieldsRequest { Type = type });
 
             if (response.Fields.Any())
             {

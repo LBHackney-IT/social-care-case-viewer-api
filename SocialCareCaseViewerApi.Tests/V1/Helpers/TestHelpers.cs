@@ -14,6 +14,7 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
+using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers

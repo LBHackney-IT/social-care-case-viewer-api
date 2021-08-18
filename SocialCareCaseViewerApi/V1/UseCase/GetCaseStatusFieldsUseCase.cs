@@ -1,12 +1,14 @@
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class GetCaseStatusFieldsUseCase
+    public class GetCaseStatusFieldsUseCase : IGetCaseStatusFieldsUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
         public GetCaseStatusFieldsUseCase(IDatabaseGateway databaseGateway)
         {
@@ -15,9 +17,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public GetCaseStatusFieldsResponse Execute(GetCaseStatusFieldsRequest request)
         {
-            return new GetCaseStatusFieldsResponse()
+            var caseStatusTypeFields = _databaseGateway.GetCaseStatusFieldsByType(request.Type);
+
+            return new GetCaseStatusFieldsResponse
             {
-                Fields = _databaseGateway.GetCaseStatusFieldsByType(request.Type)
+                Fields = caseStatusTypeFields.ToResponse()
             };
         }
     }
