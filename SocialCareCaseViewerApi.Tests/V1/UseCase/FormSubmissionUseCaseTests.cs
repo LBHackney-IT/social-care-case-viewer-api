@@ -793,6 +793,74 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway.Verify(x =>
                 x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
+
+        [Test]
+        public void ExecuteGetByQueryStripsEditHistoryIfIncludeEditHistoryIsFalse()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: false);
+            var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+
+            caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns(caseSubmissions);
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response?.First()?.EditHistory?.Count.Should().Be(null);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryContainsEditHistoryIfIncludeEditHistoryIsTrue()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: true);
+            var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+
+            caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns(caseSubmissions);
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response?.First()?.EditHistory?.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryStripsFormAnswersIfIncludeFormAnswersIsFalse()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeFormAnswers: false);
+            var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+
+            caseSubmissions.First()?.FormAnswers.Count.Should().Be(1);
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns(caseSubmissions);
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response?.First()?.FormAnswers?.Count.Should().Be(null);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryContainsFormAnswersIfIncludeFormAnswersIsTrue()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeFormAnswers: true);
+            var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+
+            caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns(caseSubmissions);
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response?.First()?.FormAnswers?.Count.Should().Be(1);
+        }
     }
 }
 

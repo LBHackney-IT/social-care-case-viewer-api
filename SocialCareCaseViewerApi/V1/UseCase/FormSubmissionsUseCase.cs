@@ -118,7 +118,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var worker = GetSanitisedWorker(request.EditedBy);
 
-            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
+            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission?>(_collectionName, ObjectId.Parse(submissionId));
             if (updatedSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
