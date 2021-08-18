@@ -549,7 +549,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(css => css.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(css => css.TypeID, f => typeId)
+                .RuleFor(css => css.TypeId, f => typeId)
                 .RuleFor(css => css.Name, f => typeName)
                 .RuleFor(css => css.Description, f => typeDescription);
         }

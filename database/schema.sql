@@ -702,3 +702,6 @@ ALTER TABLE IF EXISTS dbo.sccv_person_case_status
   ADD CONSTRAINT fk_case_status_type
     FOREIGN KEY (fk_case_status_type_id)
       REFERENCES dbo.sccv_case_status_type (id);
+
+ALTER TABLE IF EXISTS dbo.sccv_case_status_type
+  ALTER COLUMN name TYPE varchar(256) USING name::varchar(256);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,5 +19,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("description")]
         [MaxLength(16)]
         public string Description { get; set; }
+
+        [InverseProperty("Type")]
+        public List<CaseStatusTypeField> Fields { get; set; }
     }
 }

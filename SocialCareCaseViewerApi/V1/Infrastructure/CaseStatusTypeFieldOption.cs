@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("fk_sccv_case_status_field_id")]
         [MaxLength(16)]
-        public long FieldID { get; set; }
+        public long TypeFieldId { get; set; }
         public CaseStatusTypeField TypeField { get; set; }
 
         [Column("name")]

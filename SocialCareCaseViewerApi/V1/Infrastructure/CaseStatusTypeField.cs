@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,11 +12,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Key]
         public long Id { get; set; }
 
-        [Column("fk_case_status_type_id")]
-        [MaxLength(16)]
-        public long TypeID { get; set; }
-        public CaseStatusType Type { get; set; }
-
         [Column("name")]
         [MaxLength(256)]
         public string Name { get; set; }
@@ -23,5 +19,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("description")]
         [MaxLength(256)]
         public string Description { get; set; }
+
+        [Column("fk_case_status_type_id")]
+        [MaxLength(16)]
+        public long TypeId { get; set; }
+        public CaseStatusType Type { get; set; }
+
+        [InverseProperty("TypeField")]
+        public List<CaseStatusTypeFieldOption> Options { get; set; }
     }
 }
