@@ -23,6 +23,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("includeFormAnswers")]
         public bool IncludeFormAnswers { get; set; } = false;
 
+        [JsonPropertyName("includeFormAnswers")]
+        public bool IncludeEditHistory { get; set; } = false;
+
         [JsonPropertyName("page")]
         public int Page { get; set; } = 1;
 

@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
-            return foundSubmission?.Select(s => s.ToDomain().ToResponse());
+            return foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory).ToResponse());
         }
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)

@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission, bool includeAllFields = true)
+        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission, bool includeFormAnswers = true, bool includeEditHistory = true)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
@@ -156,16 +156,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PanelApprovedAt = caseSubmission.PanelApprovedAt,
                 PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToDomain(false),
                 RejectionReason = caseSubmission.RejectionReason,
-                EditHistory = includeAllFields ? caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                EditHistory = includeEditHistory ? caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
                 }).ToList() : null,
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
-                FormAnswers = includeAllFields ? caseSubmission.FormAnswers : null,
+                FormAnswers = includeFormAnswers ? caseSubmission.FormAnswers : null,
                 Title = caseSubmission.Title,
-                LastEdited = caseSubmission.EditHistory.Last().EditTime,                
-                CompletedSteps = caseSubmission.FormAnswers.Count()               
+                LastEdited = caseSubmission.EditHistory.Last().EditTime,
+                CompletedSteps = caseSubmission.FormAnswers.Count
             };
         }
 
