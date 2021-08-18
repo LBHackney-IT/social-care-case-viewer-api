@@ -586,7 +586,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.CreatedBefore, createdBefore)
                 .RuleFor(q => q.CreatedAfter, createdAfter)
                 .RuleFor(q => q.Page, page)
-                .RuleFor(q => q.Size, size);
+                .RuleFor(q => q.Size, size)
+                .RuleFor(q => q.IncludeEditHistory, f => f.Random.Bool())
+                .RuleFor(q => q.IncludeFormAnswers, f => f.Random.Bool());
         }
     }
 }

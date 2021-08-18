@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -220,6 +222,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var response = _formSubmissionController.EditSubmissionAnswers(createdSubmission.SubmissionId.ToString(), stepId, updateFormSubmissionAnswersRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void GetSubmissionByQueryParametersReturnsListOfCaseSubmissionsWith200Status()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: "any-form-id");
+            var caseSubmissions =
+                new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission().ToDomain().ToResponse() };
+            _submissionsUseCaseMock.Setup(x => x.ExecuteGetByQuery(request)).Returns(caseSubmissions);
+
+            var response = _formSubmissionController.GetSubmissionByQueryParameters(request) as ObjectResult;
+
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(caseSubmissions);
+        }
+
+        [Test]
+        public void GetSubmissionByQueryParametersReturns400WhenQueryCaseSubmissionsExceptionThrown()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: "any-form-id");
+            const string errorMessage = "invalid query";
+            _submissionsUseCaseMock.Setup(x => x.ExecuteGetByQuery(request))
+                .Throws(new QueryCaseSubmissionsException(errorMessage));
+
+            var response = _formSubmissionController.GetSubmissionByQueryParameters(request) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
         }
     }
