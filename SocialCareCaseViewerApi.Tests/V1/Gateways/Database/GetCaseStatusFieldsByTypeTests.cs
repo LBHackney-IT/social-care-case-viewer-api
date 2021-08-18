@@ -37,32 +37,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WhenASingleFieldExistsForType()
         {
-            var caseStatusType = new CaseStatusType()
-            {
-                Description = "Test Type",
-                Name = "Test",
-                Fields = new List<CaseStatusTypeField>()
-                {
-                    new CaseStatusTypeField()
-                    {
-                        Description = "Something",
-                        Name = "someThing",
-                        Options = new List<CaseStatusTypeFieldOption>()
-                        {
-                            new CaseStatusTypeFieldOption()
-                            {
-                                Name = "One", Description = "The first option"
-                            },
-                            new CaseStatusTypeFieldOption()
-                            {
-                                Name = "Two", Description = "The second option"
-                            }
-                        }
-                    }
-                }
-            };
+            var caseStatusType = new CaseStatusType() { Name = "Test", Description = "Test Type" };
             DatabaseContext.CaseStatusTypes.Add(caseStatusType);
 
+            var caseStatusTypeFields = DatabaseGatewayTests.GetValidCaseStatusTypeFields(caseStatusType);
+            foreach (CaseStatusTypeField caseStatusTypeField in caseStatusTypeFields)
+            {
+                DatabaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
+            }
             DatabaseContext.SaveChanges();
 
             var response = _databaseGateway.GetCaseStatusFieldsByType("Test");

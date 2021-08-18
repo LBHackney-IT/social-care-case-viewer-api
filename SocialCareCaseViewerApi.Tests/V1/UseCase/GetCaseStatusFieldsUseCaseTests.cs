@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -53,6 +54,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
 
             response.Fields.Should().BeEmpty();
+        }
+
+        [Test]
+        public void ExecuteReturnsFieldsWhenCaseStatusTypeFound()
+        {
+            GetCaseStatusFieldsRequest request = GetRequestForType("type");
+
+            _mockDataBaseGateway.Setup(x => x.GetCaseStatusFieldsByType(request.Type))
+                .Returns(DatabaseGatewayTests.GetValidCaseStatusTypeFields(new CaseStatusType()
+                {
+                    Name = "Test",
+                    Description = "Test Type"
+                }));
+
+            GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
+
+            response.Fields.First().Type.Name.Should().Be("Test");
+            response.Fields.First().Name.Should().Be("someThing");
+            response.Fields.First().Options.First().Name.Should().Be("One");
+            response.Fields.First().Options.Last().Name.Should().Be("Two");
         }
     }
 }

@@ -1641,5 +1641,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
                 .RuleFor(p => p.OtherNames, otherNames);
         }
+
+        public static IEnumerable<CaseStatusTypeField> GetValidCaseStatusTypeFields(CaseStatusType caseStatusType)
+        {
+            return new List<CaseStatusTypeField>()
+            {
+                new CaseStatusTypeField()
+                {
+                    Description = "Something",
+                    Name = "someThing",
+                    Type = caseStatusType,
+                    Options = new List<CaseStatusTypeFieldOption>()
+                    {
+                        new CaseStatusTypeFieldOption() { Name = "One", Description = "The first option" },
+                        new CaseStatusTypeFieldOption() { Name = "Two", Description = "The second option" }
+                    }
+                }
+            };
+        }
     }
 }
