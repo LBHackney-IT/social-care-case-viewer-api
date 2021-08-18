@@ -1027,7 +1027,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatuses;
         }
 
-        public IEnumerable<CaseStatusTypeField> GetCaseStatusFieldsByType (string type)
+        public IEnumerable<CaseStatusTypeField> GetCaseStatusFieldsByType(string type)
         {
             var response = _databaseContext.CaseStatusTypes
                 .Where(cs => cs.Name == type)
