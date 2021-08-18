@@ -242,7 +242,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 }).ToList(),
                 SubmissionState = caseSubmission.SubmissionState,
                 FormAnswers = caseSubmission.FormAnswers,
-                Title = caseSubmission.Title
+                Title = caseSubmission.Title,
+                LastEdited = caseSubmission.LastEdited?.ToString("O"),
+                CompletedSteps =caseSubmission.CompletedSteps
+
             };
         }
 

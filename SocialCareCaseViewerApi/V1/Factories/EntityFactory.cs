@@ -163,7 +163,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 }).ToList() : null,
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
                 FormAnswers = includeAllFields ? caseSubmission.FormAnswers : null,
-                Title = caseSubmission.Title
+                Title = caseSubmission.Title,
+                LastEdited = caseSubmission.EditHistory.Last().EditTime,                
+                CompletedSteps = caseSubmission.FormAnswers.Count()               
             };
         }
 
