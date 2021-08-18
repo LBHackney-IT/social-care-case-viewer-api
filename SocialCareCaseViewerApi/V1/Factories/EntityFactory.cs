@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission)
+        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission, bool includeAllFields = true)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
@@ -156,13 +156,13 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PanelApprovedAt = caseSubmission.PanelApprovedAt,
                 PanelApprovedBy = caseSubmission.PanelApprovedBy?.ToDomain(false),
                 RejectionReason = caseSubmission.RejectionReason,
-                EditHistory = caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
+                EditHistory = includeAllFields ? caseSubmission.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,
                     Worker = e.Worker.ToDomain(false)
-                }).ToList(),
+                }).ToList() : null,
                 SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
-                FormAnswers = caseSubmission.FormAnswers,
+                FormAnswers = includeAllFields ? caseSubmission.FormAnswers : null,
                 Title = caseSubmission.Title
             };
         }

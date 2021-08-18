@@ -22,14 +22,18 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? RejectionReason { get; set; }
         public List<Person> Residents { get; set; } = null!;
         public List<WorkerResponse> Workers { get; set; } = null!;
-        public List<EditHistory<WorkerResponse>> EditHistory { get; set; } = null!;
+        public List<EditHistory<WorkerResponse>>? EditHistory { get; set; } = null!;
         public string SubmissionState { get; set; } = null!;
         public string? Title { get; set; }
 
         // outer hashset string represents step id for form
         // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
         // either string, string[] or List<Dictionary<string,string>>
-        public Dictionary<string, string> FormAnswers { get; set; } = null!;
+        public Dictionary<string, string>? FormAnswers { get; set; } = null!;
+
+        public string? LastEdited { get; set; }
+
+        public int? CompletedSteps { get; set; }
 
         public override int GetHashCode()
         {

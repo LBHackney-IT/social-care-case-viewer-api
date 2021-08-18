@@ -20,6 +20,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("createdBefore")]
         public DateTime? CreatedBefore { get; set; }
 
+        [JsonPropertyName("includeFormAnswers")]
+        public bool IncludeFormAnswers { get; set; } = false;
+
         [JsonPropertyName("page")]
         public int Page { get; set; } = 1;
 

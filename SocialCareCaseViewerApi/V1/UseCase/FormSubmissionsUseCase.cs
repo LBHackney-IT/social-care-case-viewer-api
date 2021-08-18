@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var foundSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
-            return foundSubmission?.ToDomain().ToResponse();
+            return foundSubmission.ToDomain().ToResponse();
         }
 
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
