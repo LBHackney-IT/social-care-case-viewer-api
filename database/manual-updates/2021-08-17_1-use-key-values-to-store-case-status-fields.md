@@ -49,16 +49,16 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_case_status_field_option
 
 INSERT INTO dbo.sccv_case_status_field_option(fk_sccv_case_status_field_id, name, description)
 VALUES
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N1', 'Abuse or neglect'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N2', 'Child’s disability'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N3', 'Parental disability or illness'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N4', 'Family in acute stress'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N5', 'Family dysfunction'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N6', 'Socially unacceptable behaviour'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N7', 'Low income'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N8', 'Absent parenting'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N9', 'Cases other than children in need'),
-    ((select id from dbo.sccv_case_status_field where name ilike 'subtype'), 'N0', 'Not stated');
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N1', 'Abuse or neglect'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N2', 'Child’s disability'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N3', 'Parental disability or illness'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N4', 'Family in acute stress'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N5', 'Family dysfunction'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N6', 'Socially unacceptable behaviour'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N7', 'Low income'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N8', 'Absent parenting'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N9', 'Cases other than children in need'),
+    ((select id from dbo.sccv_case_status_field where name ilike 'placementReason'), 'N0', 'Not stated');
 
 CREATE TABLE IF NOT EXISTS dbo.sccv_person_case_status_field_option
 (
