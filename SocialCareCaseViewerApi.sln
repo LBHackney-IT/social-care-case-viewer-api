@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialCareCaseViewerApi.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDBImport", "MongoDBImport\MongoDBImport.csproj", "{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlertsHandlerLambda", "AlertsHandlerLambda\AlertsHandlerLambda.csproj", "{43D7A15A-4A50-4F3A-AB4D-A6920E540D5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlertsHandlerLambda.Tests", "AlertsHandlerLambda.Tests\AlertsHandlerLambda.Tests.csproj", "{C554DDD2-44F2-4A15-BABB-B17876E94E02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3CADDC5-0BA8-457C-ABD4-CE56F9092A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43D7A15A-4A50-4F3A-AB4D-A6920E540D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43D7A15A-4A50-4F3A-AB4D-A6920E540D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43D7A15A-4A50-4F3A-AB4D-A6920E540D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43D7A15A-4A50-4F3A-AB4D-A6920E540D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C554DDD2-44F2-4A15-BABB-B17876E94E02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C554DDD2-44F2-4A15-BABB-B17876E94E02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C554DDD2-44F2-4A15-BABB-B17876E94E02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C554DDD2-44F2-4A15-BABB-B17876E94E02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
