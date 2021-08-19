@@ -1027,14 +1027,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatuses;
         }
 
-        public IEnumerable<Infrastructure.CaseStatusTypeField> GetCaseStatusFieldsByType(string type)
+        public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
         {
             var response = _databaseContext.CaseStatusTypes
                 .Where(cs => cs.Name == type)
                 .Include(cs => cs.Fields)
                 .ThenInclude(sf => sf.Options);
 
-            return response.FirstOrDefault()?.Fields ?? Enumerable.Empty<Infrastructure.CaseStatusTypeField>();
+            return response.FirstOrDefault();
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)

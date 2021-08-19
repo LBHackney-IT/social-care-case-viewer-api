@@ -29,30 +29,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void WhenNoFieldsExistForType()
         {
-            var response = _databaseGateway.GetCaseStatusFieldsByType("non-existent");
+            var response = _databaseGateway.GetCaseStatusTypeWithFields("non-existent");
 
-            response.Should().BeEmpty();
+            response.Should().BeNull();
         }
 
         [Test]
         public void WhenASingleFieldExistsForType()
         {
-            var caseStatusType = new CaseStatusType() { Name = "Test", Description = "Test Type" };
+            var caseStatusType = DatabaseGatewayTests.GetValidCaseStatusTypeWithFields("Test");
             DatabaseContext.CaseStatusTypes.Add(caseStatusType);
-
-            var caseStatusTypeFields = DatabaseGatewayTests.GetValidCaseStatusTypeFields(caseStatusType);
-            foreach (CaseStatusTypeField caseStatusTypeField in caseStatusTypeFields)
-            {
-                DatabaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
-            }
             DatabaseContext.SaveChanges();
 
-            var response = _databaseGateway.GetCaseStatusFieldsByType("Test");
+            var response = _databaseGateway.GetCaseStatusTypeWithFields("Test");
 
-            response.First().Type.Name.Should().Be("Test");
-            response.First().Name.Should().Be("someThing");
-            response.First().Options.First().Name.Should().Be("One");
-            response.First().Options.Last().Name.Should().Be("Two");
+            response.Name.Should().Be("Test");
+            response.Fields.First().Name.Should().Be("someThing");
+            response.Fields.First().Options.First().Name.Should().Be("One");
+            response.Fields.First().Options.Last().Name.Should().Be("Two");
         }
     }
 }

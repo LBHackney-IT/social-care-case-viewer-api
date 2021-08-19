@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -11,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.Tests.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using SocialCareCaseViewerApi.V1.UseCase;
 using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Domain.CaseStatusTypeField;
 using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Domain.CaseStatusTypeFieldOption;
 
@@ -33,12 +33,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetCaseStatusTypeFieldsByTypeReturns200WhenCaseStatusTypeIsFound()
         {
-            var caseStatusType = new CaseStatusType() { Name = "Test", Description = "Test Type" };
+            CaseStatusType caseStatusType = DatabaseGatewayTests.GetValidCaseStatusTypeWithFields("Test");
 
             _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
                 .Returns(new GetCaseStatusFieldsResponse()
                 {
-                    Fields = DatabaseGatewayTests.GetValidCaseStatusTypeFields(caseStatusType).ToResponse()
+                    Name = caseStatusType.Name,
+                    Description = caseStatusType.Description,
+                    Fields = caseStatusType.Fields.ToResponse()
                 });
 
             var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields("Test") as ObjectResult;
@@ -46,6 +48,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(new GetCaseStatusFieldsResponse
             {
+                Description = "Test Type",
+                Name = "Test",
                 Fields = new List<CaseStatusTypeField>
                 {
                     new CaseStatusTypeField
@@ -71,16 +75,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetCaseStatusTypeFieldsByTypeReturns404WhenCaseStatusTypeIsNotFound()
         {
-
             _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
-                .Returns(new GetCaseStatusFieldsResponse()
-                {
-                    Fields = Enumerable.Empty<CaseStatusTypeField>()
-                });
+                .Throws<CaseStatusNotFoundException>();
 
-            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields("Test") as ObjectResult;
+            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields("NonExistent") as ObjectResult;
 
             response?.StatusCode.Should().Be(404);
+            response?.Value.Should().Be("Case Status Type does not exist.");
         }
     }
 }

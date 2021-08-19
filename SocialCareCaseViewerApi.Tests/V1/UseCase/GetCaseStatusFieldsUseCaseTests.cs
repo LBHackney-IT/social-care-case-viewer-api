@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
@@ -38,9 +39,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteCallsDatabaseGateway()
         {
             GetCaseStatusFieldsRequest request = GetRequestForType("type");
+            _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
+                .Returns(DatabaseGatewayTests.GetValidCaseStatusTypeWithFields("type"));
+
             _getCaseStatusFieldsUseCase.Execute(request);
 
-            _mockDataBaseGateway.Verify(x => x.GetCaseStatusFieldsByType("type"));
+            _mockDataBaseGateway.Verify(x => x.GetCaseStatusTypeWithFields("type"));
         }
 
         [Test]
@@ -48,12 +52,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             GetCaseStatusFieldsRequest request = GetRequestForType("type");
 
-            _mockDataBaseGateway.Setup(x => x.GetCaseStatusFieldsByType(request.Type))
-                .Returns(Enumerable.Empty<CaseStatusTypeField>());
+            _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
+                .Returns((CaseStatusType) null);
 
-            GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
+            Action act = () => _getCaseStatusFieldsUseCase.Execute(request);
 
-            response.Fields.Should().BeEmpty();
+            act.Should().Throw<CaseStatusNotFoundException>()
+                .WithMessage("Case Status Type does not exist.");
         }
 
         [Test]
@@ -61,12 +66,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             GetCaseStatusFieldsRequest request = GetRequestForType("type");
 
-            _mockDataBaseGateway.Setup(x => x.GetCaseStatusFieldsByType(request.Type))
-                .Returns(DatabaseGatewayTests.GetValidCaseStatusTypeFields(new CaseStatusType()
-                {
-                    Name = "Test",
-                    Description = "Test Type"
-                }));
+            CaseStatusType caseStatusType = DatabaseGatewayTests.GetValidCaseStatusTypeWithFields("type");
+
+            _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
+                .Returns(caseStatusType);
 
             GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
 

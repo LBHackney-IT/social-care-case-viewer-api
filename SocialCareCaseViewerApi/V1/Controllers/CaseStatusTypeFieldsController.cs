@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -30,15 +31,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("/case-status/form-options/{type:alpha}")]
         public IActionResult GetCaseStatusTypeFields(string type)
         {
-            GetCaseStatusFieldsResponse response =
-                _getCaseStatusFieldsUseCase.Execute(new GetCaseStatusFieldsRequest { Type = type });
-
-            if (response.Fields.Any())
+            try
             {
-                return Ok(response);
+                return Ok(_getCaseStatusFieldsUseCase.Execute(new GetCaseStatusFieldsRequest { Type = type }));
             }
-
-            return NotFound("There are no fields for this type");
+            catch (CaseStatusNotFoundException exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }
