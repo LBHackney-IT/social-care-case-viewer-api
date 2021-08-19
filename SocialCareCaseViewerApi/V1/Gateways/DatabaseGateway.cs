@@ -1022,7 +1022,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.Type);
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField);
 
             return caseStatuses;
         }

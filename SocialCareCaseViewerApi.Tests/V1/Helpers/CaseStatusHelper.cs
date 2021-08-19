@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -9,11 +11,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
             var person = TestHelpers.CreatePerson(3);
-            var caseStatus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today, notes: "Testing");
+            var caseStatus = TestHelpers.CreateCaseStatus(
+                personId: 3,
+                typeId: caseStatusType.Id,
+                startDate: DateTime.Today,
+                notes: "Testing",
+                options: new List<CaseStatusTypeFieldOption>() {caseStatusTypeField.Options.First()}
+            );
 
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
+            databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(caseStatus);
 
@@ -26,10 +36,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
             var person = TestHelpers.CreatePerson(3);
             var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
+            databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(csus);
 

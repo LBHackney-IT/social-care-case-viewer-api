@@ -254,7 +254,18 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = cs.Type?.Name,
                 StartDate = cs.StartDate.ToString("s"),
                 EndDate = cs.EndDate?.ToString("s"),
-                Notes = cs.Notes
+                Notes = cs.Notes,
+                Fields = cs.SelectedOptions.Select(
+                    o => new Domain.CaseStatusField()
+                    {
+                        Name = o.FieldOption.TypeField.Name,
+                        Description = o.FieldOption.TypeField.Description,
+                        SelectedOption = new CaseStatusFieldSelectedOption()
+                        {
+                            Name = o.FieldOption.Name,
+                            Description = o.FieldOption.Description
+                        }
+                    }).ToList()
             }).ToList();
         }
 

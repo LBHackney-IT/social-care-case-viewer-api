@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,6 +31,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("notes")]
         public string Notes { get; set; }
+
+        [InverseProperty("Status")]
+        public List<CaseStatusFieldOption> SelectedOptions { get; set; }
 
         //audit props
         [Column("sccv_created_at")]

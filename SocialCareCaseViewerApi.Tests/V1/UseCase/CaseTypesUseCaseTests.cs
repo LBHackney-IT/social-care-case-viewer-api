@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using System;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System.Collections.Generic;
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.UseCase;
 
@@ -54,8 +55,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void WhenPersonIsFoundWithCaseStatusesReturnsCaseStatusesList()
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType();
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
             var person = TestHelpers.CreatePerson();
-            var csus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, startDate: DateTime.Today, notes: "Testing");
+            var csus = TestHelpers.CreateCaseStatus(
+                personId: person.Id,
+                typeId: caseStatusType.Id,
+                startDate: DateTime.Today,
+                notes: "Testing",
+                options: new List<CaseStatusTypeFieldOption>() { caseStatusTypeField.Options.First() }
+            );
 
             var response = new List<CaseStatus>() { csus };
 
@@ -65,6 +73,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
             result.CaseStatuses.Count.Should().Be(1);
+            result.CaseStatuses.First().Fields.First().Name.Should().Be("placementReason");
+            result.CaseStatuses.First().Fields.First().Description.Should().Be("Some description");
+            result.CaseStatuses.First().Fields.First().SelectedOption.Name.Should().Be("One");
+            result.CaseStatuses.First().Fields.First().SelectedOption.Description.Should().Be("First option");
         }
     }
 }
