@@ -1,6 +1,6 @@
-using System;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -32,10 +32,5 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Fields = caseStatusType?.Fields.ToResponse()
             };
         }
-    }
-
-    public class CaseStatusNotFoundException : Exception
-    {
-        public override string Message { get; } = "Case Status Type does not exist.";
     }
 }
