@@ -246,6 +246,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static List<Domain.CaseStatus> ToResponse(this IEnumerable<Infrastructure.CaseStatus> caseStatuses)
+        {
+            return caseStatuses.Select(cs => new Domain.CaseStatus
+            {
+                Id = cs.Id,
+                Type = cs.Type?.Name,
+                SubType = cs.SubType?.Name,
+                StartDate = cs.StartDate.ToString("s"),
+                EndDate = cs.EndDate?.ToString("s"),
+                Notes = cs.Notes
+            }).ToList();
+        }
+
         public static List<Domain.PersonalRelationship> ToResponse(this List<Infrastructure.PersonalRelationship> personalRelationships)
         {
             return personalRelationships.GroupBy(

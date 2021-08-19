@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -42,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
-
+        IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId);
         void CreateRequestAudit(CreateRequestAuditRequest request);
     }
 }
