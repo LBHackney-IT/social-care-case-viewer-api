@@ -19,9 +19,9 @@ namespace AlertsHandlerLambda.Gateways
         {
             var response = await _httpClient.PostAsync(_url, new StringContent(message));
 
-            if(response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new GoogleApiException(((int)response.StatusCode).ToString());
+                throw new GoogleApiException(((int) response.StatusCode).ToString());
             }
 
             return "Message sent successfully";

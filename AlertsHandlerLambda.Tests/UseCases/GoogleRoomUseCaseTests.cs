@@ -27,7 +27,7 @@ namespace AlertsHandlerLambda.Tests.UseCases
             _googleRoomUseCase = new GoogleRoomUseCase(_mockGoogleAPIGateway.Object);
 
             _sNSEvent = new SNSEvent
-             {
+            {
                 Records = new List<SNSRecord>
                 {
                     new SNSRecord
@@ -38,7 +38,7 @@ namespace AlertsHandlerLambda.Tests.UseCases
                         }
                     }
                 }
-             }; 
+            };
         }
 
         [Test]

@@ -33,7 +33,7 @@ namespace AlertsHandlerLambda
         {
             var googleRoomUseCase = _serviceProvider.GetService<IGoogleRoomUseCase>();
 
-            if(googleRoomUseCase == null)
+            if (googleRoomUseCase == null)
             {
                 throw new ConfigurationException("IGoogleRoomUseCase not configured");
             }
