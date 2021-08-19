@@ -8,7 +8,7 @@ namespace AlertsHandlerLambda.Gateways
     public class GoogleAPIGateway : IGoogleAPIGateway
     {
         private readonly HttpClient _httpClient;
-        private readonly string _url = Environment.GetEnvironmentVariable("GOOGLE_CHAT_ROOM_URL") ?? throw new ConfigurationException("GOOGLE_CHAT_ROOM_URL not set");
+        private readonly string _url = Environment.GetEnvironmentVariable("GOOGLE_CHAT_ROOM_PATH") ?? throw new ConfigurationException("GOOGLE_CHAT_ROOM_PATH not set");
 
         public GoogleAPIGateway(HttpClient httpClient)
         {

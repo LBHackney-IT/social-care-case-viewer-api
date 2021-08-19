@@ -20,7 +20,7 @@ namespace AlertsHandlerLambda.Tests.Gateways
         [SetUp]
         public void SetUp()
         {
-            Environment.SetEnvironmentVariable("GOOGLE_CHAT_ROOM_URL", "/mockUrl");
+            Environment.SetEnvironmentVariable("GOOGLE_CHAT_ROOM_PATH", "/mockUrl");
         }
 
         [Test]

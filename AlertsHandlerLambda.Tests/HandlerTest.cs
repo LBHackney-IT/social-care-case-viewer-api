@@ -46,7 +46,7 @@ namespace AlertsHandlerLambda.Tests
             _mockGoogleAPIGateway = new Mock<IGoogleAPIGateway>();
 
             Environment.SetEnvironmentVariable("GOOGLE_API_URL", "http://googleapiurl");
-            Environment.SetEnvironmentVariable("GOOGLE_CHAT_ROOM_URL", "/spaces");
+            Environment.SetEnvironmentVariable("GOOGLE_CHAT_ROOM_PATH", "/spaces");
         }
 
         [Test]
