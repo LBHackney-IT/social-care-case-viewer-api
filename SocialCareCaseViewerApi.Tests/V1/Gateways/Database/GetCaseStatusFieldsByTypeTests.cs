@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Moq;
@@ -6,7 +5,6 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -14,7 +12,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetCaseStatusFieldsByType : DatabaseTests
     {
         private DatabaseGateway _databaseGateway;
-        private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
         private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
