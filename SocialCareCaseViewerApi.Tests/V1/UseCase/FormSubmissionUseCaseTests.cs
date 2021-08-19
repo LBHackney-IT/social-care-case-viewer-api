@@ -808,7 +808,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.EditHistory?.Count.Should().Be(null);
+            response?.First()?.EditHistory.Should().BeNull();
         }
 
         [Test]
@@ -842,7 +842,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.FormAnswers?.Count.Should().Be(null);
+            response?.First()?.FormAnswers.Should().BeNull();
         }
 
         [Test]
@@ -851,7 +851,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeFormAnswers: true);
             var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
 
-            caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
+            caseSubmissions.First()?.FormAnswers.Count.Should().Be(1);
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
