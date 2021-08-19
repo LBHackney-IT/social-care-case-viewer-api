@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 typeId: caseStatusType.Id,
                 startDate: DateTime.Today,
                 notes: "Testing",
-                options: new List<CaseStatusTypeFieldOption>() {caseStatusTypeField.Options.First()}
+                options: new List<CaseStatusTypeFieldOption>() { caseStatusTypeField.Options.First() }
             );
 
 
