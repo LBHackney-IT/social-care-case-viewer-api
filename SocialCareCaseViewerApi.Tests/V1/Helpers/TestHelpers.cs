@@ -503,7 +503,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                         new EditHistory<Worker> {Worker = workers[0], EditTime = createdAt ?? f.Date.Recent()}
                     })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>(){{"foo","bar"}})
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>() { { "foo", "bar" } })
                 .RuleFor(s => s.DateOfEvent, dateOfEvent)
                 .RuleFor(s => s.SubmittedAt, submittedAt)
                 .RuleFor(s => s.Title, title);
