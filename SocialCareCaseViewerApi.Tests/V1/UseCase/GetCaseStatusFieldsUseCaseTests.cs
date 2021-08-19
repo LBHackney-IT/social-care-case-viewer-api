@@ -18,14 +18,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     {
         private Mock<IDatabaseGateway> _mockDataBaseGateway;
         private GetCaseStatusFieldsUseCase _getCaseStatusFieldsUseCase;
-        private Fixture _fixture;
+        private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockDataBaseGateway = new Mock<IDatabaseGateway>();
             _getCaseStatusFieldsUseCase = new GetCaseStatusFieldsUseCase(_mockDataBaseGateway.Object);
-            _fixture = new Fixture();
         }
 
         private GetCaseStatusFieldsRequest GetRequestForType(string type)
