@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
