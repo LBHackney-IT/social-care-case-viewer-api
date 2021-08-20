@@ -29,12 +29,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status type not found, or no fields exist</response>
         [ProducesResponseType(typeof(GetCaseStatusFieldsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{type:alpha}")]
-        public IActionResult GetCaseStatusTypeFields(string type)
+        [Route("{type?}")]
+        public IActionResult GetCaseStatusTypeFields([FromRoute] GetCaseStatusFieldsRequest request)
         {
             try
             {
-                return Ok(_getCaseStatusFieldsUseCase.Execute(new GetCaseStatusFieldsRequest { Type = type }));
+                return Ok(_getCaseStatusFieldsUseCase.Execute(request));
             }
             catch (CaseStatusNotFoundException exception)
             {

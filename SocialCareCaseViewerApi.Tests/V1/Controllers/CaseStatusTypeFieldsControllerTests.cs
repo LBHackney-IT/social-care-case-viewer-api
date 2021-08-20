@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
                 .Returns(getCaseStatusFieldsResponse);
 
-            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields("Test") as ObjectResult;
+            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields(new GetCaseStatusFieldsRequest { Type = "Test" }) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(getCaseStatusFieldsResponse);
@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
                 .Throws<CaseStatusNotFoundException>();
 
-            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields("NonExistent") as ObjectResult;
+            var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields(new GetCaseStatusFieldsRequest { Type = "NonExistent" }) as ObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Case Status Type does not exist.");
