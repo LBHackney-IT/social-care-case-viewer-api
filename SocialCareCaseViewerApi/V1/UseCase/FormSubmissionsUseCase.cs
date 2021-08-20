@@ -111,14 +111,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
-            return foundSubmission?.Select(s => s.ToDomain().ToResponse());
+            return foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory).ToResponse());
         }
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
         {
             var worker = GetSanitisedWorker(request.EditedBy);
 
-            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
+            var updatedSubmission = _mongoGateway.LoadRecordById<CaseSubmission?>(_collectionName, ObjectId.Parse(submissionId));
             if (updatedSubmission == null)
             {
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");

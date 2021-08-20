@@ -503,7 +503,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                         new EditHistory<Worker> {Worker = workers[0], EditTime = createdAt ?? f.Date.Recent()}
                     })
                 .RuleFor(s => s.SubmissionState, f => submissionState ?? SubmissionState.InProgress)
-                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>())
+                .RuleFor(s => s.FormAnswers, new Dictionary<string, string>() { { "foo", "bar" } })
                 .RuleFor(s => s.DateOfEvent, dateOfEvent)
                 .RuleFor(s => s.SubmittedAt, submittedAt)
                 .RuleFor(s => s.Title, title);
@@ -578,7 +578,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? createdBefore = null,
             DateTime? createdAfter = null,
             int page = 0,
-            int size = 100)
+            int size = 100,
+            bool? includeEditHistory = null,
+            bool? includeFormAnswers = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -586,7 +588,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.CreatedBefore, createdBefore)
                 .RuleFor(q => q.CreatedAfter, createdAfter)
                 .RuleFor(q => q.Page, page)
-                .RuleFor(q => q.Size, size);
+                .RuleFor(q => q.Size, size)
+                .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool());
         }
     }
 }

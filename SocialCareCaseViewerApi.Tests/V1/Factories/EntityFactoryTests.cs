@@ -285,7 +285,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = "In progress",
                 FormAnswers = databaseCaseSubmission1.FormAnswers,
-                Title = null
+                Title = null,
+                LastEdited = databaseCaseSubmission1.EditHistory.Last().EditTime,
+                CompletedSteps = 1
             };
 
             var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
@@ -304,7 +306,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = "Submitted",
                 FormAnswers = databaseCaseSubmission2.FormAnswers,
-                Title = "test-title"
+                Title = "test-title",
+                LastEdited = databaseCaseSubmission2.EditHistory.Last().EditTime,
+                CompletedSteps = 1
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
