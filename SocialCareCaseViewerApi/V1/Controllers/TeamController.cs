@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/teams")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class TeamController : BaseController
+    public class TeamController : Controller
     {
         private readonly ITeamsUseCase _teamsUseCase;
 
