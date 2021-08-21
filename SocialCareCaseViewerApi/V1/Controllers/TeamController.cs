@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdTeam = _teamsUseCase.ExecutePost(request);
-                return CreatedAtAction("Team created successfully", createdTeam);
+                return CreatedAtAction(nameof(CreateTeam), createdTeam);
             }
             catch (PostTeamException e)
             {
