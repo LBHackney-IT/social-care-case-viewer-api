@@ -116,19 +116,6 @@ namespace SocialCareCaseViewerApi
                 client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL") ?? throw new InvalidOperationException("Must provide SOCIAL_CARE_PLATFORM_API_URL environment variable"));
             });
 
-            services.AddTransient<IValidator<CreateAllocationRequest>, CreateAllocationRequestValidator>();
-            services.AddTransient<IValidator<UpdateAllocationRequest>, UpdateAllocationRequestValidator>();
-            services.AddTransient<IValidator<CreateWorkerRequest>, CreateWorkerRequestValidator>();
-            services.AddTransient<IValidator<PatchWarningNoteRequest>, PatchWarningNoteRequestValidator>();
-            services.AddTransient<IValidator<CreateTeamRequest>, CreateTeamRequestValidator>();
-            services.AddTransient<IValidator<GetTeamsRequest>, GetTeamsRequestValidator>();
-            services.AddTransient<IValidator<CreateCaseSubmissionRequest>, CreateCaseSubmissionRequestValidator>();
-            services.AddTransient<IValidator<UpdateCaseSubmissionRequest>, UpdateCaseSubmissionRequestValidator>();
-            services
-                .AddTransient<IValidator<UpdateFormSubmissionAnswersRequest>, UpdateFormSubmissionAnswersValidator>();
-            services.AddTransient<IValidator<CreatePersonalRelationshipRequest>, CreatePersonalRelationshipRequestValidator>();
-            services.AddTransient<IValidator<QueryCaseSubmissionsRequest>, QueryCaseSubmissionsValidator>();
-
             services.AddScoped<ISystemTime, SystemTime>();
         }
 
