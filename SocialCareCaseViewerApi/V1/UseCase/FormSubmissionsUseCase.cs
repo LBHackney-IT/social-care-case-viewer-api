@@ -331,11 +331,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
-            var pagination = new Pagination { Page = 1, Size = 10000 };
 
-            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
-
-            var validFormIds = new List<string>
+            filter &= Builders<CaseSubmission>.Filter.Nin(s => s.FormId, new List<string>
             {
                 "adult-case-note",
                 "child-case-note",
@@ -344,9 +341,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 "face-overview-assessment",
                 "safeguarding-adult-concern-form",
                 "safeguarding-adult-manager-decision-on-concern"
-            };
+            });
 
-            foreach (var submission in foundSubmission.Where(submission => !validFormIds.Contains(submission.FormId)))
+            var pagination = new Pagination { Page = 1, Size = 100 };
+            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
+
+            foreach (var submission in foundSubmission)
             {
                 _mongoGateway.DeleteRecordById<Domain.CaseSubmission>(_collectionName, submission.SubmissionId);
             }
