@@ -1,10 +1,8 @@
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -13,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/case-status/form-options")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class CaseStatusTypeFieldsController : BaseController
+    public class CaseStatusTypeFieldsController : Controller
     {
         private readonly IGetCaseStatusFieldsUseCase _getCaseStatusFieldsUseCase;
 
