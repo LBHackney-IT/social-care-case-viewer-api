@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("sccv_case_status_type", Schema = "dbo")]
-    public class CaseStatusType
+    [Table("sccv_case_status_field", Schema = "dbo")]
+    public class CaseStatusTypeField
     {
         [Column("id")]
         [MaxLength(16)]
@@ -13,14 +13,19 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long Id { get; set; }
 
         [Column("name")]
-        [MaxLength(300)]
+        [MaxLength(256)]
         public string Name { get; set; }
 
         [Column("description")]
-        [MaxLength(16)]
+        [MaxLength(256)]
         public string Description { get; set; }
 
-        [InverseProperty("Type")]
-        public List<CaseStatusTypeField> Fields { get; set; }
+        [Column("fk_case_status_type_id")]
+        [MaxLength(16)]
+        public long TypeId { get; set; }
+        public CaseStatusType Type { get; set; }
+
+        [InverseProperty("TypeField")]
+        public List<CaseStatusTypeFieldOption> Options { get; set; }
     }
 }

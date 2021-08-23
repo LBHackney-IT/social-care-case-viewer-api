@@ -255,10 +255,34 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Id = cs.Id,
                 Type = cs.Type?.Name,
-                SubType = cs.SubType?.Name,
                 StartDate = cs.StartDate.ToString("s"),
                 EndDate = cs.EndDate?.ToString("s"),
-                Notes = cs.Notes
+                Notes = cs.Notes,
+                Fields = cs.SelectedOptions.Select(
+                    o => new Domain.CaseStatusField()
+                    {
+                        Name = o.FieldOption.TypeField.Name,
+                        Description = o.FieldOption.TypeField.Description,
+                        SelectedOption = new CaseStatusFieldSelectedOption()
+                        {
+                            Name = o.FieldOption.Name,
+                            Description = o.FieldOption.Description
+                        }
+                    }).ToList()
+            }).ToList();
+        }
+
+        public static List<Domain.CaseStatusTypeField> ToResponse(this IEnumerable<Infrastructure.CaseStatusTypeField> caseStatusTypeFields)
+        {
+            return caseStatusTypeFields.Select(cstf => new Domain.CaseStatusTypeField
+            {
+                Name = cstf.Name,
+                Description = cstf.Description,
+                Options = cstf.Options.Select(cstfo => new Domain.CaseStatusTypeFieldOption
+                {
+                    Name = cstfo.Name,
+                    Description = cstfo.Description,
+                }).ToList()
             }).ToList();
         }
 

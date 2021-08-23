@@ -14,6 +14,8 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
+using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
+using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -541,35 +543,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
 
-        public static CaseStatusSubtype CreateCaseStatusSubtype(
-            long typeId,
+        public static CaseStatusTypeField CreateCaseStatusTypeField(
+            CaseStatusType caseStatusType,
             long? id = null,
-            string? typeName = "N8",
-            string? typeDescription = "Some description")
+            string? fieldName = "placementReason",
+            string? fieldDescription = "Some description")
         {
-            return new Faker<CaseStatusSubtype>()
-                .RuleFor(css => css.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(css => css.TypeID, f => typeId)
-                .RuleFor(css => css.Name, f => typeName)
-                .RuleFor(css => css.Description, f => typeDescription);
+            return new Faker<CaseStatusTypeField>()
+                .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(cstf => cstf.Type, f => caseStatusType)
+                .RuleFor(cstf => cstf.Name, f => fieldName)
+                .RuleFor(cstf => cstf.Description, f => fieldDescription)
+                .RuleFor(cstf => cstf.Options,
+                    (f, cstf) => new List<CaseStatusTypeFieldOption>()
+                    {
+                        new CaseStatusTypeFieldOption() { Name = "One", Description = "First option", TypeField = cstf},
+                        new CaseStatusTypeFieldOption() { Name = "Two", Description = "Second option", TypeField = cstf}
+                    });
         }
 
         public static CaseStatus CreateCaseStatus(
             long? personId = null,
             long? typeId = null,
-            long? subtypeId = null,
             string? notes = null,
             DateTime? startDate = null,
-            DateTime? endDate = null)
+            DateTime? endDate = null,
+            List<CaseStatusTypeFieldOption>? options = null)
         {
+            var caseOptions = new List<CaseStatusFieldOption>();
+
+            if (options != null)
+            {
+                foreach (var option in options)
+                {
+                    caseOptions.Add(new CaseStatusFieldOption()
+                    {
+                        FieldOption = option
+                    });
+                }
+            }
 
             return new Faker<CaseStatus>()
-                .RuleFor(p => p.PersonId, f => personId ?? f.UniqueIndex + 1)
-                .RuleFor(p => p.TypeId, f => typeId ?? f.UniqueIndex + 1)
-                .RuleFor(p => p.SubTypeId, f => subtypeId ?? f.UniqueIndex + 1)
-                .RuleFor(p => p.Notes, f => notes)
-                .RuleFor(p => p.StartDate, f => startDate)
-                .RuleFor(p => p.EndDate, f => endDate);
+                .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(cs => cs.TypeId, f => typeId ?? f.UniqueIndex + 1)
+                .RuleFor(cs => cs.Notes, f => notes)
+                .RuleFor(cs => cs.StartDate, f => startDate)
+                .RuleFor(cs => cs.EndDate, f => endDate)
+                .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(

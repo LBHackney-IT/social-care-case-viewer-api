@@ -1014,10 +1014,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.SubType)
-                .Include(cs => cs.Type);
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField);
 
             return caseStatuses;
+        }
+
+        public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
+        {
+            var response = _databaseContext.CaseStatusTypes
+                .Where(cs => cs.Name == type)
+                .Include(cs => cs.Fields)
+                .ThenInclude(sf => sf.Options);
+
+            return response.FirstOrDefault();
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
