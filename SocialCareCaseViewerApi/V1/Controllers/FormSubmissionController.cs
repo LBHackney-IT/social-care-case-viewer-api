@@ -180,5 +180,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return UnprocessableEntity(e.Message);
             }
         }
+
+        [HttpDelete]
+        public IActionResult DeleteSubmissions()
+        {
+            _formSubmissionsUseCase.DeleteSubmissions();
+            return StatusCode(204);
+        }
     }
 }
