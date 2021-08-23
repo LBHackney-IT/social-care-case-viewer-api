@@ -76,6 +76,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
             updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
             updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
+
+            // Check the db state as well
+            var persistedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(_existingDbWorker.Id)).ToList();
+            persistedWorkerTeams.Count.Should().Be(1);
+            persistedWorkerTeams.Single().Team.Id.Should().Be(newTeamRequest.Id);
+            persistedWorkerTeams.Single().Team.Name.Should().Be(newTeamRequest.Name);
         }
 
         [Test]
