@@ -326,30 +326,5 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allocation.Team = null;
             }
         }
-
-        public void DeleteSubmissions()
-        {
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-
-            filter &= Builders<CaseSubmission>.Filter.Nin(s => s.FormId, new List<string>
-            {
-                "adult-case-note",
-                "child-case-note",
-                "foo",
-                "review-3c",
-                "face-overview-assessment",
-                "safeguarding-adult-concern-form",
-                "safeguarding-adult-manager-decision-on-concern"
-            });
-
-            var pagination = new Pagination { Page = 1, Size = 100 };
-            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
-
-            foreach (var submission in foundSubmission)
-            {
-                _mongoGateway.DeleteRecordById<Domain.CaseSubmission>(_collectionName, submission.SubmissionId);
-            }
-        }
     }
 }
