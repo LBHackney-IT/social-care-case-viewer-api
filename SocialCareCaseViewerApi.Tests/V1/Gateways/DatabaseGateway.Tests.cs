@@ -18,6 +18,8 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
+using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
+using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -1640,6 +1642,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Address, address)
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
                 .RuleFor(p => p.OtherNames, otherNames);
+        }
+
+        public static CaseStatusType GetValidCaseStatusTypeWithFields(string name)
+        {
+            return new CaseStatusType()
+            {
+                Name = name,
+                Description = "Test Type",
+                Fields = new List<CaseStatusTypeField>()
+                {
+                    new CaseStatusTypeField()
+                    {
+                        Description = "Something",
+                        Name = "someThing",
+                        Options = new List<CaseStatusTypeFieldOption>()
+                        {
+                            new CaseStatusTypeFieldOption()
+                            {
+                                Name = "One", Description = "The first option"
+                            },
+                            new CaseStatusTypeFieldOption()
+                            {
+                                Name = "Two", Description = "The second option"
+                            }
+                        }
+                    }
+                }
+            };
         }
     }
 }

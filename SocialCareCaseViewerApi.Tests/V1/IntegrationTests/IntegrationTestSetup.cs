@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.IO;
 using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         private ISccvDbContext _mongoDbContext;
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
-        private NpgsqlTransaction _transaction;
         protected HttpClient Client { get; private set; }
         protected DatabaseContext DatabaseContext { get; private set; }
 
@@ -49,10 +48,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Client = _factory.CreateClient();
 
             DatabaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
+            WipeDatabase();
             _mongoDbContext = new MongoDbTestContext();
-
-            _transaction = _connection.BeginTransaction(IsolationLevel.ReadCommitted);
-            DatabaseContext.Database.UseTransaction(_transaction);
         }
 
         [TearDown]
@@ -60,8 +57,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         {
             Client.Dispose();
             _factory.Dispose();
-            _transaction.Rollback();
-            _transaction.Dispose();
+            WipeDatabase();
             _mongoDbContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
         }
 
@@ -69,6 +65,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         public void AfterAllTests()
         {
             _connection.Dispose();
+        }
+
+        private void WipeDatabase()
+        {
+            DatabaseContext.Database.ExecuteSqlRaw("DROP SCHEMA dbo CASCADE");
+            var filePath = TestContext.CurrentContext.WorkDirectory.Replace(Path.Combine("SocialCareCaseViewerApi.Tests", "bin", "Debug", "netcoreapp3.1"), "");
+            var path = Path.Combine(filePath, "database", "schema.sql");
+            var sql = File.ReadAllText(path);
+            DatabaseContext.Database.ExecuteSqlRaw(sql);
         }
     }
 }

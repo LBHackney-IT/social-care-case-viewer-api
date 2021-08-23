@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Produces("application/json")]
     [ApiVersion("1.0")]
 
-    public class StatusTypeController : BaseController
+    public class StatusTypeController : Controller
     {
         private readonly ICaseStatusesUseCase _caseStatusesUseCase;
 

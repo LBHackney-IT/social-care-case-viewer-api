@@ -33,9 +33,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(10))
                 .RuleFor(p => p.Restricted, f => restricted ?? f.Random.String2(1, "YN")).Generate();
 
-            var insertPersonQuery = SeedPerson(person);
-
-            context.Database.ExecuteSqlRaw(insertPersonQuery);
+            context.Persons.Add(person);
+            context.SaveChanges();
 
             return person;
         }
@@ -53,9 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.TeamId, f => team.Id)
                 .RuleFor(t => t.Team, team).Generate();
 
-            var insertWorkerTeamQuery = SeedWorkerTeam(workerTeam);
-
-            context.Database.ExecuteSqlRaw(insertWorkerTeamQuery);
+            context.WorkerTeams.Add(workerTeam);
 
             var worker = new Faker<Worker>().RuleFor(w => w.Id, workerId)
                 .RuleFor(w => w.FirstName, f => f.Person.FirstName)
@@ -74,9 +71,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(w => w.WorkerTeams, new List<WorkerTeam> { workerTeam })
                 .RuleFor(w => w.LastModifiedBy, f => f.Person.Email).Generate();
 
-            var insertWorkerQuery = SeedWorker(worker);
-
-            context.Database.ExecuteSqlRaw(insertWorkerQuery);
+            context.Workers.Add(worker);
+            context.SaveChanges();
 
             return (worker, team);
         }
@@ -88,9 +84,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(t => t.Context, f => workerContext)
                 .RuleFor(t => t.Name, f => f.Random.String2(10, 15)).Generate();
 
-            var insertTeamQuery = SeedTeam(team);
-
-            context.Database.ExecuteSqlRaw(insertTeamQuery);
+            context.Teams.Add(team);
+            context.SaveChanges();
 
             return team;
         }
@@ -120,48 +115,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(c => c.AllocationStartDate, f => f.Date.Recent()).Generate();
 
             return createAllocationRequest;
-        }
-
-        private static string SeedPerson(DbPerson person)
-        {
-            var insertPersonQuery = $@"insert into dbo.dm_persons
-            (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name,
-            title, first_name, last_name, date_of_birth, date_of_death, gender,
-            restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy,
-            nationality, religion, marital_status, first_language, fluency_in_english, email_address,
-            context_flag, scra_id, interpreter_required, from_dm_person)
-            values ({person.Id}, NULL, {person.NhsNumber}, NULL, NULL, NULL, '{person.FullName}',
-            '{person.Title}', '{person.FirstName}', '{person.LastName}', '{person.DateOfBirth?.ToString("s")}', '{person.DateOfDeath?.ToString("s")}', '{person.Gender}',
-            '{person.Restricted}', '{person.PersonIdLegacy}', '{person.Ethnicity}', NULL, 'Y', 'Y',
-            '{person.Nationality}', '{person.Religion}', NULL, '{person.FirstLanguage}', 'N', '{person.EmailAddress}',
-            '{person.AgeContext}', NULL, 'N', '{person.DataIsFromDmPersonsBackup}');";
-
-            return insertPersonQuery;
-        }
-
-        private static string SeedWorker(Worker worker)
-        {
-            var insertWorkerQuery = $@"insert into dbo.sccv_worker
-            (id, email, first_name, last_name, role, context_flag, created_by, date_start, date_end, last_modified_by, created_at, last_modified_at, is_active )
-            values ({worker.Id}, '{worker.Email}', '{worker.FirstName}', '{worker.LastName}', '{worker.Role}',
-            '{worker.ContextFlag}', '{worker.CreatedBy}', '{worker.DateStart?.ToString("s")}', '{worker.DateEnd?.ToString("s")}',
-            '{worker.LastModifiedBy}', '{worker.CreatedAt?.ToString("s")}', '{worker.LastModifiedAt?.ToString("s")}', {worker.IsActive});";
-
-            return insertWorkerQuery;
-        }
-
-        private static string SeedTeam(Team team)
-        {
-            var insertTeamQuery = $"insert into dbo.sccv_team (id, name, context) values ({team.Id}, '{team.Name}', '{team.Context}');";
-
-            return insertTeamQuery;
-        }
-
-        private static string SeedWorkerTeam(WorkerTeam workerTeam)
-        {
-            var insertWorkerTeamQuery = $"insert into dbo.sccv_workerteam (id, worker_id, team_id) values ({workerTeam.Id}, {workerTeam.WorkerId}, {workerTeam.TeamId});";
-
-            return insertWorkerTeamQuery;
         }
     }
 }

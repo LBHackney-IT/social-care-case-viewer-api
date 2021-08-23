@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Produces("application/json")]
     [ApiVersion("1.0")]
     //TODO: rename class to match the API name
-    public class SocialCareCaseViewerApiController : BaseController
+    public class SocialCareCaseViewerApiController : Controller
     {
         private readonly IGetAllUseCase _getAllUseCase;
         private readonly IAddNewResidentUseCase _addNewResidentUseCase;

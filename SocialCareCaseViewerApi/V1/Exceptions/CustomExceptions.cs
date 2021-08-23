@@ -99,6 +99,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public GetCaseStatusesException(string message) : base(message) { }
     }
 
+    public class CaseStatusNotFoundException : Exception
+    {
+        public override string Message { get; } = "Case Status Type does not exist.";
+    }
+
     public class GetSubmissionException : Exception
     {
         public GetSubmissionException(string message) : base(message) { }

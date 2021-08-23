@@ -528,15 +528,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var workerTeams = GetTeams(request.Teams);
 
-            // Remove any previous associations in the worker teams table
-            _databaseContext.WorkerTeams.RemoveRange(_databaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(worker.Id)));
-            _databaseContext.SaveChanges();
-
-            worker.WorkerTeams = new List<WorkerTeam>();
-            foreach (var team in workerTeams)
-            {
-                worker.WorkerTeams.Add(new WorkerTeam { Team = team, Worker = worker });
-            }
+            worker.WorkerTeams = workerTeams.Select(t => new WorkerTeam { Team = t, Worker = worker }).ToList();
             _databaseContext.SaveChanges();
 
             // Update any assigned allocations to reflect the worker's new team
@@ -1022,10 +1014,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.SubType)
-                .Include(cs => cs.Type);
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField);
 
             return caseStatuses;
+        }
+
+        public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
+        {
+            var response = _databaseContext.CaseStatusTypes
+                .Where(cs => cs.Name == type)
+                .Include(cs => cs.Fields)
+                .ThenInclude(sf => sf.Options);
+
+            return response.FirstOrDefault();
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)

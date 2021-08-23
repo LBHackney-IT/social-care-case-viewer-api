@@ -7,7 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/healthcheck")]
     [ApiController]
     [Produces("application/json")]
-    public class HealthCheckController : BaseController
+    public class HealthCheckController : Controller
     {
         [HttpGet]
         [Route("ping")]

@@ -44,6 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var response = _databaseGateway.GetCaseStatusesByPersonId(person.Id);
 
             response.Should().NotBeEmpty();
+            response.First().SelectedOptions.First().FieldOption.Name.Should().Be("One");
         }
 
         [Test]

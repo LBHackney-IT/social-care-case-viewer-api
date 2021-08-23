@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class RelationshipController : BaseController
+    public class RelationshipController : Controller
     {
         private readonly IRelationshipsUseCase _relationshipsUseCase;
         private readonly IPersonalRelationshipsUseCase _personalRelationshipsUseCase;
