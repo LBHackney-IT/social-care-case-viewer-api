@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/workers")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class WorkerController : BaseController
+    public class WorkerController : Controller
     {
         private readonly IWorkersUseCase _workersUseCase;
 
@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             try
             {
                 var createdWorker = _workersUseCase.ExecutePost(request);
-                return CreatedAtAction("Worker created successfully", createdWorker);
+                return CreatedAtAction(nameof(CreateWorker), createdWorker);
             }
             catch (PostWorkerException e)
             {

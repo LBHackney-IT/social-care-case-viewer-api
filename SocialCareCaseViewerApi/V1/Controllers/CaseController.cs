@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1/cases")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    public class CaseController : BaseController
+    public class CaseController : Controller
     {
         private readonly ICaseRecordsUseCase _caseRecordsUseCase;
         private readonly ICreateRequestAuditUseCase _createRequestAuditUseCase;
