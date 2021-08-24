@@ -107,6 +107,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
             }
 
+            if (request.AgeContext != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                    r => r.AgeContext.ToUpper() == (request.AgeContext != null ? request.AgeContext.ToUpper() : null));
+            }
+
             if (request.PersonID != null)
             {
                 filter &= Builders<CaseSubmission>.Filter.ElemMatch(s => s.Residents, p => p.Id == request.PersonID);
@@ -118,7 +124,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private static bool CheckIfInvalidRequest(QueryCaseSubmissionsRequest request)
         {
             return request.FormId == null && request.SubmissionStates == null && request.CreatedAfter == null &&
-                   request.CreatedBefore == null && request.WorkerEmail == null && request.PersonID == null;
+                   request.CreatedBefore == null && request.WorkerEmail == null && request.PersonID == null && request.AgeContext == null;
         }
 
         public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)

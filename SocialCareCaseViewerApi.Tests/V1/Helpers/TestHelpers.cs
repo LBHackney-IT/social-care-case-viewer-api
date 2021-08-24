@@ -601,20 +601,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int size = 100,
             bool? includeEditHistory = null,
             bool? includeFormAnswers = null,
+            string? ageContext = null,
             string? workerEmail = null,
             long? personID = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
-                .RuleFor(q => q.FormId, formId)
-                .RuleFor(q => q.SubmissionStates, submissionStates)
-                .RuleFor(q => q.CreatedBefore, createdBefore)
-                .RuleFor(q => q.CreatedAfter, createdAfter)
-                .RuleFor(q => q.Page, page)
-                .RuleFor(q => q.Size, size)
-                .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
-                .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
-                .RuleFor(q => q.WorkerEmail, workerEmail)
-                .RuleFor(q => q.PersonID, personID);
+               .RuleFor(q => q.FormId, formId)
+               .RuleFor(q => q.SubmissionStates, submissionStates)
+               .RuleFor(q => q.CreatedBefore, createdBefore)
+               .RuleFor(q => q.CreatedAfter, createdAfter)
+               .RuleFor(q => q.Page, page)
+               .RuleFor(q => q.Size, size)
+               .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
+               .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
+               .RuleFor(q => q.AgeContext, ageContext)
+               .RuleFor(q => q.WorkerEmail, workerEmail)
+               .RuleFor(q => q.PersonID, personID);
         }
     }
 }

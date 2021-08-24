@@ -32,6 +32,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("size")]
         public int Size { get; set; } = 100;
 
+
+        [JsonPropertyName("ageContext")]
+        public string? AgeContext { get; set; }
+
         [JsonPropertyName("workerEmail")]
         public string? WorkerEmail { get; set; }
 
@@ -48,6 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                                query.SubmissionStates != null ||
                                query.CreatedAfter != null ||
                                query.CreatedBefore != null ||
+                               query.AgeContext != null ||
                                query.WorkerEmail != null ||
                                query.PersonID != null)
                 .WithMessage("Must provide at least one query parameter");
