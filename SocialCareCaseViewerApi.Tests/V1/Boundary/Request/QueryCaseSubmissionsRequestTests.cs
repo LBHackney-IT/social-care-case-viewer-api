@@ -18,7 +18,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(submissionStates: new List<string>{"submission-state"}), true, null},
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(createdBefore: DateTime.Now), true, null},
             new object?[] { TestHelpers.CreateQueryCaseSubmissions(createdAfter: DateTime.Now), true, null},
-            new object?[] { TestHelpers.CreateQueryCaseSubmissions(workerEmail: "example@hackney.gov.uk"), true, null}
+            new object?[] { TestHelpers.CreateQueryCaseSubmissions(workerEmail: "example@hackney.gov.uk"), true, null},
+            new object?[] { TestHelpers.CreateQueryCaseSubmissions(personID: 2), true, null}
         };
 
         [TestCaseSource(nameof(_queryCaseSubmissionRequests))]
