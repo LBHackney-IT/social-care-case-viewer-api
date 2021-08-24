@@ -32,11 +32,15 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("size")]
         public int Size { get; set; } = 100;
 
+
         [JsonPropertyName("ageContext")]
         public string? AgeContext { get; set; }
 
         [JsonPropertyName("workerEmail")]
         public string? WorkerEmail { get; set; }
+
+        [JsonPropertyName("personId")]
+        public long? PersonID { get; set; }
     }
 
     public class QueryCaseSubmissionsValidator : AbstractValidator<QueryCaseSubmissionsRequest>
@@ -49,8 +53,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                                query.CreatedAfter != null ||
                                query.CreatedBefore != null ||
                                query.AgeContext != null ||
-                               query.WorkerEmail != null)
-                                   .WithMessage("Must provide at least one query parameter");
+                               query.WorkerEmail != null ||
+                               query.PersonID != null)
+                .WithMessage("Must provide at least one query parameter");
         }
     }
 }
