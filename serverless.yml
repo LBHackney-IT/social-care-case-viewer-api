@@ -63,7 +63,7 @@ functions:
       SCCV_MONGO_IMPORT_COLLECTION_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/collection-name}
       SCCV_MONGO_IMPORT_FILE_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/file-name}
   alertsHandler:
-    name: social-care-alerts-handler-${self:provier.stage}
+    name: social-care-alerts-handler-${self:provider.stage}
     handler: AlertsHandlerLambda::AlertsHandlerLambda.Handler::FunctionHandler
     role: lambdaExecutionRole
     memorySize: 256
@@ -72,7 +72,7 @@ functions:
         artifact: ./AlertsHandlerLambda/bin/release/netcoreapp3.1/alerts-handler-lambda.zip
     environment:
         GOOGLE_API_URL: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-api-url}
-        GOOGLE_CHAT_ROOM_PATH: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-chat-room-path}
+        GOOGLE_CHAT_ROOM_PATH: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-chat-room-path~true}
 resources:
   Resources:
     lambdaExecutionRole:
