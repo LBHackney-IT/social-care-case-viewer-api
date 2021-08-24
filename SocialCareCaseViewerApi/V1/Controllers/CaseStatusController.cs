@@ -11,12 +11,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Route("api/v1")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-
-    public class StatusTypeController : Controller
+    public class CaseStatusController : Controller
     {
         private readonly ICaseStatusesUseCase _caseStatusesUseCase;
 
-        public StatusTypeController(ICaseStatusesUseCase caseStatusUseCase)
+        public CaseStatusController(ICaseStatusesUseCase caseStatusUseCase)
         {
             _caseStatusesUseCase = caseStatusUseCase;
         }
@@ -25,7 +24,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Get a list of case statuses by person id
         /// </summary>
         /// <response code="200">Successful request. Case statuses returned</response>
-        /// <response code="404">Case status not found</response>
+        /// <response code="404">Person does not exist</response>
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId:long}/casestatuses")]

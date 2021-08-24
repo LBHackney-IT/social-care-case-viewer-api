@@ -50,7 +50,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Description = o.FieldOption.TypeField.Description,
                     SelectedOption = new CaseStatusFieldSelectedOption
                     {
-                        Name = o.FieldOption.Name, Description = o.FieldOption.Description
+                        Name = o.FieldOption.Name,
+                        Description = o.FieldOption.Description
                     }
                 }).ToList()
             }).ToList();

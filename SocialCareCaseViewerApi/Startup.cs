@@ -152,7 +152,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
             services.AddScoped<IPersonalRelationshipsUseCase, PersonalRelationshipsUseCase>();
-            services.AddScoped<ICaseStatusesUseCase, CaseStatusesUseCase>();
+            services.AddScoped<ICaseStatusesUseCase, CaseStatusUseCase>();
             services.AddScoped<IGetCaseStatusFieldsUseCase, GetCaseStatusFieldsUseCase>();
             services.AddScoped<ICreateRequestAuditUseCase, CreateRequestAuditUseCase>();
         }

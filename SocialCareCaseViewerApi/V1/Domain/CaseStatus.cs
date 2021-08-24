@@ -10,6 +10,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string? StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Notes { get; set; }
-        public List<CaseStatusField> Fields { get; set; } = new List<CaseStatusField>();
+        public List<CaseStatusField> Fields { get; set; }
     }
 }
