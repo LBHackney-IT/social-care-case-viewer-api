@@ -1,3 +1,5 @@
+using AlertsHandlerLambda.Infrastructure;
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -17,7 +19,9 @@ namespace AlertsHandlerLambda.Gateways
 
         public async Task<string> PostMessageToGoogleRoom(string message)
         {
-            var response = await _httpClient.PostAsync(_url, new StringContent(message));
+            string googleRoomMessage = JsonConvert.SerializeObject(new GoogleRoomMessage() { Text = message });
+
+            var response = await _httpClient.PostAsync(_url, new StringContent(googleRoomMessage));
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
