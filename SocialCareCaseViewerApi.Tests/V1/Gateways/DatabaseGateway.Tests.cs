@@ -18,6 +18,7 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
+using CaseStatusType = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusType;
 using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
 using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;

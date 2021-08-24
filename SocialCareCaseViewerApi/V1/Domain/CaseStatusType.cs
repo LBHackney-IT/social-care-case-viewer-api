@@ -1,12 +1,12 @@
+#nullable enable
 using System.Collections.Generic;
 
-#nullable enable
 namespace SocialCareCaseViewerApi.V1.Domain
 {
-    public class CaseStatusTypeField
+    public class CaseStatusType
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public List<CaseStatusTypeFieldOption> Options { get; set; } = new List<CaseStatusTypeFieldOption>();
+        public List<CaseStatusTypeField> Fields { get; set; } = new List<CaseStatusTypeField>();
     }
 }

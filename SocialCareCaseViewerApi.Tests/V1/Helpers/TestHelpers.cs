@@ -14,6 +14,7 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
+using CaseStatusType = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusType;
 using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
 using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
 
