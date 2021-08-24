@@ -109,8 +109,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.PersonID != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(s => s.Residents , p => p.Id == request.PersonID);
-            }            
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(s => s.Residents, p => p.Id == request.PersonID);
+            }
 
             return filter;
         }

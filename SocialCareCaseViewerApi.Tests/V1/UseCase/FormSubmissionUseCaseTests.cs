@@ -786,7 +786,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
         }
 
-      [Test]
+        [Test]
         public void ExecuteGetByQueryOnlyGetsFormsWithQueriedPersonId()
         {
             var request = TestHelpers.CreateQueryCaseSubmissions(personID: 3);
