@@ -10,8 +10,6 @@ No feature in the app to support this
 
 ## The plan
 
-<!-- Add your rough high-level steps for what you're going to do -->
-
 1. Run the commands below
 
 ## Link to Jira ticket
