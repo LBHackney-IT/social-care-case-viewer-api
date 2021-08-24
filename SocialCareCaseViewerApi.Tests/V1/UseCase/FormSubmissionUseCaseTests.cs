@@ -787,6 +787,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedPersonId()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 3);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, p => p.Id == request.PersonID);
+
+            var expectedJsonFilter = filter.RenderToJson();
+            var pagination = new Pagination { Page = request.Page, Size = request.Size };
+
+            _mockMongoGateway.Setup(m =>
+                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+        }
+
+
+        [Test]
         public void ExecuteGetByQueryGetsFormsUsingAllQueryOptions()
         {
             const string testFormId = "foo";

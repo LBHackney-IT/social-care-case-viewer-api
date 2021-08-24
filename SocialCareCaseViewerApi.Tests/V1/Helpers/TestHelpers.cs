@@ -601,7 +601,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int size = 100,
             bool? includeEditHistory = null,
             bool? includeFormAnswers = null,
-            string? workerEmail = null)
+            string? workerEmail = null,
+            long? personID = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -612,7 +613,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.Size, size)
                 .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
                 .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
-                .RuleFor(q => q.WorkerEmail, workerEmail);
+                .RuleFor(q => q.WorkerEmail, workerEmail)
+                .RuleFor(q => q.PersonID, personID);
         }
     }
 }
