@@ -615,7 +615,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID);
-
         }
     }
 }
