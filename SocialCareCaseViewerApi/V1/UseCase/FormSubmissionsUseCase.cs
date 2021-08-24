@@ -66,13 +66,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
+        private static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
         {
-            if (request.FormId == null && request.SubmissionStates == null && request.CreatedAfter == null && request.CreatedBefore == null)
-            {
-                throw new QueryCaseSubmissionsException("Provide at minimum one query parameter");
-            }
-
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
 
@@ -107,6 +102,28 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, request.CreatedBefore);
             }
 
+            if (request.WorkerEmail != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+            }
+
+            return filter;
+        }
+
+        private static bool CheckIfInvalidRequest(QueryCaseSubmissionsRequest request)
+        {
+            return request.FormId == null && request.SubmissionStates == null && request.CreatedAfter == null &&
+                   request.CreatedBefore == null && request.WorkerEmail == null;
+        }
+
+        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
+        {
+            if (CheckIfInvalidRequest(request))
+            {
+                throw new QueryCaseSubmissionsException("Provide at minimum one query parameter");
+            }
+
+            var filter = GenerateFilter(request);
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
