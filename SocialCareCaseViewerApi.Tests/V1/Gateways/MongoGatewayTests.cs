@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -225,6 +226,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             retrievedObject1.Count.Should().Be(1);
             retrievedObject2.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void CanLoadRecordsByFilterUsingArrayElementProperty()
+        {
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+            var newId = _faker.Random.String2(24, "0123456789abcdef");
+            var newEmbeddedId = _faker.Random.String2(24, "0123456789abcdef");
+            _testObjectForMongo.Id = newId;
+            _testObjectForMongo.Property2 = new List<TestObjectForMongo>
+            {
+                new TestObjectForMongo
+                {
+                    Id = newEmbeddedId,
+                    Property2 = null,
+                    Property3 = null,
+                    TimeProperty = new DateTime()
+                }
+            };
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+
+            var builder = Builders<TestObjectForMongo>.Filter;
+            var filter = builder.Empty;
+            filter &= Builders<TestObjectForMongo>.Filter.ElemMatch(x => x.Property2, p => p.Id == newEmbeddedId);
+
+            var retrievedObject = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
+
+            retrievedObject.Count.Should().Be(1);
+            retrievedObject.First().Id.Should().Be(newId);
         }
 
         [Test]
