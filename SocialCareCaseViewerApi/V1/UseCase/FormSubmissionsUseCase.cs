@@ -107,6 +107,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
             }
 
+            if (request.AgeContext != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                    r => string.Equals(r.AgeContext.ToUpper(), request.AgeContext.ToUpper(), StringComparison.OrdinalIgnoreCase));
+            }
+
             return filter;
         }
 

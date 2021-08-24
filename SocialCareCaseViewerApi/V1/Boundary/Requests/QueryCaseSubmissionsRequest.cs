@@ -48,12 +48,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                                query.SubmissionStates != null ||
                                query.CreatedAfter != null ||
                                query.CreatedBefore != null ||
-<<<<<<< HEAD
-                               query.AgeContext != null)
-=======
+                               query.AgeContext != null ||
                                query.WorkerEmail != null)
->>>>>>> feature-filter-case-submission-by-worker-email
-                .WithMessage("Must provide at least one query parameter");
+                                   .WithMessage("Must provide at least one query parameter");
         }
     }
 }
