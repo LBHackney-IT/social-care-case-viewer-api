@@ -31,6 +31,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("size")]
         public int Size { get; set; } = 100;
+
+        [JsonPropertyName("workerEmail")]
+        public string? WorkerEmail { get; set; }
     }
 
     public class QueryCaseSubmissionsValidator : AbstractValidator<QueryCaseSubmissionsRequest>
@@ -41,7 +44,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .Must(query => !string.IsNullOrEmpty(query.FormId) ||
                                query.SubmissionStates != null ||
                                query.CreatedAfter != null ||
-                               query.CreatedBefore != null)
+                               query.CreatedBefore != null ||
+                               query.WorkerEmail != null)
                 .WithMessage("Must provide at least one query parameter");
         }
     }
