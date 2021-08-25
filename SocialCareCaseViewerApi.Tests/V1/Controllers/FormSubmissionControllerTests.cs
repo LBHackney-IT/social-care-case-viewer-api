@@ -232,7 +232,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var request = TestHelpers.CreateQueryCaseSubmissions(formId: "any-form-id");
             var paginatedCaseSubmissions = new Paginated<CaseSubmissionResponse>
             {
-                Items = new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission().ToDomain().ToResponse() }, Count = 1
+                Items = new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission().ToDomain().ToResponse() },
+                Count = 1
             };
             _submissionsUseCaseMock.Setup(x => x.ExecuteGetByQuery(request)).Returns(paginatedCaseSubmissions);
 
