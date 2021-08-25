@@ -360,11 +360,4 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
         }
     }
-
-
-    public class PaginatedResponse
-    {
-        public long Count { get; set; }
-        public IEnumerable<CaseSubmissionResponse>? Submissions { get; set; }
-    }
 }
