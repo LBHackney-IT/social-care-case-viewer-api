@@ -6,5 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Helpers
     {
         public int Page { get; set; }
         public int Size { get; set; }
+
+        public int Skip => (Page - 1) * Size;
     }
 }

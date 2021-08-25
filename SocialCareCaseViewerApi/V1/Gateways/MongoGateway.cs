@@ -87,8 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var sortDefinition = Builders<CaseSubmission>.Sort.Descending(a => a.CreatedAt);
 
-            var skip = pagination.Size * (pagination.Page - 1);
-            return (collection.Find(filter).Sort(sortDefinition).Skip(skip).Limit(pagination.Size).ToList(), collection.Find(filter).CountDocuments());
+            return (collection.Find(filter).Sort(sortDefinition).Skip(pagination.Skip).Limit(pagination.Size).ToList(), collection.Find(filter).CountDocuments());
         }
     }
 
