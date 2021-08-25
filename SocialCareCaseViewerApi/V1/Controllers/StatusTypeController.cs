@@ -1,5 +1,7 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -38,6 +40,42 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (GetCaseStatusesException ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+         /// <summary>
+        /// Create a case status
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="201">Successfully created case status</response>
+        /// <response code="400">Invalid CreatePersonCaseStatusRequest received</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("resident/case-status")]
+        public IActionResult CreatePersonCaseStatus([FromBody] CreateCaseStatusRequest request)
+        {
+            var validator = new CreateCaseStatusRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _caseStatusesUseCase.ExecutePost(request);
+
+                return CreatedAtAction("CreatePersonCaseStatus", "Successfully created case status.");
+            }
+            catch (Exception e) when (
+                e is PersonNotFoundException ||
+                e is CaseStatusTypeNotFoundException ||
+                e is CaseStatusAlreadyExistsException ||
+                e is WorkerNotFoundException
+            )
+            {
+                return BadRequest(e.Message);
             }
         }
     }

@@ -1138,5 +1138,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = createdBy
             };
         }
+        public CaseStatusType GetCaseStatusType(string name)
+        {
+            var caseStatusType = _databaseContext.CaseStatusTypes.Where(cs => cs.Name == name).FirstOrDefault();
+            return caseStatusType;
+        }
     }
 }

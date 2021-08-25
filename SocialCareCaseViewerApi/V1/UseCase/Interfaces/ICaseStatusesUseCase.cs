@@ -5,5 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     public interface ICaseStatusesUseCase
     {
         ListCaseStatusesResponse ExecuteGet(long personId);
+        void ExecutePost(CreateCaseStatusRequest request);
     }
 }
