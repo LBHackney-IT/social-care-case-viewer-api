@@ -75,14 +75,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return collection.Find(filter).FirstOrDefault();
         }
 
-        public List<T1> LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter, Pagination? pagination = null)
+        public (List<T1>, long) LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter, Pagination? pagination = null)
         {
             var collection = _mongoDatabase.GetCollection<T1>(collectionName);
+            var count = collection.EstimatedDocumentCount();
 
-            if (pagination == null) return collection.Find(filter).ToList();
+            if (pagination == null) return (collection.Find(filter).ToList(), count);
 
             var skip = pagination.Size * (pagination.Page - 1);
-            return collection.Find(filter).Skip(skip).Limit(pagination.Size).ToList();
+            return (collection.Find(filter).Skip(skip).Limit(pagination.Size).ToList(), count);
 
         }
     }
