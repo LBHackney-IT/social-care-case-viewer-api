@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 
@@ -51,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
             _mockMongoGateway
                 .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
-                    It.IsAny<FilterDefinition<CaseSubmission>>(), null))
+                    It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
                 .Returns((expectedResponse, 3));
 
             var response = _caseRecordsUseCase.GetResidentCases(request);

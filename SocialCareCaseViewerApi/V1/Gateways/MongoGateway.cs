@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -75,21 +77,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return collection.Find(filter).FirstOrDefault();
         }
 
-        public (List<T1>, long) LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter, Pagination? pagination = null)
+        public (List<CaseSubmission>, long) LoadRecordsByFilter(
+            string collectionName,
+            FilterDefinition<CaseSubmission> filter,
+            Pagination pagination
+        )
         {
-            var collection = _mongoDatabase.GetCollection<T1>(collectionName);
+            var collection = _mongoDatabase.GetCollection<CaseSubmission>(collectionName);
 
-            // estimated uses document metadata to get the count - it will only be wrong for upto 60 seconds
-            // if records are deleted/inserted and the db is shut down in an unexpected way
-            // unlike CountDocuments method this way to count scales, it will not increase in time as the number of
-            // documents increase
-            var count = collection.EstimatedDocumentCount();
-
-            if (pagination == null) return (collection.Find(filter).ToList(), count);
+            var sortDefinition = Builders<CaseSubmission>.Sort.Descending(a => a.CreatedAt);
 
             var skip = pagination.Size * (pagination.Page - 1);
-            return (collection.Find(filter).Skip(skip).Limit(pagination.Size).ToList(), count);
-
+            return (collection.Find(filter).Sort(sortDefinition).Skip(skip).Limit(pagination.Size).ToList(), collection.Find(filter).CountDocuments());
         }
     }
 
