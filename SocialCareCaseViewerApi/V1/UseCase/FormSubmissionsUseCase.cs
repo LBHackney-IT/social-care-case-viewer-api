@@ -127,7 +127,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                    request.CreatedBefore == null && request.WorkerEmail == null && request.PersonID == null && request.AgeContext == null;
         }
 
-        public IEnumerable<CaseSubmissionResponse>? ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
+        public Paginated<CaseSubmissionResponse> ExecuteGetByQuery(QueryCaseSubmissionsRequest request)
         {
             if (CheckIfInvalidRequest(request))
             {
@@ -137,9 +137,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var filter = GenerateFilter(request);
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
-            var foundSubmission = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
+            var (foundSubmission, totalCount) = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
-            return foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory).ToResponse());
+            return new Paginated<CaseSubmissionResponse>
+            {
+                Count = totalCount,
+                Items = foundSubmission.Select(s =>
+                    s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory).ToResponse()).ToList()
+            };
         }
 
         public CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request)
@@ -354,5 +359,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allocation.Team = null;
             }
         }
+    }
+
+
+    public class PaginatedResponse
+    {
+        public long Count { get; set; }
+        public IEnumerable<CaseSubmissionResponse>? Submissions { get; set; }
     }
 }
