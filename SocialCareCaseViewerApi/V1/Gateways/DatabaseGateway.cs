@@ -1032,6 +1032,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response.FirstOrDefault();
         }
 
+        public void CreateCaseStatus(CreateCaseStatusRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
@@ -1138,10 +1143,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = createdBy
             };
         }
-        public CaseStatusType GetCaseStatusType(string name)
-        {
-            var caseStatusType = _databaseContext.CaseStatusTypes.Where(cs => cs.Name == name).FirstOrDefault();
-            return caseStatusType;
-        }
+
     }
 }
