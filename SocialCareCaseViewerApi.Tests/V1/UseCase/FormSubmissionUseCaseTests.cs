@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -925,6 +926,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             response.Items.First()?.FormAnswers?.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryReturnsAPaginatedListAndTheTotalCount()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo");
+            var paginatedCaseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+            const long totalCount = 20;
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((paginatedCaseSubmissions, totalCount));
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response.Should().BeEquivalentTo(new Paginated<CaseSubmissionResponse>
+            {
+                Items = paginatedCaseSubmissions.Select(x => x.ToDomain().ToResponse()).ToList(),
+                Count = totalCount
+            });
         }
     }
 }
