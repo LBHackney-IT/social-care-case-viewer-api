@@ -73,6 +73,16 @@ functions:
     environment:
         GOOGLE_API_URL: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-api-url}
         GOOGLE_CHAT_ROOM_PATH: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-chat-room-path~true}
+    events: 
+      - sns:
+          arn:
+            Fn::Join:
+              - ':'
+              - - 'arn:aws:sns'
+                - Ref: 'AWS::Region'
+                - Ref: 'AWS::AccountId'
+                - 'social-care-application-alerts'
+          topicName: social-care-application-alerts
 resources:
   Resources:
     lambdaExecutionRole:
