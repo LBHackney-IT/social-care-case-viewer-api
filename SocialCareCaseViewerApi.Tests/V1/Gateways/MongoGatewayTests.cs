@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private readonly IMongoGateway _mongoGateway = new MongoGateway();
         private readonly Faker _faker = new Faker();
         private TestObjectForMongo _testObjectForMongo = null!;
-        private readonly DateTime _dateTimeValue = new DateTime(2021, 08, 09, 14, 30, 27);
+        private readonly DateTime _dateTimeValue = new DateTime(2021, 08, 09, 14, 30, 27).ToUniversalTime();
 
         [SetUp]
         public void Setup()
