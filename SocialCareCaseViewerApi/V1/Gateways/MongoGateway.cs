@@ -78,6 +78,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public (List<T1>, long) LoadRecordsByFilter<T1>(string collectionName, FilterDefinition<T1> filter, Pagination? pagination = null)
         {
             var collection = _mongoDatabase.GetCollection<T1>(collectionName);
+
+            // estimated uses document metadata to get the count - it will only be wrong for upto 60 seconds
+            // if records are deleted/inserted and the db is shut down in an unexpected way
+            // unlike CountDocuments method this way to count scales, it will not increase in time as the number of
+            // documents increase
             var count = collection.EstimatedDocumentCount();
 
             if (pagination == null) return (collection.Find(filter).ToList(), count);
