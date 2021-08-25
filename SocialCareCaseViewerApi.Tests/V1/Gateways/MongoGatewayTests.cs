@@ -203,8 +203,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var retrievedObject = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
-            retrievedObject.Count.Should().Be(1);
-            retrievedObject[0].Should().BeEquivalentTo(_testObjectForMongo);
+            retrievedObject.Item2.Should().Be(1);
+            retrievedObject.Item1.First().Should().BeEquivalentTo(_testObjectForMongo);
         }
 
         [Test]
@@ -224,8 +224,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             filter2 &= Builders<TestObjectForMongo>.Filter.Eq(x => x.Property1, "invalid-property-name");
             var retrievedObject2 = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter2, null);
 
-            retrievedObject1.Count.Should().Be(1);
-            retrievedObject2.Count.Should().Be(0);
+            retrievedObject1.Item1.Count.Should().Be(1);
+            retrievedObject2.Item1.Count.Should().Be(0);
         }
 
         [Test]
@@ -251,10 +251,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var filter = builder.Empty;
             filter &= Builders<TestObjectForMongo>.Filter.ElemMatch(x => x.Property2, p => p.Id == newEmbeddedId);
 
-            var retrievedObject = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
+            var (testObjectForMongo, count) = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
-            retrievedObject.Count.Should().Be(1);
-            retrievedObject.First().Id.Should().Be(newId);
+            count.Should().Be(2);
+            testObjectForMongo.First().Id.Should().Be(newId);
         }
 
         [Test]
@@ -287,11 +287,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             filter &= Builders<TestObjectForMongo>.Filter.Eq(s => s.TimeProperty, _dateTimeValue);
             var retrievedSameTime = _mongoGateway.LoadRecordsByFilter("test-collection-name", filter, null);
 
-            retrievedAfterCorrect.Count.Should().Be(1);
-            retrievedBeforeCorrect.Count.Should().Be(1);
-            retrievedSameTime.Count.Should().Be(1);
-            retrievedAfterWrong.Count.Should().Be(0);
-            retrievedBeforeWrong.Count.Should().Be(0);
+            retrievedAfterCorrect.Item1.Count.Should().Be(1);
+            retrievedBeforeCorrect.Item1.Count.Should().Be(1);
+            retrievedSameTime.Item1.Count.Should().Be(1);
+            retrievedAfterWrong.Item1.Count.Should().Be(0);
+            retrievedBeforeWrong.Item1.Count.Should().Be(0);
         }
     }
 }

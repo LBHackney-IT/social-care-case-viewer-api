@@ -142,7 +142,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return new Paginated<CaseSubmissionResponse>
             {
                 Count = totalCount,
-                Items = foundSubmission.Select(s =>
+                Items = foundSubmission?.Select(s =>
                     s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory).ToResponse()).ToList()
             };
         }

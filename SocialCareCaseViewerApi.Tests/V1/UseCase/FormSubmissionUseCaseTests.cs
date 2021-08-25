@@ -869,11 +869,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.EditHistory.Should().BeNull();
+            response.Items.First()?.EditHistory.Should().BeNull();
         }
 
         [Test]
@@ -886,11 +886,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.EditHistory?.Count.Should().Be(1);
+            response.Items.First()?.EditHistory?.Count.Should().Be(1);
         }
 
         [Test]
@@ -903,11 +903,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.FormAnswers.Should().BeNull();
+            response.Items.First()?.FormAnswers.Should().BeNull();
         }
 
         [Test]
@@ -920,11 +920,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.FormAnswers?.Count.Should().Be(1);
+            response.Items.First()?.FormAnswers?.Count.Should().Be(1);
         }
     }
 }

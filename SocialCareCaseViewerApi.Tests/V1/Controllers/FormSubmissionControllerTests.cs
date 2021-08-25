@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers
@@ -229,14 +230,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         public void GetSubmissionByQueryParametersReturnsListOfCaseSubmissionsWith200Status()
         {
             var request = TestHelpers.CreateQueryCaseSubmissions(formId: "any-form-id");
-            var caseSubmissions =
-                new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission().ToDomain().ToResponse() };
-            _submissionsUseCaseMock.Setup(x => x.ExecuteGetByQuery(request)).Returns(caseSubmissions);
+            var paginatedCaseSubmissions = new Paginated<CaseSubmissionResponse>
+            {
+                Items = new List<CaseSubmissionResponse> { TestHelpers.CreateCaseSubmission().ToDomain().ToResponse() }, Count = 1
+            };
+            _submissionsUseCaseMock.Setup(x => x.ExecuteGetByQuery(request)).Returns(paginatedCaseSubmissions);
 
             var response = _formSubmissionController.GetSubmissionByQueryParameters(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
-            response?.Value.Should().BeEquivalentTo(caseSubmissions);
+            response?.Value.Should().BeEquivalentTo(paginatedCaseSubmissions);
         }
 
         [Test]
