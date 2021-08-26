@@ -8,7 +8,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -53,6 +52,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
+
+
             if (request.MosaicId != null)
             {
                 var builder = Builders<CaseSubmission>.Filter;
@@ -62,10 +63,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                     x.SubmissionState, SubmissionState.Submitted);
 
-                var pagination = new Pagination { Page = 1, Size = 100000 };
-
                 var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, pagination)
+                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
                     .Item1
                     .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
