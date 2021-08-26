@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -869,11 +870,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.EditHistory.Should().BeNull();
+            response.Items.First()?.EditHistory.Should().BeNull();
         }
 
         [Test]
@@ -886,11 +887,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.EditHistory?.Count.Should().Be(1);
+            response.Items.First()?.EditHistory?.Count.Should().Be(1);
         }
 
         [Test]
@@ -903,11 +904,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.FormAnswers.Should().BeNull();
+            response.Items.First()?.FormAnswers.Should().BeNull();
         }
 
         [Test]
@@ -920,11 +921,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Setup(m =>
                     m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns(caseSubmissions);
+                .Returns((caseSubmissions, 1));
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response?.First()?.FormAnswers?.Count.Should().Be(1);
+            response.Items.First()?.FormAnswers?.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryReturnsAPaginatedListAndTheTotalCount()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo");
+            var paginatedCaseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+            const long totalCount = 20;
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((paginatedCaseSubmissions, totalCount));
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response.Should().BeEquivalentTo(new Paginated<CaseSubmissionResponse>
+            {
+                Items = paginatedCaseSubmissions.Select(x => x.ToDomain().ToResponse()).ToList(),
+                Count = totalCount
+            });
         }
     }
 }

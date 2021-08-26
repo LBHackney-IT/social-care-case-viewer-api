@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -45,7 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Case submission successfully found</response>
         /// <response code="400">Invalid query made</response>
-        [ProducesResponseType(typeof(CaseSubmissionResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Paginated<CaseSubmissionResponse>), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetSubmissionByQueryParameters([FromQuery] QueryCaseSubmissionsRequest request)
         {
