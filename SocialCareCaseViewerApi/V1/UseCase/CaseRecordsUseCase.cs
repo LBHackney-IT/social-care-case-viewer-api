@@ -62,12 +62,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                     x.SubmissionState, SubmissionState.Submitted);
 
-                var pagination = new Pagination { Page = 1, Size = 100000 };
 
                 var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, pagination)
+                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
                     .Item1
-                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
                     .ToList();
 

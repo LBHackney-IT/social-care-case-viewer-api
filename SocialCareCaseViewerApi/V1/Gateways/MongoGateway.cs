@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Helpers;
@@ -80,14 +79,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public (List<CaseSubmission>, long) LoadRecordsByFilter(
             string collectionName,
             FilterDefinition<CaseSubmission> filter,
-            Pagination pagination
+            Pagination? pagination = null
         )
         {
             var collection = _mongoDatabase.GetCollection<CaseSubmission>(collectionName);
 
-            var sortDefinition = Builders<CaseSubmission>.Sort.Descending(a => a.CreatedAt);
+            if (pagination != null)
+            {
+                var sortDefinition = Builders<CaseSubmission>.Sort.Descending(a => a.CreatedAt);
 
-            return (collection.Find(filter).Sort(sortDefinition).Skip(pagination.Skip).Limit(pagination.Size).ToList(), collection.Find(filter).CountDocuments());
+                return (collection.Find(filter).Sort(sortDefinition).Skip(pagination.Skip).Limit(pagination.Size).ToList(), collection.Find(filter).CountDocuments());
+            }
+
+            return (collection.Find(filter).ToList(), collection.Find(filter).CountDocuments());
+
         }
     }
 

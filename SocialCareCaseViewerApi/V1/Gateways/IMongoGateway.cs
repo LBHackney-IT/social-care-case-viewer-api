@@ -18,6 +18,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<T1> LoadMultipleRecordsByProperty<T1, T2>(string collectionName, string propertyName,
             T2 propertyValue);
         public T1 LoadRecordByProperty<T1, T2>(string collectionName, string propertyName, T2 propertyValue);
-        public (List<CaseSubmission>, long) LoadRecordsByFilter(string collectionName, FilterDefinition<CaseSubmission> filter, Pagination pagination);
+        public (List<CaseSubmission>, long) LoadRecordsByFilter(string collectionName, FilterDefinition<CaseSubmission> filter, Pagination? pagination);
     }
 }
