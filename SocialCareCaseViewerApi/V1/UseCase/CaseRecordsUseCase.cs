@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -54,11 +55,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.MosaicId != null)
             {
-                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                var builder = Builders<CaseSubmission>.Filter;
+                var filter = builder.Empty;
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
                     r => r.Id == long.Parse(request.MosaicId));
+                filter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.SubmissionState, SubmissionState.Submitted);
+
+                var pagination = new Pagination { Page = 1, Size = 100000 };
 
                 var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
+                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, pagination)
                     .Item1
                     .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
