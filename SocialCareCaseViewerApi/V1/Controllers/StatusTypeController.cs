@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
         }
 
-         /// <summary>
+        /// <summary>
         /// Create a case status
         /// </summary>
         /// <param name="request"></param>

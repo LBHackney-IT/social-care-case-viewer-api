@@ -1059,7 +1059,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             _databaseContext.CaseStatuses.Add(caseStatus);
 
-            foreach (var optionValue in request.Fields){
+            foreach (var optionValue in request.Fields)
+            {
                 var field = _databaseContext.CaseStatusTypeFields
                 .Where(f => f.Name == optionValue.Name)
                 .FirstOrDefault();
