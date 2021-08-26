@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(
                 () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
             _mockMongoGateway
-                .Setup(x => x.LoadRecordsByFilter(MongoGateway.MongoConnectionStrings.Map[MongoGateway.Collection.ResidentCaseSubmissions],
+                .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
                     It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
                 .Returns((expectedResponse, 3));
 

@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
-            
+
 
             if (request.MosaicId != null)
             {
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     x.SubmissionState, SubmissionState.Submitted);
 
                 var caseSubmissions = _mongoGateway
-                    .LoadRecordsByFilter(MongoGateway.MongoConnectionStrings.Map[MongoGateway.Collection.ResidentCaseSubmissions], filter, null)
+                    .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
                     .Item1
                     .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
