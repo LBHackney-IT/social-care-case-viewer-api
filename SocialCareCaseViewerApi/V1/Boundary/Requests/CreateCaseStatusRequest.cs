@@ -34,9 +34,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; } = null!;
     }
 
-    public class CaseStatusRequestField {
-        public String Name { get; set; }
-        public String Selected { get; set; }
+    public class CaseStatusRequestField
+    {
+        public String? Name { get; set; }
+        public String? Selected { get; set; }
     }
 
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>
@@ -62,7 +63,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.StartDate)
                 .NotNull().WithMessage("Start date required")
                 .LessThan(DateTime.Now).WithMessage("Start date must be in the past");
-                
+
             RuleFor(pr => pr.Notes)
                 .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
             RuleFor(pr => pr.CreatedBy)
@@ -70,4 +71,4 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .EmailAddress().WithMessage("'createdBy' must be an email address.");
         }
     }
-} 
+}
