@@ -42,8 +42,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
         IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId);
+        CaseStatus GetCaseStatusesByPersonIdDate(long personId, System.DateTime period);
         CaseStatusType GetCaseStatusTypeWithFields(string caseStatusType);
-        void CreateCaseStatus(CreateCaseStatusRequest request);
+        CaseStatus CreateCaseStatus(CreateCaseStatusRequest request);
         void CreateRequestAudit(CreateRequestAuditRequest request);
     }
 }

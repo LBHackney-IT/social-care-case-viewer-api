@@ -47,26 +47,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var workerDoesNotExist = worker == null;
             if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
 
-            // add check if case status exists for the period
+            // check if case status exists for the period
+            var personCaseStatus = _databaseGateway.GetCaseStatusesByPersonIdDate(request.PersonId, request.StartDate);
 
-            // var personCaseStatus = _databaseGateway.GetCaseStatusesByPersonId(request.PersonId);
-
-            // var personalRelationships = personWithPersonalRelationships.PersonalRelationships;
-            // var personCaseStatusAlreadyExists = personCaseStatus.Find(pr => pr.OtherPersonId == request.OtherPersonId && pr.Type.Description == request.Type) != null;
-            // if (personalRelationshipAlreadyExists) throw new PersonalRelationshipAlreadyExistsException($"Personal relationship with 'type' of '{request.Type}' already exists.");
+            var personCaseStatusAlreadyExists = personCaseStatus != null;
+            if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
 
             _databaseGateway.CreateCaseStatus(request);
-
-            // _databaseGateway.CreatePersonalRelationship(new CreatePersonalRelationshipRequest()
-            // {
-            //     PersonId = request.OtherPersonId,
-            //     OtherPersonId = request.PersonId,
-            //     TypeId = type.InverseTypeId,
-            //     IsMainCarer = null,
-            //     IsInformalCarer = null,
-            //     Details = null,
-            //     CreatedBy = request.CreatedBy
-            // });
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long? TypeId { get; set; }
 
         [JsonPropertyName("fields")]
-        public List<CaseStatusField> Fields { get; set; } = null!;
+        public List<CaseStatusRequestField> Fields { get; set; } = null!;
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
@@ -33,6 +33,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; } = null!;
     }
+
+    public class CaseStatusRequestField {
+        public String Name { get; set; }
+        public String Selected { get; set; }
+    }
+
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>
     {
         public CreateCaseStatusRequestValidator()
@@ -51,11 +57,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .ChildRules(field =>
                 {
                     field.RuleFor(t => t.Name).NotNull().WithMessage("Field must have a name");
-                    field.RuleFor(t => t.SelectedOption).NotNull().WithMessage("Field selected value must not be empty");
+                    field.RuleFor(t => t.Selected).NotNull().WithMessage("Field selected value must not be empty");
                 });
             RuleFor(x => x.StartDate)
                 .NotNull().WithMessage("Start date required")
                 .LessThan(DateTime.Now).WithMessage("Start date must be in the past");
+                
             RuleFor(pr => pr.Notes)
                 .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
             RuleFor(pr => pr.CreatedBy)

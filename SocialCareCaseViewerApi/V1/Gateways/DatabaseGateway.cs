@@ -1021,6 +1021,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses;
         }
+        public Infrastructure.CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
+        {
+            var caseStatuse = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
+                .Where(cs => cs.StartDate <= date)
+                .Where(cs => cs.EndDate == null || cs.EndDate >= date)
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField)
+                .FirstOrDefault();
+
+            return caseStatuse;
+        }
 
         public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
         {
@@ -1032,9 +1045,41 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response.FirstOrDefault();
         }
 
-        public void CreateCaseStatus(CreateCaseStatusRequest request)
+        public Infrastructure.CaseStatus CreateCaseStatus(CreateCaseStatusRequest request)
         {
-            throw new NotImplementedException();
+            var caseStatus = new Infrastructure.CaseStatus()
+            {
+                PersonId = request.PersonId,
+                TypeId = (long) request.TypeId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                Notes = request.Notes,
+                CreatedBy = request.CreatedBy
+            };
+
+            _databaseContext.CaseStatuses.Add(caseStatus);
+
+            foreach (var optionValue in request.Fields){
+                var field = _databaseContext.CaseStatusTypeFields
+                .Where(f => f.Name == optionValue.Name)
+                .FirstOrDefault();
+
+                var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
+                .Where(fov => fov.Name == optionValue.Selected)
+                .Where(fov => fov.TypeFieldId == field.Id)
+                .FirstOrDefault();
+
+                CaseStatusFieldOption fieldOptions = new Infrastructure.CaseStatusFieldOption()
+                {
+                    Status = caseStatus,
+                    FieldOption = fieldTypeOption
+                };
+                _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+            }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus;
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
