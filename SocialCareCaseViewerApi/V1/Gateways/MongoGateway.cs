@@ -89,12 +89,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 var sortDefinition = Builders<CaseSubmission>.Sort.Descending(a => a.CreatedAt);
 
-                return (
-                    collection.Find(filter).Sort(sortDefinition).Skip(pagination.Skip).Limit(pagination.Size).ToList(),
-                    collection.Find(filter).CountDocuments());
+                return (collection.Find(filter).Sort(sortDefinition).Skip(pagination.Skip).Limit(pagination.Size)
+                    .ToList(), collection.Find(filter).CountDocuments());
             }
 
-            return (collection.Find(filter).ToList(), collection.Find(filter).CountDocuments());
+            var data = collection.Find(filter).ToList();
+            return (data, data.Count);
         }
     }
 
