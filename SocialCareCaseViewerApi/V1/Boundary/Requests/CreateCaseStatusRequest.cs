@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long? TypeId { get; set; }
 
         [JsonPropertyName("fields")]
-        public List<CaseStatusRequestField> Fields { get; set; } = null!;
+        public List<CaseStatusRequestField>? Fields { get; set; } = new List<CaseStatusRequestField>(){}!;
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
@@ -34,10 +34,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; } = null!;
     }
 
-    public class CaseStatusRequestField
-    {
-        public String? Name { get; set; }
-        public String? Selected { get; set; }
+    public class CaseStatusRequestField {
+        public String? Name { get; set; }  = null!;
+        public String? Selected { get; set; }  = null!;
     }
 
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>
@@ -48,27 +47,26 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .GreaterThanOrEqualTo(1).WithMessage("'personId' must be provided.");
             RuleFor(pr => pr.Type)
                 .NotNull().WithMessage("'type' must be provided.");
+
             RuleFor(pr => pr.Fields)
-                .NotNull().WithMessage("'fields' must be provided.");
-            RuleFor(pr => pr.Fields)
-                .NotNull().WithMessage("'fields' must be provided.");
-            RuleFor(pr => pr.Fields.Count)
-                .GreaterThan(0).WithMessage("A team must be provided");
+                .NotEmpty().WithMessage("'fields' must contain at least one value.");
+
             RuleForEach(pr => pr.Fields)
                 .ChildRules(field =>
                 {
                     field.RuleFor(t => t.Name).NotNull().WithMessage("Field must have a name");
                     field.RuleFor(t => t.Selected).NotNull().WithMessage("Field selected value must not be empty");
                 });
-            RuleFor(x => x.StartDate)
-                .NotNull().WithMessage("Start date required")
-                .LessThan(DateTime.Now).WithMessage("Start date must be in the past");
 
+            RuleFor(x => x.StartDate)
+                .LessThan(DateTime.Now).WithMessage("'start_date' must be in the past");
+                
             RuleFor(pr => pr.Notes)
-                .MaximumLength(1000).WithMessage("'details' must be less than or equal to 1,000 characters.");
+                .MaximumLength(1000).WithMessage("'notes' must be less than or equal to 1,000 characters.");
+                
             RuleFor(pr => pr.CreatedBy)
                 .NotNull().WithMessage("'createdBy' must be provided.")
                 .EmailAddress().WithMessage("'createdBy' must be an email address.");
         }
     }
-}
+} 
