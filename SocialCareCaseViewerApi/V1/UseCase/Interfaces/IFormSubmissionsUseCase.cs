@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
 
@@ -13,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 
         CaseSubmissionResponse ExecuteGetById(string submissionId);
 
-        IEnumerable<CaseSubmissionResponse> ExecuteGetByQuery(QueryCaseSubmissionsRequest request);
+        Paginated<CaseSubmissionResponse> ExecuteGetByQuery(QueryCaseSubmissionsRequest request);
 
         CaseSubmissionResponse ExecuteUpdateSubmission(string submissionId, UpdateCaseSubmissionRequest request);
         CaseSubmissionResponse UpdateAnswers(string submissionId, string stepId,

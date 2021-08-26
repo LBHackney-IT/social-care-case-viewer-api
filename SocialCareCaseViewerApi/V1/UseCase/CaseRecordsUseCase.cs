@@ -52,13 +52,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
+
+
             if (request.MosaicId != null)
             {
-                var filter = Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                var builder = Builders<CaseSubmission>.Filter;
+                var filter = builder.Empty;
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
                     r => r.Id == long.Parse(request.MosaicId));
+                filter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.SubmissionState, SubmissionState.Submitted);
 
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
+                    .Item1
                     .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
                     .ToList();

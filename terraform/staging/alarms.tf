@@ -27,7 +27,7 @@ resource "aws_cloudwatch_metric_alarm" "social_care_frontend_critical_errors" {
   metric_name         = "SocialCareFrontendCriticalErrors"
   namespace           = "SocialCareFrontend"
   period              = "60"
-  statistic           = "Average"
+  statistic           = "Sum"
   threshold           = "2"
   alarm_description   = "Triggers an alarm every time there are 2 critical errors in a minute for the Social Care Frontend."
   alarm_actions       = [aws_sns_topic.social_care_alerts.arn]
