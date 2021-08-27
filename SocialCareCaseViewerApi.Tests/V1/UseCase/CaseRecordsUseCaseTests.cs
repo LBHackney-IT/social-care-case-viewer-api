@@ -35,30 +35,65 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GetResidentCasesCallMongoGatewayAndReturnsResidentsSubmittedCases()
+        public void GetResidentCasesReturnsResidentsWithMosaicIdProvided()
         {
-            var request = TestHelpers.CreateListCasesRequest();
+            var request = TestHelpers.CreateListCasesRequest(mosaicId: "1");
+            var residents = new List<Person>
+            {
+                new Person { Id = 1, FirstName = "foo1", LastName = "bar1", DateOfBirth = DateTime.Now },
+                new Person { Id = 2, FirstName = "foo2", LastName = "bar2", DateOfBirth = DateTime.Now }
+            };
 
             var expectedResponse = new List<CaseSubmission>
             {
-                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-                TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, residentId: int.Parse(request.MosaicId ?? ""))
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residents: residents),
             };
 
-            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
-            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns("1");
+            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns("1");
             _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(
                 () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
             _mockMongoGateway
                 .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
                     It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns((expectedResponse, 3));
+                .Returns((expectedResponse, 1));
 
             var response = _caseRecordsUseCase.GetResidentCases(request);
 
-            response.Cases.Count.Should().Be(2);
-            response.Cases.Should().BeEquivalentTo(expectedResponse.Take(2).Select(x => x.ToCareCaseData(request)).ToList());
+            response.Cases.Count.Should().Be(1);
+            response.Cases.First().FirstName.Should().Be("foo1");
+            response.Cases.First().LastName.Should().Be("bar1");
+        }
+
+        [Test]
+        public void GetResidentCasesReturnsFirstResidentsWhenMosaicIdNotProvided()
+        {
+            var request = TestHelpers.CreateListCasesRequest(workerEmail: "example@hackney.gov.uk");
+            var residents = new List<Person>
+            {
+                new Person { FirstName = "foo1", LastName = "bar1", DateOfBirth = DateTime.Now },
+                new Person { FirstName = "foo2", LastName = "bar2", DateOfBirth = DateTime.Now }
+            };
+
+            var expectedResponse = new List<CaseSubmission>
+            {
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residents: residents),
+            };
+
+            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns("1");
+            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns("1");
+            _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(
+                () => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                    It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((expectedResponse, 1));
+
+            var response = _caseRecordsUseCase.GetResidentCases(request);
+
+            response.Cases.Count.Should().Be(1);
+            response.Cases.First().FirstName.Should().Be("foo1");
+            response.Cases.First().LastName.Should().Be("bar1");
         }
     }
 }

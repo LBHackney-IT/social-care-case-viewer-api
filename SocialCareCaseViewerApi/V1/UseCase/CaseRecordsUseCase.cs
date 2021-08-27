@@ -52,8 +52,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
-
-
             if (request.MosaicId != null || request.WorkerEmail != null)
             {
                 var builder = Builders<CaseSubmission>.Filter;
