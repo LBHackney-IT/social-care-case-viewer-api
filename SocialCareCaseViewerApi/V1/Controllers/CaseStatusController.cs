@@ -14,11 +14,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     [Produces("application/json")]
     [ApiVersion("1.0")]
 
-    public class StatusTypeController : Controller
+    public class CaseStatusController : Controller
     {
         private readonly ICaseStatusesUseCase _caseStatusesUseCase;
 
-        public StatusTypeController(ICaseStatusesUseCase caseStatusUseCase)
+        public CaseStatusController(ICaseStatusesUseCase caseStatusUseCase)
         {
             _caseStatusesUseCase = caseStatusUseCase;
         }
@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
         [Route("resident/case-status")]
-        public IActionResult CreatePersonCaseStatus([FromBody] CreateCaseStatusRequest request)
+        public IActionResult CreateCaseStatus([FromBody] CreateCaseStatusRequest request)
         {
             var validator = new CreateCaseStatusRequestValidator();
             var validationResults = validator.Validate(request);

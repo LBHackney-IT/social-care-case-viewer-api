@@ -33,6 +33,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void WhenStartDateIsInTheFutureReturnsErrorWithMessage()
+        {
+            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(startDate: System.DateTime.Today.AddDays(1));
+            
+            var response = createCaseStatusRequestValidator.Validate(badRequest);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'start_date' must be in the past");
+        }
+
+        [Test]
+        public void WhenFieldsIsEmptyReturnsErrorWithMessage()
+        {
+            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(fields: new System.Collections.Generic.List<CaseStatusRequestField>(){});
+            
+            var response = createCaseStatusRequestValidator.Validate(badRequest);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'fields' must contain at least one value.");
+        }
+
+        [Test]
         public void WhenNotesIsAbove1000CharactersReturnsErrorWithMessage()
         {
             var badRequest = CaseStatusHelper.CreateCaseStatusRequest(notes: _faker.Random.String(1001));
