@@ -59,13 +59,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 var builder = Builders<CaseSubmission>.Filter;
                 var filter = builder.Empty;
                 if (request.MosaicId != null){
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.Id == long.Parse(request.MosaicId));
+                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                        r => r.Id == long.Parse(request.MosaicId));
                 }
                 if (request.WorkerEmail != null)
                 {
                     filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
-                }            
+                }
                 filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                     x.SubmissionState, SubmissionState.Submitted);
 
