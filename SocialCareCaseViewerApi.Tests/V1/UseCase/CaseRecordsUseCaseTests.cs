@@ -7,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -40,8 +39,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.CreateListCasesRequest(mosaicId: "1");
             var residents = new List<Person>
             {
-                new Person { Id = 1, FirstName = "foo1", LastName = "bar1", DateOfBirth = DateTime.Now },
                 new Person { Id = 2, FirstName = "foo2", LastName = "bar2", DateOfBirth = DateTime.Now }
+                 new Person { Id = 1, FirstName = "foo1", LastName = "bar1", DateOfBirth = DateTime.Now },
             };
 
             var expectedResponse = new List<CaseSubmission>
