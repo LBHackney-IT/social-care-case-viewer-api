@@ -54,19 +54,24 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
 
 
-            if (request.MosaicId != null)
+            if (request.MosaicId != null || request.WorkerEmail != null)
             {
                 var builder = Builders<CaseSubmission>.Filter;
                 var filter = builder.Empty;
+                if (request.MosaicId != null){
                 filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
                     r => r.Id == long.Parse(request.MosaicId));
+                }
+                if (request.WorkerEmail != null)
+                {
+                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+                }            
                 filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                     x.SubmissionState, SubmissionState.Submitted);
 
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
                     .Item1
-                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
                     .ToList();
 
