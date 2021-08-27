@@ -56,7 +56,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 var builder = Builders<CaseSubmission>.Filter;
                 var filter = builder.Empty;
-                if (request.MosaicId != null){
+                if (request.MosaicId != null)
+                {
                     filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
                         r => r.Id == long.Parse(request.MosaicId));
                 }
