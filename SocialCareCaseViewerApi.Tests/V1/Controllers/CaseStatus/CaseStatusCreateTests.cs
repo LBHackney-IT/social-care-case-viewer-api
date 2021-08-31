@@ -53,5 +53,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
             response?.Value.Should().Be(exceptionMessage);
         }
 
+        [Test]
+        public void WhenCaseTypeNotFoundExceptionIsThrownReturns400WithMessage()
+        {
+            var exceptionMessage = "error message";
+            _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()))
+                .Throws(new CaseStatusTypeNotFoundException(exceptionMessage));
+                
+            var request = CaseStatusHelper.CreateCaseStatusRequest();
+
+            var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
+
+        [Test]
+        public void WhenCaseTypeAlreadyExistsExceptionIsThrownReturns400WithMessage()
+        {
+            var exceptionMessage = "error message";
+            _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()))
+                .Throws(new CaseStatusAlreadyExistsException(exceptionMessage));
+            var request = CaseStatusHelper.CreateCaseStatusRequest();
+
+            var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
+
+        [Test]
+        public void WhenRequestIsValidReturnsSuccessfulResponse()
+        {
+            var request = CaseStatusHelper.CreateCaseStatusRequest();
+            var response = _caseStatusController.CreateCaseStatus(request);
+
+            response.Should().BeOfType<CreatedAtActionResult>();
+            var createdAtAction = response as CreatedAtActionResult;
+            createdAtAction.StatusCode.Should().Be(201);
+            createdAtAction.Value.Should().Be("Successfully created case status.");
+        }
     }
 }

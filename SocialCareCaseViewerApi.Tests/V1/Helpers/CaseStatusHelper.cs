@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
             var person = TestHelpers.CreatePerson(3);
             var caseStatus = TestHelpers.CreateCaseStatus(
                 personId: 3,
@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DatabaseContext databaseContext)
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
             var person = TestHelpers.CreatePerson(3);
             var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
 
@@ -59,14 +59,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           List<CaseStatusRequestField>? fields = null,
           DateTime? startDate = null,
           DateTime? endDate = null,
-          string? notes = null,
-          string? type = "CIN",          
+          string? notes = null,   
           string? createdBy = null
         )
         {
             return new Faker<CreateCaseStatusRequest>()
                 .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
-                .RuleFor(pr => pr.Type, type)
                 .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
                 .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="FieldName", Selected="N0"}})
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(- 1))
@@ -92,6 +90,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.SaveChanges();
 
             return (csus, person);
+        }
+
+        public static (CaseStatusType, CaseStatusTypeField, CaseStatusTypeFieldOption, SocialCareCaseViewerApi.V1.Infrastructure.Person) SaveCaseStatusFieldsToDatabase(DatabaseContext databaseContext){
+            var person = TestHelpers.CreatePerson();
+            var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id, fieldName: "reason", fieldDescription: "What's the reason?");
+            var caseOptions = TestHelpers.CreateCaseStatusTypeFieldOptions(caseStatusTypeField.Id, description: "reason", name: "N0");
+
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatusTypes.Add(caseStatusType);
+            databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
+            databaseContext.CaseStatusTypeFieldOptions.Add(caseOptions);
+
+            databaseContext.SaveChanges();
+
+            return (caseStatusType, caseStatusTypeField, caseOptions, person);
         }
     }
 }

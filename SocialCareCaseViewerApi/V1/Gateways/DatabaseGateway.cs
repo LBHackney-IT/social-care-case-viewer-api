@@ -1058,6 +1058,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             };
 
             _databaseContext.CaseStatuses.Add(caseStatus);
+            _databaseContext.SaveChanges();
 
             foreach (var optionValue in request.Fields)
             {
@@ -1072,8 +1073,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 CaseStatusFieldOption fieldOptions = new Infrastructure.CaseStatusFieldOption()
                 {
-                    Status = caseStatus,
-                    FieldOption = fieldTypeOption
+                    StatusId = caseStatus.Id,
+                    FieldOptionId = fieldTypeOption.Id
                 };
                 _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
             }

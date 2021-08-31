@@ -542,16 +542,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cst => cst.Description, f => typeDescription);
         }
 
+        public static CaseStatusTypeFieldOption CreateCaseStatusTypeFieldOptions(
+            long caseStatusTypeFieldId, 
+            string name, 
+            string description, 
+            long? id = null)
+        {
+            return new Faker<CaseStatusTypeFieldOption>()
+                .RuleFor(fo => fo.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(fo => fo.TypeFieldId, f => caseStatusTypeFieldId)
+                .RuleFor(fo => fo.Name, f => name)
+                .RuleFor(fo => fo.Description, f=> description);
+        }
+
 
         public static CaseStatusTypeField CreateCaseStatusTypeField(
-            CaseStatusType caseStatusType,
+            long caseStatusTypeId,
             long? id = null,
             string? fieldName = "placementReason",
             string? fieldDescription = "Some description")
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cstf => cstf.Type, f => caseStatusType)
+                .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
                 .RuleFor(cstf => cstf.Name, f => fieldName)
                 .RuleFor(cstf => cstf.Description, f => fieldDescription)
                 .RuleFor(cstf => cstf.Options,
