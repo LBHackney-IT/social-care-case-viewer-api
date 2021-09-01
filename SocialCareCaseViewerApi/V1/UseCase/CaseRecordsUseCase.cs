@@ -65,6 +65,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 {
                     filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
                 }
+
+                if (request.FormName == "Case Note"){
+                    filter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.FormId, "adult-case-note") | Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.FormId, "child-case-note");
+
+                }
                 filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                     x.SubmissionState, SubmissionState.Submitted);
 
