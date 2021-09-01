@@ -171,8 +171,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
 
         public static CareCaseData ToCareCaseData(this CaseSubmission caseSubmission, ListCasesRequest listCasesRequest)
         {
-            var resident = listCasesRequest.MosaicId != null ? caseSubmission.Residents
-                .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? "")) : caseSubmission.Residents.First();
+            var resident = caseSubmission.Residents
+                .First(x => x.Id == long.Parse(listCasesRequest.MosaicId ?? ""));
 
             return new CareCaseData
             {
