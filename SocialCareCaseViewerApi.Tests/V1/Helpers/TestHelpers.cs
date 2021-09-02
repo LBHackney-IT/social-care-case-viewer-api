@@ -544,14 +544,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static CaseStatusTypeFieldOption CreateCaseStatusTypeFieldOptions(
             long typeFieldId,
-            string value,
+            string name,
             string description,
             long? id = null)
         {
             return new Faker<CaseStatusTypeFieldOption>()
                 .RuleFor(fo => fo.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(fo => fo.TypeFieldId, f => typeFieldId)
-                .RuleFor(fo => fo.Name, f => value)
+                .RuleFor(fo => fo.Name, f => name)
                 .RuleFor(fo => fo.Description, f => description);
         }
 
