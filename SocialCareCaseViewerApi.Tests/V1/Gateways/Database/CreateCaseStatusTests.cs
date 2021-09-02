@@ -51,13 +51,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         public void SetsStartDateToNow()
         {
             var fakeTime = new DateTime(2000, 1, 1, 15, 30, 0);
-            _mockSystemTime.Setup(time => time.Now).Returns(fakeTime);
 
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+            var (caseStatusType, _, _) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, type: caseStatusType.Name, fields: requestField, startDate: fakeTime);
 

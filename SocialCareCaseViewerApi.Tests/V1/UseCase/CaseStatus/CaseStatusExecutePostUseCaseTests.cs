@@ -7,10 +7,9 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
-using System.Collections.Generic;
 using System;
 
-namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class CaseStatusExecutePostUseCaseTests
@@ -77,8 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         public void WhenCreatedByEmailDoesNotExistThrowsWorkerNotFoundException()
         {
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
-                .Returns((Worker) null);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
 
