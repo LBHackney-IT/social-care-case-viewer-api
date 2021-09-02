@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
     [TestFixture]
     public class CaseStatusExecutePostUseCaseTests
     {
-         private Mock<IDatabaseGateway> _mockDatabaseGateway;
+        private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private CaseStatusesUseCase _caseStatusesUseCase;
         private CreateCaseStatusRequest _request;
         private readonly CaseStatusType _typeInRequest = TestHelpers.CreateCaseStatusType();
@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<int>()))
                 .Returns(TestHelpers.CreatePerson((int) _request.PersonId));
 
-            CaseStatus _caseStatus =  CaseStatusHelper.CreateCaseStatus();
+            CaseStatus _caseStatus = CaseStatusHelper.CreateCaseStatus();
 
             _mockDatabaseGateway.Setup(x => x.CreateCaseStatus(It.IsAny<CreateCaseStatusRequest>()))
                 .Returns(_caseStatus);
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         public void CallsDatabaseGatewayToCheckPersonExists()
         {
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
-            
+
             _caseStatusesUseCase.ExecutePost(_request);
             _mockDatabaseGateway.Verify(gateway => gateway.GetPersonByMosaicId(_request.PersonId));
         }
@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         public void WhenPersonDoesNotExistThrowsPersonNotFoundException()
         {
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>()));
-            
+
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
 
             act.Should().Throw<PersonNotFoundException>()
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
         }
         [Test]
         public void WhenTypeDoesNotExistThrowsTypeNotFoundException()
-        {            
+        {
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(It.IsAny<string>()));
 

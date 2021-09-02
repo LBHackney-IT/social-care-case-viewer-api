@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long? TypeId { get; set; }
 
         [JsonPropertyName("fields")]
-        public List<CaseStatusRequestField>? Fields { get; set; } = new List<CaseStatusRequestField>(){}!;
+        public List<CaseStatusRequestField>? Fields { get; set; } = new List<CaseStatusRequestField>() { }!;
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
@@ -34,9 +34,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; } = null!;
     }
 
-    public class CaseStatusRequestField {
-        public String? Name { get; set; }  = null!;
-        public String? Selected { get; set; }  = null!;
+    public class CaseStatusRequestField
+    {
+        public String? Name { get; set; } = null!;
+        public String? Selected { get; set; } = null!;
     }
 
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>
@@ -60,13 +61,13 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
             RuleFor(x => x.StartDate)
                 .LessThan(DateTime.Now).WithMessage("'start_date' must be in the past");
-                
+
             RuleFor(pr => pr.Notes)
                 .MaximumLength(1000).WithMessage("'notes' must be less than or equal to 1,000 characters.");
-                
+
             RuleFor(pr => pr.CreatedBy)
                 .NotNull().WithMessage("'createdBy' must be provided.")
                 .EmailAddress().WithMessage("'createdBy' must be an email address.");
         }
     }
-} 
+}

@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-        
+
         [Test]
         public void CreatesACaseStatus()
         {
@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
+            var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField);
 
             _databaseGateway.CreateCaseStatus(request);
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
 
             var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
-            var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
+            var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField, startDate: fakeTime);
 
             _databaseGateway.CreateCaseStatus(request);
@@ -77,7 +77,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.SaveChanges();
 
             var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
-            var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
+            var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField);
 
             _databaseGateway.CreateCaseStatus(request);
@@ -89,5 +89,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
     }
 
-           
+
 }

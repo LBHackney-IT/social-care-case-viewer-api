@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenStartDateIsInTheFutureReturnsErrorWithMessage()
         {
             var badRequest = CaseStatusHelper.CreateCaseStatusRequest(startDate: System.DateTime.Today.AddDays(1));
-            
+
             var response = createCaseStatusRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
@@ -46,8 +46,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void WhenFieldsIsEmptyReturnsErrorWithMessage()
         {
-            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(fields: new System.Collections.Generic.List<CaseStatusRequestField>(){});
-            
+            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(fields: new System.Collections.Generic.List<CaseStatusRequestField>() { });
+
             var response = createCaseStatusRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenRequestIsValidReturnsItIsValid()
         {
             var validRequest = CaseStatusHelper.CreateCaseStatusRequest();
-            
+
             var response = createCaseStatusRequestValidator.Validate(validRequest);
 
             response.IsValid.Should().BeTrue();

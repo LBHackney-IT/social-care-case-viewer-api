@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
             var exceptionMessage = "error message";
             _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()))
                 .Throws(new PersonNotFoundException(exceptionMessage));
-                
+
             var request = CaseStatusHelper.CreateCaseStatusRequest();
 
             var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.Relationship
             var exceptionMessage = "error message";
             _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()))
                 .Throws(new CaseStatusTypeNotFoundException(exceptionMessage));
-                
+
             var request = CaseStatusHelper.CreateCaseStatusRequest();
 
             var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;

@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var type = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
-            
+
             request.TypeId = type.Id;
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
