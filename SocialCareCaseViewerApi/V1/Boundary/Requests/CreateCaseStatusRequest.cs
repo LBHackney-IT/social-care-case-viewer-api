@@ -49,9 +49,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.Type)
                 .NotNull().WithMessage("'type' must be provided.");
 
-            RuleFor(pr => pr.Fields)
-                .NotEmpty().WithMessage("'fields' must contain at least one value.");
-
             RuleForEach(pr => pr.Fields)
                 .ChildRules(field =>
                 {

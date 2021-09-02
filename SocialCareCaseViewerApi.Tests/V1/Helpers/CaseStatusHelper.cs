@@ -82,10 +82,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           string? createdBy = null
         )
         {
-            // var caseType = TestHelpers.CreateCaseStatusType();
-            // var typeField = TestHelpers.CreateCaseStatusTypeField(caseType.Id);
-            // var typeOption = TestHelpers.CreateCaseStatusTypeFieldOptions(typeFieldId: typeField.Id, value: "N0", description: "some description");
-
             return new Faker<CreateCaseStatusRequest>()
                 .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(pr => pr.Type, f => type ?? "CIN")
@@ -120,7 +116,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType(id: 999, name: "CSTYPE");
             var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id, name: "reason", description: "What's the reason?");
-            var caseOptions = TestHelpers.CreateCaseStatusTypeFieldOptions(caseStatusTypeField.Id, value: "N0", description: "value of the reason");
+            var caseOptions = TestHelpers.CreateCaseStatusTypeFieldOptions(caseStatusTypeField.Id, name: "N0", description: "value of the reason");
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
