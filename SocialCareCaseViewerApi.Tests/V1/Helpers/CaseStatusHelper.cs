@@ -74,7 +74,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CreateCaseStatusRequest CreateCaseStatusRequest(
           long? personId = null,
           string? type = null,
-          long? typeId = null,
           List<CaseStatusRequestField>? fields = null,
           DateTime? startDate = null,
           DateTime? endDate = null,
@@ -85,7 +84,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CreateCaseStatusRequest>()
                 .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(pr => pr.Type, f => type ?? "CIN")
-                .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex + 1)
                 .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "placementReason", Selected = "N0" } })
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(-1))
                 .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))

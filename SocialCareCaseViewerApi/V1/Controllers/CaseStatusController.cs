@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status not found</response>
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("residents/{personId:long}/casestatuses")]
+        [Route("residents/{personId:long}/case-statuses")]
         public IActionResult ListCaseStatuses(long personId)
         {
             try
@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid CreatePersonCaseStatusRequest received</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        [Route("resident/case-status")]
+        [Route("resident/case-statuses")]
         public IActionResult CreateCaseStatus([FromBody] CreateCaseStatusRequest request)
         {
             var validator = new CreateCaseStatusRequestValidator();
@@ -64,9 +64,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                _caseStatusesUseCase.ExecutePost(request);
+                var caseStatus = _caseStatusesUseCase.ExecutePost(request);
 
-                return CreatedAtAction("CreatePersonCaseStatus", "Successfully created case status.");
+                return CreatedAtAction(nameof(CreateCaseStatus), caseStatus);
             }
             catch (Exception e) when (
                 e is PersonNotFoundException ||

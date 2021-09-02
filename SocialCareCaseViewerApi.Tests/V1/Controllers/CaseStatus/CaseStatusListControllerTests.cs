@@ -8,7 +8,7 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using AutoFixture;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Controllers
+namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
 {
     [TestFixture]
     public class CaseStatusListControllerTests

@@ -1,5 +1,6 @@
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -32,16 +33,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return response;
         }
 
-        public void ExecutePost(CreateCaseStatusRequest request)
+        public CaseStatus ExecutePost(CreateCaseStatusRequest request)
         {
-            var persons = _databaseGateway.GetPersonByMosaicId(request.PersonId);
-            if (persons == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
+            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
+            if (person == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
 
             var type = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
-
-            request.TypeId = type.Id;
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;
@@ -53,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var personCaseStatusAlreadyExists = personCaseStatus != null;
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
 
-            _databaseGateway.CreateCaseStatus(request);
+            return _databaseGateway.CreateCaseStatus(request);
         }
     }
 }

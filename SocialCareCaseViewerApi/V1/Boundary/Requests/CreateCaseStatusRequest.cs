@@ -15,8 +15,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = null!;
-        [JsonIgnore]
-        public long? TypeId { get; set; }
 
         [JsonPropertyName("fields")]
         public List<CaseStatusRequestField>? Fields { get; set; } = new List<CaseStatusRequestField>() { }!;

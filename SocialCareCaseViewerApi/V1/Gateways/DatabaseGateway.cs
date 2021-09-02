@@ -1047,10 +1047,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Infrastructure.CaseStatus CreateCaseStatus(CreateCaseStatusRequest request)
         {
+
+            var statusType = _databaseContext.CaseStatusTypes
+                .Where(f => f.Name == request.Type)
+                .FirstOrDefault();
+
             var caseStatus = new Infrastructure.CaseStatus()
             {
                 PersonId = request.PersonId,
-                TypeId = (long) request.TypeId,
+                TypeId = statusType.Id,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
                 Notes = request.Notes,
