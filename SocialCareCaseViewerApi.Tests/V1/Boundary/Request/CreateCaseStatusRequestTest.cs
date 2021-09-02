@@ -25,11 +25,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = createCaseStatusRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().HaveCount(4);
+            response.Errors.Should().HaveCount(3);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'personId' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'type' must be provided.");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided.");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'fields' must contain at least one value.");
         }
 
         [Test]
@@ -41,17 +40,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             response.IsValid.Should().BeFalse();
             response.Errors.Should().Contain(e => e.ErrorMessage == "'start_date' must be in the past");
-        }
-
-        [Test]
-        public void WhenFieldsIsEmptyReturnsErrorWithMessage()
-        {
-            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(fields: new System.Collections.Generic.List<CaseStatusRequestField>() { });
-
-            var response = createCaseStatusRequestValidator.Validate(badRequest);
-
-            response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'fields' must contain at least one value.");
         }
 
         [Test]
