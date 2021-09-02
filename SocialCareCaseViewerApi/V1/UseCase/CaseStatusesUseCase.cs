@@ -38,10 +38,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (persons == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
 
             var type = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
-            request.TypeId = type.Id;
-
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
+            
+            request.TypeId = type.Id;
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;

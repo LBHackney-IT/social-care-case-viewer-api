@@ -534,25 +534,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static CaseStatusType CreateCaseStatusType(
             long? id = null,
-            string? typeName = "CIN",
-            string? typeDescription = "Child in need")
+            string? name = "CIN",
+            string? description = "Child in need")
         {
             return new Faker<CaseStatusType>()
                 .RuleFor(cst => cst.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cst => cst.Name, f => typeName)
-                .RuleFor(cst => cst.Description, f => typeDescription);
+                .RuleFor(cst => cst.Name, f => name)
+                .RuleFor(cst => cst.Description, f => description);
         }
 
         public static CaseStatusTypeFieldOption CreateCaseStatusTypeFieldOptions(
-            long caseStatusTypeFieldId, 
-            string name, 
+            long typeFieldId, 
+            string value, 
             string description, 
             long? id = null)
         {
             return new Faker<CaseStatusTypeFieldOption>()
                 .RuleFor(fo => fo.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(fo => fo.TypeFieldId, f => caseStatusTypeFieldId)
-                .RuleFor(fo => fo.Name, f => name)
+                .RuleFor(fo => fo.TypeFieldId, f => typeFieldId)
+                .RuleFor(fo => fo.Name, f => value)
                 .RuleFor(fo => fo.Description, f=> description);
         }
 
@@ -560,14 +560,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseStatusTypeField CreateCaseStatusTypeField(
             long caseStatusTypeId,
             long? id = null,
-            string? fieldName = "placementReason",
-            string? fieldDescription = "Some description")
+            string? name = "placementReason",
+            string? description = "Some description")
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
-                .RuleFor(cstf => cstf.Name, f => fieldName)
-                .RuleFor(cstf => cstf.Description, f => fieldDescription)
+                .RuleFor(cstf => cstf.Name, f => name)
+                .RuleFor(cstf => cstf.Description, f => description)
                 .RuleFor(cstf => cstf.Options,
                     (f, cstf) => new List<CaseStatusTypeFieldOption>()
                     {

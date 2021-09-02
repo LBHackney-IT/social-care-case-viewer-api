@@ -29,8 +29,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void CreatesACaseStatus()
         {
-            var (caseStatusType, caseStatusTypeField, caseOptions, person) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
-            
+            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
             var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField);
 
@@ -49,7 +53,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var fakeTime = new DateTime(2000, 1, 1, 15, 30, 0);
             _mockSystemTime.Setup(time => time.Now).Returns(fakeTime);
 
-            var (caseStatusType, caseStatusTypeField, caseOptions, person) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+
+            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField, startDate: fakeTime);
 
@@ -63,7 +72,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void AuditsTheCaseStatus()
         {
-            var (caseStatusType, caseStatusTypeField, caseOptions, person) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="reason", Selected="N0"}};
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, typeId: caseStatusType.Id, fields: requestField);
 

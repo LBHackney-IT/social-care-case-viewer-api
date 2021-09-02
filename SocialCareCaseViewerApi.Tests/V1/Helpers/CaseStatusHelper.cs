@@ -53,8 +53,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (csus, person);
         }
 
+        public static CaseStatus CreateCaseStatus(
+          long? personId = null,
+          long? typeId = null,
+          DateTime? startDate = null,
+          DateTime? endDate = null,
+          string? notes = null,   
+          string? createdBy = null
+        ) {
+          return new Faker<CaseStatus>()
+            .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
+            .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex + 1)
+            .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(- 1))
+            .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))
+            .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
+            .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
+        }
+
         public static CreateCaseStatusRequest CreateCaseStatusRequest(
           long? personId = null,
+          string? type = null,
           long? typeId = null,
           List<CaseStatusRequestField>? fields = null,
           DateTime? startDate = null,
@@ -63,10 +81,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           string? createdBy = null
         )
         {
+            // var caseType = TestHelpers.CreateCaseStatusType();
+            // var typeField = TestHelpers.CreateCaseStatusTypeField(caseType.Id);
+            // var typeOption = TestHelpers.CreateCaseStatusTypeFieldOptions(typeFieldId: typeField.Id, value: "N0", description: "some description");
+            
             return new Faker<CreateCaseStatusRequest>()
                 .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
-                .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex)
-                .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="FieldName", Selected="N0"}})
+                .RuleFor(pr => pr.Type, f => type ?? "CIN")
+                .RuleFor(pr => pr.TypeId, f => typeId ?? f.UniqueIndex + 1)
+                .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>(){ new CaseStatusRequestField() { Name="placementReason", Selected="N0"}})
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(- 1))
                 .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))
                 .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
@@ -92,20 +115,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (csus, person);
         }
 
-        public static (CaseStatusType, CaseStatusTypeField, CaseStatusTypeFieldOption, SocialCareCaseViewerApi.V1.Infrastructure.Person) SaveCaseStatusFieldsToDatabase(DatabaseContext databaseContext){
-            var person = TestHelpers.CreatePerson();
-            var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id, fieldName: "reason", fieldDescription: "What's the reason?");
-            var caseOptions = TestHelpers.CreateCaseStatusTypeFieldOptions(caseStatusTypeField.Id, description: "reason", name: "N0");
+        public static (CaseStatusType, CaseStatusTypeField, CaseStatusTypeFieldOption) SaveCaseStatusFieldsToDatabase(DatabaseContext databaseContext){
+            var caseStatusType = TestHelpers.CreateCaseStatusType(id: 999, name: "CSTYPE");
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id, name: "reason", description: "What's the reason?");
+            var caseOptions = TestHelpers.CreateCaseStatusTypeFieldOptions(caseStatusTypeField.Id, value: "N0", description: "value of the reason");
 
-            databaseContext.Persons.Add(person);
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
             databaseContext.CaseStatusTypeFieldOptions.Add(caseOptions);
 
             databaseContext.SaveChanges();
 
-            return (caseStatusType, caseStatusTypeField, caseOptions, person);
+            return (caseStatusType, caseStatusTypeField, caseOptions);
         }
     }
 }
