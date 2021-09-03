@@ -1068,20 +1068,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             foreach (var optionValue in request.Fields)
             {
                 var field = _databaseContext.CaseStatusTypeFields
-                .Where(f => f.Name == optionValue.Name)
-                .FirstOrDefault();
+                    .FirstOrDefault(f => f.Name == optionValue.Name);
 
                 var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
-                .Where(fov => fov.Name == optionValue.Selected)
-                .Where(fov => fov.TypeFieldId == field.Id)
-                .FirstOrDefault();
+                    .Where(fov => fov.Name == optionValue.Selected)
+                    .FirstOrDefault(fov => fov.TypeFieldId == field.Id);
 
-                CaseStatusFieldOption fieldOptions = new Infrastructure.CaseStatusFieldOption()
+                if (fieldTypeOption != null)
                 {
-                    StatusId = caseStatus.Id,
-                    FieldOptionId = fieldTypeOption.Id
-                };
-                _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+                    var fieldOptions = new CaseStatusFieldOption
+                    {
+                        StatusId = caseStatus.Id,
+                        FieldOptionId = fieldTypeOption.Id
+                    };
+
+                    _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+                }
             }
 
             _databaseContext.SaveChanges();

@@ -33,10 +33,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<int>()))
                 .Returns(TestHelpers.CreatePerson(_request.PersonId));
 
-            CaseStatus _caseStatus = CaseStatusHelper.CreateCaseStatus();
+            var caseStatus = CaseStatusHelper.CreateCaseStatus();
 
             _mockDatabaseGateway.Setup(x => x.CreateCaseStatus(It.IsAny<CreateCaseStatusRequest>()))
-                .Returns(_caseStatus);
+                .Returns(caseStatus);
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
                 .Returns(TestHelpers.CreateWorker(email: _request.CreatedBy));
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void WhenTypeDoesNotExistThrowsTypeNotFoundException()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson( _request.PersonId));
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(It.IsAny<string>()));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
