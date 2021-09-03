@@ -37,8 +37,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
 
             _request = PersonalRelationshipsHelper.CreatePersonalRelationshipRequest(type: _typeInRequest.Description);
 
-            _person = TestHelpers.CreatePerson((int) _request.PersonId);
-            _otherPerson = TestHelpers.CreatePerson((int) _request.OtherPersonId);
+            _person = TestHelpers.CreatePerson(_request.PersonId);
+            _otherPerson = TestHelpers.CreatePerson(_request.OtherPersonId);
 
             var personalRelationship = PersonalRelationshipsHelper.CreatePersonalRelationship(_person, _otherPerson, typeInExistingRelationship);
             _person.PersonalRelationships = new List<PersonalRelationship>() { personalRelationship };

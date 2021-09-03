@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _request = CaseStatusHelper.CreateCaseStatusRequest(type: _typeInRequest.Name);
 
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<int>()))
-                .Returns(TestHelpers.CreatePerson((int) _request.PersonId));
+                .Returns(TestHelpers.CreatePerson(_request.PersonId));
 
             CaseStatus _caseStatus = CaseStatusHelper.CreateCaseStatus();
 
@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void CallsDatabaseGatewayToCheckPersonExists()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
 
             _caseStatusesUseCase.ExecutePost(_request);
             _mockDatabaseGateway.Verify(gateway => gateway.GetPersonByMosaicId(_request.PersonId));
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void WhenTypeDoesNotExistThrowsTypeNotFoundException()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson( _request.PersonId));
             _mockDatabaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(It.IsAny<string>()));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
@@ -75,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void WhenCreatedByEmailDoesNotExistThrowsWorkerNotFoundException()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson((int) _request.PersonId));
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);

@@ -171,7 +171,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static InfrastructurePerson CreatePerson(int? personId = null, string? firstName = null, string? lastName = null)
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
