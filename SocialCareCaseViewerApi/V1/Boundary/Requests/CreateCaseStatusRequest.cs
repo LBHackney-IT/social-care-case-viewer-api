@@ -22,9 +22,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
 
-        [JsonPropertyName("endDate")]
-        public DateTime? EndDate { get; set; }
-
         [JsonPropertyName("notes")]
         public string Notes { get; set; } = null!;
 

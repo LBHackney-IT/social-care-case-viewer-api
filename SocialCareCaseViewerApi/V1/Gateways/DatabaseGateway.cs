@@ -1057,7 +1057,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = request.PersonId,
                 TypeId = statusType.Id,
                 StartDate = request.StartDate,
-                EndDate = request.EndDate,
                 Notes = request.Notes,
                 CreatedBy = request.CreatedBy
             };
@@ -1065,26 +1064,30 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.CaseStatuses.Add(caseStatus);
             _databaseContext.SaveChanges();
 
-            foreach (var optionValue in request.Fields)
+            if (request.Fields != null)
             {
-                var field = _databaseContext.CaseStatusTypeFields
-                    .FirstOrDefault(f => f.Name == optionValue.Name);
-
-                var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
-                    .Where(fov => fov.Name == optionValue.Selected)
-                    .FirstOrDefault(fov => fov.TypeFieldId == field.Id);
-
-                if (fieldTypeOption != null)
+                foreach (var optionValue in request.Fields)
                 {
-                    var fieldOptions = new CaseStatusFieldOption
-                    {
-                        StatusId = caseStatus.Id,
-                        FieldOptionId = fieldTypeOption.Id
-                    };
+                    var field = _databaseContext.CaseStatusTypeFields
+                        .FirstOrDefault(f => f.Name == optionValue.Name);
 
-                    _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+                    var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
+                        .Where(fov => fov.Name == optionValue.Selected)
+                        .FirstOrDefault(fov => fov.TypeFieldId == field.Id);
+
+                    if (fieldTypeOption != null)
+                    {
+                        var fieldOptions = new CaseStatusFieldOption
+                        {
+                            StatusId = caseStatus.Id,
+                            FieldOptionId = fieldTypeOption.Id
+                        };
+
+                        _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+                    }
                 }
             }
+
 
             _databaseContext.SaveChanges();
 

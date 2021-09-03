@@ -76,7 +76,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           string? type = null,
           List<CaseStatusRequestField>? fields = null,
           DateTime? startDate = null,
-          DateTime? endDate = null,
           string? notes = null,
           string? createdBy = null
         )
@@ -86,7 +85,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(pr => pr.Type, f => type ?? "CIN")
                 .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "placementReason", Selected = "N0" } })
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(-1))
-                .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))
                 .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
         }
