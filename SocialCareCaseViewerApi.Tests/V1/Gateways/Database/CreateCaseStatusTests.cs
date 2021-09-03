@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void CreatesACaseStatus()
         {
-            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+            var (caseStatusType, _, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
 
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (caseStatusType, caseStatusTypeField, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
+            var (caseStatusType, _, _) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, type: caseStatusType.Name, fields: requestField);
 

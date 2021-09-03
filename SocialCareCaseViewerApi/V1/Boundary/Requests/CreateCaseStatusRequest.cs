@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string Type { get; set; } = null!;
 
         [JsonPropertyName("fields")]
-        public List<CaseStatusRequestField>? Fields { get; set; } = new List<CaseStatusRequestField>() { }!;
+        public List<CaseStatusRequestField> Fields { get; set; } = new List<CaseStatusRequestField>();
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
