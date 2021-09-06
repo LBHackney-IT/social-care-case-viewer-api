@@ -15,7 +15,7 @@ using SocialCareCaseViewerApi.V1.UseCase;
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
-    public class GetCaseStatusFieldsUseCaseTests
+    public class CaseStatusFieldsExecuteGetUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDataBaseGateway;
         private GetCaseStatusFieldsUseCase _getCaseStatusFieldsUseCase;
