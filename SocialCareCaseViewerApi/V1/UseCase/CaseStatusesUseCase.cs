@@ -17,6 +17,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+         public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
+        {
+            var caseStatusType = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
+
+            if (caseStatusType == null)
+            {
+                throw new CaseStatusNotFoundException();
+            }
+
+            return new GetCaseStatusFieldsResponse
+            {
+                Description = caseStatusType.Description,
+                Name = caseStatusType.Name,
+                Fields = caseStatusType?.Fields.ToResponse()
+            };
+        }
+
         public ListCaseStatusesResponse ExecuteGet(long personId)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);

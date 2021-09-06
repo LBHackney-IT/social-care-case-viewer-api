@@ -14,22 +14,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     [TestFixture]
     public class CaseStatusTypeFieldsControllerTest
     {
-        private CaseStatusTypeFieldsController _caseStatusTypeFieldsController;
-        private Mock<IGetCaseStatusFieldsUseCase> _mockCaseStatusesUseCase;
+        private CaseStatusController _caseStatusTypeFieldsController;
+        private Mock<ICaseStatusesUseCase> _mockCaseStatusesUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
-            _mockCaseStatusesUseCase = new Mock<IGetCaseStatusFieldsUseCase>();
-            _caseStatusTypeFieldsController = new CaseStatusTypeFieldsController(_mockCaseStatusesUseCase.Object);
+            _mockCaseStatusesUseCase = new Mock<ICaseStatusesUseCase>();
+            _caseStatusTypeFieldsController = new CaseStatusController(_mockCaseStatusesUseCase.Object);
         }
 
         [Test]
         public void GetCaseStatusTypeFieldsByTypeReturns200WhenCaseStatusTypeIsFound()
         {
             var getCaseStatusFieldsResponse = _fixture.Create<GetCaseStatusFieldsResponse>();
-            _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGetFields(It.IsAny<GetCaseStatusFieldsRequest>()))
                 .Returns(getCaseStatusFieldsResponse);
 
             var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields(new GetCaseStatusFieldsRequest { Type = "Test" }) as ObjectResult;
@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetCaseStatusTypeFieldsByTypeReturns404WhenCaseStatusTypeIsNotFound()
         {
-            _mockCaseStatusesUseCase.Setup(x => x.Execute(It.IsAny<GetCaseStatusFieldsRequest>()))
+            _mockCaseStatusesUseCase.Setup(x => x.ExecuteGetFields(It.IsAny<GetCaseStatusFieldsRequest>()))
                 .Throws<CaseStatusNotFoundException>();
 
             var response = _caseStatusTypeFieldsController.GetCaseStatusTypeFields(new GetCaseStatusFieldsRequest { Type = "NonExistent" }) as ObjectResult;

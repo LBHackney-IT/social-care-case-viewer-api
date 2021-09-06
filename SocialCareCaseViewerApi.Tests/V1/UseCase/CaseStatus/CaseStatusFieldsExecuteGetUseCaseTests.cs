@@ -18,14 +18,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class CaseStatusFieldsExecuteGetUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDataBaseGateway;
-        private GetCaseStatusFieldsUseCase _getCaseStatusFieldsUseCase;
+        private CaseStatusesUseCase _getCaseStatusFieldsUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockDataBaseGateway = new Mock<IDatabaseGateway>();
-            _getCaseStatusFieldsUseCase = new GetCaseStatusFieldsUseCase(_mockDataBaseGateway.Object);
+            _getCaseStatusFieldsUseCase = new CaseStatusesUseCase(_mockDataBaseGateway.Object);
         }
 
         private GetCaseStatusFieldsRequest GetRequestForType(string type)
@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
                 .Returns(DatabaseGatewayTests.GetValidCaseStatusTypeWithFields("type"));
 
-            _getCaseStatusFieldsUseCase.Execute(request);
+            _getCaseStatusFieldsUseCase.ExecuteGetFields(request);
 
             _mockDataBaseGateway.Verify(x => x.GetCaseStatusTypeWithFields("type"));
         }
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
                 .Returns((CaseStatusType) null);
 
-            Action act = () => _getCaseStatusFieldsUseCase.Execute(request);
+            Action act = () => _getCaseStatusFieldsUseCase.ExecuteGetFields(request);
 
             act.Should().Throw<CaseStatusNotFoundException>()
                 .WithMessage("Case Status Type does not exist.");
@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDataBaseGateway.Setup(x => x.GetCaseStatusTypeWithFields(request.Type))
                 .Returns(caseStatusType);
 
-            GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.Execute(request);
+            GetCaseStatusFieldsResponse response = _getCaseStatusFieldsUseCase.ExecuteGetFields(request);
 
             response.Fields.First().Name.Should().Be("someThing");
             response.Fields.First().Options.First().Name.Should().Be("One");
