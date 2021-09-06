@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 var caseStatus = _caseStatusesUseCase.ExecutePost(request);
 
-                return CreatedAtAction(nameof(CreateCaseStatus), caseStatus);
+                return CreatedAtAction(nameof(CreateCaseStatus), "Successfully created case status.");
             }
             catch (Exception e) when (
                 e is PersonNotFoundException ||
