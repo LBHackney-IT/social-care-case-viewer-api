@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-         public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
+        public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
         {
             var caseStatusType = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
 
