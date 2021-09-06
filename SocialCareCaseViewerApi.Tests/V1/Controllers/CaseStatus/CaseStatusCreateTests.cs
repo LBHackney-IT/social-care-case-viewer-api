@@ -81,19 +81,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             response?.Value.Should().Be(exceptionMessage);
         }
 
-        // [Test]
-        // public void WhenRequestIsValidReturnsSuccessfulResponse()
-        // {
-        //     var request = CaseStatusHelper.CreateCaseStatusRequest();
-        //     var response = CaseStatusHelper.CreateCaseStatusResponse();
+        [Test]
+        public void WhenRequestIsValidReturnsSuccessfulResponse()
+        {
+            var caseStatus = CaseStatusHelper.CreateCaseStatus();
+            var request = CaseStatusHelper.CreateCaseStatusRequest();
 
-        //      _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(request)).Returns(team);
+            _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(request)).Returns(caseStatus);
 
-        //     var response = _teamController.CreateTeam(createTeamRequest) as ObjectResult;
+            var response = _caseStatusController.CreateCaseStatus(request) as CreatedAtActionResult;
 
-        //     _teamsUseCase.Verify(x => x.ExecutePost(createTeamRequest), Times.Once);
-        //     response?.StatusCode.Should().Be(201);
-        //     response?.Value.Should().BeEquivalentTo(team);
-        // }
+            _mockCaseStatusesUseCase.Verify(x => x.ExecutePost(request));
+
+            response?.StatusCode.Should().Be(201);
+            response.Should().BeOfType<CreatedAtActionResult>();
+            response?.Value.Should().Be(caseStatus);
+        }
     }
 }

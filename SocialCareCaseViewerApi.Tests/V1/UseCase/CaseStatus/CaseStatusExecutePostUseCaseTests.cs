@@ -15,6 +15,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     public class CaseStatusExecutePostUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
+        private CaseStatus _caseStatus;
         private CaseStatusesUseCase _caseStatusesUseCase;
         private CreateCaseStatusRequest _request;
         private readonly CaseStatusType _typeInRequest = TestHelpers.CreateCaseStatusType();
@@ -33,22 +34,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<int>()))
                 .Returns(TestHelpers.CreatePerson(_request.PersonId));
 
-            var caseStatus = CaseStatusHelper.CreateCaseStatus();
+            _caseStatus = CaseStatusHelper.CreateCaseStatus();
 
             _mockDatabaseGateway.Setup(x => x.CreateCaseStatus(It.IsAny<CreateCaseStatusRequest>()))
-                .Returns(caseStatus);
+                .Returns(_caseStatus);
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
                 .Returns(TestHelpers.CreateWorker(email: _request.CreatedBy));
         }
 
         [Test]
-        public void CallsDatabaseGatewayToCheckPersonExists()
+        public void CallsDatabaseGatewayToCheckCaseStatusExists()
         {
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
 
             _caseStatusesUseCase.ExecutePost(_request);
+
             _mockDatabaseGateway.Verify(gateway => gateway.GetPersonByMosaicId(_request.PersonId));
+            _mockDatabaseGateway.Verify(gateway => gateway.GetWorkerByEmail(_request.CreatedBy));
+            _mockDatabaseGateway.Verify(gateway => gateway.GetCaseStatusTypeWithFields(_request.Type));
+            _mockDatabaseGateway.Verify(gateway => gateway.CreateCaseStatus(_request));
         }
 
         [Test]
