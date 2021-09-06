@@ -93,8 +93,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             _mockCaseStatusesUseCase.Verify(x => x.ExecutePost(request));
 
             response?.StatusCode.Should().Be(201);
-            response.Should().BeOfType<CreatedAtActionResult>();
-            response?.Value.Should().Be(caseStatus);
+            response?.Value.Should().Be("Successfully created case status.");
         }
     }
 }
