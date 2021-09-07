@@ -1062,7 +1062,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             };
 
             _databaseContext.CaseStatuses.Add(caseStatus);
-            _databaseContext.SaveChanges();
 
             if (request.Fields != null)
             {
@@ -1083,11 +1082,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             FieldOptionId = fieldTypeOption.Id
                         };
 
-                        _databaseContext.CaseStatusFieldOptions.Add(fieldOptions);
+                        if (caseStatus.SelectedOptions == null)
+                        {
+                            caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
+                        }
+                        caseStatus.SelectedOptions.Add(fieldOptions);
                     }
                 }
             }
-
 
             _databaseContext.SaveChanges();
 

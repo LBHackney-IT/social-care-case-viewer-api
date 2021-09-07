@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid CreatePersonCaseStatusRequest received</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        [Route("resident/case-statuses")]
+        [Route("residents/case-statuses")]
         public IActionResult CreateCaseStatus([FromBody] CreateCaseStatusRequest request)
         {
             var validator = new CreateCaseStatusRequestValidator();
