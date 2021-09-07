@@ -1076,7 +1076,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     if (fieldTypeOption != null)
                     {
-                        var fieldOptions = new CaseStatusFieldOption
+                        var fieldOption = new CaseStatusFieldOption
                         {
                             StatusId = caseStatus.Id,
                             FieldOptionId = fieldTypeOption.Id
@@ -1086,7 +1086,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         {
                             caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
                         }
-                        caseStatus.SelectedOptions.Add(fieldOptions);
+                        caseStatus.SelectedOptions.Add(fieldOption);
                     }
                 }
             }
