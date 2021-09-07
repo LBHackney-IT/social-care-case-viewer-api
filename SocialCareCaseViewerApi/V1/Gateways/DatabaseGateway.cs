@@ -1021,6 +1021,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses;
         }
+        public Infrastructure.CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
+        {
+            var caseStatuse = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
+                .Where(cs => cs.StartDate <= date)
+                .Where(cs => cs.EndDate == null || cs.EndDate >= date)
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField)
+                .FirstOrDefault();
+
+            return caseStatuse;
+        }
 
         public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
         {
@@ -1030,6 +1043,57 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(sf => sf.Options);
 
             return response.FirstOrDefault();
+        }
+
+        public Infrastructure.CaseStatus CreateCaseStatus(CreateCaseStatusRequest request)
+        {
+
+            var statusType = _databaseContext.CaseStatusTypes
+                .Where(f => f.Name == request.Type)
+                .FirstOrDefault();
+
+            var caseStatus = new Infrastructure.CaseStatus()
+            {
+                PersonId = request.PersonId,
+                TypeId = statusType.Id,
+                StartDate = request.StartDate,
+                Notes = request.Notes,
+                CreatedBy = request.CreatedBy
+            };
+
+            _databaseContext.CaseStatuses.Add(caseStatus);
+
+            if (request.Fields != null)
+            {
+                foreach (var optionValue in request.Fields)
+                {
+                    var field = _databaseContext.CaseStatusTypeFields
+                        .FirstOrDefault(f => f.Name == optionValue.Name);
+
+                    var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
+                        .Where(fov => fov.Name == optionValue.Selected)
+                        .FirstOrDefault(fov => fov.TypeFieldId == field.Id);
+
+                    if (fieldTypeOption != null)
+                    {
+                        var fieldOption = new CaseStatusFieldOption
+                        {
+                            StatusId = caseStatus.Id,
+                            FieldOptionId = fieldTypeOption.Id
+                        };
+
+                        if (caseStatus.SelectedOptions == null)
+                        {
+                            caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
+                        }
+                        caseStatus.SelectedOptions.Add(fieldOption);
+                    }
+                }
+            }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus;
         }
 
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
@@ -1138,5 +1202,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = createdBy
             };
         }
+
     }
 }
