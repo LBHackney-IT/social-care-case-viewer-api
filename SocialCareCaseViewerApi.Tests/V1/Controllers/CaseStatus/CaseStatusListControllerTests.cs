@@ -8,12 +8,12 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using AutoFixture;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Controllers
+namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
 {
     [TestFixture]
-    public class StatusTypeControllerTests
+    public class CaseStatusListControllerTests
     {
-        private StatusTypeController _statusTypeController;
+        private CaseStatusController _caseStatusController;
         private Mock<ICaseStatusesUseCase> _mockCaseStatusesUseCase;
         private readonly Fixture _fixture = new Fixture();
 
@@ -22,8 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockCaseStatusesUseCase = new Mock<ICaseStatusesUseCase>();
 
-            _statusTypeController = new StatusTypeController(_mockCaseStatusesUseCase.Object);
-
+            _caseStatusController = new CaseStatusController(_mockCaseStatusesUseCase.Object);
         }
 
         [Test]
@@ -31,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(new ListCaseStatusesResponse());
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as ObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(123456789) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
@@ -41,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Throws(new GetCaseStatusesException("Person not found"));
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as NotFoundObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(123456789) as NotFoundObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Person not found");
@@ -53,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var listRelationShipsResponse = _fixture.Create<ListCaseStatusesResponse>();
             _mockCaseStatusesUseCase.Setup(x => x.ExecuteGet(It.IsAny<long>())).Returns(listRelationShipsResponse);
 
-            var response = _statusTypeController.ListCaseStatuses(123456789) as ObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(123456789) as ObjectResult;
 
             response?.Value.Should().BeOfType<ListCaseStatusesResponse>();
             response?.Value.Should().BeEquivalentTo(listRelationShipsResponse);

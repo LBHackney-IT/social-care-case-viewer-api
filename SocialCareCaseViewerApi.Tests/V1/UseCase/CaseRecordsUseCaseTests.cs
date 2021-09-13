@@ -37,13 +37,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetResidentCasesCallMongoGatewayAndReturnsResidentsSubmittedCases()
         {
-            var request = TestHelpers.CreateListCasesRequest();
+            var request = TestHelpers.CreateListCasesRequest(1L);
 
             var expectedResponse = new List<CaseSubmission>
             {
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
-                TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, residentId: int.Parse(request.MosaicId ?? ""))
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""))
             };
 
             _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
@@ -53,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway
                 .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
                     It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns((expectedResponse, 3));
+                .Returns((expectedResponse, 2));
 
             var response = _caseRecordsUseCase.GetResidentCases(request);
 

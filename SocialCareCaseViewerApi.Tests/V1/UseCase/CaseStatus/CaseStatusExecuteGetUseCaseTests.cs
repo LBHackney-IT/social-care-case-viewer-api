@@ -13,7 +13,7 @@ using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
-    public class CaseTypesUseCaseTests
+    public class CaseStatusExecuteGetUseCaseTests
     {
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private CaseStatusesUseCase _caseStatusesUseCase;
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void WhenPersonIsFoundWithCaseStatusesReturnsCaseStatusesList()
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType();
-            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType);
+            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
             var person = TestHelpers.CreatePerson();
             var csus = TestHelpers.CreateCaseStatus(
                 personId: person.Id,
