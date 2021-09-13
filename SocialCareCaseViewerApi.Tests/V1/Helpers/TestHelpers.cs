@@ -171,7 +171,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static InfrastructurePerson CreatePerson(int? personId = null, string? firstName = null, string? lastName = null)
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -511,11 +511,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.Title, title);
         }
 
-        public static ListCasesRequest CreateListCasesRequest(string? mosaicId = null, string? workerEmail = null)
+        public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
         {
             return new Faker<ListCasesRequest>()
-                .RuleFor(r => r.MosaicId, mosaicId)
-                .RuleFor(r => r.WorkerEmail, workerEmail);
+                .RuleFor(r => r.MosaicId, f => mosaicId?.ToString() ?? f.Random.Long(0, 100000).ToString());
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
@@ -534,27 +533,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static CaseStatusType CreateCaseStatusType(
             long? id = null,
-            string? typeName = "CIN",
-            string? typeDescription = "Child in need")
+            string? name = "CIN",
+            string? description = "Child in need")
         {
             return new Faker<CaseStatusType>()
                 .RuleFor(cst => cst.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cst => cst.Name, f => typeName)
-                .RuleFor(cst => cst.Description, f => typeDescription);
+                .RuleFor(cst => cst.Name, f => name)
+                .RuleFor(cst => cst.Description, f => description);
+        }
+
+        public static CaseStatusTypeFieldOption CreateCaseStatusTypeFieldOptions(
+            long typeFieldId,
+            string name,
+            string description,
+            long? id = null)
+        {
+            return new Faker<CaseStatusTypeFieldOption>()
+                .RuleFor(fo => fo.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(fo => fo.TypeFieldId, f => typeFieldId)
+                .RuleFor(fo => fo.Name, f => name)
+                .RuleFor(fo => fo.Description, f => description);
         }
 
 
         public static CaseStatusTypeField CreateCaseStatusTypeField(
-            CaseStatusType caseStatusType,
+            long caseStatusTypeId,
             long? id = null,
-            string? fieldName = "placementReason",
-            string? fieldDescription = "Some description")
+            string? name = "placementReason",
+            string? description = "Some description")
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cstf => cstf.Type, f => caseStatusType)
-                .RuleFor(cstf => cstf.Name, f => fieldName)
-                .RuleFor(cstf => cstf.Description, f => fieldDescription)
+                .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
+                .RuleFor(cstf => cstf.Name, f => name)
+                .RuleFor(cstf => cstf.Description, f => description)
                 .RuleFor(cstf => cstf.Options,
                     (f, cstf) => new List<CaseStatusTypeFieldOption>()
                     {
