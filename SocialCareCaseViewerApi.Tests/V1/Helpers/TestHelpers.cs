@@ -514,7 +514,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
         {
             return new Faker<ListCasesRequest>()
-                .RuleFor(r => r.MosaicId, f => mosaicId?.ToString() ?? f.Random.Long(0, 100000).ToString());
+                .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString());
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(

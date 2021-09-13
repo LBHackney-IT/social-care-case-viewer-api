@@ -483,6 +483,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void CaseSubmissionToCareCaseDataReturnsFirstResidentInformationWhenNullMosaicId()
+        {
+            var residents = new List<Person> { TestHelpers.CreatePerson(), TestHelpers.CreatePerson() };
+            var request = TestHelpers.CreateListCasesRequest();
+            var submission = TestHelpers.CreateCaseSubmission(residents: residents);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.PersonId.Should().Be(residents[0].Id);
+            response.FirstName.Should().Be(residents[0].FirstName);
+            response.LastName.Should().Be(residents[0].LastName);
+        }
+
+        [Test]
         public void CaseSubmissionToCareCaseDataReturnsOfficeEmailOfFirstWorkerAssociatedWithCaseSubmission()
         {
             var residents = new List<Person> { TestHelpers.CreatePerson() };

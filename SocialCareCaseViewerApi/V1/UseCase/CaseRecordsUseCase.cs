@@ -91,7 +91,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
                     .Item1
-                    .Where(x => x.SubmissionState == SubmissionState.Submitted)
                     .Select(x => x.ToCareCaseData(request))
                     .ToList();
 
