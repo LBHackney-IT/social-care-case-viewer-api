@@ -15,7 +15,6 @@ using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
-using ResidentInformation = SocialCareCaseViewerApi.V1.Domain.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -25,22 +24,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class EntityFactory
     {
-        public static ResidentInformation ToDomain(this Person databaseEntity)
-        {
-            return new ResidentInformation
-            {
-                PersonId = databaseEntity.Id.ToString(),
-                Title = databaseEntity.Title,
-                FirstName = databaseEntity.FirstName,
-                LastName = databaseEntity.LastName,
-                DateOfBirth = databaseEntity.DateOfBirth?.ToString("O"),
-                Gender = databaseEntity.Gender,
-                Nationality = databaseEntity.Nationality,
-                NhsNumber = databaseEntity.NhsNumber?.ToString(),
-
-            };
-        }
-
         public static Address ToDomain(this DbAddress address)
         {
             return new Address
