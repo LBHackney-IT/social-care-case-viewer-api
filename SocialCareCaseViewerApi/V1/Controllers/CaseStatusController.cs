@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status type not found, or no fields exist</response>
         [ProducesResponseType(typeof(GetCaseStatusFieldsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("case-status/form-options/{type?}")]
+        [Route("case-statuses/form-options/{type?}")]
         public IActionResult GetCaseStatusTypeFields([FromRoute] GetCaseStatusFieldsRequest request)
         {
             try
@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="404">Case status not found</response>
         [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("residents/{personId:long}/casestatuses")]
+        [Route("residents/{personId:long}/case-statuses")]
         public IActionResult ListCaseStatuses(long personId)
         {
             try
