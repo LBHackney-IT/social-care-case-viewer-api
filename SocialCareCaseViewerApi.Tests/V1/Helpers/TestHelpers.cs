@@ -34,10 +34,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.ReasonVisitNotMade, f => f.Random.String2(1, 16))
                 .RuleFor(v => v.SeenAloneFlag, f => f.Random.Bool())
                 .RuleFor(v => v.CompletedFlag, f => f.Random.Bool())
-                .RuleFor(v => v.CpRegistrationId, f => f.UniqueIndex)
-                .RuleFor(v => v.CpVisitScheduleStepId, f => f.UniqueIndex)
-                .RuleFor(v => v.CpVisitScheduleDays, f => f.Random.Number(999))
-                .RuleFor(v => v.CpVisitOnTime, f => f.Random.Bool())
                 .RuleFor(v => v.CreatedByEmail, f => f.Person.Email)
                 .RuleFor(v => v.CreatedByName, f => f.Person.FullName);
         }

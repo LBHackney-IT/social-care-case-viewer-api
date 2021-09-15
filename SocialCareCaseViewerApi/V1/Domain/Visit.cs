@@ -27,13 +27,5 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public bool SeenAloneFlag { get; set; }
 
         public bool CompletedFlag { get; set; }
-
-        public long? CpRegistrationId { get; set; }
-
-        public long? CpVisitScheduleStepId { get; set; }
-
-        public long? CpVisitScheduleDays { get; set; }
-
-        public bool CpVisitOnTime { get; set; }
     }
 }
