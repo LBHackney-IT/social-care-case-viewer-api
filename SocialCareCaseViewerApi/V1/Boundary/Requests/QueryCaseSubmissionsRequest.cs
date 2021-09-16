@@ -40,6 +40,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "personId")]
         public long? PersonID { get; set; }
+
+        [FromQuery(Name = "pruneUnfinished")]
+        public bool PruneUnfinished { get; set; } = false;
     }
 
     public class QueryCaseSubmissionsValidator : AbstractValidator<QueryCaseSubmissionsRequest>

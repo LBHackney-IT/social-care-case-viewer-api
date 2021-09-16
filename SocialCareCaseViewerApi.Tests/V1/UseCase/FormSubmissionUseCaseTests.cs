@@ -863,7 +863,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByQueryStripsEditHistoryIfIncludeEditHistoryIsFalse()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: false);
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: false, pruneUnfinished: false);
             var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
 
             caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
@@ -880,7 +880,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByQueryContainsEditHistoryIfIncludeEditHistoryIsTrue()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: true);
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeEditHistory: true, pruneUnfinished: false);
             var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
 
             caseSubmissions.First()?.EditHistory.Count.Should().Be(1);
@@ -892,6 +892,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
             response.Items.First()?.EditHistory?.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryContainsMinimalResponseIfPruneUnfinishedIsTrue()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", pruneUnfinished: true);
+            var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((caseSubmissions, 1));
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+            var responseItem = response.Items.First();
+
+            responseItem.ApprovedAt.Should().BeNull();
+            responseItem.ApprovedBy.Should().BeNull();
+            responseItem.DateOfEvent.Should().BeNull();
+            responseItem.EditHistory.Should().BeNull();
+            responseItem.FormAnswers.Should().BeNull();
+            responseItem.PanelApprovedAt.Should().BeNull();
+            responseItem.PanelApprovedBy.Should().BeNull();
+            responseItem.RejectionReason.Should().BeNull();
+            responseItem.SubmittedAt.Should().BeNull();
+            responseItem.SubmittedBy.Should().BeNull();
+
+            responseItem.Residents.First().Should().BeEquivalentTo(new Person
+            {
+                Id = caseSubmissions.First().Residents.First().Id,
+                FirstName = caseSubmissions.First().Residents.First().FirstName,
+                LastName = caseSubmissions.First().Residents.First().LastName,
+                AgeContext = caseSubmissions.First().Residents.First().AgeContext,
+                Restricted = caseSubmissions.First().Residents.First().Restricted
+            });
+
+            responseItem.Workers.First().Email.Should().Be(caseSubmissions.First().Workers.First().Email);
+
+            responseItem.CreatedAt.Should().Be(caseSubmissions.First().CreatedAt.ToString("O"));
         }
 
         [Test]
@@ -914,7 +952,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByQueryContainsFormAnswersIfIncludeFormAnswersIsTrue()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeFormAnswers: true);
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeFormAnswers: true, pruneUnfinished: false);
             var caseSubmissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
 
             caseSubmissions.First()?.FormAnswers.Count.Should().Be(1);
