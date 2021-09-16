@@ -1,45 +1,44 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 #nullable enable
 {
     public class QueryCaseSubmissionsRequest
     {
-        [JsonPropertyName("formId")]
+        [FromQuery(Name = "formId")]
         public string? FormId { get; set; }
 
-        [JsonPropertyName("submissionStates")]
+        [FromQuery(Name = "submissionStates")]
         public IEnumerable<string>? SubmissionStates { get; set; }
 
-        [JsonPropertyName("createdAfter")]
+        [FromQuery(Name = "createdAfter")]
         public DateTime? CreatedAfter { get; set; }
 
-        [JsonPropertyName("createdBefore")]
+        [FromQuery(Name = "createdBefore")]
         public DateTime? CreatedBefore { get; set; }
 
-        [JsonPropertyName("includeFormAnswers")]
+        [FromQuery(Name = "includeFormAnswers")]
         public bool IncludeFormAnswers { get; set; } = false;
 
-        [JsonPropertyName("includeEditHistory")]
+        [FromQuery(Name = "includeEditHistory")]
         public bool IncludeEditHistory { get; set; } = false;
 
-        [JsonPropertyName("page")]
+        [FromQuery(Name = "page")]
         public int Page { get; set; } = 1;
 
-        [JsonPropertyName("size")]
+        [FromQuery(Name = "size")]
         public int Size { get; set; } = 100;
 
-
-        [JsonPropertyName("ageContext")]
+        [FromQuery(Name = "ageContext")]
         public string? AgeContext { get; set; }
 
-        [JsonPropertyName("workerEmail")]
+        [FromQuery(Name = "workerEmail")]
         public string? WorkerEmail { get; set; }
 
-        [JsonPropertyName("personId")]
+        [FromQuery(Name = "personId")]
         public long? PersonID { get; set; }
     }
 
