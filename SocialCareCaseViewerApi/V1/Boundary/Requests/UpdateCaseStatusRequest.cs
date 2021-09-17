@@ -8,6 +8,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateCaseStatusRequest
     {
+        [JsonProperty("person_id")]
+        public long PersonId { get; set; }
+
         [JsonProperty("start_date")]
         public DateTime? StartDate { get; set; }
 
@@ -21,10 +24,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string? Notes { get; set; }
 
         [JsonProperty("values")]
-        public List<CaseStatusValues>? Values { get; set; }
+        public List<CaseStatusValue>? Values { get; set; }
     }
 
-    public class CaseStatusValues
+    public class CaseStatusValue
     {
         [JsonProperty("name")]
         public string Name { get; set; }
