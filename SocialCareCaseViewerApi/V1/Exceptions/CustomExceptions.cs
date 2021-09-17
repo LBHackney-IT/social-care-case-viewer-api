@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Exceptions
@@ -146,6 +147,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class CaseStatusDoesNotMatchPersonException : Exception
     {
         public CaseStatusDoesNotMatchPersonException(string message) : base(message) { }
+    }
+
+    public class InvalidAgeContextException : Exception
+    {
+        public InvalidAgeContextException(string message) : base(message) { }
     }
 
     public class CustomException : Exception

@@ -57,6 +57,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
+            if (person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException(
+                    $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
+            }
 
             var type = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
             var typeDoesNotExist = type == null;
@@ -86,12 +91,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return updatedCaseStatus;
         }
 
-        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus? caseStatus)
+        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus caseStatus)
         {
             var person = _databaseGateway.GetPersonByMosaicId(caseStatusId);
             if (person == null)
             {
-                throw new PersonNotFoundException($"'personId' with '{caseStatusId}' was not found.");
+                throw new PersonNotFoundException($"'personId' with '{caseStatusId}' was not found");
+            }
+            if (person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException(
+                    $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
+            }
+
+            if (caseStatus.Person.Id != request.PersonId)
+            {
+                throw new CaseStatusDoesNotMatchPersonException(
+                    $"Retrieved case status does not match the provided person id of {request.PersonId}");
             }
 
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
@@ -103,12 +119,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
-            }
-
-            if (caseStatus.Person.Id != request.PersonId)
-            {
-                throw new CaseStatusDoesNotMatchPersonException(
-                    $"Retrieved case status does not match the provided person id of {request.PersonId}");
             }
         }
 
@@ -128,7 +138,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             caseStatus.LastModifiedBy = request.EditedBy;
 
-            caseStatus.Notes = request.Notes;
+            if (request.Notes != null)
+            {
+                caseStatus.Notes = request.Notes;
+            }
 
             // TODO not sure what I am meant to do with request.values here
             return caseStatus;
