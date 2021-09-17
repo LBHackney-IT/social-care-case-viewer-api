@@ -108,7 +108,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <param name="caseStatusId"></param>
         /// <response code="201">Successfully updated a case status</response>
         /// <response code="400">Invalid request received</response>
-        [ProducesResponseType(typeof(CaseStatus),200)]
+        [ProducesResponseType(typeof(CaseStatus), 200)]
         [HttpPatch]
         [Route("residents/case-statuses/{caseStatusId:long}")]
         public IActionResult UpdateCaseStatus([FromRoute] long caseStatusId, [FromBody] UpdateCaseStatusRequest request)
