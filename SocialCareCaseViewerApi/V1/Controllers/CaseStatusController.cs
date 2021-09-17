@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(200)]
         [HttpPatch]
         [Route("residents/case-statuses/{id:long}")]
-        public IActionResult UpdateCaseStatus([FromRoute] long id, [FromBody] UpdateCaseStatus request)
+        public IActionResult UpdateCaseStatus([FromRoute] long id, [FromBody] UpdateCaseStatusRequest request)
         {
             var validator = new UpdateCaseStatusValidator();
             var validationResults = validator.Validate(request);
@@ -120,7 +120,18 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return BadRequest(validationResults.ToString());
             }
 
-            return Ok();
+            try
+            {
+                return Ok();
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (CaseStatusDoesNotExistException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }
