@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
         public CaseStatusesUseCase(IDatabaseGateway databaseGateway)
         {
@@ -70,6 +70,39 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
 
             return _databaseGateway.CreateCaseStatus(request);
+        }
+
+        public CaseStatus ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
+        {
+            var person = _databaseGateway.GetPersonByMosaicId(caseStatusId);
+            if (person == null)
+            {
+                throw new PersonNotFoundException($"'personId' with '{caseStatusId}' was not found.");
+            }
+
+            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
+            }
+
+            var caseStatus = _databaseGateway.GetCasesStatusByCaseStatusId(caseStatusId);
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
+            if (caseStatus.Person.Id != request.PersonId)
+            {
+                throw new CaseStatusDoesNotMatchPersonException(
+                    $"Retrieved case status does not match the provided person id of {request.PersonId}");
+            }
+
+            // apply updates
+
+            // save changes
+
+            return new CaseStatus();
         }
     }
 }
