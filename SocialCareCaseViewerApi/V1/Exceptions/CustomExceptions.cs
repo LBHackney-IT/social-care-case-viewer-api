@@ -140,7 +140,12 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
 
     public class CaseStatusDoesNotExistException : Exception
     {
-        public override string Message { get; } = "Case Status not found.";
+        public CaseStatusDoesNotExistException(string message) : base(message) { }
+    }
+
+    public class CaseStatusDoesNotMatchPersonException : Exception
+    {
+        public CaseStatusDoesNotMatchPersonException(string message) : base(message) { }
     }
 
     public class CustomException : Exception

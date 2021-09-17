@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -104,13 +105,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Edit a Case Status
         /// </summary>
         /// <param name="request"></param>
-        /// <param name="id"></param>
+        /// <param name="caseStatusId"></param>
         /// <response code="201">Successfully updated a case status</response>
         /// <response code="400">Invalid request received</response>
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(CaseStatus),200)]
         [HttpPatch]
-        [Route("residents/case-statuses/{id:long}")]
-        public IActionResult UpdateCaseStatus([FromRoute] long id, [FromBody] UpdateCaseStatusRequest request)
+        [Route("residents/case-statuses/{caseStatusId:long}")]
+        public IActionResult UpdateCaseStatus([FromRoute] long caseStatusId, [FromBody] UpdateCaseStatusRequest request)
         {
             var validator = new UpdateCaseStatusValidator();
             var validationResults = validator.Validate(request);
@@ -122,9 +123,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                return Ok();
+                var caseStatus = _caseStatusesUseCase.ExecuteUpdate(caseStatusId, request);
+                return Ok(caseStatus);
             }
-            catch (WorkerNotFoundException e)
+            catch (Exception e) when (
+                e is PersonNotFoundException ||
+                e is WorkerNotFoundException ||
+                e is CaseStatusDoesNotMatchPersonException
+            )
             {
                 return BadRequest(e.Message);
             }
