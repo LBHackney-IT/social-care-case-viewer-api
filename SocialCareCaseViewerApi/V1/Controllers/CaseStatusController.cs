@@ -99,5 +99,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        /// <summary>
+        /// Edit a Case Status
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="id"></param>
+        /// <response code="201">Successfully updated a case status</response>
+        /// <response code="400">Invalid request received</response>
+        [ProducesResponseType(200)]
+        [HttpPatch]
+        [Route("residents/case-statuses/{id:long}")]
+        public IActionResult UpdateCaseStatus([FromRoute] long id, [FromBody] UpdateCaseStatus request)
+        {
+            var validator = new UpdateCaseStatusValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            return Ok();
+        }
     }
 }
