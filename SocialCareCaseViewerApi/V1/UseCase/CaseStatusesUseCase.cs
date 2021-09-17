@@ -1,11 +1,14 @@
+using System;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
@@ -74,6 +77,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseStatus ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
         {
+            var caseStatus = _databaseGateway.GetCasesStatusByCaseStatusId(caseStatusId);
+
+            ExecuteUpdateValidation(caseStatusId, request, caseStatus);
+
+            var updatedCaseStatus = UpdatedCaseStatus(request, caseStatus);
+
+            return updatedCaseStatus;
+        }
+
+        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus? caseStatus)
+        {
             var person = _databaseGateway.GetPersonByMosaicId(caseStatusId);
             if (person == null)
             {
@@ -86,7 +100,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
 
-            var caseStatus = _databaseGateway.GetCasesStatusByCaseStatusId(caseStatusId);
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
@@ -97,12 +110,28 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseStatusDoesNotMatchPersonException(
                     $"Retrieved case status does not match the provided person id of {request.PersonId}");
             }
+        }
 
-            // apply updates
+        private static CaseStatus UpdatedCaseStatus(UpdateCaseStatusRequest request, CaseStatus caseStatus)
+        {
+            if (request.StartDate != null)
+            {
+                caseStatus.StartDate = (DateTime)request.StartDate;
+            }
 
-            // save changes
+            if (request.EndDate != null)
+            {
+                caseStatus.EndDate = request.EndDate;
+            }
 
-            return new CaseStatus();
+            caseStatus.LastModifiedAt = new SystemTime().Now;
+
+            caseStatus.LastModifiedBy = request.EditedBy;
+
+            caseStatus.Notes = request.Notes;
+
+            // TODO not sure what I am meant to do with request.values here
+            return caseStatus;
         }
     }
 }
