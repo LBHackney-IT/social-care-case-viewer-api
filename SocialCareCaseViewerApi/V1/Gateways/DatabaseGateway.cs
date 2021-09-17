@@ -1021,6 +1021,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses;
         }
+
+        public Infrastructure.CaseStatus GetCasesStatusByCaseStatusId(long id)
+        {
+            return _databaseContext.CaseStatuses
+                .Where(cs => cs.Id == id)
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField)
+                .FirstOrDefault();
+        }
+
         public Infrastructure.CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
         {
             var caseStatuse = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
