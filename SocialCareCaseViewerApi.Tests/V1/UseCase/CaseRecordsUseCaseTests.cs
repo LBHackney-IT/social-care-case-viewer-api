@@ -63,34 +63,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GenerateFilterDefinitionForDefaultCase()
         {
+            const string expectedJsonQuery = "{ \"SubmissionState\" : 1 }";
             var emptyRequest = TestHelpers.CreateListCasesRequest();
 
             var response = CaseRecordsUseCase.GenerateFilterDefinition(emptyRequest);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var expectedFilter = builder.Empty;
-            expectedFilter &= Builders<CaseSubmission>.Filter.Eq(x =>
-                x.SubmissionState, SubmissionState.Submitted);
-
-            response.RenderToJson().Should().Be(expectedFilter.RenderToJson());
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
 
         [Test]
         public void GenerateFilterDefinitionWithProvidedMosaicId()
         {
+            const string expectedJsonQuery = "{ \"Residents._id\" : 1, \"SubmissionState\" : 1 }";
             const long mosaicId = 1L;
             var requestWithMosaicId = TestHelpers.CreateListCasesRequest(mosaicId);
 
             var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var expectedFilter = builder.Empty;
-            expectedFilter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                r => r.Id == mosaicId);
-            expectedFilter &= Builders<CaseSubmission>.Filter.Eq(x =>
-                x.SubmissionState, SubmissionState.Submitted);
-
-            response.RenderToJson().Should().Be(expectedFilter.RenderToJson());
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
     }
 }
