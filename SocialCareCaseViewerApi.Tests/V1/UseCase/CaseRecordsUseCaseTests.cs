@@ -74,5 +74,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.RenderToJson().Should().Be(expectedFilter.RenderToJson());
         }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedMosaicId()
+        {
+            const long mosaicId = 1L;
+            var requestWithMosaicId = TestHelpers.CreateListCasesRequest(mosaicId);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var expectedFilter = builder.Empty;
+            expectedFilter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                r => r.Id == mosaicId);
+            expectedFilter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                x.SubmissionState, SubmissionState.Submitted);
+
+            response.RenderToJson().Should().Be(expectedFilter.RenderToJson());
+        }
     }
 }
