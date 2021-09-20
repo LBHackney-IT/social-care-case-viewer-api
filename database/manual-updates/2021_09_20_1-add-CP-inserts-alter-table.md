@@ -3,15 +3,16 @@
 ## The problem we're trying to solve
 
 Populating the various Case Status tables for LAC
+Also, altering one table to allow longer descriptions
 
 ## Justification for doing a manual update
 
-We don't have database migrations set up for the API.
+We don't have database migrations set up for the API
 
 ## The plan
 
-1. Run SQL statements to create the tables in Staging
-2. Run SQL statements to create the tables in Production
+1. Run SQL statements to create the new rows in Staging
+2. Run SQL statements to create the new rows in Production
 
 ## Link to Jira ticket
 
@@ -29,11 +30,11 @@ VALUES ((select id from dbo.sccv_case_status_type where name ilike 'LAC'), 'lega
 
 INSERT INTO dbo.sccv_case_status_field(fk_case_status_type_id, name, description)
 VALUES ((select id from dbo.sccv_case_status_type where name ilike 'LAC'), 'placementType',
- 'What is the latest the placement type?');
+ 'What is the latest placement type?');
 
 INSERT INTO dbo.sccv_case_status_field(fk_case_status_type_id, name, description)
 VALUES ((select id from dbo.sccv_case_status_type where name ilike 'LAC'), 'reasonCeased',
- 'What is the reason for the episode ending?'); 
+ 'What is the reason for the episode ending?');
 
 ALTER TABLE DBO.SCCV_CASE_STATUS_FIELD_OPTION ALTER COLUMN description TYPE varchar(512);
 
