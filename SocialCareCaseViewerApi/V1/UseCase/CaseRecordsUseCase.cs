@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -49,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
-            var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
+            var (response, totalCount) = (new List<CareCaseData>(), 0);
             var allCareCaseData = response.ToList();
 
             if (request.MosaicId != null || request.WorkerEmail != null || request.FormName != null || request.FirstName != null || request.LastName != null)
@@ -86,10 +87,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
+
             if (request.MosaicId != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.Id == long.Parse(request.MosaicId));
+                var bsonQuery = "{'Residents._id':" + request.MosaicId + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
             if (request.WorkerEmail != null)
             {
