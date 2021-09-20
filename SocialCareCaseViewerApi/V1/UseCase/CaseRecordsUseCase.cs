@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 }
             }
 
-            var (response, totalCount) = (new List<CareCaseData>(), 0);
+            var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
             if (request.MosaicId != null || request.WorkerEmail != null || request.FormName != null || request.FirstName != null || request.LastName != null)
