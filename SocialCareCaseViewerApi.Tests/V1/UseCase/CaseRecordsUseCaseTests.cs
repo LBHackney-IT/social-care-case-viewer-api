@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GenerateFilterDefinitionQueriesForResidentMosaicId()
+        public void GenerateFilterDefinitionForDefaultCase()
         {
             var emptyRequest = TestHelpers.CreateListCasesRequest();
 
