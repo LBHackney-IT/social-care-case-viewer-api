@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -52,43 +53,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
 
-
-
             if (request.MosaicId != null || request.WorkerEmail != null || request.FormName != null || request.FirstName != null || request.LastName != null)
             {
-                var builder = Builders<CaseSubmission>.Filter;
-                var filter = builder.Empty;
-                if (request.MosaicId != null)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                        r => r.Id == long.Parse(request.MosaicId));
-                }
-                if (request.WorkerEmail != null)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
-                }
-
-                if (request.FormName == "Case Note")
-                {
-                    filter &= Builders<CaseSubmission>.Filter.Eq(x =>
-                    x.FormId, "adult-case-note") | Builders<CaseSubmission>.Filter.Eq(x =>
-                    x.FormId, "child-case-note");
-                }
-
-                if (request.FirstName != null)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                        r => r.FirstName.ToLower() == request.FirstName.ToLower());
-                }
-
-                if (request.LastName != null)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                        r => r.LastName.ToLower() == request.LastName.ToLower());
-                }
-
-                filter &= Builders<CaseSubmission>.Filter.Eq(x =>
-                    x.SubmissionState, SubmissionState.Submitted);
+                var filter = GenerateFilterDefinition(request);
 
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
@@ -114,6 +81,47 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Cases = careCaseData.ToList(),
                 NextCursor = nextCursor
             };
+        }
+
+        public static FilterDefinition<CaseSubmission> GenerateFilterDefinition(ListCasesRequest request)
+        {
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+
+            if (request.MosaicId != null)
+            {
+                var bsonQuery = "{'Residents._id':" + request.MosaicId + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
+            }
+            if (request.WorkerEmail != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+            }
+
+            if (request.FormName == "Case Note")
+            {
+                filter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.FormId, "adult-case-note") | Builders<CaseSubmission>.Filter.Eq(x =>
+                    x.FormId, "child-case-note");
+            }
+
+            if (request.FirstName != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                    r => r.FirstName.ToLower() == request.FirstName.ToLower());
+            }
+
+            if (request.LastName != null)
+            {
+                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
+                    r => r.LastName.ToLower() == request.LastName.ToLower());
+            }
+
+            filter &= Builders<CaseSubmission>.Filter.Eq(x =>
+                x.SubmissionState, SubmissionState.Submitted);
+
+            return filter;
         }
 
         public CareCaseData? Execute(string recordId)
