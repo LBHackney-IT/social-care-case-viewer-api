@@ -121,10 +121,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Email = worker.Email,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
-                Role = worker.Role ?? "",
-                ContextFlag = worker.ContextFlag ?? "",
-                CreatedBy = worker.CreatedBy ?? "",
-                DateStart = worker.DateStart?.ToString("s") ?? "",
+                Role = worker.Role,
+                ContextFlag = worker.ContextFlag,
+                CreatedBy = worker.CreatedBy,
+                DateStart = worker.DateStart?.ToString("s"),
                 AllocationCount = worker.AllocationCount,
                 Teams = worker.Teams
             };
@@ -245,7 +245,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Title = caseSubmission.Title,
                 LastEdited = caseSubmission.LastEdited?.ToString("O"),
                 CompletedSteps = caseSubmission.CompletedSteps
-
             };
         }
 
