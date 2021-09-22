@@ -88,9 +88,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             const string expectedJsonQuery = "{ \"Residents.FirstName\" : /^testington$/i, \"SubmissionState\" : 1 }";
             const string firstName = "testington";
-            var requestWithMosaicId = TestHelpers.CreateListCasesRequest(firstName: firstName);
+            var requestWithFirstName = TestHelpers.CreateListCasesRequest(firstName: firstName);
 
-            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithFirstName);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
@@ -100,9 +100,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             const string expectedJsonQuery = "{ \"Residents.LastName\" : /^toastington$/i, \"SubmissionState\" : 1 }";
             const string lastName = "toastington";
-            var requestWithMosaicId = TestHelpers.CreateListCasesRequest(lastName: lastName);
+            var requestWithLastName = TestHelpers.CreateListCasesRequest(lastName: lastName);
 
-            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithLastName);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
