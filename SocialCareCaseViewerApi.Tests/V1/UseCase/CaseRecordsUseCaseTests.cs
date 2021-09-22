@@ -84,11 +84,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GenerateFilterDefinitionWithProvidedLastName()
+        public void GenerateFilterDefinitionWithProvidedFirstName()
         {
             const string expectedJsonQuery = "{ \"Residents.FirstName\" : /^testington$/i, \"SubmissionState\" : 1 }";
             const string firstName = "testington";
             var requestWithMosaicId = TestHelpers.CreateListCasesRequest(firstName: firstName);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedLastName()
+        {
+            const string expectedJsonQuery = "{ \"Residents.LastName\" : /^toastington$/i, \"SubmissionState\" : 1 }";
+            const string lastName = "toastington";
+            var requestWithMosaicId = TestHelpers.CreateListCasesRequest(lastName: lastName);
 
             var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
 

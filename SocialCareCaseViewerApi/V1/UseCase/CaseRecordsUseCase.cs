@@ -109,14 +109,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (request.FirstName != null)
             {
                 var bsonQuery = "{'Residents.FirstName':" + "/^" + request.FirstName.ToLower() + "$/i}";
-                
+
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.LastName != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.LastName.ToLower() == request.LastName.ToLower());
+                var bsonQuery = "{'Residents.LastName':" + "/^" + request.LastName.ToLower() + "$/i}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             filter &= Builders<CaseSubmission>.Filter.Eq(x =>
