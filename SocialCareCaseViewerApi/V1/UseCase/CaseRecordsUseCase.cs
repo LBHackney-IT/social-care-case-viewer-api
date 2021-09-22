@@ -108,8 +108,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.FirstName != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.FirstName.ToLower() == request.FirstName.ToLower());
+                var bsonQuery = "{'Residents.FirstName':" + "/^" + request.FirstName.ToLower() + "$/i}";
+                
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.LastName != null)
