@@ -794,3 +794,7 @@ INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME
 INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME, DESCRIPTION) VALUES ((SELECT ID FROM DBO.SCCV_CASE_STATUS_FIELD WHERE NAME ILIKE 'reasonCeased'), 'E16' , 'Child moved abroad');
 INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME, DESCRIPTION) VALUES ((SELECT ID FROM DBO.SCCV_CASE_STATUS_FIELD WHERE NAME ILIKE 'reasonCeased'), 'E17' , 'Aged 18 (or over) and remained with current carers (inc under staying put arrangements)');
 INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME, DESCRIPTION) VALUES ((SELECT ID FROM DBO.SCCV_CASE_STATUS_FIELD WHERE NAME ILIKE 'reasonCeased'), 'E8'  , 'Period of being looked-after ceased for any other reason (where none of the other reasons apply)');
+
+alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN created_date timestamp;
+
+alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN start_date timestamp;
