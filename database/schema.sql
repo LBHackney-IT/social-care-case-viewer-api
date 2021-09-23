@@ -798,3 +798,7 @@ INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN created_date timestamp;
 
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN start_date timestamp;
+
+delete from dbo.sccv_case_status_field_option where fk_sccv_case_status_field_id in (select id from dbo.sccv_case_status_type where name = 'CIN' );
+
+delete from dbo.sccv_case_status_field where fk_case_status_type_id in (select id from dbo.sccv_case_status_type where name = 'CIN' );
