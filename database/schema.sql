@@ -798,3 +798,7 @@ INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN created_date timestamp;
 
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN start_date timestamp;
+
+alter table  IF EXISTS dbo.sccv_case_status_field ADD COLUMN element_type varchar(300);
+
+alter table  IF EXISTS dbo.sccv_case_status_field ADD COLUMN phase varchar(300);
