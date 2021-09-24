@@ -297,12 +297,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 StartDate = caseStatus.StartDate.ToString("s"),
                 EndDate = caseStatus.EndDate?.ToString("s"),
                 Notes = caseStatus.Notes,
-                Fields = caseStatus.SelectedOptions.Select(
-                    o => new Domain.CaseStatusField()
+                Fields = caseStatus.SelectedOptions?.Select(
+                    o => new CaseStatusField
                     {
                         Name = o.FieldOption.TypeField.Name,
                         Description = o.FieldOption.TypeField.Description,
-                        SelectedOption = new CaseStatusFieldSelectedOption()
+                        SelectedOption = new CaseStatusFieldSelectedOption
                         {
                             Name = o.FieldOption.Name,
                             Description = o.FieldOption.Description
