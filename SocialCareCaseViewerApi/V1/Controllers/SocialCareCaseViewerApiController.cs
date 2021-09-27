@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -18,127 +16,20 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     //TODO: rename class to match the API name
     public class SocialCareCaseViewerApiController : Controller
     {
-        private readonly IGetAllUseCase _getAllUseCase;
-        private readonly IAddNewResidentUseCase _addNewResidentUseCase;
         private readonly IAllocationsUseCase _allocationUseCase;
         private readonly ICaseNotesUseCase _caseNotesUseCase;
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
-        private readonly IPersonUseCase _personUseCase;
-        private readonly ICreateRequestAuditUseCase _createRequestAuditUseCase;
 
-        public SocialCareCaseViewerApiController(IGetAllUseCase getAllUseCase, IAddNewResidentUseCase addNewResidentUseCase,
-            IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
-            IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase,
-            IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IPersonUseCase personUseCase, ICreateRequestAuditUseCase createRequestAuditUseCase)
+        public SocialCareCaseViewerApiController(IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
+            IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
         {
-            _getAllUseCase = getAllUseCase;
-            _addNewResidentUseCase = addNewResidentUseCase;
             _allocationUseCase = allocationUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
-            _personUseCase = personUseCase;
-            _createRequestAuditUseCase = createRequestAuditUseCase;
-        }
-
-        /// <summary>
-        /// Returns list of contacts who share the query search parameter
-        /// </summary>
-        /// <response code="200">Success. Returns a list of matching residents information</response>
-        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents")]
-        public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
-        {
-            return Ok(_getAllUseCase.Execute(rqp, (int) cursor, (int) limit));
-        }
-
-        /// <summary>
-        /// Creates a new person record and adds all related entities
-        /// </summary>
-        /// <response code="201">Records successfully inserted</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
-        [HttpPost]
-        [Route("residents")]
-        public IActionResult AddNewResident([FromBody] AddNewResidentRequest residentRequest)
-        {
-            try
-            {
-                var response = _addNewResidentUseCase.Execute(residentRequest);
-
-                return CreatedAtAction(nameof(AddNewResident), new { id = response.Id }, response); //TODO: return object with IDs for all related entities
-            }
-            catch (ResidentCouldNotBeinsertedException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (AddressCouldNotBeInsertedException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Get resident by id
-        /// </summary>
-        /// <response code="200">Success</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem getting the record</response>
-        ///
-        [ProducesResponseType(typeof(GetPersonResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("residents/{id}")]
-        public IActionResult GetPerson([FromQuery] GetPersonRequest request)
-        {
-            if (request.AuditingEnabled && !string.IsNullOrEmpty(request.UserId))
-            {
-                var auditRequest = new CreateRequestAuditRequest()
-                {
-                    ActionName = "view_resident",
-                    UserName = request.UserId,
-                    Metadata = new Dictionary<string, object>() { { "residentId", request.Id } }
-                };
-
-                _createRequestAuditUseCase.Execute(auditRequest);
-            }
-
-            var response = _personUseCase.ExecuteGet(request);
-
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            return StatusCode(200, response);
-        }
-
-        /// <summary>
-        /// Update resident details
-        /// </summary>
-        /// <response code="200">Success</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        /// <response code="500">There was a problem updating the records</response>
-        ///
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPatch]
-        [Route("residents")]
-        public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
-        {
-            try
-            {
-                _personUseCase.ExecutePatch(request);
-            }
-            catch (UpdatePersonException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-            return StatusCode(204);
         }
 
         /// <summary>
