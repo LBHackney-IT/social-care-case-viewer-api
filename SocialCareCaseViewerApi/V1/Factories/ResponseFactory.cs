@@ -13,6 +13,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -248,29 +249,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static List<Domain.CaseStatus> ToResponse(this IEnumerable<Infrastructure.CaseStatus> caseStatuses)
-        {
-            return caseStatuses.Select(cs => new Domain.CaseStatus
-            {
-                Id = cs.Id,
-                Type = cs.Type?.Name,
-                StartDate = cs.StartDate.ToString("s"),
-                EndDate = cs.EndDate?.ToString("s"),
-                Notes = cs.Notes,
-                Fields = cs.SelectedOptions.Select(
-                    o => new Domain.CaseStatusField()
-                    {
-                        Name = o.FieldOption.TypeField.Name,
-                        Description = o.FieldOption.TypeField.Description,
-                        SelectedOption = new CaseStatusFieldSelectedOption()
-                        {
-                            Name = o.FieldOption.Name,
-                            Description = o.FieldOption.Description
-                        }
-                    }).ToList()
-            }).ToList();
-        }
-
         public static List<Domain.CaseStatusTypeField> ToResponse(this IEnumerable<Infrastructure.CaseStatusTypeField> caseStatusTypeFields)
         {
             return caseStatusTypeFields.Select(cstf => new Domain.CaseStatusTypeField
@@ -365,6 +343,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PhoneNumber = phoneNumber.Number,
                 PhoneType = phoneNumber.Type
             }).ToList();
+        }
+
+        public static CaseStatusResponse ToResponse(this CaseStatus caseStatus)
+        {
+            return new CaseStatusResponse
+            {
+                Id = caseStatus.Id,
+                Type = caseStatus.Type,
+                StartDate = caseStatus.StartDate.ToString("O"),
+                EndDate = caseStatus.EndDate?.ToString("O"),
+                Notes = caseStatus.Notes,
+                Fields = caseStatus.Fields
+            };
         }
     }
 }
