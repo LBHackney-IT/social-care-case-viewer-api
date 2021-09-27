@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
+namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
     [TestFixture]
     public class GetCaseStatusesByPersonIdTests : DatabaseTests
@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.SaveChanges();
 
             var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
+
             response.Should().BeEmpty();
         }
 
