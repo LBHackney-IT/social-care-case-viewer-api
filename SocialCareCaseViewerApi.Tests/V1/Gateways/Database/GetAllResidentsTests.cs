@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -17,13 +18,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetAllResidentsTests : DatabaseTests
     {
         private DatabaseGateway _classUnderTest;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
+        private Mock<IWorkerGateway> _mockWorkerGateway;
         private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+            _mockWorkerGateway = new Mock<IWorkerGateway>();
+
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }

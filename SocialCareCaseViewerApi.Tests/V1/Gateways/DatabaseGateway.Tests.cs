@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Moq;
@@ -15,6 +16,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
@@ -35,6 +37,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     {
         private DatabaseGateway _classUnderTest;
         private DatabaseGateway _classUnderTestWithProcessDataGateway;
+        private WorkerGateway _workerGateway;
+
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Faker _faker;
         private Fixture _fixture;
@@ -47,31 +51,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
             _mockSystemTime = new Mock<ISystemTime>();
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
             _faker = new Faker();
             _fixture = new Fixture();
             _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
             _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockSocialCarePlatformAPIGateway.Object);
-            _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway, _mockSystemTime.Object);
-        }
-
-        [Test]
-        public void GetWorkerByWorkerIdReturnsWorker()
-        {
-            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
-
-            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id);
-
-            response.Should().BeEquivalentTo(worker);
-        }
-
-        [Test]
-        public void GetWorkerByWorkerIdReturnsNullWhenIdNotPresent()
-        {
-            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
-            var response = _classUnderTest.GetWorkerByWorkerId(worker.Id + 1);
-
-            response.Should().BeNull();
+            _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway,
+                _mockSystemTime.Object);
+            _workerGateway = new WorkerGateway(DatabaseContext);
         }
 
         [Test]
@@ -106,7 +94,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             response.Should().BeEquivalentTo(worker);
         }
-
 
         [Test]
         public void CreateWorkerInsertsWorkerIntoDatabaseAndAddsWorkerToTeam()
@@ -151,9 +138,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
-            var workerByGetWorkerById = _classUnderTest.GetWorkerByWorkerId(createdWorker.Id);
+            var workerByGetWorkerById = _workerGateway.GetWorkerByWorkerId(createdWorker.Id);
 
-            var expectedResponse = new Worker
+            var expectedResponse = new SocialCareCaseViewerApi.V1.Domain.Worker
             {
                 Id = workerByGetWorkerById.Id,
                 FirstName = workerByGetWorkerById.FirstName,
@@ -165,7 +152,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 DateStart = workerByGetWorkerById.DateStart,
             };
 
-            var responseWorkerTeam = workerByGetWorkerById.WorkerTeams?.ToList()[0];
+            var responseWorkerTeam = workerByGetWorkerById.Teams?.ToList()[0];
 
             workerByGetWorkerById.Id.Should().Be(expectedResponse.Id);
             workerByGetWorkerById.FirstName.Should().Be(expectedResponse.FirstName);
@@ -176,8 +163,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             workerByGetWorkerById.CreatedBy.Should().Be(expectedResponse.CreatedBy);
             workerByGetWorkerById.DateStart.Should().Be(expectedResponse.DateStart);
 
-            responseWorkerTeam?.TeamId.Should().Be(createdTeams[0].Id);
-            responseWorkerTeam?.WorkerId.Should().Be(expectedResponse.Id);
+            responseWorkerTeam?.Id.Should().Be(createdTeams[0].Id);
         }
 
         [Test]
@@ -288,12 +274,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             // Check worker's details before updating
-            var originalWorker = _classUnderTest.GetWorkerByWorkerId(worker.Id);
+            var originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             var currentTeam = DatabaseContext.WorkerTeams.Single(x => x.WorkerId == originalWorker.Id).Team;
 
-            originalWorker.WorkerTeams?.Count.Should().Be(1);
-            originalWorker.WorkerTeams?.Single().TeamId.Should().Be(currentTeam.Id);
-            originalWorker.Allocations?.Count.Should().Be(0);
+            originalWorker?.Teams?.Count.Should().Be(1);
+            originalWorker?.Teams?.Single().Id.Should().Be(currentTeam.Id);
+            originalWorker?.AllocationCount.Should().Be(0);
 
             var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
             DatabaseContext.Workers.Add(allocator);
@@ -302,7 +288,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             // Check allocations assigned to the worker
             _classUnderTest.CreateAllocation(createAllocationRequest);
-            originalWorker.Allocations?.Count.Should().Be(1);
+            originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
+            originalWorker?.AllocationCount.Should().Be(1);
 
             var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id);
 
@@ -317,11 +304,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.UpdateWorker(updateTeamRequest);
 
             // Check worker's details after updating
-            var getUpdatedWorker = _classUnderTest.GetWorkerByWorkerId(originalWorker.Id);
+            var getUpdatedWorker = _workerGateway.GetWorkerByWorkerId(originalWorker.Id);
 
-            getUpdatedWorker.WorkerTeams?.Count.Should().Be(1);
-            getUpdatedWorker.WorkerTeams?.Single().TeamId.Should().Be(differentTeam.Id);
-            getUpdatedWorker.Allocations?.Count.Should().Be(1);
+            getUpdatedWorker?.Teams?.Count.Should().Be(1);
+            getUpdatedWorker?.Teams?.Single().Id.Should().Be(differentTeam.Id);
+            getUpdatedWorker?.AllocationCount.Should().Be(1);
 
             // Check allocations assigned to the worker have been updated
             var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id);
@@ -466,12 +453,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.Allocations;
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
-            Assert.AreEqual(insertedRecord.PersonId, request.MosaicId);
-            Assert.AreEqual(insertedRecord.WorkerId, worker.Id);
-            Assert.AreEqual(insertedRecord.CreatedBy, createdByWorker.Email);
-            Assert.IsNotNull(insertedRecord.CreatedAt);
-            Assert.IsNull(insertedRecord.LastModifiedAt);
-            Assert.IsNull(insertedRecord.LastModifiedBy);
+            insertedRecord.PersonId.Should().Be(request.MosaicId);
+            insertedRecord.WorkerId.Should().Be(worker.Id);
+            insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
         }
 
         [Test]

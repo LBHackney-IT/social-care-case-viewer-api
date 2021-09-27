@@ -31,11 +31,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private readonly IWorkerGateway _workerGateway;
         private readonly ISystemTime _systemTime;
 
-        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, IWorkerGateway workerGateway, ISystemTime systemTime)
+        public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
-            _workerGateway = workerGateway;
+            _workerGateway = new WorkerGateway(databaseContext);
             _systemTime = systemTime;
         }
 
