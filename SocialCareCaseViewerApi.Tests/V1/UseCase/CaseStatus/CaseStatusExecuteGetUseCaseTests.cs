@@ -4,7 +4,6 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using FluentAssertions;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using System;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,11 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
-            result.Should().BeEquivalentTo(new ListCaseStatusesResponse
-            {
-                PersonId = person.Id,
-                CaseStatuses = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus>()
-            });
+            result.Should().BeEquivalentTo(new List<CaseStatusResponse>());
         }
 
         [Test]
@@ -79,11 +74,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
-            result.CaseStatuses.Count.Should().Be(1);
-            result.CaseStatuses.First().Fields.First().Name.Should().Be(caseStatusTypeField.Name);
-            result.CaseStatuses.First().Fields.First().Description.Should().Be(caseStatusTypeField.Description);
-            result.CaseStatuses.First().Fields.First().SelectedOption.Name.Should().Be("One");
-            result.CaseStatuses.First().Fields.First().SelectedOption.Description.Should().Be("First option");
+            result.Count.Should().Be(1);
+            result.First().Fields.First().Name.Should().Be(caseStatusTypeField.Name);
+            result.First().Fields.First().Description.Should().Be(caseStatusTypeField.Description);
+            result.First().Fields.First().SelectedOption.Name.Should().Be("One");
+            result.First().Fields.First().SelectedOption.Description.Should().Be("First option");
         }
     }
 }

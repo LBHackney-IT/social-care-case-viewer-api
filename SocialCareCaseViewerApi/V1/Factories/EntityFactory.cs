@@ -294,8 +294,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Id = caseStatus.Id,
                 Type = caseStatus.Type?.Name,
-                StartDate = caseStatus.StartDate.ToString("s"),
-                EndDate = caseStatus.EndDate?.ToString("s"),
+                StartDate = caseStatus.StartDate,
+                EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
                 Fields = caseStatus.SelectedOptions?.Select(
                     o => new CaseStatusField
