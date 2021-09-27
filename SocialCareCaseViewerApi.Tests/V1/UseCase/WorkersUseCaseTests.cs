@@ -8,37 +8,41 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class WorkersUseCaseTests
     {
-        private Mock<IDatabaseGateway> _mockDatabaseGateway;
-        private IWorkersUseCase _workersUseCase;
+        private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
+        private Mock<IWorkerGateway> _mockWorkerGateway = null!;
+        private IWorkersUseCase _workersUseCase = null!;
 
         [SetUp]
         public void SetUp()
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _workersUseCase = new WorkersUseCase(_mockDatabaseGateway.Object);
+            _mockWorkerGateway = new Mock<IWorkerGateway>();
+            _workersUseCase = new WorkersUseCase(_mockDatabaseGateway.Object, _mockWorkerGateway.Object);
         }
 
         [Test]
         public void ExecuteGetCallsDatabaseGateway()
         {
-            var fakeWorker = TestHelpers.CreateWorker();
+            var fakeWorker = TestHelpers.CreateWorker().ToDomain(true);
             const int teamId = 1;
             var request = new GetWorkersRequest { WorkerId = fakeWorker.Id, Email = fakeWorker.Email, TeamId = teamId };
 
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
+            _mockWorkerGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
 
             _workersUseCase.ExecuteGet(request);
 
-            _mockDatabaseGateway.Verify(x => x.GetWorkerByWorkerId(fakeWorker.Id), Times.Once);
+            _mockWorkerGateway.Verify(x => x.GetWorkerByWorkerId(fakeWorker.Id), Times.Once);
             _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(fakeWorker.Email), Times.Once);
             _mockDatabaseGateway.Verify(x => x.GetTeamByTeamId(teamId), Times.Once);
         }
@@ -46,10 +50,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GetWorkerByWorkerIdReturnsListWorkersWhenWorkerWithIdExists()
         {
-            var fakeWorker = TestHelpers.CreateWorker();
+            var fakeWorker = TestHelpers.CreateWorker().ToDomain(true);
             var request = new GetWorkersRequest { WorkerId = fakeWorker.Id };
 
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
+            _mockWorkerGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
             var result = _workersUseCase.ExecuteGet(request);
             var worker = result.First();
 
@@ -150,13 +154,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                     Worker = fakeWorker
                 }}
             };
+            var fakeWorkerDomain = fakeWorker.ToDomain(true);
             var request = new GetWorkersRequest
             {
                 WorkerId = fakeWorker.Id,
                 TeamId = fakeTeamId,
                 Email = fakeWorker.Email
             };
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorker);
+            _mockWorkerGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorker.Id)).Returns(fakeWorkerDomain);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorker.Email)).Returns(fakeWorker);
             _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(fakeTeamId)).Returns(fakeTeam);
 
@@ -174,7 +179,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 FirstName = "TestFirstName",
                 LastName = "TestLastName",
                 Role = "TestRole"
-            };
+            }.ToDomain(true);
             var fakeWorkerEmail = new Worker()
             {
                 Id = 2,
@@ -204,7 +209,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 }}
             };
 
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorkerId.Id)).Returns(fakeWorkerId);
+            _mockWorkerGateway.Setup(x => x.GetWorkerByWorkerId(fakeWorkerId.Id)).Returns(fakeWorkerId);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(fakeWorkerEmail.Email)).Returns(fakeWorkerEmail);
             _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(fakeTeamId)).Returns(fakeTeam);
 
@@ -251,9 +256,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var updateWorkerRequest = TestHelpers.CreateUpdateWorkersRequest();
 
-            _mockDatabaseGateway
+            _mockWorkerGateway
                 .Setup(x => x.GetWorkerByWorkerId(updateWorkerRequest.WorkerId))
-                .Returns(new Worker());
+                .Returns(TestHelpers.CreateWorker().ToDomain(true));
 
             _mockDatabaseGateway.Setup(x => x.UpdateWorker(updateWorkerRequest));
 
