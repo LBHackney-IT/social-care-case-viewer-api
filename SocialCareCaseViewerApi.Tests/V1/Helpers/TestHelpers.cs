@@ -560,16 +560,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseStatusTypeField CreateCaseStatusTypeField(
             long caseStatusTypeId,
             long? id = null,
-            string? name = "placementReason",
-            string? description = "Some description")
+            string? name = null,
+            string? description = null)
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
-                .RuleFor(cstf => cstf.Name, f => name)
-                .RuleFor(cstf => cstf.Description, f => description)
+                .RuleFor(cstf => cstf.Name, f => name ?? f.Random.String2(50))
+                .RuleFor(cstf => cstf.Description, f => description ?? f.Random.String2(50))
                 .RuleFor(cstf => cstf.Options,
-                    (f, cstf) => new List<CaseStatusTypeFieldOption>()
+                    (f, cstf) => new List<CaseStatusTypeFieldOption>
                     {
                         new CaseStatusTypeFieldOption() { Name = "One", Description = "First option", TypeField = cstf},
                         new CaseStatusTypeFieldOption() { Name = "Two", Description = "Second option", TypeField = cstf}
@@ -600,9 +600,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseStatus>()
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.TypeId, f => typeId ?? f.UniqueIndex + 1)
-                .RuleFor(cs => cs.Notes, f => notes)
-                .RuleFor(cs => cs.StartDate, f => startDate)
-                .RuleFor(cs => cs.EndDate, f => endDate)
+                .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
+                .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
+                .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
         }
 

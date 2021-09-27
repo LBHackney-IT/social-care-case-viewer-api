@@ -1,3 +1,4 @@
+using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -5,21 +6,24 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
     {
-        private IDatabaseGateway _databaseGateway;
+        private readonly ICaseStatusGateway _caseStatusGateway;
+        private readonly IDatabaseGateway _databaseGateway;
 
-        public CaseStatusesUseCase(IDatabaseGateway databaseGateway)
+        public CaseStatusesUseCase(ICaseStatusGateway caseStatusGateway, IDatabaseGateway databaseGateway)
         {
+            _caseStatusGateway = caseStatusGateway;
             _databaseGateway = databaseGateway;
         }
 
         public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
         {
-            var caseStatusType = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
+            var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
 
             if (caseStatusType == null)
             {
@@ -43,9 +47,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var caseStatus = _databaseGateway.GetCaseStatusesByPersonId(personId);
+            var caseStatus = _caseStatusGateway.GetCaseStatusesByPersonId(personId);
 
-            var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToResponse() };
+            var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToList() };
 
             return response;
         }
@@ -55,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
 
-            var type = _databaseGateway.GetCaseStatusTypeWithFields(request.Type);
+            var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
             var typeDoesNotExist = type == null;
             if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
@@ -64,12 +68,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
 
             // check if case status exists for the period
-            var personCaseStatus = _databaseGateway.GetCaseStatusesByPersonIdDate(request.PersonId, request.StartDate);
+            var personCaseStatus = _caseStatusGateway.GetCaseStatusesByPersonIdDate(request.PersonId, request.StartDate);
 
             var personCaseStatusAlreadyExists = personCaseStatus != null;
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
 
-            return _databaseGateway.CreateCaseStatus(request);
+            return _caseStatusGateway.CreateCaseStatus(request);
         }
     }
 }

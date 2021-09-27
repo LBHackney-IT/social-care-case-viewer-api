@@ -135,6 +135,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>();
             services.AddScoped<IMongoGateway, MongoGateway>();
             services.AddScoped<ITeamGateway, TeamGateway>();
+            services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
