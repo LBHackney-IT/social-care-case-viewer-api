@@ -563,16 +563,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return teamsWorkerBelongsIn;
         }
 
-        public Team CreateTeam(CreateTeamRequest request)
-        {
-            var team = new Team { Name = request.Name, Context = request.Context, WorkerTeams = new List<WorkerTeam>() };
-
-            _databaseContext.Teams.Add(team);
-            _databaseContext.SaveChanges();
-
-            return team;
-        }
-
         public Team GetTeamByTeamId(int teamId)
         {
             return _databaseContext.Teams

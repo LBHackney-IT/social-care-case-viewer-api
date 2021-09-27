@@ -19,7 +19,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         string GetNCReferenceByPersonId(string personId);
         Worker GetWorkerByWorkerId(int workerId);
         Worker GetWorkerByEmail(string email);
-        Team CreateTeam(CreateTeamRequest request);
         IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
         Team GetTeamByTeamName(string name);
         Team GetTeamByTeamId(int id);
