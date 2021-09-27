@@ -11,23 +11,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     [TestFixture]
     public class GetCaseStatusFieldsByType : DatabaseTests
     {
-        private DatabaseGateway _databaseGateway;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-        private Mock<ISystemTime> _mockSystemTime;
+        private ICaseStatusGateway _caseStatusGateway;
 
         [SetUp]
         public void Setup()
         {
-            _mockSystemTime = new Mock<ISystemTime>();
-            _databaseGateway =
-                new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         [Test]
         public void WhenNoFieldsExistForType()
         {
-            var response = _databaseGateway.GetCaseStatusTypeWithFields("non-existent");
+            var response = _caseStatusGateway.GetCaseStatusTypeWithFields("non-existent");
 
             response.Should().BeNull();
         }
@@ -39,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.CaseStatusTypes.Add(caseStatusType);
             DatabaseContext.SaveChanges();
 
-            var response = _databaseGateway.GetCaseStatusTypeWithFields("Test");
+            var response = _caseStatusGateway.GetCaseStatusTypeWithFields("Test");
 
             response.Name.Should().Be("Test");
             response.Fields.First().Name.Should().Be("someThing");

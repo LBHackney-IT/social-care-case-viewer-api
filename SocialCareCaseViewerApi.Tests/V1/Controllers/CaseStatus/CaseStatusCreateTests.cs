@@ -6,6 +6,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
@@ -31,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()));
             var request = CaseStatusHelper.CreateCaseStatusRequest();
 
-            var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;
+            _caseStatusController.CreateCaseStatus(request);
 
             _mockCaseStatusesUseCase.Verify(x => x.ExecutePost(request));
         }
@@ -84,14 +85,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         public void WhenRequestIsValidReturnsSuccessfulResponse()
         {
             var caseStatus = CaseStatusHelper.CreateCaseStatus();
-            var request = CaseStatusHelper.CreateCaseStatusRequest();
+            var caseStatusDomain = caseStatus.ToDomain();
+            var request = CaseStatusHelper.CreateCaseStatusRequest(caseStatus.PersonId);
+            _mockCaseStatusesUseCase
+                .Setup(x => x.ExecutePost(request))
+                .Returns(caseStatusDomain);
 
-            _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(request)).Returns(caseStatus);
-
-            var response = _caseStatusController.CreateCaseStatus(request) as CreatedAtActionResult;
+            var response = _caseStatusController.CreateCaseStatus(request) as ObjectResult;
 
             _mockCaseStatusesUseCase.Verify(x => x.ExecutePost(request));
-
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().Be("Successfully created case status.");
         }

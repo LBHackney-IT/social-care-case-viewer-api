@@ -13,17 +13,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithCaseStatusToDatabase(
           DatabaseContext databaseContext)
         {
-            var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
+            var caseStatusType = TestHelpers.CreateCaseStatusType();
             var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
-            var person = TestHelpers.CreatePerson(3);
-            var caseStatus = TestHelpers.CreateCaseStatus(
-                personId: 3,
-                typeId: caseStatusType.Id,
-                startDate: DateTime.Today,
-                notes: "Testing",
-                options: new List<CaseStatusTypeFieldOption>() { caseStatusTypeField.Options.First() }
-            );
-
+            var person = TestHelpers.CreatePerson();
+            var caseStatus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, options: new List<CaseStatusTypeFieldOption> { caseStatusTypeField.Options.First() });
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
@@ -92,20 +85,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithMultipleCaseStatusToDatabase(
           DatabaseContext databaseContext)
         {
-            var caseStatusType = TestHelpers.CreateCaseStatusType(id: 10);
-            var person = TestHelpers.CreatePerson(3);
-            var csus = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-2), endDate: DateTime.Today.AddDays(-1), notes: "Testing");
-            var csus2 = TestHelpers.CreateCaseStatus(personId: 3, typeId: caseStatusType.Id, startDate: DateTime.Today.AddDays(-1), notes: "Testing");
-
+            var caseStatusType = TestHelpers.CreateCaseStatusType();
+            var person = TestHelpers.CreatePerson();
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id);
+            var caseStatus2 = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id);
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.Persons.Add(person);
-            databaseContext.CaseStatuses.Add(csus);
-            databaseContext.CaseStatuses.Add(csus2);
+            databaseContext.CaseStatuses.Add(caseStatus);
+            databaseContext.CaseStatuses.Add(caseStatus2);
 
             databaseContext.SaveChanges();
 
-            return (csus, person);
+            return (caseStatus, person);
         }
 
         public static (CaseStatusType, CaseStatusTypeField, CaseStatusTypeFieldOption) SaveCaseStatusFieldsToDatabase(DatabaseContext databaseContext)

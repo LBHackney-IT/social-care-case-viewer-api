@@ -287,5 +287,28 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedBy = request.CreatedBy
             };
         }
+
+        public static Domain.CaseStatus ToDomain(this Infrastructure.CaseStatus caseStatus)
+        {
+            return new Domain.CaseStatus
+            {
+                Id = caseStatus.Id,
+                Type = caseStatus.Type?.Name,
+                StartDate = caseStatus.StartDate.ToString("s"),
+                EndDate = caseStatus.EndDate?.ToString("s"),
+                Notes = caseStatus.Notes,
+                Fields = caseStatus.SelectedOptions?.Select(
+                    o => new CaseStatusField
+                    {
+                        Name = o.FieldOption.TypeField.Name,
+                        Description = o.FieldOption.TypeField.Description,
+                        SelectedOption = new CaseStatusFieldSelectedOption
+                        {
+                            Name = o.FieldOption.Name,
+                            Description = o.FieldOption.Description
+                        }
+                    }).ToList()
+            };
+        }
     }
 }
