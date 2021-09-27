@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -38,7 +39,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public ListCaseStatusesResponse ExecuteGet(long personId)
+        public List<CaseStatusResponse> ExecuteGet(long personId)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);
 
@@ -47,11 +48,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var caseStatus = _caseStatusGateway.GetCaseStatusesByPersonId(personId);
+            var caseStatuses = _caseStatusGateway.GetCaseStatusesByPersonId(personId);
 
-            var response = new ListCaseStatusesResponse() { PersonId = personId, CaseStatuses = caseStatus.ToList() };
-
-            return response;
+            return caseStatuses.Select(caseStatus => caseStatus.ToResponse()).ToList();
         }
 
         public CaseStatus ExecutePost(CreateCaseStatusRequest request)

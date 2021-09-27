@@ -13,6 +13,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
+using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -342,6 +343,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PhoneNumber = phoneNumber.Number,
                 PhoneType = phoneNumber.Type
             }).ToList();
+        }
+
+        public static CaseStatusResponse ToResponse(this CaseStatus caseStatus)
+        {
+            return new CaseStatusResponse
+            {
+                Id = caseStatus.Id,
+                Type = caseStatus.Type,
+                StartDate = caseStatus.StartDate.ToString("O"),
+                EndDate = caseStatus.EndDate?.ToString("O"),
+                Notes = caseStatus.Notes,
+                Fields = caseStatus.Fields
+            };
         }
     }
 }

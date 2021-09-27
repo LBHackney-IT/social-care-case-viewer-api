@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -8,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request);
 
-        ListCaseStatusesResponse ExecuteGet(long personId);
+        List<CaseStatusResponse> ExecuteGet(long personId);
         CaseStatus ExecutePost(CreateCaseStatusRequest request);
     }
 }
