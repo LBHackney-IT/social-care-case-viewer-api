@@ -21,7 +21,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.WorkerGatewayTests
         [Test]
         public void GetWorkerByWorkerIdReturnsWorker()
         {
-            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
+            var worker = TestHelpers.CreateWorker();
+            SaveWorkerToDatabase(worker);
 
             var response = _workerGateway.GetWorkerByWorkerId(worker.Id);
 
@@ -31,17 +32,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.WorkerGatewayTests
         [Test]
         public void GetWorkerByWorkerIdReturnsNullWhenIdNotPresent()
         {
-            var worker = SaveWorkerToDatabase(TestHelpers.CreateWorker());
+            var worker = TestHelpers.CreateWorker();
+            SaveWorkerToDatabase(worker);
+
             var response = _workerGateway.GetWorkerByWorkerId(worker.Id + 1);
 
             response.Should().BeNull();
         }
 
-        private Worker SaveWorkerToDatabase(Worker worker)
+        private void SaveWorkerToDatabase(Worker worker)
         {
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.SaveChanges();
-            return worker;
         }
     }
 }
