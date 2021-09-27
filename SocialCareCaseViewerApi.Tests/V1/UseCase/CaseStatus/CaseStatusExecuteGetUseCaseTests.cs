@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
-            result.Should().BeEquivalentTo( new List<CaseStatusResponse>());
+            result.Should().BeEquivalentTo(new List<CaseStatusResponse>());
         }
 
         [Test]
