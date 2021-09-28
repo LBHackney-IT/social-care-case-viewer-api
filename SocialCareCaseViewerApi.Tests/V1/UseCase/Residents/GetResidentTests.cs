@@ -11,7 +11,7 @@ using SocialCareCaseViewerApi.V1.UseCase;
 using dbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 #nullable enable
-namespace SocialCareCaseViewerApi.Tests.V1.UseCase.ResidentUseCaseTests
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 {
     [TestFixture]
     public class GetResidentTests

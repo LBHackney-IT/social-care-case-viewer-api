@@ -43,7 +43,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
                 _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
         }
 
-        #region Allocations
         [Test]
         public void CreateAllocationReturns201WhenSuccessful()
         {
@@ -266,7 +265,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             Assert.AreEqual(JsonConvert.SerializeObject(response), JsonConvert.SerializeObject(resultContent));
             Assert.AreEqual(200, okResult.StatusCode);
         }
-        #endregion
 
         [Test]
         public void ListVisitsByPersonIdReturns200WhenSuccessful()

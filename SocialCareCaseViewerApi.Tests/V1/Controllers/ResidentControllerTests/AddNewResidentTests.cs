@@ -46,11 +46,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         [Test]
         public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
         {
+            var addNewResidentRequest = _fixture.Create<AddNewResidentRequest>();
             _mockResidentUseCase
-                .Setup(x => x.AddNewResident(It.IsAny<AddNewResidentRequest>()))
+                .Setup(x => x.AddNewResident(addNewResidentRequest))
                 .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
 
-            var response = _residentController.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
+            var response = _residentController.AddNewResident(addNewResidentRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(500);
             response?.Value.Should().Be("Resident could not be inserted");
@@ -59,11 +60,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         [Test]
         public void AddNewResidentReturns500WhenAddressCouldNotBeInserted()
         {
+            var addNewResidentRequest = _fixture.Create<AddNewResidentRequest>();
             _mockResidentUseCase
-                .Setup(x => x.AddNewResident(It.IsAny<AddNewResidentRequest>()))
+                .Setup(x => x.AddNewResident(addNewResidentRequest))
                 .Throws(new AddressCouldNotBeInsertedException("Address could not be inserted"));
 
-            var response = _residentController.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
+            var response = _residentController.AddNewResident(addNewResidentRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(500);
             response?.Value.Should().Be("Address could not be inserted");

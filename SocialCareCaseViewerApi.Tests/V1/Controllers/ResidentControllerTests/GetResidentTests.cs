@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         [Test]
         public void GetPersonByIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
         {
-            var request = new GetPersonRequest()
+            var request = new GetPersonRequest
             {
                 AuditingEnabled = false,
                 UserId = _faker.Person.Email,

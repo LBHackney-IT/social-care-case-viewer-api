@@ -6,7 +6,7 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase;
 
 #nullable enable
-namespace SocialCareCaseViewerApi.Tests.V1.UseCase.ResidentUseCaseTests
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 {
     [TestFixture]
     public class UpdateResidentTests
