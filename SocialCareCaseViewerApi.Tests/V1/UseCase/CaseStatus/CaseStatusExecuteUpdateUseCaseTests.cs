@@ -3,10 +3,12 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 
 #nullable enable
@@ -19,58 +21,58 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
         private CaseStatusesUseCase _caseStatusesUseCase = null!;
 
+        private Person _resident = null!;
+        private Worker _worker = null!;
+        private SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus _caseStatus = null!;
+        private UpdateCaseStatusRequest _updateCaseStatusRequest = null!;
+        private SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus _updatedCaseStatus = null!;
+
         [SetUp]
         public void SetUp()
         {
             _mockCaseStatusGateway = new Mock<ICaseStatusGateway>();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _caseStatusesUseCase = new CaseStatusesUseCase(_mockCaseStatusGateway.Object, _mockDatabaseGateway.Object);
+
+            _resident = TestHelpers.CreatePerson(ageContext: "C");
+            _worker = TestHelpers.CreateWorker();
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident);
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id, email: _worker.Email);
+            _updatedCaseStatus = TestHelpers.CreateCaseStatus(_resident.Id, _caseStatus.TypeId, _caseStatus.Notes,
+                _caseStatus.StartDate, _updateCaseStatusRequest.EndDate, resident: _resident);
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+
+            _mockCaseStatusGateway
+                .Setup(x => x.UpdateCaseStatus(_caseStatus.Id, _updateCaseStatusRequest))
+                .Returns(_updatedCaseStatus.ToDomain());
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_resident.Id)).Returns(_resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_worker.Email)).Returns(_worker);
         }
 
         [Test]
         public void TestUseCaseMakesAppropriateCallsToOurGateways()
         {
-            var resident = TestHelpers.CreatePerson(ageContext: "C");
-            var worker = TestHelpers.CreateWorker();
-            var caseStatus = TestHelpers.CreateCaseStatus(resident: resident);
+            _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: resident.Id, email: worker.Email);
-            var updatedCaseStatus = TestHelpers.CreateCaseStatus(resident.Id, caseStatus.TypeId, caseStatus.Notes,
-                caseStatus.StartDate, updateCaseStatusRequest.EndDate, resident: resident);
-
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
-
-            _mockCaseStatusGateway
-                .Setup(x => x.UpdateCaseStatus(caseStatus.Id, updateCaseStatusRequest))
-                .Returns(updatedCaseStatus.ToDomain());
-
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(worker.Email)).Returns(worker);
-
-            _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
-
-            _mockCaseStatusGateway.Verify(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id), Times.Once);
-            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(caseStatus.Id, updateCaseStatusRequest), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(resident.Id), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(worker.Email), Times.Once);
+            _mockCaseStatusGateway.Verify(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id), Times.Once);
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_caseStatus.Id, _updateCaseStatusRequest), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(_resident.Id), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(_worker.Email), Times.Once);
         }
 
         [Test]
         public void TestWhenResidentNotFoundWithRequestIdPersonNotFoundExceptionThrown()
         {
             const int nonExistentResidentId = 0;
-            var caseStatus = TestHelpers.CreateCaseStatus();
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: nonExistentResidentId);
-
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: nonExistentResidentId);
 
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(nonExistentResidentId));
 
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
             act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"'personId' with '{nonExistentResidentId}' was not found");
@@ -79,101 +81,61 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void TestWhenResidentAgeContextIsNotChildrensInvalidAgeContextExceptionThrown()
         {
-            var resident = TestHelpers.CreatePerson(ageContext: "A");
-            var caseStatus = TestHelpers.CreateCaseStatus();
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: resident.Id);
+            _resident = TestHelpers.CreatePerson(ageContext: "A");
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id);
 
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_resident.Id)).Returns(_resident);
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
             act.Should().Throw<InvalidAgeContextException>()
-                .WithMessage($"Person with the id {resident.Id} belongs to the wrong AgeContext for this operation");
+                .WithMessage($"Person with the id {_resident.Id} belongs to the wrong AgeContext for this operation");
         }
 
         [Test]
         public void TestWhenResidentIdFromRequestDoesNotMatchResidentOnCaseStatusThrowCaseStatusDoesNotMatchPersonException()
         {
-            var resident = TestHelpers.CreatePerson(ageContext: "C");
             var residentOnCaseStatus = TestHelpers.CreatePerson(ageContext: "C");
-            var caseStatus = TestHelpers.CreateCaseStatus(resident: residentOnCaseStatus);
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: resident.Id);
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: residentOnCaseStatus);
 
             _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
             act.Should().Throw<CaseStatusDoesNotMatchPersonException>()
-                .WithMessage($"Retrieved case status does not match the provided person id of {updateCaseStatusRequest.PersonId}");
+                .WithMessage($"Retrieved case status does not match the provided person id of {_updateCaseStatusRequest.PersonId}");
         }
 
         [Test]
         public void TestWhenRequestEditedByWorkerEmailNotFoundWorkerNotFoundExceptionThrown()
         {
-            var worker = TestHelpers.CreateWorker();
-            var resident = TestHelpers.CreatePerson(ageContext: "C");
-            var caseStatus = TestHelpers.CreateCaseStatus(resident: resident);
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: resident.Id, email: worker.Email);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_updateCaseStatusRequest.EditedBy));
 
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
-
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(updateCaseStatusRequest.EditedBy));
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
             act.Should().Throw<WorkerNotFoundException>()
-                .WithMessage($"Worker with email `{updateCaseStatusRequest.EditedBy}` was not found");
+                .WithMessage($"Worker with email `{_updateCaseStatusRequest.EditedBy}` was not found");
         }
 
         [Test]
         public void TestWhenUpdatingCaseStatusAndCaseStatusNotFoundCaseStatusDoesNotExistExceptionThrown()
         {
-            var caseStatus = TestHelpers.CreateCaseStatus();
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest();
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id));
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id));
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
             act.Should().Throw<CaseStatusDoesNotExistException>()
-                .WithMessage($"Case status with {caseStatus.Id} not found");
+                .WithMessage($"Case status with {_caseStatus.Id} not found");
         }
 
         [Test]
         public void TestUpdatingACaseStatusReturnsUpdatedCaseStatusResponse()
         {
-            var worker = TestHelpers.CreateWorker();
-            var resident = TestHelpers.CreatePerson(ageContext: "C");
-            var caseStatus = TestHelpers.CreateCaseStatus(resident: resident);
-            var updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: resident.Id, email: worker.Email);
-            var updatedCaseStatus = TestHelpers.CreateCaseStatus(resident.Id, caseStatus.TypeId, caseStatus.Notes,
-                caseStatus.StartDate, updateCaseStatusRequest.EndDate, resident: resident);
+            var response = _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
 
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCasesStatusByCaseStatusId(caseStatus.Id))
-                .Returns(caseStatus.ToDomain());
-
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(resident.Id)).Returns(resident);
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(updateCaseStatusRequest.EditedBy)).Returns(worker);
-
-            _mockCaseStatusGateway
-                .Setup(x => x.UpdateCaseStatus(caseStatus.Id, updateCaseStatusRequest))
-                .Returns(updatedCaseStatus.ToDomain());
-
-            var response = _caseStatusesUseCase.ExecuteUpdate(caseStatus.Id, updateCaseStatusRequest);
-
-            response.Should().BeEquivalentTo(updatedCaseStatus.ToDomain().ToResponse());
+            response.Should().BeEquivalentTo(_updatedCaseStatus.ToDomain().ToResponse());
         }
     }
 }
