@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -109,6 +110,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         caseStatus.SelectedOptions.Add(fieldOption);
                     }
                 }
+            }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus.ToDomain();
+        }
+
+        public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
+        {
+            var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
+            if (request.EndDate != null)
+            {
+                caseStatus.EndDate = request.EndDate;
             }
 
             _databaseContext.SaveChanges();

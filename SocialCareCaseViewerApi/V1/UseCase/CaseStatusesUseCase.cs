@@ -90,17 +90,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             ExecuteUpdateValidation(caseStatusId, request, caseStatus);
 
-            var updatedCaseStatus = UpdatedCaseStatus(request, caseStatus);
+            var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(caseStatusId, request);
 
             return updatedCaseStatus;
         }
 
         private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus caseStatus)
         {
-            var person = _databaseGateway.GetPersonByMosaicId(caseStatusId);
+            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null)
             {
-                throw new PersonNotFoundException($"'personId' with '{caseStatusId}' was not found");
+                throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found");
             }
             if (person.AgeContext.ToLower() != "c")
             {
@@ -126,24 +126,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
         }
 
-        private static CaseStatus UpdatedCaseStatus(UpdateCaseStatusRequest request, CaseStatus caseStatus)
-        {
-            if (request.EndDate != null)
-            {
-                caseStatus.EndDate = request.EndDate;
-            }
 
-            // caseStatus.LastModifiedAt = new SystemTime().Now;
-            //
-            // caseStatus.LastModifiedBy = request.EditedBy;
-
-            if (request.Notes != null)
-            {
-                caseStatus.Notes = request.Notes;
-            }
-
-            // save changes
-            return caseStatus;
-        }
     }
 }
