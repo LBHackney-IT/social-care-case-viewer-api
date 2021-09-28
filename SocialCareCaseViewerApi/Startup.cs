@@ -136,12 +136,11 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IMongoGateway, MongoGateway>();
             services.AddScoped<ITeamGateway, TeamGateway>();
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
+            services.AddScoped<IWorkerGateway, WorkerGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAllUseCase, GetAllUseCase>();
-            services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
             services.AddScoped<ICaseRecordsUseCase, CaseRecordsUseCase>();
             services.AddScoped<IAllocationsUseCase, AllocationsUseCase>();
             services.AddScoped<ITeamsUseCase, TeamsUseCase>();
@@ -150,12 +149,12 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IWarningNoteUseCase, WarningNoteUseCase>();
             services.AddScoped<IGetVisitByVisitIdUseCase, GetVisitByVisitIdUseCase>();
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
-            services.AddScoped<IPersonUseCase, PersonUseCase>();
             services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
             services.AddScoped<IPersonalRelationshipsUseCase, PersonalRelationshipsUseCase>();
             services.AddScoped<ICaseStatusesUseCase, CaseStatusesUseCase>();
             services.AddScoped<ICreateRequestAuditUseCase, CreateRequestAuditUseCase>();
+            services.AddScoped<IResidentUseCase, ResidentUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

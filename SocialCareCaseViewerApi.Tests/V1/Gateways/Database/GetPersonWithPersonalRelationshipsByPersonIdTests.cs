@@ -1,6 +1,5 @@
 using System.Linq;
 using FluentAssertions;
-using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -14,14 +13,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetPersonWithPersonalRelationshipsByPersonIdTests : DatabaseTests
     {
         private DatabaseGateway _databaseGateway;
-        private Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
             _mockSystemTime = new Mock<ISystemTime>();
-            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+
+            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 

@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 #nullable enable
@@ -15,10 +14,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public class WorkersUseCase : IWorkersUseCase
     {
         private readonly IDatabaseGateway _databaseGateway;
+        private readonly IWorkerGateway _workerGateway;
 
-        public WorkersUseCase(IDatabaseGateway databaseGateway)
+        public WorkersUseCase(IDatabaseGateway databaseGateway, IWorkerGateway workerGateway)
         {
             _databaseGateway = databaseGateway;
+            _workerGateway = workerGateway;
         }
 
         public List<WorkerResponse> ExecuteGet(GetWorkersRequest request)
@@ -62,12 +63,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         private Worker? GetByWorkerId(int workerId)
         {
-            if (workerId == 0)
-            {
-                return null;
-            }
-            var dbWorker = _databaseGateway.GetWorkerByWorkerId(workerId);
-            return dbWorker?.ToDomain(true);
+            return workerId == 0 ? null : _workerGateway.GetWorkerByWorkerId(workerId);
         }
 
         private Worker? GetByWorkerEmail(string email)

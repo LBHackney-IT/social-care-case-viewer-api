@@ -9,20 +9,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
     [TestFixture]
     public class SaveRequestAudit : DatabaseTests
     {
-        private DatabaseGateway _databaseGateway;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-        private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
-        private Faker _faker = new Faker();
+        private DatabaseGateway _databaseGateway = null!;
+        private Mock<IProcessDataGateway> _mockProcessDataGateway = null!;
+        private Mock<ISystemTime> _mockSystemTime = null!;
+        private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void SetUp()
         {
-            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+            _mockSystemTime = new Mock<ISystemTime>();
+
+            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
         }
 
         [Test]

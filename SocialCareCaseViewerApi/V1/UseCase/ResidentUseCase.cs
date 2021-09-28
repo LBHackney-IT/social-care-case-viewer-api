@@ -1,23 +1,42 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
-    public class GetAllUseCase : IGetAllUseCase
+    public class ResidentUseCase : IResidentUseCase
     {
         private readonly IDatabaseGateway _databaseGateway;
-        public GetAllUseCase(IDatabaseGateway databaseGateway)
+
+        public ResidentUseCase(IDatabaseGateway databaseGateway)
         {
             _databaseGateway = databaseGateway;
         }
 
-        public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
+        public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
+        {
+            return _databaseGateway.AddNewResident(request);
+        }
+
+        public GetPersonResponse? GetResident(GetPersonRequest request)
+        {
+            var resident = _databaseGateway.GetPersonDetailsById(request.Id);
+
+            return resident != null ? ResponseFactory.ToResponse(resident) : null;
+        }
+
+        public void UpdateResident(UpdatePersonRequest request)
+        {
+            _databaseGateway.UpdatePerson(request);
+        }
+
+        public ResidentInformationList GetResidentsByQuery(ResidentQueryParam rqp, int cursor, int limit)
         {
             long? mosaicId = null;
 
