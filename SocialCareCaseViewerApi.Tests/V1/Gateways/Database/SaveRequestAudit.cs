@@ -8,7 +8,6 @@ using SocialCareCaseViewerApi.V1.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
@@ -18,7 +17,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     {
         private DatabaseGateway _databaseGateway = null!;
         private Mock<IProcessDataGateway> _mockProcessDataGateway = null!;
-        private Mock<IWorkerGateway> _mockWorkerGateway = null!;
         private Mock<ISystemTime> _mockSystemTime = null!;
         private readonly Faker _faker = new Faker();
 
@@ -26,7 +24,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         public void SetUp()
         {
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-            _mockWorkerGateway = new Mock<IWorkerGateway>();
             _mockSystemTime = new Mock<ISystemTime>();
 
             _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,

@@ -1027,7 +1027,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
             var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker.Email))
+            if (string.IsNullOrEmpty(worker?.Email))
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }

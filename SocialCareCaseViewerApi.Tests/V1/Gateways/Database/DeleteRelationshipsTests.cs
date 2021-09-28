@@ -15,7 +15,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     {
         private DatabaseGateway _databaseGateway;
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
-        private Mock<IWorkerGateway> _mockWorkerGateway;
         private Mock<ISystemTime> _mockSystemTime;
         private PersonalRelationship _relationship;
         private PersonalRelationship _oppositeRelationship;
@@ -25,7 +24,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
             _mockSystemTime = new Mock<ISystemTime>();
-            _mockWorkerGateway = new Mock<IWorkerGateway>();
 
             _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
                 _mockSystemTime.Object);

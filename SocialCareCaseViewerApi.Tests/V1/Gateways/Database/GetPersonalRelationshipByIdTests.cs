@@ -5,7 +5,6 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -14,7 +13,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     {
         private DatabaseGateway _databaseGateway;
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
-        private Mock<IWorkerGateway> _mockWorkerGateway;
         private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
@@ -22,7 +20,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             _mockSystemTime = new Mock<ISystemTime>();
             _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-            _mockWorkerGateway = new Mock<IWorkerGateway>();
 
             _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
                 _mockSystemTime.Object);
