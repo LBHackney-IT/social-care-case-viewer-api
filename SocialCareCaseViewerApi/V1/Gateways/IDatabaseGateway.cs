@@ -19,7 +19,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         string GetNCReferenceByPersonId(string personId);
         Worker GetWorkerByWorkerId(int workerId);
         Worker GetWorkerByEmail(string email);
-        Team CreateTeam(CreateTeamRequest request);
         IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
         Team GetTeamByTeamName(string name);
         Team GetTeamByTeamId(int id);
@@ -41,11 +40,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
-        CaseStatus GetCasesStatusByCaseStatusId(long id);
-        IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId);
-        CaseStatus GetCaseStatusesByPersonIdDate(long personId, System.DateTime period);
-        CaseStatusType GetCaseStatusTypeWithFields(string caseStatusType);
-        CaseStatus CreateCaseStatus(CreateCaseStatusRequest request);
         void CreateRequestAudit(CreateRequestAuditRequest request);
     }
 }

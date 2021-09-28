@@ -5,10 +5,10 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
@@ -17,14 +17,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     [TestFixture]
     public class TeamsUseCaseTests
     {
-        private Mock<IDatabaseGateway> _mockDatabaseGateway;
+        private readonly Mock<IDatabaseGateway> _mockDatabaseGateway = new Mock<IDatabaseGateway>();
+        private readonly Mock<ITeamGateway> _mockTeamGateway = new Mock<ITeamGateway>();
         private TeamsUseCase _teamsUseCase;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-            _teamsUseCase = new TeamsUseCase(_mockDatabaseGateway.Object);
+            _teamsUseCase = new TeamsUseCase(_mockDatabaseGateway.Object, _mockTeamGateway.Object);
         }
 
         [Test]
@@ -90,24 +90,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var createTeamRequest = TestHelpers.CreateTeamRequest();
             var team = TestHelpers.CreateTeam(name: createTeamRequest.Name, context: createTeamRequest.Context);
-            _mockDatabaseGateway.Setup(x => x.CreateTeam(createTeamRequest)).Returns(team);
+            _mockTeamGateway.Setup(x => x.CreateTeam(createTeamRequest)).Returns(team.ToDomain());
 
             _teamsUseCase.ExecutePost(createTeamRequest);
 
-            _mockDatabaseGateway.Verify(x => x.CreateTeam(createTeamRequest));
-            _mockDatabaseGateway.Verify(x => x.CreateTeam(It.Is<CreateTeamRequest>(w => w == createTeamRequest)), Times.Once());
+            _mockTeamGateway.Verify(x => x.CreateTeam(createTeamRequest), Times.Once);
         }
 
         [Test]
         public void ExecutePostReturnsCreatedTeam()
         {
             var createTeamRequest = TestHelpers.CreateTeamRequest();
-            var team = TestHelpers.CreateTeam(name: createTeamRequest.Name, context: createTeamRequest.Context);
-            _mockDatabaseGateway.Setup(x => x.CreateTeam(createTeamRequest)).Returns(team);
+            var team = TestHelpers.CreateTeam(name: createTeamRequest.Name, context: createTeamRequest.Context).ToDomain();
+            _mockTeamGateway.Setup(x => x.CreateTeam(createTeamRequest)).Returns(team);
 
             var response = _teamsUseCase.ExecutePost(createTeamRequest);
 
-            response.Should().BeEquivalentTo(team.ToDomain().ToResponse());
+            response.Should().BeEquivalentTo(team.ToResponse());
         }
 
         [Test]

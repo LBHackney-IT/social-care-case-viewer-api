@@ -113,7 +113,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission, bool includeFormAnswers = true, bool includeEditHistory = true)
+        public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission,
+            bool includeFormAnswers = true, bool includeEditHistory = true, bool pruneUnfinished = false)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
@@ -122,6 +123,33 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 { SubmissionState.Discarded, "Discarded" },
                 { SubmissionState.PanelApproved, "Panel Approved" }
             };
+
+            if (pruneUnfinished)
+            {
+                return new Domain.CaseSubmission
+                {
+                    SubmissionId = caseSubmission.SubmissionId.ToString(),
+                    FormId = caseSubmission.FormId,
+                    CreatedBy = new Worker { Email = caseSubmission.CreatedBy.Email, },
+                    CreatedAt = caseSubmission.CreatedAt,
+                    Residents = caseSubmission.Residents.Select(r => new Person
+                    {
+                        Id = r.Id,
+                        AgeContext = r.AgeContext,
+                        FirstName = r.FirstName,
+                        LastName = r.LastName,
+                        Restricted = r.Restricted
+                    }).ToList(),
+                    Workers = caseSubmission.Workers.Select(w => new Worker
+                    {
+                        Email = w.Email
+                    }).ToList(),
+                    SubmissionState = mapSubmissionStateToString[caseSubmission.SubmissionState],
+                    LastEdited = caseSubmission.EditHistory.Last().EditTime,
+                    CompletedSteps = caseSubmission.FormAnswers.Count,
+                    Title = caseSubmission.Title,
+                };
+            }
 
             return new Domain.CaseSubmission
             {
@@ -257,6 +285,29 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ManagerName = request.ManagerName,
                 DiscussedWithManagerDate = request.DiscussedWithManagerDate,
                 CreatedBy = request.CreatedBy
+            };
+        }
+
+        public static Domain.CaseStatus ToDomain(this Infrastructure.CaseStatus caseStatus)
+        {
+            return new Domain.CaseStatus
+            {
+                Id = caseStatus.Id,
+                Type = caseStatus.Type?.Name,
+                StartDate = caseStatus.StartDate,
+                EndDate = caseStatus.EndDate,
+                Notes = caseStatus.Notes,
+                Fields = caseStatus.SelectedOptions?.Select(
+                    o => new CaseStatusField
+                    {
+                        Name = o.FieldOption.TypeField.Name,
+                        Description = o.FieldOption.TypeField.Description,
+                        SelectedOption = new CaseStatusFieldSelectedOption
+                        {
+                            Name = o.FieldOption.Name,
+                            Description = o.FieldOption.Description
+                        }
+                    }).ToList()
             };
         }
     }

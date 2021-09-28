@@ -59,5 +59,52 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             response.Cases.Count.Should().Be(2);
             response.Cases.Should().BeEquivalentTo(expectedResponse.Take(2).Select(x => x.ToCareCaseData(request)).ToList());
         }
+
+        [Test]
+        public void GenerateFilterDefinitionForDefaultCase()
+        {
+            const string expectedJsonQuery = "{ \"SubmissionState\" : 1 }";
+            var emptyRequest = TestHelpers.CreateListCasesRequest();
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(emptyRequest);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedMosaicId()
+        {
+            const string expectedJsonQuery = "{ \"Residents._id\" : 1, \"SubmissionState\" : 1 }";
+            const long mosaicId = 1L;
+            var requestWithMosaicId = TestHelpers.CreateListCasesRequest(mosaicId: mosaicId);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithMosaicId);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedFirstName()
+        {
+            const string expectedJsonQuery = "{ \"Residents.FirstName\" : /^testington$/i, \"SubmissionState\" : 1 }";
+            const string firstName = "testington";
+            var requestWithFirstName = TestHelpers.CreateListCasesRequest(firstName: firstName);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithFirstName);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedLastName()
+        {
+            const string expectedJsonQuery = "{ \"Residents.LastName\" : /^toastington$/i, \"SubmissionState\" : 1 }";
+            const string lastName = "toastington";
+            var requestWithLastName = TestHelpers.CreateListCasesRequest(lastName: lastName);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithLastName);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
     }
 }

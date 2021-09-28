@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using MongoDB.Bson;
-using Moq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -509,10 +508,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.Title, title);
         }
 
-        public static ListCasesRequest CreateListCasesRequest(long? mosaicId = null)
+        public static ListCasesRequest CreateListCasesRequest(
+            long? mosaicId = null,
+            string? firstName = null,
+            string? lastName = null)
         {
             return new Faker<ListCasesRequest>()
-                .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString());
+                .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString())
+                .RuleFor(r => r.FirstName, firstName)
+                .RuleFor(r => r.LastName, lastName);
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
@@ -557,16 +561,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CaseStatusTypeField CreateCaseStatusTypeField(
             long caseStatusTypeId,
             long? id = null,
-            string? name = "placementReason",
-            string? description = "Some description")
+            string? name = null,
+            string? description = null)
         {
             return new Faker<CaseStatusTypeField>()
                 .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
-                .RuleFor(cstf => cstf.Name, f => name)
-                .RuleFor(cstf => cstf.Description, f => description)
+                .RuleFor(cstf => cstf.Name, f => name ?? f.Random.String2(50))
+                .RuleFor(cstf => cstf.Description, f => description ?? f.Random.String2(50))
                 .RuleFor(cstf => cstf.Options,
-                    (f, cstf) => new List<CaseStatusTypeFieldOption>()
+                    (f, cstf) => new List<CaseStatusTypeFieldOption>
                     {
                         new CaseStatusTypeFieldOption() { Name = "One", Description = "First option", TypeField = cstf},
                         new CaseStatusTypeFieldOption() { Name = "Two", Description = "Second option", TypeField = cstf}
@@ -591,10 +595,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CaseStatus>()
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.TypeId, f => typeId ?? f.UniqueIndex + 1)
-                .RuleFor(cs => cs.Notes, notes)
-                .RuleFor(cs => cs.StartDate, startDate)
-                .RuleFor(cs => cs.EndDate, endDate)
-                .RuleFor(cs => cs.SelectedOptions, caseOptions);
+                .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
+                .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
+                .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
+                .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
@@ -608,20 +612,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             bool? includeFormAnswers = null,
             string? ageContext = null,
             string? workerEmail = null,
-            long? personID = null)
+            long? personID = null,
+            bool? pruneUnfinished = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
-               .RuleFor(q => q.FormId, formId)
-               .RuleFor(q => q.SubmissionStates, submissionStates)
-               .RuleFor(q => q.CreatedBefore, createdBefore)
-               .RuleFor(q => q.CreatedAfter, createdAfter)
-               .RuleFor(q => q.Page, page)
-               .RuleFor(q => q.Size, size)
-               .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
-               .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
-               .RuleFor(q => q.AgeContext, ageContext)
-               .RuleFor(q => q.WorkerEmail, workerEmail)
-               .RuleFor(q => q.PersonID, personID);
+                .RuleFor(q => q.FormId, formId)
+                .RuleFor(q => q.SubmissionStates, submissionStates)
+                .RuleFor(q => q.CreatedBefore, createdBefore)
+                .RuleFor(q => q.CreatedAfter, createdAfter)
+                .RuleFor(q => q.Page, page)
+                .RuleFor(q => q.Size, size)
+                .RuleFor(q => q.IncludeEditHistory, f => includeEditHistory ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeFormAnswers, f => includeFormAnswers ?? f.Random.Bool())
+                .RuleFor(q => q.AgeContext, ageContext)
+                .RuleFor(q => q.WorkerEmail, workerEmail)
+                .RuleFor(q => q.PersonID, personID)
+                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
         }
 
         private static List<CaseStatusValue> CreateCaseStatusValues()

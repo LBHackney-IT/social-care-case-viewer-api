@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
@@ -30,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             var resident = TestHelpers.CreatePerson();
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
             var mockResponse = TestHelpers.CreateCaseStatus(personId: resident.Id, startDate: DateTime.Now.AddDays(-1),
-                endDate: DateTime.Now.AddDays(1));
+                endDate: DateTime.Now.AddDays(1)).ToDomain();
 
             _mockCaseStatusesUseCase
                 .Setup(x => x.ExecuteUpdate(resident.Id, request))

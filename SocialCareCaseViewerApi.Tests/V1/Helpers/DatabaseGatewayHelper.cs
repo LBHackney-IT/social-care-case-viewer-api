@@ -112,8 +112,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.CreatedBy, p => p.Internet.Email())
                 .RuleFor(p => p.LastModifiedAt, p => p.Date.Past())
                 .RuleFor(p => p.LastModifiedBy, p => p.Internet.Email())
-                .RuleFor(p => p.FirstName, p => p.Name.FirstName())
-                .RuleFor(p => p.LastName, p => p.Name.LastName())
+                .RuleFor(p => p.FirstName, p => p.Random.String2(100))
+                .RuleFor(p => p.LastName, p => p.Random.String2(100))
                 .RuleFor(p => p.PersonId, personId);
         }
     }

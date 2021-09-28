@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -50,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Successful request. Case statuses returned</response>
         /// <response code="404">Case status not found</response>
-        [ProducesResponseType(typeof(ListRelationshipsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<CaseStatusResponse>), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId:long}/case-statuses")]
         public IActionResult ListCaseStatuses(long personId)
@@ -86,7 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var caseStatus = _caseStatusesUseCase.ExecutePost(request);
+                _caseStatusesUseCase.ExecutePost(request);
 
                 return CreatedAtAction(nameof(CreateCaseStatus), "Successfully created case status.");
             }
