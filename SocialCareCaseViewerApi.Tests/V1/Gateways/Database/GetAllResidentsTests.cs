@@ -17,13 +17,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetAllResidentsTests : DatabaseTests
     {
         private DatabaseGateway _classUnderTest;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }

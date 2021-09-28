@@ -9,7 +9,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("sccv_worker", Schema = "dbo")]
     public class Worker : IAuditEntity
     {
-        [Column("id")] [MaxLength(16)] [Key] public int Id { get; set; }
+        [Column("id")]
+        [MaxLength(16)]
+        [Key]
+        public int Id { get; set; }
 
         [Column("email")]
         [MaxLength(62)]

@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 {
@@ -14,13 +15,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class CreatePersonalRelationshipTests : DatabaseTests
     {
         private DatabaseGateway _databaseGateway;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
-        private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+            _mockSystemTime = new Mock<ISystemTime>();
+
+            _databaseGateway = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 

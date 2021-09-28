@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -27,12 +28,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
+        private readonly IWorkerGateway _workerGateway;
         private readonly ISystemTime _systemTime;
 
         public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
+            _workerGateway = new WorkerGateway(databaseContext);
             _systemTime = systemTime;
         }
 
@@ -453,16 +456,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.MosaicId == personId).FirstOrDefault();
 
             return lookup?.NCId;
-        }
-
-        public Worker GetWorkerByWorkerId(int workerId)
-        {
-            return _databaseContext.Workers
-                .Where(x => x.Id == workerId)
-                .Include(x => x.Allocations)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(y => y.Team)
-                .FirstOrDefault();
         }
 
         public Worker GetWorkerByEmail(string email)
@@ -1031,10 +1024,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (first + " " + last).TrimStart().TrimEnd();
         }
 
-        private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker.Email))
+            var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
+            if (string.IsNullOrEmpty(worker?.Email))
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
@@ -1070,7 +1063,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdateAllocationException("Allocation already closed");
             }
 
-            var worker = GetWorkerByWorkerId(allocation.WorkerId ?? 0);
+            var worker = _workerGateway.GetWorkerByWorkerId(allocation.WorkerId ?? 0);
 
             if (worker == null)
             {
