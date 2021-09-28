@@ -27,10 +27,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     public class CaseStatusValue
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
     }
 
     public class UpdateCaseStatusValidator : AbstractValidator<UpdateCaseStatusRequest>

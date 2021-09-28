@@ -128,11 +128,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         private static CaseStatus UpdatedCaseStatus(UpdateCaseStatusRequest request, CaseStatus caseStatus)
         {
-            if (request.StartDate != null)
-            {
-                caseStatus.StartDate = (DateTime) request.StartDate;
-            }
-
             if (request.EndDate != null)
             {
                 caseStatus.EndDate = request.EndDate;

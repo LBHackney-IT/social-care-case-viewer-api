@@ -646,14 +646,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return caseStatusValues;
         }
 
-        public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest()
+        public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
+            string? notes = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
                 .RuleFor(u => u.PersonId, f => f.UniqueIndex + 1)
-                .RuleFor(u => u.StartDate, f => f.Date.Past())
-                .RuleFor(u => u.EndDate, f => f.Date.Future())
-                .RuleFor(u => u.EditedBy, f => f.Person.Email)
-                .RuleFor(u => u.Notes, f => f.Random.String2(1000))
+                .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
+                .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
+                .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(u => u.Values, CreateCaseStatusValues());
         }
     }
