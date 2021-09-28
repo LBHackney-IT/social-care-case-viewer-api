@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -7,7 +6,6 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
@@ -84,7 +82,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _caseStatusGateway.CreateCaseStatus(request);
         }
 
-        public CaseStatus ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
+        public CaseStatusResponse ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
         {
             var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(caseStatusId);
 
@@ -92,7 +90,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(caseStatusId, request);
 
-            return updatedCaseStatus;
+            return updatedCaseStatus.ToResponse();
         }
 
         private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus caseStatus)
@@ -108,7 +106,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
             }
 
-            if (caseStatus.Person.Id != request.PersonId)
+            if (caseStatus.Resident.Id != request.PersonId)
             {
                 throw new CaseStatusDoesNotMatchPersonException(
                     $"Retrieved case status does not match the provided person id of {request.PersonId}");

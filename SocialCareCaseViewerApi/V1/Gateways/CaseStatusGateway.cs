@@ -24,6 +24,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             return _databaseContext.CaseStatuses
                 .Where(cs => cs.Id == id)
+                .Include(cs => cs.Person)
                 .Include(cs => cs.Type)
                 .Include(cs => cs.SelectedOptions)
                 .ThenInclude(csso => csso.FieldOption)

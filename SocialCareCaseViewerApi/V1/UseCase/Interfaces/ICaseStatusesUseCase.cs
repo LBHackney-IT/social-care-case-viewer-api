@@ -10,6 +10,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request);
         List<CaseStatusResponse> ExecuteGet(long personId);
         CaseStatus ExecutePost(CreateCaseStatusRequest request);
-        CaseStatus ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request);
+        CaseStatusResponse ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request);
     }
 }
