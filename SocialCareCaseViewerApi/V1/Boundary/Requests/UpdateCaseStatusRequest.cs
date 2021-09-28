@@ -11,9 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonProperty("person_id")]
         public long PersonId { get; set; }
 
-        [JsonProperty("start_date")]
-        public DateTime? StartDate { get; set; }
-
         [JsonProperty("end_date")]
         public DateTime? EndDate { get; set; }
 
@@ -40,8 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         public UpdateCaseStatusValidator()
         {
-            RuleFor(x => x.StartDate)
-                .LessThan(DateTime.Now).When(x => x.StartDate != null).WithMessage("'start_date' must be in the past");
             RuleFor(x => x.EndDate)
                 .GreaterThan(DateTime.Now).When(x => x.EndDate != null).WithMessage("'end_date' must be in the future");
             RuleFor(x => x.EditedBy)
