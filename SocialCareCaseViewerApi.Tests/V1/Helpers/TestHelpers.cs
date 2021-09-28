@@ -168,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null)
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -186,7 +186,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Nationality, f => f.Address.Country())
                 .RuleFor(p => p.NhsNumber, f => f.Random.Number(int.MaxValue))
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
-                .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
+                .RuleFor(p => p.AgeContext, f => ageContext ?? f.Random.String2(1, "ACac"))
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.SexualOrientation, f => f.Random.String2(100))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(100))

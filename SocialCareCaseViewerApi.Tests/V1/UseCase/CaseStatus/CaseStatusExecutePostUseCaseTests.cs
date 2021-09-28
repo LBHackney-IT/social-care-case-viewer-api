@@ -44,15 +44,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _mockCaseStatusGateway
                 .Setup(x => x.CreateCaseStatus(It.IsAny<CreateCaseStatusRequest>()))
                 .Returns(caseStatus);
-
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()))
-                .Returns(TestHelpers.CreateWorker(email: _request.CreatedBy));
         }
 
         [Test]
         public void CallsGatewaysToCheckCaseStatusExists()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
+            var worker = TestHelpers.CreateWorker(createdBy: _request.CreatedBy);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(worker);
 
             _caseStatusesUseCase.ExecutePost(_request);
 
@@ -76,8 +76,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenTypeDoesNotExistThrowsTypeNotFoundException()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
-            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusTypeWithFields(It.IsAny<string>()));
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusTypeWithFields(_request.Type));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
 
@@ -87,13 +88,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenCreatedByEmailDoesNotExistThrowsWorkerNotFoundException()
         {
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(TestHelpers.CreatePerson(_request.PersonId));
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>()));
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy));
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
 
             act.Should().Throw<WorkerNotFoundException>()
                 .WithMessage($"'createdBy' with '{_request.CreatedBy}' was not found as a worker.");
+        }
+
+        [Test]
+        public void WhenPersonIsAdultAgeContextItShouldThrowInvalidAgeContextException()
+        {
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "a");
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+
+            Action act = () => _caseStatusesUseCase.ExecutePost(_request);
+
+            act.Should().Throw<InvalidAgeContextException>()
+            .WithMessage($"Person with the id {resident.Id} belongs to the wrong AgeContext for this operation");
         }
     }
 }
