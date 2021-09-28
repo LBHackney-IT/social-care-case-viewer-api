@@ -27,11 +27,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var response = _caseStatusGateway.GetCasesStatusByCaseStatusId(caseStatus.Id);
 
-            CaseStatusHelper.TrimMilliseconds(response.StartDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().StartDate));
-            CaseStatusHelper.TrimMilliseconds(response.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
-            response.Id.Should().Be(caseStatus.ToDomain().Id);
-            response.Type.Should().Be(caseStatus.ToDomain().Type);
-            response.Fields.Should().BeEquivalentTo(caseStatus.ToDomain().Fields);
+            CaseStatusHelper.TrimMilliseconds(response?.StartDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().StartDate));
+            CaseStatusHelper.TrimMilliseconds(response?.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
+            response?.Id.Should().Be(caseStatus.ToDomain().Id);
+            response?.Type.Should().Be(caseStatus.ToDomain().Type);
+            response?.Fields.Should().BeEquivalentTo(caseStatus.ToDomain().Fields);
         }
 
         [Test]
