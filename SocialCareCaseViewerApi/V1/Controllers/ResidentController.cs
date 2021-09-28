@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (UpdatePersonException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

@@ -22,191 +22,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
     public class SocialCareCaseViewerApiControllerTests
     {
         private SocialCareCaseViewerApiController _classUnderTest;
-        private Mock<IGetAllUseCase> _mockGetAllUseCase;
-        private Mock<IAddNewResidentUseCase> _mockAddNewResidentUseCase;
         private Mock<IAllocationsUseCase> _mockAllocationsUseCase;
         private Mock<ICaseNotesUseCase> _mockCaseNotesUseCase;
         private Mock<IVisitsUseCase> _mockVisitsUseCase;
         private Mock<IWarningNoteUseCase> _mockWarningNoteUseCase;
         private Mock<IGetVisitByVisitIdUseCase> _mockGetVisitByVisitIdUseCase;
-        private Mock<IPersonUseCase> _mockPersonUseCase;
-        private Mock<ICreateRequestAuditUseCase> _mockCreateRequestAuditUseCase;
-        private Fixture _fixture;
-        private Faker _faker;
+        private readonly Fixture _fixture = new Fixture();
+        private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void SetUp()
         {
-            _mockGetAllUseCase = new Mock<IGetAllUseCase>();
-            _mockAddNewResidentUseCase = new Mock<IAddNewResidentUseCase>();
             _mockAllocationsUseCase = new Mock<IAllocationsUseCase>();
             _mockCaseNotesUseCase = new Mock<ICaseNotesUseCase>();
             _mockVisitsUseCase = new Mock<IVisitsUseCase>();
             _mockWarningNoteUseCase = new Mock<IWarningNoteUseCase>();
             _mockGetVisitByVisitIdUseCase = new Mock<IGetVisitByVisitIdUseCase>();
-            _mockPersonUseCase = new Mock<IPersonUseCase>();
-            _mockCreateRequestAuditUseCase = new Mock<ICreateRequestAuditUseCase>();
 
-            _classUnderTest = new SocialCareCaseViewerApiController(_mockGetAllUseCase.Object, _mockAddNewResidentUseCase.Object,
-                    _mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
-            _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object, _mockPersonUseCase.Object, _mockCreateRequestAuditUseCase.Object);
-
-            _fixture = new Fixture();
-            _faker = new Faker();
-        }
-
-        [Test]
-        public void ListContactsReturns200WhenSuccessful()
-        {
-            var residentInformationList = _fixture.Create<ResidentInformationList>();
-            var residentQueryParam = new ResidentQueryParam();
-
-            _mockGetAllUseCase.Setup(x => x.Execute(residentQueryParam, 2, 3)).Returns(residentInformationList);
-            var response = _classUnderTest.ListContacts(residentQueryParam, 2, 3) as OkObjectResult;
-
-            response?.StatusCode.Should().Be(200);
-            response?.Value.Should().BeEquivalentTo(residentInformationList);
-        }
-
-        [Test]
-        public void AddNewResidentReturns201WhenSuccessful()
-        {
-            var addNewResidentResponse = _fixture.Create<AddNewResidentResponse>();
-            var addNewResidentRequest = new AddNewResidentRequest();
-
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(addNewResidentRequest)).Returns(addNewResidentResponse);
-            var response = _classUnderTest.AddNewResident(addNewResidentRequest) as CreatedAtActionResult;
-
-            response?.StatusCode.Should().Be(201);
-            response?.Value.Should().BeEquivalentTo(addNewResidentResponse);
-        }
-
-        [Test]
-        public void AddNewResidentReturns500WhenResidentCouldNotBeInserted()
-        {
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-                .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
-
-            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
-
-            response?.StatusCode.Should().Be(500);
-            response?.Value.Should().Be("Resident could not be inserted");
-        }
-
-        [Test]
-        public void AddNewResidentReturns500WhenAddressCouldNotBeInserted()
-        {
-            _mockAddNewResidentUseCase.Setup(x => x.Execute(It.IsAny<AddNewResidentRequest>()))
-                .Throws(new AddressCouldNotBeInsertedException("Address could not be inserted"));
-
-            var response = _classUnderTest.AddNewResident(new AddNewResidentRequest()) as ObjectResult;
-
-            response?.StatusCode.Should().Be(500);
-            response?.Value.Should().Be("Address could not be inserted");
-        }
-
-        [Test]
-        public void GetPersonByIdReturns200WhenSuccessful()
-        {
-            var request = new GetPersonRequest();
-            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>())).Returns(new GetPersonResponse());
-
-            var response = _classUnderTest.GetPerson(request) as ObjectResult;
-
-            response?.StatusCode.Should().Be(200);
-        }
-
-        [Test]
-        public void GetPersonByIdDoesNotCallTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsFalse()
-        {
-            var request = new GetPersonRequest()
-            {
-                AuditingEnabled = false,
-                UserId = _faker.Person.Email,
-                Id = 7
-            };
-
-            _classUnderTest.GetPerson(request);
-
-            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()), Times.Never);
-        }
-
-        [Test]
-        public void GetPersonByIdCallsTheCreateRequestAuditUseCaseWhenAuditingIsEnabledIsTrueAndUserIdIsProvided()
-        {
-            var getPersonRequest = new GetPersonRequest() { AuditingEnabled = true, UserId = _faker.Person.Email, Id = 1 };
-
-            _classUnderTest.GetPerson(getPersonRequest);
-
-            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.IsAny<CreateRequestAuditRequest>()));
-        }
-
-        [Test]
-        public void GetPersonByIdCallsTheCreateRequestAuditUseCaseWithCorrectValuesWhenAuditingIsEnabledIsTrueAndUserIdIsProvided()
-        {
-            var getPersonRequest = new GetPersonRequest() { AuditingEnabled = true, UserId = _faker.Person.Email, Id = 1 };
-
-            var request = new CreateRequestAuditRequest()
-            {
-                ActionName = "view_resident",
-                UserName = getPersonRequest.UserId,
-                Metadata = new Dictionary<string, object>() { { "residentId", getPersonRequest.Id } }
-            };
-
-            _mockCreateRequestAuditUseCase.Setup(x => x.Execute(request)).Verifiable();
-
-            _classUnderTest.GetPerson(getPersonRequest);
-
-            _mockCreateRequestAuditUseCase.Verify(x => x.Execute(It.Is<CreateRequestAuditRequest>(
-                x => x.ActionName == request.ActionName
-                && x.UserName == request.UserName
-                && JsonConvert.SerializeObject(x.Metadata) == JsonConvert.SerializeObject(request.Metadata)
-                )), Times.Once);
-        }
-
-        [Test]
-        public void GetPersonByIdCallsPersonUseCaseWhenOnlyIdIsProvidedToEnsureBackwardsCompatibility()
-        {
-            var getPersonRequest = new GetPersonRequest() { Id = 1 };
-
-            _classUnderTest.GetPerson(getPersonRequest);
-
-            _mockPersonUseCase.Verify(x => x.ExecuteGet(getPersonRequest));
-        }
-
-        [Test]
-        public void GetPersonByIdReturns404WhenPersonNotFound()
-        {
-            var request = new GetPersonRequest();
-            _mockPersonUseCase.Setup(x => x.ExecuteGet(It.IsAny<GetPersonRequest>()));
-
-            var result = _classUnderTest.GetPerson(request) as NotFoundResult;
-
-            result?.StatusCode.Should().Be(404);
-        }
-
-        [Test]
-        public void UpdatePersonReturns200WhenSuccessful()
-        {
-            var request = new UpdatePersonRequest();
-
-            var result = _classUnderTest.UpdatePerson(request) as StatusCodeResult;
-
-            result?.StatusCode.Should().Be(204);
-        }
-
-        [Test]
-        public void UpdatePersonReturns404WhenPersonNotFound()
-        {
-            UpdatePersonRequest request = new UpdatePersonRequest();
-
-            _mockPersonUseCase.Setup(x => x.ExecutePatch(It.IsAny<UpdatePersonRequest>())).Throws(new UpdatePersonException("Person not found"));
-
-            var result = _classUnderTest.UpdatePerson(request) as NotFoundObjectResult;
-
-            result.Should().BeNull();
-            result?.StatusCode.Should().Be(404);
-            result?.Value.Should().Be("Person not found");
+            _classUnderTest = new SocialCareCaseViewerApiController(_mockAllocationsUseCase.Object, _mockCaseNotesUseCase.Object, _mockVisitsUseCase.Object,
+                _mockWarningNoteUseCase.Object, _mockGetVisitByVisitIdUseCase.Object);
         }
 
         #region Allocations
