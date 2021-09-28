@@ -1,35 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using FluentValidation;
-using Newtonsoft.Json;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateCaseStatusRequest
     {
-        [JsonProperty("person_id")]
+        [JsonPropertyName("personId")]
         public long PersonId { get; set; }
 
-        [JsonProperty("end_date")]
+        [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; }
 
-        [JsonProperty("edited_by")]
+        [JsonPropertyName("editedBy")]
         public string EditedBy { get; set; } = null!;
 
-        [JsonProperty("notes")]
+        [JsonPropertyName("notes")]
         public string? Notes { get; set; }
 
-        [JsonProperty("values")]
+        [JsonPropertyName("values")]
         public List<CaseStatusValue>? Values { get; set; }
     }
 
     public class CaseStatusValue
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; } = null!;
     }
 
@@ -38,10 +38,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public UpdateCaseStatusValidator()
         {
             RuleFor(x => x.EndDate)
-                .GreaterThan(DateTime.Now).When(x => x.EndDate != null).WithMessage("'end_date' must be in the future");
+                .GreaterThan(DateTime.Now).When(x => x.EndDate != null).WithMessage("'endDate' must be in the future");
             RuleFor(x => x.EditedBy)
-                .NotNull().WithMessage("'edited_by' must be provided")
-                .EmailAddress().WithMessage("'edited_by' must be a valid email address");
+                .NotNull().WithMessage("'editedBy' must be provided")
+                .EmailAddress().WithMessage("'editedBy' must be a valid email address");
             RuleFor(x => x.Notes)
                 .MaximumLength(1000).When(x => x.Notes != null).WithMessage("'notes' must be less than or equal to 1,000 characters.");
             RuleForEach(x => x.Values)
