@@ -130,7 +130,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (request.StartDate != null)
             {
-                caseStatus.StartDate = (DateTime)request.StartDate;
+                caseStatus.StartDate = (DateTime) request.StartDate;
             }
 
             if (request.EndDate != null)
