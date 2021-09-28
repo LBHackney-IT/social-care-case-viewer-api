@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class CaseStatusGateway : ICaseStatusGateway
@@ -20,7 +21,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public CaseStatus GetCasesStatusByCaseStatusId(long id)
+        public CaseStatus? GetCasesStatusByCaseStatusId(long id)
         {
             return _databaseContext.CaseStatuses
                 .Where(cs => cs.Id == id)
@@ -44,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
-        public CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
+        public CaseStatus? GetCaseStatusesByPersonIdDate(long personId, DateTime date)
         {
             var caseStatus = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.StartDate <= date)
@@ -58,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatus?.ToDomain();
         }
 
-        public CaseStatusType GetCaseStatusTypeWithFields(string type)
+        public CaseStatusType? GetCaseStatusTypeWithFields(string type)
         {
             var response = _databaseContext.CaseStatusTypes
                 .Where(cs => cs.Name == type)
