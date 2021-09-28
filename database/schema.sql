@@ -728,7 +728,7 @@ VALUES ((select id from dbo.sccv_case_status_type where name ilike 'LAC'), 'plac
 
 INSERT INTO dbo.sccv_case_status_field(fk_case_status_type_id, name, description)
 VALUES ((select id from dbo.sccv_case_status_type where name ilike 'LAC'), 'reasonCeased',
- 'What is the reason for the episode ending?'); 
+ 'What is the reason for the episode ending?');
 
 ALTER TABLE DBO.SCCV_CASE_STATUS_FIELD_OPTION ALTER COLUMN description TYPE varchar(512);
 
@@ -798,3 +798,6 @@ INSERT INTO DBO.SCCV_CASE_STATUS_FIELD_OPTION(FK_SCCV_CASE_STATUS_FIELD_ID, NAME
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN created_date timestamp;
 
 alter table  IF EXISTS dbo.sccv_person_case_status_field_option ADD COLUMN start_date timestamp;
+
+ALTER TABLE IF EXISTS dbo.sccv_person_case_status
+  ADD type varchar(256)

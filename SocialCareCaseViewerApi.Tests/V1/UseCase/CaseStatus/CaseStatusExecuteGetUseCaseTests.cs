@@ -4,7 +4,6 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using FluentAssertions;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -59,14 +58,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenPersonIsFoundWithCaseStatusesReturnsCaseStatusesList()
         {
-            var caseStatusType = TestHelpers.CreateCaseStatusType();
-            var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
             var person = TestHelpers.CreatePerson();
-            var caseStatus = TestHelpers.CreateCaseStatus(
-                person.Id,
-                caseStatusType.Id,
-                options: new List<CaseStatusTypeFieldOption> { caseStatusTypeField.Options.First() }
-            );
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id);
 
             var response = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus> { caseStatus.ToDomain() };
 
@@ -76,10 +69,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
             result.Count.Should().Be(1);
-            result.First().Fields.First().Name.Should().Be(caseStatusTypeField.Name);
-            result.First().Fields.First().Description.Should().Be(caseStatusTypeField.Description);
-            result.First().Fields.First().SelectedOption.Name.Should().Be("One");
-            result.First().Fields.First().SelectedOption.Description.Should().Be("First option");
         }
     }
 }

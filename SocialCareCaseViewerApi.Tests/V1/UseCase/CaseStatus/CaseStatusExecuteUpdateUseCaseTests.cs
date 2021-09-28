@@ -38,8 +38,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _worker = TestHelpers.CreateWorker();
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident);
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id, email: _worker.Email);
-            _updatedCaseStatus = TestHelpers.CreateCaseStatus(_resident.Id, _caseStatus.TypeId, _caseStatus.Notes,
-                _caseStatus.StartDate, _updateCaseStatusRequest.EndDate, resident: _resident);
+            _updatedCaseStatus = TestHelpers.CreateCaseStatus(_resident.Id, _caseStatus.Notes,
+                _caseStatus.StartDate, _updateCaseStatusRequest.EndDate, _resident);
 
             _mockCaseStatusGateway
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))

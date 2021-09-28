@@ -7,7 +7,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface ICaseStatusesUseCase
     {
-        GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request);
         List<CaseStatusResponse> ExecuteGet(long personId);
         CaseStatus ExecutePost(CreateCaseStatusRequest request);
         CaseStatusResponse ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request);

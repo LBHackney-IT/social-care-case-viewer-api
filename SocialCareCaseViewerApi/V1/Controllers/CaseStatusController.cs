@@ -25,26 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseStatusesUseCase = caseStatusUseCase;
         }
 
-        /// <summary>
-        /// Get a list of fields and their options for a case status type
-        /// </summary>
-        /// <response code="200">Found case status type, returns the fields for that type</response>
-        /// <response code="404">Case status type not found, or no fields exist</response>
-        [ProducesResponseType(typeof(GetCaseStatusFieldsResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("case-statuses/form-options/{type?}")]
-        public IActionResult GetCaseStatusTypeFields([FromRoute] GetCaseStatusFieldsRequest request)
-        {
-            try
-            {
-                return Ok(_caseStatusesUseCase.ExecuteGetFields(request));
-            }
-            catch (CaseStatusNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-        }
-
 
         /// <summary>
         /// Get a list of case statuses by person id
@@ -93,7 +73,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (Exception e) when (
                 e is PersonNotFoundException ||
-                e is CaseStatusTypeNotFoundException ||
                 e is CaseStatusAlreadyExistsException ||
                 e is WorkerNotFoundException
             )

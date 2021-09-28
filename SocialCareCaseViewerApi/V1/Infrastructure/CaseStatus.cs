@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,10 +18,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public Person Person { get; set; }
 
-        [Column("fk_case_status_type_id")]
-        [MaxLength(16)]
-        public long TypeId { get; set; }
-        public CaseStatusType Type { get; set; }
+        [Column(name:"type")]
+        [MaxLength(3)]
+        public string Type { get; set; }
 
         [Column("start_date")]
         public DateTime StartDate { get; set; }
@@ -32,9 +30,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("notes")]
         public string Notes { get; set; }
-
-        [InverseProperty("Status")]
-        public List<CaseStatusFieldOption> SelectedOptions { get; set; }
 
         //audit props
         [Column("sccv_created_at")]

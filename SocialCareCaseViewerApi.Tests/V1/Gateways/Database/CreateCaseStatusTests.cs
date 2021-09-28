@@ -25,22 +25,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void CreatesACaseStatus()
         {
-            var (caseStatusType, _, caseOptions) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
-
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
             var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, type: caseStatusType.Name, fields: requestField);
+            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: requestField);
 
             _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.SelectedOptions).FirstOrDefault();
+            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
 
             caseStatus?.PersonId.Should().Be(request.PersonId);
-            caseStatus?.TypeId.Should().Be(caseStatusType.Id);
-            caseStatus?.SelectedOptions[0].FieldOptionId.Should().Be(caseOptions.Id);
         }
 
         [Test]
@@ -52,13 +48,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (caseStatusType, _, _) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, type: caseStatusType.Name, fields: requestField, startDate: fakeTime);
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, fields: requestField, startDate: fakeTime);
 
             _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.SelectedOptions).FirstOrDefault();
+            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
             caseStatus?.StartDate.Should().Be(fakeTime);
         }
 
@@ -69,13 +64,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (caseStatusType, _, _) = CaseStatusHelper.SaveCaseStatusFieldsToDatabase(DatabaseContext);
             var requestField = new List<CaseStatusRequestField> { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, caseStatusType.Name, requestField);
+            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: requestField);
 
             _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.SelectedOptions).FirstOrDefault();
+            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
             caseStatus?.CreatedAt.Should().NotBeNull();
             caseStatus?.CreatedBy.Should().Be(request.CreatedBy);
         }
