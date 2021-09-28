@@ -93,8 +93,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return updatedCaseStatus.ToResponse();
         }
 
-        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus caseStatus)
+        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus? caseStatus)
         {
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null)
             {
@@ -117,13 +122,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
-
-            if (caseStatus == null)
-            {
-                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
-            }
         }
-
-
     }
 }

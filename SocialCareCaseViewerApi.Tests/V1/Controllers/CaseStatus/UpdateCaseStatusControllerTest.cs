@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             var resident = TestHelpers.CreatePerson();
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
             var mockResponse = TestHelpers.CreateCaseStatus(personId: resident.Id, startDate: DateTime.Now.AddDays(-1),
-                endDate: DateTime.Now.AddDays(1)).ToDomain();
+                endDate: DateTime.Now.AddDays(1)).ToDomain().ToResponse();
 
             _mockCaseStatusesUseCase
                 .Setup(x => x.ExecuteUpdate(resident.Id, request))

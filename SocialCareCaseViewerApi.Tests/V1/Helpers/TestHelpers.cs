@@ -583,8 +583,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? notes = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
-            List<CaseStatusTypeFieldOption>? options = null)
+            List<CaseStatusTypeFieldOption>? options = null,
+            InfrastructurePerson? resident = null)
         {
+            resident ??= CreatePerson();
+
             var caseOptions = new List<CaseStatusFieldOption>();
 
             if (options != null)
@@ -598,6 +601,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
+                .RuleFor(cs => cs.Person, resident)
                 .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
         }
 
@@ -647,10 +651,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null)
+            string? notes = null, long? personId = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
-                .RuleFor(u => u.PersonId, f => f.UniqueIndex + 1)
+                .RuleFor(u => u.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
