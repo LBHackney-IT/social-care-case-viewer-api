@@ -18,7 +18,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         string GetPersonIdByNCReference(string nfReference);
         string GetNCReferenceByPersonId(string personId);
         Worker GetWorkerByEmail(string email);
-        IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
         Team GetTeamByTeamName(string name);
         List<dynamic> GetWorkerAllocations(List<Worker> workers);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);

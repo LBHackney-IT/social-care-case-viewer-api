@@ -568,11 +568,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault();
         }
 
-        public IEnumerable<Team> GetTeamsByTeamContextFlag(string context)
-        {
-            return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper()));
-        }
-
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
         {

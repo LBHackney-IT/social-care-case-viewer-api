@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 
@@ -8,5 +9,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
     {
         Team CreateTeam(CreateTeamRequest request);
         Infrastructure.Team? GetTeamByTeamId(int id);
+        IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context);
     }
 }
