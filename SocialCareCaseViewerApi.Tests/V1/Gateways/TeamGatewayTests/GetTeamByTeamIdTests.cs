@@ -32,6 +32,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.TeamGatewayTests
         }
 
         [Test]
+        public void GetTeamByTeamIdReturnsNullWhenNoTeamFound()
+        {
+            const int nonExistentTeamId = 123;
+
+            var response = _teamGateway.GetTeamByTeamId(nonExistentTeamId);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public void GetTeamByTeamIdAndGetAssociatedWorkers()
         {
             var workerOne =
