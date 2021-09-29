@@ -38,10 +38,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
         }
+<<<<<<< HEAD
 
         public IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context)
         {
             return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper()));
         }
+=======
+>>>>>>> development
     }
 }
