@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
@@ -25,6 +27,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
 
             return team.ToDomain();
+        }
+
+        public Team? GetTeamByTeamId(int teamId)
+        {
+            return _databaseContext.Teams
+                .Where(x => x.Id == teamId)
+                .Include(x => x.WorkerTeams)
+                .ThenInclude(x => x.Worker)
+                .ThenInclude(x => x.Allocations)
+                .FirstOrDefault()
+                ?.ToDomain();
         }
     }
 }

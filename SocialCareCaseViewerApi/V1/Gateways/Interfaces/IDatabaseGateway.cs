@@ -5,7 +5,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
-namespace SocialCareCaseViewerApi.V1.Gateways
+namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
 {
     public interface IDatabaseGateway
     {
@@ -20,7 +20,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         Worker GetWorkerByEmail(string email);
         IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
         Team GetTeamByTeamName(string name);
-        Team GetTeamByTeamId(int id);
         List<dynamic> GetWorkerAllocations(List<Worker> workers);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
