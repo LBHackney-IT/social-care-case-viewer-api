@@ -7,23 +7,26 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     [TestFixture]
     public class TeamsUseCaseTests
     {
-        private readonly Mock<IDatabaseGateway> _mockDatabaseGateway = new Mock<IDatabaseGateway>();
-        private readonly Mock<ITeamGateway> _mockTeamGateway = new Mock<ITeamGateway>();
-        private TeamsUseCase _teamsUseCase;
+        private Mock<IDatabaseGateway> _mockDatabaseGateway = null!;
+        private Mock<ITeamGateway> _mockTeamGateway = null!;
+        private TeamsUseCase _teamsUseCase = null!;
 
         [SetUp]
         public void SetUp()
         {
+            _mockDatabaseGateway = new Mock<IDatabaseGateway>();
+            _mockTeamGateway = new Mock<ITeamGateway>();
+
             _teamsUseCase = new TeamsUseCase(_mockDatabaseGateway.Object, _mockTeamGateway.Object);
         }
 
@@ -71,11 +74,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.CreateGetTeamsRequest();
             var team = TestHelpers.CreateTeam();
 
-            _mockDatabaseGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam> { team });
+            _mockTeamGateway.Setup(x => x.GetTeamsByTeamContextFlag(request.ContextFlag)).Returns(new List<DbTeam> { team });
 
             var result = _teamsUseCase.ExecuteGet(request);
 
-            _mockDatabaseGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Once);
+            _mockTeamGateway.Verify(x => x.GetTeamsByTeamContextFlag(request.ContextFlag), Times.Once);
 
             var firstTeamResponse = result.Teams.FirstOrDefault();
 

@@ -384,17 +384,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetTeamByContextReturnsListOfTeamsWithWorkers()
-        {
-            var team = SaveTeamToDatabase(
-                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
-
-            var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
-
-            response.Should().BeEquivalentTo(new List<Team> { team });
-        }
-
-        [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();

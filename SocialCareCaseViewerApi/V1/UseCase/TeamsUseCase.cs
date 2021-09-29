@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public ListTeamsResponse ExecuteGet(GetTeamsRequest request)
         {
-            var teams = _databaseGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
+            var teams = _teamGateway.GetTeamsByTeamContextFlag(request.ContextFlag);
             return new ListTeamsResponse() { Teams = teams.Select(team => team.ToDomain().ToResponse()).ToList() };
         }
 
