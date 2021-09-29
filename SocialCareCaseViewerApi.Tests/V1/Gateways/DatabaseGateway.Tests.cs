@@ -389,7 +389,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var team = SaveTeamToDatabase(
                 DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
 
-            var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
+            var response = _teamGateway.GetTeamsByTeamContextFlag(team.Context);
 
             response.Should().BeEquivalentTo(new List<Team> { team });
         }
