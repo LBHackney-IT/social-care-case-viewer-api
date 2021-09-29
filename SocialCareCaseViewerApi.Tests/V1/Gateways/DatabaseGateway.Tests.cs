@@ -38,6 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private DatabaseGateway _classUnderTest;
         private DatabaseGateway _classUnderTestWithProcessDataGateway;
         private WorkerGateway _workerGateway;
+        private TeamGateway _teamGateway;
 
         private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private Faker _faker;
@@ -60,6 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway,
                 _mockSystemTime.Object);
             _workerGateway = new WorkerGateway(DatabaseContext);
+            _teamGateway = new TeamGateway(DatabaseContext);
         }
 
         [Test]
@@ -174,7 +176,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var createdWorker = _classUnderTest.CreateWorker(createWorkerRequest);
 
             var workerGetByTeamId =
-                _classUnderTest.GetTeamByTeamId(createdTeams[0].Id).WorkerTeams.ToList()[0].Worker;
+                _teamGateway.GetTeamByTeamId(createdTeams[0].Id)?.WorkerTeams.ToList()[0].Worker;
 
             var expectedResponse = new Worker
             {
@@ -371,17 +373,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetTeamByTeamIdReturnsTeamWithWorkers()
-        {
-            var team = SaveTeamToDatabase(
-                DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
-
-            var response = _classUnderTest.GetTeamByTeamId(team.Id);
-
-            response.Should().BeEquivalentTo(team);
-        }
-
-        [Test]
         public void GetTeamByTeamNameReturnsTeamWithWorkers()
         {
             var team = SaveTeamToDatabase(
@@ -401,42 +392,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.GetTeamsByTeamContextFlag(team.Context);
 
             response.Should().BeEquivalentTo(new List<Team> { team });
-        }
-
-        [Test]
-        public void GetTeamByTeamIdAndGetAssociatedWorkers()
-        {
-            var workerOne =
-                SaveWorkerToDatabase(
-                    DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1,
-                        email: "worker-one-test-email@example.com"));
-            var workerTwo =
-                SaveWorkerToDatabase(
-                    DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2,
-                        email: "worker-two-test-email@example.com"));
-            var workerTeamOne =
-                SaveWorkerTeamToDatabase(
-                    DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: workerOne.Id,
-                        worker: workerOne));
-            var workerTeamTwo =
-                SaveWorkerTeamToDatabase(
-                    DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: workerTwo.Id,
-                        worker: workerTwo));
-            var workerTeams = new List<WorkerTeam> { workerTeamOne, workerTeamTwo };
-            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: workerTeams));
-
-            var responseTeam = _classUnderTest.GetTeamByTeamId(team.Id);
-
-            responseTeam?.WorkerTeams.Count.Should().Be(2);
-
-            var responseWorkerTeams = responseTeam?.WorkerTeams.ToList();
-            var workerOneResponse =
-                responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerOne.Id)?.Worker;
-            var workerTwoResponse =
-                responseWorkerTeams?.Find(workerTeam => workerTeam.Worker.Id == workerTwo.Id)?.Worker;
-
-            workerOneResponse.Should().BeEquivalentTo(workerOne);
-            workerTwoResponse.Should().BeEquivalentTo(workerTwo);
         }
 
         [Test]
@@ -1160,13 +1115,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.SaveChanges();
             return worker;
-        }
-
-        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
-        {
-            DatabaseContext.WorkerTeams.Add(workerTeam);
-            DatabaseContext.SaveChanges();
-            return workerTeam;
         }
 
         private Team SaveTeamToDatabase(Team team)

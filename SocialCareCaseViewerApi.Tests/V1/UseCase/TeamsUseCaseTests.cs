@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetTeamsByTeamIdReturnsTeamResponseWhenTeamExists()
         {
             var team = TestHelpers.CreateTeam();
-            _mockDatabaseGateway.Setup(x => x.GetTeamByTeamId(team.Id)).Returns(team);
+            _mockTeamGateway.Setup(x => x.GetTeamByTeamId(team.Id)).Returns(team);
 
             var response = _teamsUseCase.ExecuteGetById(team.Id);
 
