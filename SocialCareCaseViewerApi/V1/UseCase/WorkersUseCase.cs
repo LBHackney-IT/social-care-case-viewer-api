@@ -4,7 +4,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -15,11 +14,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     {
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IWorkerGateway _workerGateway;
+        private readonly ITeamGateway _teamGateway;
 
-        public WorkersUseCase(IDatabaseGateway databaseGateway, IWorkerGateway workerGateway)
+        public WorkersUseCase(IDatabaseGateway databaseGateway, IWorkerGateway workerGateway, ITeamGateway teamGateway)
         {
             _databaseGateway = databaseGateway;
             _workerGateway = workerGateway;
+            _teamGateway = teamGateway;
         }
 
         public List<WorkerResponse> ExecuteGet(GetWorkersRequest request)
@@ -84,8 +85,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 return null;
             }
 
-            var dbTeam = _databaseGateway.GetTeamByTeamId(teamId);
-            var dbWorkerTeams = dbTeam?.WorkerTeams;
+            var team = _teamGateway.GetTeamByTeamId(teamId);
+            var dbWorkerTeams = team?.WorkerTeams;
 
 
             List<Worker> domainWorkers = new List<Worker>();

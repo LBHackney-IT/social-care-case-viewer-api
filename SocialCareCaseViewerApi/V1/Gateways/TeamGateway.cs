@@ -29,15 +29,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return team.ToDomain();
         }
 
-        public Team? GetTeamByTeamId(int teamId)
+        public Infrastructure.Team? GetTeamByTeamId(int teamId)
         {
             return _databaseContext.Teams
                 .Where(x => x.Id == teamId)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
-                .FirstOrDefault()
-                ?.ToDomain();
+                .FirstOrDefault();
         }
     }
 }
