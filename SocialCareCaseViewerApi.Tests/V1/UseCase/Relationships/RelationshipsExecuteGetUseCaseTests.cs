@@ -4,10 +4,10 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Relationships
 {

@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
         private readonly IWorkerGateway _workerGateway;
+        private readonly ITeamGateway _teamGateway;
         private readonly ISystemTime _systemTime;
 
         public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
@@ -36,6 +37,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
             _workerGateway = new WorkerGateway(databaseContext);
+            _teamGateway = new TeamGateway(databaseContext);
             _systemTime = systemTime;
         }
 
@@ -544,7 +546,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var teamsWorkerBelongsIn = new List<Team>();
             foreach (var requestTeam in request)
             {
-                var team = GetTeamByTeamId(requestTeam.Id);
+                var team = _teamGateway.GetTeamByTeamId(requestTeam.Id);
                 if (team == null)
                 {
                     throw new GetTeamException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
@@ -554,16 +556,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             return teamsWorkerBelongsIn;
-        }
-
-        public Team GetTeamByTeamId(int teamId)
-        {
-            return _databaseContext.Teams
-                .Where(x => x.Id == teamId)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(x => x.Worker)
-                .ThenInclude(x => x.Allocations)
-                .FirstOrDefault();
         }
 
         public Team GetTeamByTeamName(string teamName)

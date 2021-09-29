@@ -1,8 +1,8 @@
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {

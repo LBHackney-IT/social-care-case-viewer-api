@@ -7,5 +7,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
     public interface ITeamGateway
     {
         Team CreateTeam(CreateTeamRequest request);
+        Infrastructure.Team? GetTeamByTeamId(int id);
     }
 }

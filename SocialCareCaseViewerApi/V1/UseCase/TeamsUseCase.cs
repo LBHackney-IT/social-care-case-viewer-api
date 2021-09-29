@@ -3,7 +3,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -23,7 +22,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public TeamResponse? ExecuteGetById(int id)
         {
-            var team = _databaseGateway.GetTeamByTeamId(id);
+            var team = _teamGateway.GetTeamByTeamId(id);
             return team?.ToDomain().ToResponse();
         }
 
