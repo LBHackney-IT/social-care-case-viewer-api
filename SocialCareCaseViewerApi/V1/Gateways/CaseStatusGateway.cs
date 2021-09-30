@@ -37,7 +37,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var caseStatuses = _databaseContext.CaseStatuses
                 .Where(cs => cs.PersonId == personId)
-                .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today);
+                .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
+                .Include(cs => cs.Person);
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
@@ -46,6 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var caseStatus = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.StartDate <= date)
                 .Where(cs => cs.EndDate == null || cs.EndDate >= date)
+                .Include(cs => cs.Person)
                 .FirstOrDefault();
 
             return caseStatus?.ToDomain();

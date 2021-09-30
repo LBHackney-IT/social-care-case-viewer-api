@@ -36,14 +36,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: requestField);
 
-            _caseStatusGateway.CreateCaseStatus(request);
+            var caseStatus = _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
-
-            caseStatus?.PersonId.Should().Be(request.PersonId);
-            caseStatus?.Answers.Count.Should().Be(1);
-            caseStatus?.Answers.FirstOrDefault()?.Answer.Should().Be("N0");
-            caseStatus?.Notes.Should().Be(request.Notes);
+            caseStatus.Answers.Count.Should().Be(1);
+            caseStatus.Answers.FirstOrDefault()?.Answer.Should().Be("N0");
+            caseStatus.Answers.FirstOrDefault()?.Question.Should().Be("reason");
+            caseStatus.Notes.Should().Be(request.Notes);
         }
 
         [Test]
