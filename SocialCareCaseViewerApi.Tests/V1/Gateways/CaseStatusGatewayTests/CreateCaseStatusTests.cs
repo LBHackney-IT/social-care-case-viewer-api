@@ -7,18 +7,22 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using System.Collections.Generic;
+using Moq;
+using SocialCareCaseViewerApi.V1.Helpers;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
+namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
     [TestFixture]
     public class CreateCaseStatusTests : DatabaseTests
     {
         private CaseStatusGateway _caseStatusGateway;
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _caseStatusGateway = new CaseStatusGateway(DatabaseContext);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 

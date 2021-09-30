@@ -6,6 +6,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
@@ -15,10 +16,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class CaseStatusGateway : ICaseStatusGateway
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly ISystemTime _systemTime;
 
-        public CaseStatusGateway(DatabaseContext databaseContext)
+        public CaseStatusGateway(DatabaseContext databaseContext, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
+            _systemTime = systemTime;
         }
 
         public CaseStatus? GetCasesStatusByCaseStatusId(long id)
@@ -59,11 +62,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = request.CreatedBy
             };
 
-            _databaseContext.CaseStatuses.Add(caseStatus);
+            var caseStatusEntity = _databaseContext.CaseStatuses.Add(caseStatus).Entity;
 
-            foreach (var optionValue in request.Fields)
+            foreach (var answer in request.Fields)
             {
+                var caseStatusAnswer = new CaseStatusAnswer
+                {
+                    CaseStatusId = caseStatusEntity.Id,
+                    Question = answer.Name,
+                    Answer = answer.Selected,
+                    StartDate = request.StartDate,
+                    CreatedAt = _systemTime.Now
+                };
 
+                _databaseContext.CaseStatusAnswers.Add(caseStatusAnswer);
             }
 
             _databaseContext.SaveChanges();

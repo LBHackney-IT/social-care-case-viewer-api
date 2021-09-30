@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,7 +19,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public Person Person { get; set; }
 
-        [Column("type")]
+        [Column("case_status_type")]
         [MaxLength(3)]
         public string Type { get; set; }
 
@@ -30,6 +31,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("notes")]
         public string Notes { get; set; }
+
+        public List<CaseStatusAnswer> Answers;
 
         //audit props
         [Column("sccv_created_at")]

@@ -817,6 +817,7 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_person_case_status_answers
   questions varchar(512),
   answers varchar(512),
   start_date timestamp,
+  created_at timestamp,
   CONSTRAINT fk_case_status
     FOREIGN KEY(fk_person_case_status_id)
       REFERENCES dbo.sccv_person_case_status(id)

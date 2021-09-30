@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using System;
+using Moq;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -14,11 +16,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
     public class UpdateCaseStatusTests : DatabaseTests
     {
         private CaseStatusGateway _caseStatusGateway;
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _caseStatusGateway = new CaseStatusGateway(DatabaseContext);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 

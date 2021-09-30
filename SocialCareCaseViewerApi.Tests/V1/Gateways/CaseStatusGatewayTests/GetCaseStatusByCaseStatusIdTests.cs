@@ -1,9 +1,11 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
@@ -12,11 +14,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
     public class GetCaseStatusByCaseStatusIdTests : DatabaseTests
     {
         private CaseStatusGateway _caseStatusGateway = null!;
+        private Mock<ISystemTime> _mockSystemTime = null!;
 
         [SetUp]
         public void Setup()
         {
-            _caseStatusGateway = new CaseStatusGateway(DatabaseContext);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
