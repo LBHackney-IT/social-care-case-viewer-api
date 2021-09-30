@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public Person Person { get; set; }
 
-        [Column(name:"type")]
+        [Column("type")]
         [MaxLength(3)]
         public string Type { get; set; }
 
