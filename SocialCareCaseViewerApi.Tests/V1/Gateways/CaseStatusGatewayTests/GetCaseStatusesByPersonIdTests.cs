@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             CaseStatusHelper.TrimMilliseconds(responseElement.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
             responseElement.Id.Should().Be(caseStatus.ToDomain().Id);
             responseElement.Type.Should().Be(caseStatus.ToDomain().Type);
-            responseElement.Fields.Should().BeEquivalentTo(caseStatus.ToDomain().Fields);
+            responseElement.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers);
         }
 
         [Test]

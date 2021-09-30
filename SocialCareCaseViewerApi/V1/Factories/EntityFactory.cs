@@ -298,7 +298,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
                 Resident = caseStatus.Person,
-                Fields = new List<CaseStatusField>()
+                Answers = caseStatus.Answers
             };
         }
     }

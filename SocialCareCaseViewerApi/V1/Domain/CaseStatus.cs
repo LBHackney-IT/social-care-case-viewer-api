@@ -13,6 +13,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public DateTime? EndDate { get; set; }
         public string? Notes { get; set; }
         public Person Resident { get; set; }
-        public List<CaseStatusField> Fields { get; set; }
+        public List<CaseStatusAnswer> Answers { get; set; }
     }
 }
