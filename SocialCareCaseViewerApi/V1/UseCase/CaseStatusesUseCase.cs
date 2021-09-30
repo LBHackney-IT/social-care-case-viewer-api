@@ -100,6 +100,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
             }
 
+            if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
+            {
+                throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
+                                                  $"is before the start date of {caseStatus.StartDate:O}");
+            }
+
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null)
             {

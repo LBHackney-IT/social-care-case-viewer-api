@@ -37,8 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         public UpdateCaseStatusValidator()
         {
-            RuleFor(x => x.EndDate)
-                .GreaterThan(DateTime.Now).When(x => x.EndDate != null).WithMessage("'endDate' must be in the future");
             RuleFor(x => x.EditedBy)
                 .NotNull().WithMessage("'editedBy' must be provided")
                 .EmailAddress().WithMessage("'editedBy' must be a valid email address");

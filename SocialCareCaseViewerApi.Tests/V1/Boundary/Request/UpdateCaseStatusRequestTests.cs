@@ -16,7 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         private static object[] _updateCaseStatusRequests =
         {
             new object?[] { TestHelpers.CreateUpdateCaseStatusRequest(), true, ""},
-            new object?[] { TestHelpers.CreateUpdateCaseStatusRequest(DateTime.Now.AddDays(-1)), false, "'endDate' must be in the future"},
             new object?[] { TestHelpers.CreateUpdateCaseStatusRequest(email: "invalid-email-address"), false, "'editedBy' must be a valid email address"},
             new object?[] { TestHelpers.CreateUpdateCaseStatusRequest(notes: _faker.Random.String2(1001)), false, "'notes' must be less than or equal to 1,000 characters."},
         };

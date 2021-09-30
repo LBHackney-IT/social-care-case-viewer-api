@@ -131,6 +131,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
+        public void TestWhenRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown()
+        {
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1));
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id, email: _worker.Email, endDate: DateTime.Now.AddDays(-1));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage($"requested end date of {_updateCaseStatusRequest.EndDate?.ToString("O")} " +
+                             $"is before the start date of {_caseStatus.StartDate:O}");
+        }
+
+        [Test]
         public void TestUpdatingACaseStatusReturnsUpdatedCaseStatusResponse()
         {
             var response = _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);

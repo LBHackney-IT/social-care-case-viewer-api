@@ -154,6 +154,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public InvalidAgeContextException(string message) : base(message) { }
     }
 
+    public class InvalidEndDateException : Exception
+    {
+        public InvalidEndDateException(string message) : base(message) { }
+    }
+
     public class CustomException : Exception
     {
         public CustomException(string message) : base(message)
