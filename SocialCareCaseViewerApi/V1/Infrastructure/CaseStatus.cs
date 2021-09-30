@@ -16,6 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("fk_person_id")]
         [MaxLength(16)]
         public long PersonId { get; set; }
+
         public Person Person { get; set; }
 
         [Column("fk_case_status_type_id")]

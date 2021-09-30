@@ -9,10 +9,12 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
     {
+
         private readonly ICaseStatusGateway _caseStatusGateway;
         private readonly IDatabaseGateway _databaseGateway;
 
@@ -35,7 +37,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Description = caseStatusType.Description,
                 Name = caseStatusType.Name,
-                Fields = caseStatusType?.Fields.ToResponse()
+                Fields = caseStatusType.Fields.ToResponse()
             };
         }
 
@@ -57,6 +59,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
+            if (person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException(
+                    $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
+            }
 
             var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
             var typeDoesNotExist = type == null;
@@ -73,6 +80,54 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
 
             return _caseStatusGateway.CreateCaseStatus(request);
+        }
+
+        public CaseStatusResponse ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
+        {
+            var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(caseStatusId);
+
+            ExecuteUpdateValidation(caseStatusId, request, caseStatus);
+
+            var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(caseStatusId, request);
+
+            return updatedCaseStatus.ToResponse();
+        }
+
+        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus? caseStatus)
+        {
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
+            if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
+            {
+                throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
+                                                  $"is before the start date of {caseStatus.StartDate:O}");
+            }
+
+            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
+            if (person == null)
+            {
+                throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found");
+            }
+            if (person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException(
+                    $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
+            }
+
+            if (caseStatus.Resident.Id != request.PersonId)
+            {
+                throw new CaseStatusDoesNotMatchPersonException(
+                    $"Retrieved case status does not match the provided person id of {request.PersonId}");
+            }
+
+            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
+            }
         }
     }
 }

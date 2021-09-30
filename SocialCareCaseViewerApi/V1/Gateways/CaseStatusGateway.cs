@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class CaseStatusGateway : ICaseStatusGateway
@@ -16,6 +19,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public CaseStatusGateway(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
+        }
+
+        public CaseStatus? GetCasesStatusByCaseStatusId(long id)
+        {
+            return _databaseContext.CaseStatuses
+                .Where(cs => cs.Id == id)
+                .Include(cs => cs.Person)
+                .Include(cs => cs.Type)
+                .Include(cs => cs.SelectedOptions)
+                .ThenInclude(csso => csso.FieldOption)
+                .ThenInclude(fo => fo.TypeField)
+                .FirstOrDefault()
+                ?.ToDomain();
         }
 
         public List<CaseStatus> GetCaseStatusesByPersonId(long personId)
@@ -29,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
-        public CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
+        public CaseStatus? GetCaseStatusesByPersonIdDate(long personId, DateTime date)
         {
             var caseStatus = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.StartDate <= date)
@@ -43,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatus?.ToDomain();
         }
 
-        public CaseStatusType GetCaseStatusTypeWithFields(string type)
+        public CaseStatusType? GetCaseStatusTypeWithFields(string type)
         {
             var response = _databaseContext.CaseStatusTypes
                 .Where(cs => cs.Name == type)
@@ -57,8 +73,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
 
             var statusType = _databaseContext.CaseStatusTypes
-                .Where(f => f.Name == request.Type)
-                .FirstOrDefault();
+                .FirstOrDefault(f => f.Name == request.Type);
 
             var caseStatus = new Infrastructure.CaseStatus()
             {
@@ -97,6 +112,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         caseStatus.SelectedOptions.Add(fieldOption);
                     }
                 }
+            }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus.ToDomain();
+        }
+
+        public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
+        {
+            var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
+            if (request.EndDate != null)
+            {
+                caseStatus.EndDate = request.EndDate;
             }
 
             _databaseContext.SaveChanges();

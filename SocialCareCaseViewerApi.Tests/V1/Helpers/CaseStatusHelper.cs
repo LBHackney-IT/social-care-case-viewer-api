@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var caseStatusType = TestHelpers.CreateCaseStatusType();
             var caseStatusTypeField = TestHelpers.CreateCaseStatusTypeField(caseStatusType.Id);
             var person = TestHelpers.CreatePerson();
-            var caseStatus = TestHelpers.CreateCaseStatus(personId: person.Id, typeId: caseStatusType.Id, options: new List<CaseStatusTypeFieldOption> { caseStatusTypeField.Options.First() });
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id, options: new List<CaseStatusTypeFieldOption> { caseStatusTypeField.Options.First() }, resident: person);
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.CaseStatusTypeFields.Add(caseStatusTypeField);
@@ -87,8 +87,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var caseStatusType = TestHelpers.CreateCaseStatusType();
             var person = TestHelpers.CreatePerson();
-            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id);
-            var caseStatus2 = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id);
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id, resident: person);
+            var caseStatus2 = TestHelpers.CreateCaseStatus(person.Id, caseStatusType.Id, resident: person);
 
             databaseContext.CaseStatusTypes.Add(caseStatusType);
             databaseContext.Persons.Add(person);
@@ -113,6 +113,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.SaveChanges();
 
             return (caseStatusType, caseStatusTypeField, caseOptions);
+        }
+
+        public static DateTime? TrimMilliseconds(DateTime? dt)
+        {
+            if (dt == null) return null;
+            return new DateTime(dt.Value.Year, dt.Value.Month, dt.Value.Day, dt.Value.Hour, dt.Value.Minute, dt.Value.Second, 0, dt.Value.Kind);
         }
     }
 }

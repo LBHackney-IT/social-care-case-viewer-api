@@ -9,7 +9,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 
-namespace SocialCareCaseViewerApi.Tests.V1.Controllers
+namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
 {
     [TestFixture]
     public class CaseStatusTypeFieldsControllerTest

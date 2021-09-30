@@ -500,7 +500,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void ReturnsResidentsUPRN()
+        public void ReturnsResidentsUprn()
         {
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
 
@@ -516,8 +516,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(0, 20);
 
             listOfPersons
-                .Where(p => p.MosaicId.Equals(person.Id.ToString()))
-                .First()
+                .First(p => p.MosaicId.Equals(person.Id.ToString()))
                 .Uprn
                 .Should().Be(address.Uprn.ToString());
         }

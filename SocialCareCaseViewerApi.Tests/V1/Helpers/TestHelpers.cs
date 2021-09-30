@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bogus;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -167,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null)
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -185,7 +186,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Nationality, f => f.Address.Country())
                 .RuleFor(p => p.NhsNumber, f => f.Random.Number(int.MaxValue))
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
-                .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
+                .RuleFor(p => p.AgeContext, f => ageContext ?? f.Random.String2(1, "ACac"))
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.SexualOrientation, f => f.Random.String2(100))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(100))
@@ -582,19 +583,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? notes = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
-            List<CaseStatusTypeFieldOption>? options = null)
+            List<CaseStatusTypeFieldOption>? options = null,
+            InfrastructurePerson? resident = null)
         {
+            resident ??= CreatePerson();
+
             var caseOptions = new List<CaseStatusFieldOption>();
 
             if (options != null)
             {
-                foreach (var option in options)
-                {
-                    caseOptions.Add(new CaseStatusFieldOption()
-                    {
-                        FieldOption = option
-                    });
-                }
+                caseOptions.AddRange(options.Select(option => new CaseStatusFieldOption() { FieldOption = option }));
             }
 
             return new Faker<CaseStatus>()
@@ -603,6 +601,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
+                .RuleFor(cs => cs.Person, resident)
                 .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
         }
 
@@ -633,6 +632,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID)
                 .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
+        }
+
+        private static List<CaseStatusValue> CreateCaseStatusValues()
+        {
+            var caseStatusValues = new List<CaseStatusValue>();
+
+            for (var i = 0; i < new Random().Next(1, 10); i++)
+            {
+                var value = new Faker<CaseStatusValue>()
+                    .RuleFor(c => c.Name, f => f.Random.String2(1000))
+                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
+
+                caseStatusValues.Add(value);
+            }
+
+            return caseStatusValues;
+        }
+
+        public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
+            string? notes = null, long? personId = null)
+        {
+            return new Faker<UpdateCaseStatusRequest>()
+                .RuleFor(u => u.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
+                .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
+                .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
+                .RuleFor(u => u.Values, CreateCaseStatusValues());
         }
     }
 }
