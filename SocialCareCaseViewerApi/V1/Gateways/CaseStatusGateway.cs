@@ -59,16 +59,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Type = request.Type,
                 StartDate = request.StartDate,
                 Notes = request.Notes,
-                CreatedBy = request.CreatedBy
+                CreatedBy = request.CreatedBy,
+                Answers = new List<CaseStatusAnswer>()
             };
 
-            var caseStatusEntity = _databaseContext.CaseStatuses.Add(caseStatus).Entity;
+            _databaseContext.CaseStatuses.Add(caseStatus);
+            _databaseContext.SaveChanges();
 
             foreach (var answer in request.Fields)
             {
                 var caseStatusAnswer = new CaseStatusAnswer
                 {
-                    CaseStatusId = caseStatusEntity.Id,
+                    CaseStatusId = caseStatus.Id,
                     Question = answer.Name,
                     Answer = answer.Selected,
                     StartDate = request.StartDate,
@@ -76,6 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 };
 
                 _databaseContext.CaseStatusAnswers.Add(caseStatusAnswer);
+                caseStatus.Answers.Add(caseStatusAnswer);
             }
 
             _databaseContext.SaveChanges();

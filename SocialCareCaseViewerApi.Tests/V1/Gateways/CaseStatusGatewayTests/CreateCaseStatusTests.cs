@@ -41,6 +41,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
 
             caseStatus?.PersonId.Should().Be(request.PersonId);
+            caseStatus?.Answers.Count.Should().Be(1);
+            caseStatus?.Answers.FirstOrDefault()?.Answer.Should().Be("N0");
+            caseStatus?.Notes.Should().Be(request.Notes);
+        }
+
+        [Test]
+        public void CreatesACaseStatusWithoutAnswers()
+        {
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: new List<CaseStatusRequestField>());
+
+            _caseStatusGateway.CreateCaseStatus(request);
+
+            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
+
+            caseStatus?.PersonId.Should().Be(request.PersonId);
         }
 
         [Test]
