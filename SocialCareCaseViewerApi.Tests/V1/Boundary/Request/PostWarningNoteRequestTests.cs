@@ -78,18 +78,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidationFailsIfNotesIsNull()
-        {
-            var request = GetValidPostWarningNoteRequest();
-            request.Notes = null;
-            var error = ValidationHelper.ValidateModel(request);
-
-            error.Count.Should().Be(1);
-            error.Should().Contain(x => x.ErrorMessage.Contains("The Notes field is required"));
-
-        }
-
-        [Test]
         public void ValidationFailsIfNoteTypesIsLongerThan50Characters()
         {
             var request = GetValidPostWarningNoteRequest();

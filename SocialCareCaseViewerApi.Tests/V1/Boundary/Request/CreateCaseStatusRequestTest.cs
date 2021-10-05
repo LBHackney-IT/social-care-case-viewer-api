@@ -9,7 +9,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class CreateCaseStatusRequestTests
     {
-        private readonly Faker _faker = new Faker();
         CreateCaseStatusRequestValidator createCaseStatusRequestValidator;
 
         [SetUp]
@@ -42,16 +41,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.Errors.Should().Contain(e => e.ErrorMessage == "'start_date' must be in the past");
         }
 
-        [Test]
-        public void WhenNotesIsAbove1000CharactersReturnsErrorWithMessage()
-        {
-            var badRequest = CaseStatusHelper.CreateCaseStatusRequest(notes: _faker.Random.String(1001));
-
-            var response = createCaseStatusRequestValidator.Validate(badRequest);
-
-            response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'notes' must be less than or equal to 1,000 characters.");
-        }
 
         [Test]
         public void WhenCreatedByIsNotAnEmailAddressReturnsErrorWithMessage()
@@ -73,5 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             response.IsValid.Should().BeTrue();
         }
+
+
     }
 }
