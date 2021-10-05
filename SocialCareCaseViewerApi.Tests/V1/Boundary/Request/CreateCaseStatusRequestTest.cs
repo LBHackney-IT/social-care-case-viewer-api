@@ -53,7 +53,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.Errors.Should().Contain(e => e.ErrorMessage == "'notes' must be less than or equal to 1,000 characters.");
         }
 
-
         [Test]
         public void WhenCreatedByIsNotAnEmailAddressReturnsErrorWithMessage()
         {
@@ -74,7 +73,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             response.IsValid.Should().BeTrue();
         }
-
-
     }
 }
