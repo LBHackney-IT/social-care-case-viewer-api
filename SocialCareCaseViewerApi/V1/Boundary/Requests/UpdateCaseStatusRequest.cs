@@ -29,8 +29,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("name")]
         public string Name { get; set; } = null!;
 
-        [JsonPropertyName("value")]
-        public string Value { get; set; } = null!;
+        [JsonPropertyName("selected")]
+        public string Selected { get; set; } = null!;
     }
 
     public class UpdateCaseStatusValidator : AbstractValidator<UpdateCaseStatusRequest>
@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .ChildRules(value =>
                 {
                     value.RuleFor(x => x.Name).NotNull().WithMessage("Field must have a name");
-                    value.RuleFor(x => x.Value).NotNull().WithMessage("Field selected value must not be empty");
+                    value.RuleFor(x => x.Selected).NotNull().WithMessage("Field selected value must not be empty");
                 });
         }
     }
