@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 //check for individual. Ignore if provided id contains leading zeros as those won't be system Ids
                 if (!rqp.MosaicId.StartsWith("0"))
                 {
-                    var resident = _databaseGateway.GetPersonByMosaicId(mosaicId.Value);
+                    var resident = _databaseGateway.GetPersonDetailsById(mosaicId.Value);
 
                     if (resident != null)
                     {
