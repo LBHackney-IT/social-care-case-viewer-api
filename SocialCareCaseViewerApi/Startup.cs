@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -133,12 +134,13 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
             services.AddScoped<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>();
             services.AddScoped<IMongoGateway, MongoGateway>();
+            services.AddScoped<ITeamGateway, TeamGateway>();
+            services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
+            services.AddScoped<IWorkerGateway, WorkerGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAllUseCase, GetAllUseCase>();
-            services.AddScoped<IAddNewResidentUseCase, AddNewResidentUseCase>();
             services.AddScoped<ICaseRecordsUseCase, CaseRecordsUseCase>();
             services.AddScoped<IAllocationsUseCase, AllocationsUseCase>();
             services.AddScoped<ITeamsUseCase, TeamsUseCase>();
@@ -147,12 +149,12 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<IWarningNoteUseCase, WarningNoteUseCase>();
             services.AddScoped<IGetVisitByVisitIdUseCase, GetVisitByVisitIdUseCase>();
             services.AddScoped<IWorkersUseCase, WorkersUseCase>();
-            services.AddScoped<IPersonUseCase, PersonUseCase>();
             services.AddScoped<IFormSubmissionsUseCase, FormSubmissionsUseCase>();
             services.AddScoped<IRelationshipsUseCase, RelationshipsUseCase>();
             services.AddScoped<IPersonalRelationshipsUseCase, PersonalRelationshipsUseCase>();
             services.AddScoped<ICaseStatusesUseCase, CaseStatusesUseCase>();
             services.AddScoped<ICreateRequestAuditUseCase, CreateRequestAuditUseCase>();
+            services.AddScoped<IResidentUseCase, ResidentUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

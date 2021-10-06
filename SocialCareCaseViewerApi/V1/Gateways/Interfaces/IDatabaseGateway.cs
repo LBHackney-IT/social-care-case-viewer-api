@@ -5,7 +5,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
-namespace SocialCareCaseViewerApi.V1.Gateways
+namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
 {
     public interface IDatabaseGateway
     {
@@ -17,12 +17,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         CreateAllocationResponse CreateAllocation(CreateAllocationRequest request);
         string GetPersonIdByNCReference(string nfReference);
         string GetNCReferenceByPersonId(string personId);
-        Worker GetWorkerByWorkerId(int workerId);
         Worker GetWorkerByEmail(string email);
-        Team CreateTeam(CreateTeamRequest request);
-        IEnumerable<Team> GetTeamsByTeamContextFlag(string context);
         Team GetTeamByTeamName(string name);
-        Team GetTeamByTeamId(int id);
         List<dynamic> GetWorkerAllocations(List<Worker> workers);
         UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request);
         PostWarningNoteResponse PostWarningNote(PostWarningNoteRequest request);
@@ -41,10 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         PersonalRelationship CreatePersonalRelationship(CreatePersonalRelationshipRequest request);
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
-        IEnumerable<CaseStatus> GetCaseStatusesByPersonId(long personId);
-        CaseStatus GetCaseStatusesByPersonIdDate(long personId, System.DateTime period);
-        CaseStatusType GetCaseStatusTypeWithFields(string caseStatusType);
-        CaseStatus CreateCaseStatus(CreateCaseStatusRequest request);
         void CreateRequestAudit(CreateRequestAuditRequest request);
     }
 }

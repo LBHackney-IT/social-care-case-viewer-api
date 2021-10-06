@@ -17,13 +17,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
     public class GetAllResidentsTests : DatabaseTests
     {
         private DatabaseGateway _classUnderTest;
-        private readonly Mock<IProcessDataGateway> _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+        private Mock<IProcessDataGateway> _mockProcessDataGateway;
         private readonly Mock<ISystemTime> _mockSystemTime = new Mock<ISystemTime>();
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object, _mockSystemTime.Object);
+            _mockProcessDataGateway = new Mock<IProcessDataGateway>();
+
+            _classUnderTest = new DatabaseGateway(DatabaseContext, _mockProcessDataGateway.Object,
+                _mockSystemTime.Object);
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
@@ -497,7 +500,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void ReturnsResidentsUPRN()
+        public void ReturnsResidentsUprn()
         {
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
 
@@ -513,8 +516,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var listOfPersons = _classUnderTest.GetResidentsBySearchCriteria(0, 20);
 
             listOfPersons
-                .Where(p => p.MosaicId.Equals(person.Id.ToString()))
-                .First()
+                .First(p => p.MosaicId.Equals(person.Id.ToString()))
                 .Uprn
                 .Should().Be(address.Uprn.ToString());
         }

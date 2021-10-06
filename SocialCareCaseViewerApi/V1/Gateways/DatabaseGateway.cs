@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -27,12 +28,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly DatabaseContext _databaseContext;
         private readonly IProcessDataGateway _processDataGateway;
+        private readonly IWorkerGateway _workerGateway;
+        private readonly ITeamGateway _teamGateway;
         private readonly ISystemTime _systemTime;
 
         public DatabaseGateway(DatabaseContext databaseContext, IProcessDataGateway processDataGateway, ISystemTime systemTime)
         {
             _databaseContext = databaseContext;
             _processDataGateway = processDataGateway;
+            _workerGateway = new WorkerGateway(databaseContext);
+            _teamGateway = new TeamGateway(databaseContext);
             _systemTime = systemTime;
         }
 
@@ -455,16 +460,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return lookup?.NCId;
         }
 
-        public Worker GetWorkerByWorkerId(int workerId)
-        {
-            return _databaseContext.Workers
-                .Where(x => x.Id == workerId)
-                .Include(x => x.Allocations)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(y => y.Team)
-                .FirstOrDefault();
-        }
-
         public Worker GetWorkerByEmail(string email)
         {
             return _databaseContext.Workers
@@ -551,7 +546,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var teamsWorkerBelongsIn = new List<Team>();
             foreach (var requestTeam in request)
             {
-                var team = GetTeamByTeamId(requestTeam.Id);
+                var team = _teamGateway.GetTeamByTeamId(requestTeam.Id);
                 if (team == null)
                 {
                     throw new GetTeamException($"Team with Name {requestTeam.Name} and ID {requestTeam.Id} not found");
@@ -563,26 +558,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return teamsWorkerBelongsIn;
         }
 
-        public Team CreateTeam(CreateTeamRequest request)
-        {
-            var team = new Team { Name = request.Name, Context = request.Context, WorkerTeams = new List<WorkerTeam>() };
-
-            _databaseContext.Teams.Add(team);
-            _databaseContext.SaveChanges();
-
-            return team;
-        }
-
-        public Team GetTeamByTeamId(int teamId)
-        {
-            return _databaseContext.Teams
-                .Where(x => x.Id == teamId)
-                .Include(x => x.WorkerTeams)
-                .ThenInclude(x => x.Worker)
-                .ThenInclude(x => x.Allocations)
-                .FirstOrDefault();
-        }
-
         public Team GetTeamByTeamName(string teamName)
         {
             return _databaseContext.Teams
@@ -591,11 +566,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
-        }
-
-        public IEnumerable<Team> GetTeamsByTeamContextFlag(string context)
-        {
-            return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper()));
         }
 
         //TODO: use db views or queries
@@ -1010,92 +980,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
-        public IEnumerable<Infrastructure.CaseStatus> GetCaseStatusesByPersonId(long personId)
-        {
-            var caseStatuses = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
-                .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.Type)
-                .Include(cs => cs.SelectedOptions)
-                .ThenInclude(csso => csso.FieldOption)
-                .ThenInclude(fo => fo.TypeField);
-
-            return caseStatuses;
-        }
-        public Infrastructure.CaseStatus GetCaseStatusesByPersonIdDate(long personId, DateTime date)
-        {
-            var caseStatuse = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
-                .Where(cs => cs.StartDate <= date)
-                .Where(cs => cs.EndDate == null || cs.EndDate >= date)
-                .Include(cs => cs.Type)
-                .Include(cs => cs.SelectedOptions)
-                .ThenInclude(csso => csso.FieldOption)
-                .ThenInclude(fo => fo.TypeField)
-                .FirstOrDefault();
-
-            return caseStatuse;
-        }
-
-        public Infrastructure.CaseStatusType GetCaseStatusTypeWithFields(string type)
-        {
-            var response = _databaseContext.CaseStatusTypes
-                .Where(cs => cs.Name == type)
-                .Include(cs => cs.Fields)
-                .ThenInclude(sf => sf.Options);
-
-            return response.FirstOrDefault();
-        }
-
-        public Infrastructure.CaseStatus CreateCaseStatus(CreateCaseStatusRequest request)
-        {
-
-            var statusType = _databaseContext.CaseStatusTypes
-                .Where(f => f.Name == request.Type)
-                .FirstOrDefault();
-
-            var caseStatus = new Infrastructure.CaseStatus()
-            {
-                PersonId = request.PersonId,
-                TypeId = statusType.Id,
-                StartDate = request.StartDate,
-                Notes = request.Notes,
-                CreatedBy = request.CreatedBy
-            };
-
-            _databaseContext.CaseStatuses.Add(caseStatus);
-
-            if (request.Fields != null)
-            {
-                foreach (var optionValue in request.Fields)
-                {
-                    var field = _databaseContext.CaseStatusTypeFields
-                        .FirstOrDefault(f => f.Name == optionValue.Name);
-
-                    var fieldTypeOption = _databaseContext.CaseStatusTypeFieldOptions
-                        .Where(fov => fov.Name == optionValue.Selected)
-                        .FirstOrDefault(fov => fov.TypeFieldId == field.Id);
-
-                    if (fieldTypeOption != null)
-                    {
-                        var fieldOption = new CaseStatusFieldOption
-                        {
-                            StatusId = caseStatus.Id,
-                            FieldOptionId = fieldTypeOption.Id
-                        };
-
-                        if (caseStatus.SelectedOptions == null)
-                        {
-                            caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
-                        }
-                        caseStatus.SelectedOptions.Add(fieldOption);
-                    }
-                }
-            }
-
-            _databaseContext.SaveChanges();
-
-            return caseStatus;
-        }
-
         private static AllocationSet SetDeallocationValues(AllocationSet allocation, DateTime dt, string modifiedBy)
         {
             //keep workerId and TeamId in the record so they can be easily exposed to front end
@@ -1127,10 +1011,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (first + " " + last).TrimStart().TrimEnd();
         }
 
-        private (Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker.Email))
+            var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
+            if (string.IsNullOrEmpty(worker?.Email))
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
@@ -1166,7 +1050,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdateAllocationException("Allocation already closed");
             }
 
-            var worker = GetWorkerByWorkerId(allocation.WorkerId ?? 0);
+            var worker = _workerGateway.GetWorkerByWorkerId(allocation.WorkerId ?? 0);
 
             if (worker == null)
             {

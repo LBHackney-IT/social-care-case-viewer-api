@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class Worker
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         public string Email { get; set; } = null!;
 
