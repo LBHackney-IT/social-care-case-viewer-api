@@ -642,7 +642,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             {
                 var value = new Faker<CaseStatusValue>()
                     .RuleFor(c => c.Name, f => f.Random.String2(1000))
-                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
+                    .RuleFor(c => c.Selected, f => f.Random.String2(1000));
 
                 caseStatusValues.Add(value);
             }
