@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void GetCaseStatusByIdReturnsTheAssociatedCaseStatus()
         {
-            var (caseStatus, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
             var response = _caseStatusGateway.GetCasesStatusByCaseStatusId(caseStatus.Id);
 

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable enable
@@ -7,13 +8,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("sccv_person_case_status_answers", Schema = "dbo")]
     public class CaseStatusAnswer
     {
+        //TODO: add column lenghts
         [Column("id")]
-        public long id { get; set; }
-
-        [Column("fk_person_case_status_id")]
-        public long CaseStatusId { get; set; }
-
-        public CaseStatus CaseStatus { get; set; }
+        [Key]
+        public long Id { get; set; }              
 
         [Column("questions")]
         public string Question { get; set; }
@@ -26,5 +24,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
+
+
+        [Column("fk_person_case_status_id")]
+        public long CaseStatusId { get; set; }
+
+        [ForeignKey("CaseStatusId")]
+        public CaseStatus CaseStatus { get; set; }
     }
 }

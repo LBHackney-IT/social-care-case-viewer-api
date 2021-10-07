@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("notes")]
         public string Notes { get; set; }
 
-        public List<CaseStatusAnswer> Answers;
+        public List<CaseStatusAnswer> Answers { get; set; }
 
         //audit props
         [Column("sccv_created_at")]

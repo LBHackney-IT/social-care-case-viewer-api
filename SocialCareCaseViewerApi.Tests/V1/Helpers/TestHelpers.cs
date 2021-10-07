@@ -593,6 +593,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return caseStatusValues;
         }
 
+        public static List<CaseStatusAnswer> CreateCaseStatusAnswers(
+            DateTime? startDate = null,
+            DateTime? createdAt = null,
+            long? caseStatusId = null)
+        {
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+
+            for (var i = 0; i < new Random().Next(1,5); i++)
+            {
+                var answer = new Faker<CaseStatusAnswer>()
+                    .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
+                    .RuleFor(a => a.Question, f => f.Random.String2(100))
+                    .RuleFor(a => a.Answer, f => f.Random.String2(100))
+                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past()) //TODO: TK check these
+                    .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
+
+                caseStatusAnswers.Add(answer);
+            }
+
+            return caseStatusAnswers;
+        }
+
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
             string? notes = null, long? personId = null)
         {

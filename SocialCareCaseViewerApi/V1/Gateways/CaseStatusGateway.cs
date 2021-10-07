@@ -35,10 +35,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public List<CaseStatus> GetCaseStatusesByPersonId(long personId)
         {
-            var caseStatuses = _databaseContext.CaseStatuses
+            var caseStatuses = _databaseContext
+                .CaseStatuses
                 .Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.Person);
+                .Include(cs => cs.Person)
+                .Include(cs => cs.Answers);           
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
@@ -65,8 +67,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Answers = new List<CaseStatusAnswer>()
             };
 
-            _databaseContext.CaseStatuses.Add(caseStatus);
-            _databaseContext.SaveChanges();
+            _databaseContext.CaseStatuses.Add(caseStatus); 
 
             foreach (var answer in request.Fields)
             {
@@ -78,10 +79,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     StartDate = request.StartDate,
                     CreatedAt = _systemTime.Now
                 };
-
-                _databaseContext.CaseStatusAnswers.Add(caseStatusAnswer);
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
+            _databaseContext.CaseStatuses.Add(caseStatus);
 
             _databaseContext.SaveChanges();
 

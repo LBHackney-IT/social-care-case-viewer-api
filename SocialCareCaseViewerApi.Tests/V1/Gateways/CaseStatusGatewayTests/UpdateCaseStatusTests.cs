@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         public void WhenACaseStatusIsFoundItUpdatesTheEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
-            var (caseStatus, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
             caseStatus.EndDate = null;
             DatabaseContext.SaveChanges();
 

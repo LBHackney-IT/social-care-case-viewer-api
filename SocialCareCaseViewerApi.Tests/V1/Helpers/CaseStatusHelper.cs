@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class CaseStatusHelper
     {
-        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithCaseStatusToDatabase(
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonWithCaseStatusToDatabase(
           DatabaseContext databaseContext)
         {
             var person = TestHelpers.CreatePerson();
@@ -21,7 +21,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             databaseContext.SaveChanges();
 
-            return (caseStatus, person);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id);
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, caseStatusAnswers);
         }
 
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithPastCaseStatusToDatabase(
