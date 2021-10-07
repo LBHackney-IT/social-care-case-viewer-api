@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="200">Successful request. Case statuses returned</response>
         /// <response code="404">Case status not found</response>
-        [ProducesResponseType(typeof(List<CaseStatusResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CaseStatusResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId:long}/case-statuses")]
         public IActionResult ListCaseStatuses(long personId)
