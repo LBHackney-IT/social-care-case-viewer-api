@@ -96,6 +96,28 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
             }
 
+                        if (caseStatus.SelectedOptions == null)
+                        {
+                            caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
+                        }
+                        caseStatus.SelectedOptions.Add(fieldOption);
+                    }
+                }
+            }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus.ToDomain();
+        }
+
+        public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
+        {
+            var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
             if (request.EndDate != null)
             {
                 caseStatus.EndDate = request.EndDate;

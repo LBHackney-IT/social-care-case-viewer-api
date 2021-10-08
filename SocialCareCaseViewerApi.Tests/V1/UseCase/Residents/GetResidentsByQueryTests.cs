@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
@@ -151,7 +151,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         [TestCase("42NC")]
         [TestCase("A42SC")]
         [TestCase("TM42P")]
-        public void CallsGetPersonByMosaicIdWhenMosaicIdIsProvidedWithoutZeroPrefix(string mosaicId)
+        public void CallsGetPersonDetailsByIdWhenMosaicIdIsProvidedWithoutZeroPrefix(string mosaicId)
         {
             var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
@@ -160,13 +160,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 4);
 
-            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(Convert.ToInt64(request.MosaicId)));
+            _mockDatabaseGateway.Verify(x => x.GetPersonDetailsById(Convert.ToInt64(request.MosaicId)));
         }
 
         [Test]
         [TestCase("042")]
         [TestCase("0042")]
-        public void DoesNotCallGetPersonByMosaicIdWhenMosaicIdContainsLeadingZeros(string mosaicId)
+        public void DoesNotCallGetPersonDetailsByIdWhenMosaicIdContainsLeadingZeros(string mosaicId)
         {
             var request = new ResidentQueryParam() { MosaicId = mosaicId };
 
@@ -175,7 +175,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 4);
 
-            _mockDatabaseGateway.Verify(x => x.GetPersonByMosaicId(It.IsAny<long>()), Times.Never);
+            _mockDatabaseGateway.Verify(x => x.GetPersonDetailsById(It.IsAny<long>()), Times.Never);
         }
 
         [Test]

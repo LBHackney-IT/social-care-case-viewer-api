@@ -91,5 +91,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             act.Should().Throw<InvalidAgeContextException>()
             .WithMessage($"Person with the id {resident.Id} belongs to the wrong AgeContext for this operation");
         }
+
+        [Test]
+        public void WhenPersonIsAdultAgeContextItShouldThrowInvalidAgeContextException()
+        {
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "a");
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+
+            Action act = () => _caseStatusesUseCase.ExecutePost(_request);
+
+            act.Should().Throw<InvalidAgeContextException>()
+            .WithMessage($"Person with the id {resident.Id} belongs to the wrong AgeContext for this operation");
+        }
     }
 }

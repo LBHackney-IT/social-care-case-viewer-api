@@ -10,6 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
     {
         List<CaseStatus> GetCaseStatusesByPersonId(long personId);
         CaseStatus? GetCaseStatusesByPersonIdDate(long personId, System.DateTime period);
+        CaseStatusType? GetCaseStatusTypeWithFields(string caseStatusType);
         CaseStatus CreateCaseStatus(CreateCaseStatusRequest request);
         CaseStatus? GetCasesStatusByCaseStatusId(long id);
         CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request);

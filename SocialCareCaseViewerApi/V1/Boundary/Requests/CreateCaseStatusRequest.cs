@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public DateTime StartDate { get; set; }
 
         [JsonPropertyName("notes")]
-        public string Notes { get; set; } = null!;
+        public string? Notes { get; set; } = null!;
 
         [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; } = null!;

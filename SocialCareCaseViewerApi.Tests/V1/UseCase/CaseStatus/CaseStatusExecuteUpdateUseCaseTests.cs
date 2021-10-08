@@ -38,8 +38,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _worker = TestHelpers.CreateWorker();
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident);
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id, email: _worker.Email);
-            _updatedCaseStatus = TestHelpers.CreateCaseStatus(_resident.Id, _caseStatus.Notes,
-                _caseStatus.StartDate, _updateCaseStatusRequest.EndDate, _resident);
+            _updatedCaseStatus = TestHelpers.CreateCaseStatus(_resident.Id, _caseStatus.TypeId, _caseStatus.Notes,
+                _caseStatus.StartDate, _updateCaseStatusRequest.EndDate, resident: _resident);
 
             _mockCaseStatusGateway
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
@@ -128,6 +128,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             act.Should().Throw<CaseStatusDoesNotExistException>()
                 .WithMessage($"Case status with {_caseStatus.Id} not found");
+        }
+
+        [Test]
+        public void TestWhenRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown()
+        {
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1));
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(personId: _resident.Id, email: _worker.Email, endDate: DateTime.Now.AddDays(-1));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_caseStatus.Id, _updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage($"requested end date of {_updateCaseStatusRequest.EndDate?.ToString("O")} " +
+                             $"is before the start date of {_caseStatus.StartDate:O}");
         }
 
         [Test]

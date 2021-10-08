@@ -24,6 +24,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+        public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
+        {
+            var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
+
+            if (caseStatusType == null)
+            {
+                throw new CaseStatusNotFoundException();
+            }
+
+            return new GetCaseStatusFieldsResponse
+            {
+                Description = caseStatusType.Description,
+                Name = caseStatusType.Name,
+                Fields = caseStatusType.Fields.ToResponse()
+            };
+        }
+
         public List<CaseStatusResponse> ExecuteGet(long personId)
         {
             var person = _databaseGateway.GetPersonByMosaicId(personId);
@@ -47,6 +64,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidAgeContextException(
                     $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
             }
+
+            var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
+            var typeDoesNotExist = type == null;
+            if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;
@@ -77,6 +98,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+            }
+
+            if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
+            {
+                throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
+                                                  $"is before the start date of {caseStatus.StartDate:O}");
             }
 
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
