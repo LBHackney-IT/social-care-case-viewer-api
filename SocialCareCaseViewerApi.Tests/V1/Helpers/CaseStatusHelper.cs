@@ -56,7 +56,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
               .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(-1))
               .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))
               .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
-              .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
+              .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email())
+              .RuleFor(pr => pr.Answers, new List<CaseStatusAnswer>());
         }
 
         public static CreateCaseStatusRequest CreateCaseStatusRequest(
@@ -91,12 +92,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.SaveChanges();
 
             return (caseStatus, person);
-        }
-
-        public static DateTime? TrimMilliseconds(DateTime? dt)
-        {
-            if (dt == null) return null;
-            return new DateTime(dt.Value.Year, dt.Value.Month, dt.Value.Day, dt.Value.Hour, dt.Value.Minute, dt.Value.Second, 0, dt.Value.Kind);
         }
 
         public static DateTime? TrimMilliseconds(DateTime? dt)

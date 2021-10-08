@@ -545,7 +545,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
-                .RuleFor(cs => cs.Person, resident);
+                .RuleFor(cs => cs.Person, resident)
+                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>());
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
@@ -585,7 +586,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             {
                 var value = new Faker<CaseStatusValue>()
                     .RuleFor(c => c.Name, f => f.Random.String2(1000))
-                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
+                    .RuleFor(c => c.Selected, f => f.Random.String2(1000));
 
                 caseStatusValues.Add(value);
             }

@@ -293,20 +293,20 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new Domain.CaseStatus
             {
                 Id = caseStatus.Id,
-                Type = caseStatus.Type?.Name,
+                Type = caseStatus.Type,//?.Name,
                 StartDate = caseStatus.StartDate,
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
                 Resident = caseStatus.Person,
-                Fields = caseStatus.SelectedOptions?.Select(
+                Fields = caseStatus.Answers.Select(
                     o => new CaseStatusField
                     {
-                        Name = o.FieldOption.TypeField.Name,
-                        Description = o.FieldOption.TypeField.Description,
+                        Name = o.Question,
+                        Description = o.Answer,
                         SelectedOption = new CaseStatusFieldSelectedOption
                         {
-                            Name = o.FieldOption.Name,
-                            Description = o.FieldOption.Description
+                            Name = o.Answer,
+                            Description = o.Question
                         }
                     }).ToList()
             };

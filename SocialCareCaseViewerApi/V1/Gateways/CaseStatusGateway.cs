@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.CaseStatuses
                 .Where(cs => cs.Id == id)
                 .Include(cs => cs.Person)
+                .Include(cs => cs.Answers)
                 .FirstOrDefault()
                 ?.ToDomain();
         }
@@ -90,42 +91,40 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
         {
-            var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
+            var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == caseStatusId);
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
             }
 
-            if (caseStatus.SelectedOptions == null)
-            {
-                caseStatus.SelectedOptions = new List<CaseStatusFieldOption>();
-            }
-            caseStatus.SelectedOptions.Add(fieldOption);
-        }
-    }
-}
+            //if (caseStatus.Answers == null)
+            //{
+            //    caseStatus.Answers = new List<CaseStatusAnswer>();
+            //}
+            //caseStatus.Answers.Add(fieldOption);
+            //TODO: TK what should be here?
 
-_databaseContext.SaveChanges();
+            _databaseContext.SaveChanges();
 
-return caseStatus.ToDomain();
+            return caseStatus.ToDomain();
         }
 
-        public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
-{
-    var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
-    if (caseStatus == null)
-    {
-        throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
-    }
+        //public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
+        //{
+        //    var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
+        //    if (caseStatus == null)
+        //    {
+        //        throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+        //    }
 
-    if (request.EndDate != null)
-    {
-        caseStatus.EndDate = request.EndDate;
-    }
+        //    if (request.EndDate != null)
+        //    {
+        //        caseStatus.EndDate = request.EndDate;
+        //    }
 
-    _databaseContext.SaveChanges();
+        //    _databaseContext.SaveChanges();
 
-    return caseStatus.ToDomain();
-}
+        //    return caseStatus.ToDomain();
+        //}
     }
 }

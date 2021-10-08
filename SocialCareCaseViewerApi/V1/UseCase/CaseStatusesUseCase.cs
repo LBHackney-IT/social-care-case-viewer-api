@@ -24,22 +24,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
-        {
-            var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
+        //public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
+        //{
+        //    var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
 
-            if (caseStatusType == null)
-            {
-                throw new CaseStatusNotFoundException();
-            }
+        //    if (caseStatusType == null)
+        //    {
+        //        throw new CaseStatusNotFoundException();
+        //    }
 
-            return new GetCaseStatusFieldsResponse
-            {
-                Description = caseStatusType.Description,
-                Name = caseStatusType.Name,
-                Fields = caseStatusType.Fields.ToResponse()
-            };
-        }
+        //    return new GetCaseStatusFieldsResponse
+        //    {
+        //        Description = caseStatusType.Description,
+        //        Name = caseStatusType.Name,
+        //        Fields = caseStatusType.Fields.ToResponse()
+        //    };
+        //}
 
         public List<CaseStatusResponse> ExecuteGet(long personId)
         {
@@ -65,9 +65,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
             }
 
-            var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
-            var typeDoesNotExist = type == null;
-            if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
+            //var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
+            //var typeDoesNotExist = type == null;
+            //if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;
