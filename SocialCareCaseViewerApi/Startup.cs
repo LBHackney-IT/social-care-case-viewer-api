@@ -47,9 +47,9 @@ namespace SocialCareCaseViewerApi
                 o.ApiVersionReader = new UrlSegmentApiVersionReader(); // read the version number from the url segment header)
             });
 
-            //TODO: test this properly
-            services.AddControllers().AddNewtonsoftJson(x =>
-                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            //TODO: TK could we use this?
+            //services.AddControllers().AddNewtonsoftJson(x =>
+            //    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 

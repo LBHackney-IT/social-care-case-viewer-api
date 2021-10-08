@@ -51,6 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(cs => cs.StartDate <= date)
                 .Where(cs => cs.EndDate == null || cs.EndDate >= date)
                 .Include(cs => cs.Person)
+                .Include(cs => cs.Answers)
                 .FirstOrDefault();
 
             return caseStatus?.ToDomain();
@@ -97,34 +98,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
             }
 
-            //if (caseStatus.Answers == null)
-            //{
-            //    caseStatus.Answers = new List<CaseStatusAnswer>();
-            //}
-            //caseStatus.Answers.Add(fieldOption);
-            //TODO: TK what should be here?
+            if (request.EndDate != null)
+            {
+                caseStatus.EndDate = request.EndDate;
+            }
 
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
         }
-
-        //public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
-        //{
-        //    var caseStatus = _databaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatusId);
-        //    if (caseStatus == null)
-        //    {
-        //        throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
-        //    }
-
-        //    if (request.EndDate != null)
-        //    {
-        //        caseStatus.EndDate = request.EndDate;
-        //    }
-
-        //    _databaseContext.SaveChanges();
-
-        //    return caseStatus.ToDomain();
-        //}
     }
 }

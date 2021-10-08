@@ -339,8 +339,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = caseStatus.Type,
                 StartDate = caseStatus.StartDate.ToString("O"),
                 EndDate = caseStatus.EndDate?.ToString("O"),
-                Notes = caseStatus.Notes//,
-                //Answers = caseStatus.Answers
+                Notes = caseStatus.Notes,
+                Fields = caseStatus.Fields
             };
         }
     }

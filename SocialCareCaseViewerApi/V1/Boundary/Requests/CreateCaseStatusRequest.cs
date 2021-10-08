@@ -30,8 +30,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
     public class CaseStatusRequestField
     {
-        public string Name { get; set; } = null!;
-        public string Selected { get; set; } = null!;
+        public String? Name { get; set; } = null!;
+        public String? Selected { get; set; } = null!;
     }
 
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>

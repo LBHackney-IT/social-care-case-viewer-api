@@ -293,7 +293,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new Domain.CaseStatus
             {
                 Id = caseStatus.Id,
-                Type = caseStatus.Type,//?.Name,
+                Type = caseStatus.Type,
                 StartDate = caseStatus.StartDate,
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
