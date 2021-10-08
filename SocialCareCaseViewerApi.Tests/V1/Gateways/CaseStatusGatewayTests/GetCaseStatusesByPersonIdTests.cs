@@ -50,22 +50,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             CaseStatusHelper.TrimMilliseconds(responseElement.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
             responseElement.Id.Should().Be(caseStatus.ToDomain().Id);
             responseElement.Type.Should().Be(caseStatus.ToDomain().Type);
-            //responseElement.Answers.Count.Should().Be(answers.Count);
-
-            //TODO: better way of handling this?
-            //foreach(var a in responseElement.Answers)
-            //{
-            //    a.CreatedAt = CaseStatusHelper.TrimMilliseconds(a.CreatedAt).Value;
-            //    a.StartDate = CaseStatusHelper.TrimMilliseconds(a.StartDate).Value;
-            //}
-
-            //foreach (var a in caseStatus.Answers)
-            //{
-            //    a.CreatedAt = CaseStatusHelper.TrimMilliseconds(a.CreatedAt).Value;
-            //    a.StartDate = CaseStatusHelper.TrimMilliseconds(a.StartDate).Value;
-            //}
-
-            //responseElement.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers);
+            //responseElement.Answers.Count.Should().Be(answers.Count); //TODO: fix ms error
         }
 
         [Test]

@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 #nullable enable
@@ -23,23 +22,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _caseStatusGateway = caseStatusGateway;
             _databaseGateway = databaseGateway;
         }
-
-        //public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
-        //{
-        //    var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
-
-        //    if (caseStatusType == null)
-        //    {
-        //        throw new CaseStatusNotFoundException();
-        //    }
-
-        //    return new GetCaseStatusFieldsResponse
-        //    {
-        //        Description = caseStatusType.Description,
-        //        Name = caseStatusType.Name,
-        //        Fields = caseStatusType.Fields.ToResponse()
-        //    };
-        //}
 
         public List<CaseStatusResponse> ExecuteGet(long personId)
         {
@@ -64,10 +46,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidAgeContextException(
                     $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
             }
-
-            //var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
-            //var typeDoesNotExist = type == null;
-            //if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;
