@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         //TODO: add column lenghts
         [Column("id")]
         [Key]
-        public long Id { get; set; }              
+        public long Id { get; set; }
 
         [Column("questions")]
         public string Question { get; set; }

@@ -600,7 +600,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
-            for (var i = 0; i < new Random().Next(1,5); i++)
+            for (var i = 0; i < new Random().Next(1, 5); i++)
             {
                 var answer = new Faker<CaseStatusAnswer>()
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
