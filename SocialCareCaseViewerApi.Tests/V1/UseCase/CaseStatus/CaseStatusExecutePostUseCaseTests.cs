@@ -4,12 +4,10 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.Infrastructure;
-using SocialCareCaseViewerApi.V1.UseCase;
-using System;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.UseCase;
+using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 {
@@ -20,7 +18,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private Mock<ICaseStatusGateway> _mockCaseStatusGateway;
         private CaseStatusesUseCase _caseStatusesUseCase;
         private CreateCaseStatusRequest _request;
-        private readonly CaseStatusType _typeInRequest = TestHelpers.CreateCaseStatusType();
 
         [SetUp]
         public void SetUp()
@@ -29,11 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _mockCaseStatusGateway = new Mock<ICaseStatusGateway>();
             _caseStatusesUseCase = new CaseStatusesUseCase(_mockCaseStatusGateway.Object, _mockDatabaseGateway.Object);
 
-            _mockCaseStatusGateway
-                .Setup(x => x.GetCaseStatusTypeWithFields(_typeInRequest.Name))
-                .Returns(_typeInRequest);
-
-            _request = CaseStatusHelper.CreateCaseStatusRequest(type: _typeInRequest.Name);
+            _request = CaseStatusHelper.CreateCaseStatusRequest();
 
             _mockDatabaseGateway
                 .Setup(x => x.GetPersonByMosaicId(It.IsAny<int>()))
@@ -47,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void CallsGatewaysToCheckCaseStatusExists()
+        public void CallsGateways()
         {
             var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
             var worker = TestHelpers.CreateWorker(createdBy: _request.CreatedBy);
@@ -58,7 +51,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             _mockDatabaseGateway.Verify(gateway => gateway.GetPersonByMosaicId(_request.PersonId));
             _mockDatabaseGateway.Verify(gateway => gateway.GetWorkerByEmail(_request.CreatedBy));
-            _mockCaseStatusGateway.Verify(gateway => gateway.GetCaseStatusTypeWithFields(_request.Type));
             _mockCaseStatusGateway.Verify(gateway => gateway.CreateCaseStatus(_request));
         }
 
@@ -72,17 +64,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             act.Should().Throw<PersonNotFoundException>()
                 .WithMessage($"'personId' with '{_request.PersonId}' was not found.");
-        }
-        [Test]
-        public void WhenTypeDoesNotExistThrowsTypeNotFoundException()
-        {
-            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
-            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusTypeWithFields(_request.Type));
-
-            Action act = () => _caseStatusesUseCase.ExecutePost(_request);
-
-            act.Should().Throw<CaseStatusTypeNotFoundException>();
         }
 
         [Test]
@@ -98,10 +79,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
                 .WithMessage($"'createdBy' with '{_request.CreatedBy}' was not found as a worker.");
         }
 
+        [TestCase("a")]
+        [TestCase("z")]
         [Test]
-        public void WhenPersonIsAdultAgeContextItShouldThrowInvalidAgeContextException()
+        public void WhenPersonIsNotInChildAgeContextItShouldThrowInvalidAgeContextException(string ageContext)
         {
-            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "a");
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: ageContext);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);

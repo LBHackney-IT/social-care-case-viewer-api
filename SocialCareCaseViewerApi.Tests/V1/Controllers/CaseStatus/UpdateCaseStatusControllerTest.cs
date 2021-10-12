@@ -34,10 +34,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
                 endDate: DateTime.Now.AddDays(1)).ToDomain().ToResponse();
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate(resident.Id, request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Returns(mockResponse);
 
-            var response = _caseStatusController.UpdateCaseStatus(resident.Id, request) as ObjectResult;
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(mockResponse);
@@ -51,10 +51,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             const string errorMessage = "error-message";
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate(resident.Id, request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Throws(new CaseStatusDoesNotExistException(errorMessage));
 
-            var response = _caseStatusController.UpdateCaseStatus(resident.Id, request) as ObjectResult;
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be(errorMessage);
@@ -68,10 +68,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             const string errorMessage = "error-message";
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate(resident.Id, request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Throws(new WorkerNotFoundException(errorMessage));
 
-            var response = _caseStatusController.UpdateCaseStatus(resident.Id, request) as ObjectResult;
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
@@ -85,10 +85,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             const string errorMessage = "error-message";
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate(resident.Id, request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Throws(new PersonNotFoundException(errorMessage));
 
-            var response = _caseStatusController.UpdateCaseStatus(resident.Id, request) as ObjectResult;
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
@@ -102,10 +102,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             const string errorMessage = "error-message";
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate(resident.Id, request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Throws(new CaseStatusDoesNotMatchPersonException(errorMessage));
 
-            var response = _caseStatusController.UpdateCaseStatus(resident.Id, request) as ObjectResult;
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);

@@ -15,8 +15,7 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
-using CaseStatusTypeField = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeField;
-using CaseStatusTypeFieldOption = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusTypeFieldOption;
+using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -533,76 +532,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.RejectionReason, rejectionReason);
         }
 
-        public static CaseStatusType CreateCaseStatusType(
-            long? id = null,
-            string? name = "CIN",
-            string? description = "Child in need")
-        {
-            return new Faker<CaseStatusType>()
-                .RuleFor(cst => cst.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cst => cst.Name, f => name)
-                .RuleFor(cst => cst.Description, f => description);
-        }
-
-        public static CaseStatusTypeFieldOption CreateCaseStatusTypeFieldOptions(
-            long typeFieldId,
-            string name,
-            string description,
-            long? id = null)
-        {
-            return new Faker<CaseStatusTypeFieldOption>()
-                .RuleFor(fo => fo.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(fo => fo.TypeFieldId, f => typeFieldId)
-                .RuleFor(fo => fo.Name, f => name)
-                .RuleFor(fo => fo.Description, f => description);
-        }
-
-
-        public static CaseStatusTypeField CreateCaseStatusTypeField(
-            long caseStatusTypeId,
-            long? id = null,
-            string? name = null,
-            string? description = null)
-        {
-            return new Faker<CaseStatusTypeField>()
-                .RuleFor(cstf => cstf.Id, f => id ?? f.UniqueIndex + 1)
-                .RuleFor(cstf => cstf.TypeId, f => caseStatusTypeId)
-                .RuleFor(cstf => cstf.Name, f => name ?? f.Random.String2(50))
-                .RuleFor(cstf => cstf.Description, f => description ?? f.Random.String2(50))
-                .RuleFor(cstf => cstf.Options,
-                    (f, cstf) => new List<CaseStatusTypeFieldOption>
-                    {
-                        new CaseStatusTypeFieldOption() { Name = "One", Description = "First option", TypeField = cstf},
-                        new CaseStatusTypeFieldOption() { Name = "Two", Description = "Second option", TypeField = cstf}
-                    });
-        }
-
         public static CaseStatus CreateCaseStatus(
             long? personId = null,
-            long? typeId = null,
             string? notes = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
-            List<CaseStatusTypeFieldOption>? options = null,
             InfrastructurePerson? resident = null)
         {
             resident ??= CreatePerson();
 
-            var caseOptions = new List<CaseStatusFieldOption>();
-
-            if (options != null)
-            {
-                caseOptions.AddRange(options.Select(option => new CaseStatusFieldOption() { FieldOption = option }));
-            }
-
             return new Faker<CaseStatus>()
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
-                .RuleFor(cs => cs.TypeId, f => typeId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(cs => cs.Person, resident)
-                .RuleFor(cs => cs.SelectedOptions, f => caseOptions);
+                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>());
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
@@ -641,8 +586,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             for (var i = 0; i < new Random().Next(1, 10); i++)
             {
                 var value = new Faker<CaseStatusValue>()
-                    .RuleFor(c => c.Name, f => f.Random.String2(1000))
-                    .RuleFor(c => c.Selected, f => f.Random.String2(1000));
+                    .RuleFor(c => c.Option, f => f.Random.String2(1000))
+                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
 
                 caseStatusValues.Add(value);
             }
@@ -650,15 +595,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return caseStatusValues;
         }
 
+        public static List<CaseStatusAnswer> CreateCaseStatusAnswers(
+            DateTime? startDate = null,
+            DateTime? createdAt = null,
+            long? caseStatusId = null)
+        {
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+
+            for (var i = 0; i < new Random().Next(1, 5); i++)
+            {
+                var answer = new Faker<CaseStatusAnswer>()
+                    .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
+                    .RuleFor(a => a.Option, f => f.Random.String2(100))
+                    .RuleFor(a => a.Value, f => f.Random.String2(100))
+                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
+                    .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
+
+                caseStatusAnswers.Add(answer);
+            }
+
+            return caseStatusAnswers;
+        }
+
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null, long? personId = null)
+            string? notes = null, long? caseStatusId = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
-                .RuleFor(u => u.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
-                .RuleFor(u => u.Values, CreateCaseStatusValues());
+                .RuleFor(u => u.Answers, CreateCaseStatusValues());
         }
     }
 }

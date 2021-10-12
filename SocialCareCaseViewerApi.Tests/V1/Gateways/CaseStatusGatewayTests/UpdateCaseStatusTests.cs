@@ -1,12 +1,12 @@
-using System.Linq;
 using FluentAssertions;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Factories;
-using System;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Helpers;
+using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -14,23 +14,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
     public class UpdateCaseStatusTests : DatabaseTests
     {
         private CaseStatusGateway _caseStatusGateway;
+        private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
         public void Setup()
         {
-            _caseStatusGateway = new CaseStatusGateway(DatabaseContext);
+            _mockSystemTime = new Mock<ISystemTime>();
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         [Test]
-        public void WhenACaseStatusIsFoundItUpdatesTheEndDate()
+        public void WhenACaseStatusIsFoundAndTheEndDateIsNotSetItUpdatesTheEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
-            var (caseStatus, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
             caseStatus.EndDate = null;
             DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
 
-            var response = _caseStatusGateway.UpdateCaseStatus(caseStatus.Id, request);
+            var response = _caseStatusGateway.UpdateCaseStatus(request);
 
             response.EndDate.Should().Be(request.EndDate);
         }
@@ -39,14 +42,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         public void WhenACaseStatusIsNotFoundItThrowsAnException()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
-            const long nonExistentCaseStatusId = 1L;
+            request.CaseStatusId = 1L;
 
-            Action act = () => _caseStatusGateway.UpdateCaseStatus(nonExistentCaseStatusId, request);
+            Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>()
-            .WithMessage($"Case status with {nonExistentCaseStatusId} not found");
+            .WithMessage($"Case status with {request.CaseStatusId} not found");
         }
 
+        [Test]
+        public void WhenCaseStatusHasEndDateAlreadyItThrowsAnException()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
 
+            Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
+
+            act.Should().Throw<CaseStatusAlreadyClosedException>()
+                .WithMessage($"Case status with {request.CaseStatusId} has already been closed.");
+        }
     }
 }

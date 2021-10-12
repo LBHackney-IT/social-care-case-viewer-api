@@ -15,8 +15,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("type")]
         public string Type { get; set; } = null!;
 
-        [JsonPropertyName("fields")]
-        public List<CaseStatusRequestField> Fields { get; set; } = new List<CaseStatusRequestField>();
+        [JsonPropertyName("answers")]
+        public List<CaseStatusRequestAnswers> Answers { get; set; } = new List<CaseStatusRequestAnswers>();
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
@@ -28,10 +28,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; } = null!;
     }
 
-    public class CaseStatusRequestField
+    public class CaseStatusRequestAnswers
     {
-        public String? Name { get; set; } = null!;
-        public String? Selected { get; set; } = null!;
+        public string? Option { get; set; } = null!;
+        public string? Value { get; set; } = null!;
     }
 
     public class CreateCaseStatusRequestValidator : AbstractValidator<CreateCaseStatusRequest>
@@ -43,11 +43,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.Type)
                 .NotNull().WithMessage("'type' must be provided.");
 
-            RuleForEach(pr => pr.Fields)
+            RuleForEach(pr => pr.Answers)
                 .ChildRules(field =>
                 {
-                    field.RuleFor(t => t.Name).NotNull().WithMessage("Field must have a name");
-                    field.RuleFor(t => t.Selected).NotNull().WithMessage("Field selected value must not be empty");
+                    field.RuleFor(t => t.Option).NotNull().WithMessage("Field must have a name");
+                    field.RuleFor(t => t.Value).NotNull().WithMessage("Field selected value must not be empty");
                 });
 
             RuleFor(x => x.StartDate)

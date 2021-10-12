@@ -1,38 +1,33 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("sccv_person_case_status", Schema = "dbo")]
-    public class CaseStatus : IAuditEntity
+    [Table("sccv_person_case_status_answers", Schema = "dbo")]
+    public class CaseStatusAnswer
     {
+        //TODO: add column lenghts
         [Column("id")]
-        [MaxLength(16)]
         [Key]
         public long Id { get; set; }
 
-        [Column("fk_person_id")]
-        [MaxLength(16)]
-        public long PersonId { get; set; }
+        [Column("option")]
+        public string? Option { get; set; }
 
-        public Person Person { get; set; }
-
-        [Column("case_status_type")]
-        [MaxLength(3)]
-        public string Type { get; set; }
+        [Column("value")]
+        public string? Value { get; set; }
 
         [Column("start_date")]
         public DateTime StartDate { get; set; }
 
-        [Column("end_date")]
-        public DateTime? EndDate { get; set; }
+        [Column("fk_person_case_status_id")]
+        public long CaseStatusId { get; set; }
 
-        [Column("notes")]
-        public string Notes { get; set; }
+        [ForeignKey("CaseStatusId")]
+        public CaseStatus CaseStatus { get; set; }
 
-        public List<CaseStatusAnswer> Answers { get; set; }
 
         //audit props
         [Column("sccv_created_at")]

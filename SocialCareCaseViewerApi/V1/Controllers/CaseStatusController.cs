@@ -25,26 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             _caseStatusesUseCase = caseStatusUseCase;
         }
 
-        /// <summary>
-        /// Get a list of fields and their options for a case status type
-        /// </summary>
-        /// <response code="200">Found case status type, returns the fields for that type</response>
-        /// <response code="404">Case status type not found, or no fields exist</response>
-        [ProducesResponseType(typeof(GetCaseStatusFieldsResponse), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("case-statuses/form-options/{type?}")]
-        public IActionResult GetCaseStatusTypeFields([FromRoute] GetCaseStatusFieldsRequest request)
-        {
-            try
-            {
-                return Ok(_caseStatusesUseCase.ExecuteGetFields(request));
-            }
-            catch (CaseStatusNotFoundException exception)
-            {
-                return NotFound(exception.Message);
-            }
-        }
-
 
         /// <summary>
         /// Get a list of case statuses by person id
@@ -74,7 +54,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid CreatePersonCaseStatusRequest received</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        [Route("residents/case-statuses")]
+        [Route("residents/{personId:long}/case-statuses")]
         public IActionResult CreateCaseStatus([FromBody] CreateCaseStatusRequest request)
         {
             var validator = new CreateCaseStatusRequestValidator();
@@ -93,7 +73,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (Exception e) when (
                 e is PersonNotFoundException ||
-                e is CaseStatusTypeNotFoundException ||
                 e is CaseStatusAlreadyExistsException ||
                 e is WorkerNotFoundException
             )
@@ -111,8 +90,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid request received</response>
         [ProducesResponseType(typeof(CaseStatus), 200)]
         [HttpPatch]
-        [Route("residents/case-statuses/{caseStatusId:long}")]
-        public IActionResult UpdateCaseStatus([FromRoute] long caseStatusId, [FromBody] UpdateCaseStatusRequest request)
+        [Route("case-statuses/{caseStatusId:long}")]
+        public IActionResult UpdateCaseStatus([FromBody] UpdateCaseStatusRequest request)
         {
             var validator = new UpdateCaseStatusValidator();
             var validationResults = validator.Validate(request);
@@ -124,7 +103,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var caseStatus = _caseStatusesUseCase.ExecuteUpdate(caseStatusId, request);
+                var caseStatus = _caseStatusesUseCase.ExecuteUpdate(request);
                 return Ok(caseStatus);
             }
             catch (Exception e) when (
