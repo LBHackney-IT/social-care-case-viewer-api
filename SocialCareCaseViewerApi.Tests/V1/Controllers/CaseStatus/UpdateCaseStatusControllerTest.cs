@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             const string errorMessage = "error-message";
 
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteUpdate( request))
+                .Setup(x => x.ExecuteUpdate(request))
                 .Throws(new PersonNotFoundException(errorMessage));
 
             var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;

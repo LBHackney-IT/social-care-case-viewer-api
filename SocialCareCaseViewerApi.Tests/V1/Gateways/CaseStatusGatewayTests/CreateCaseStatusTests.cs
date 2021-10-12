@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             caseStatus?.Answers.Count.Should().Be(0);
         }
-       
+
         [Test]
         public void CreatesACaseStatusWithAnswers()
         {
@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var answersTwo = new CaseStatusRequestAnswers()
             {
-                Option = _faker.Random.String2(10), 
+                Option = _faker.Random.String2(10),
                 Value = _faker.Random.String2(2)
             };
 
@@ -111,7 +111,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var requestField = new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() { Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, answers: requestField, startDate: fakeTime);
 
             _caseStatusGateway.CreateCaseStatus(request);
@@ -127,7 +127,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() { Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, answers: requestField);
 
             _caseStatusGateway.CreateCaseStatus(request);
@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() { Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
             var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, answers: requestField);
 
             _caseStatusGateway.CreateCaseStatus(request);

@@ -300,12 +300,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Person = caseStatus.Person,
                 Answers = caseStatus.Answers.Select(
                     a => new Domain.CaseStatusAnswer
-                        {
-                            Option = a.Option,
-                            Value = a.Value,
-                            StartDate = a.StartDate,
-                            CreatedAt = a.CreatedAt.Value
-                        }
+                    {
+                        Option = a.Option,
+                        Value = a.Value,
+                        StartDate = a.StartDate,
+                        CreatedAt = a.CreatedAt.Value
+                    }
                     ).ToList()
             };
         }
