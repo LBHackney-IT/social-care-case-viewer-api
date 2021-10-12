@@ -92,9 +92,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public CaseStatus UpdateCaseStatus(UpdateCaseStatusRequest request)
         {
             var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
+
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
+            }
+
+            if(caseStatus.EndDate != null)
+            {
+                throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
             }
 
             if (request.EndDate != null)

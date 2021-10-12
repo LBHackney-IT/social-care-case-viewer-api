@@ -145,6 +145,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public CaseStatusDoesNotMatchPersonException(string message) : base(message) { }
     }
 
+    public class CaseStatusAlreadyClosedException : Exception
+    {
+        public CaseStatusAlreadyClosedException(string message) : base(message) { } 
+    }
+
     public class InvalidAgeContextException : Exception
     {
         public InvalidAgeContextException(string message) : base(message) { }

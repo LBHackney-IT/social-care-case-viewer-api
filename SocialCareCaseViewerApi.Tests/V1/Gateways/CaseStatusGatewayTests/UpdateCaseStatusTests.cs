@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void WhenACaseStatusIsFoundItUpdatesTheEndDate()
+        public void WhenACaseStatusIsFoundAndTheEndDateIsNotSetItUpdatesTheEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
@@ -50,6 +50,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             act.Should().Throw<CaseStatusDoesNotExistException>()
             .WithMessage($"Case status with {request.CaseStatusId} not found");
+        }
+
+        [Test]
+        public void WhenCaseStatusHasEndDateAlreadyItThrowsAnException()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
+
+            Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
+
+            act.Should().Throw<CaseStatusAlreadyClosedException>()
+                .WithMessage($"Case status with {request.CaseStatusId} has already been closed.");
         }
     }
 }
