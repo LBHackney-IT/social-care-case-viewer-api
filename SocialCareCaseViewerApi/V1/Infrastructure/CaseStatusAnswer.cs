@@ -13,23 +13,33 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Key]
         public long Id { get; set; }
 
-        [Column("questions")]
-        public string Question { get; set; }
+        [Column("option")]
+        public string? Option { get; set; }
 
-        [Column("answers")]
-        public string Answer { get; set; }
+        [Column("value")]
+        public string? Value { get; set; }
 
         [Column("start_date")]
         public DateTime StartDate { get; set; }
-
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
-
 
         [Column("fk_person_case_status_id")]
         public long CaseStatusId { get; set; }
 
         [ForeignKey("CaseStatusId")]
         public CaseStatus CaseStatus { get; set; }
+
+
+        //audit props
+        [Column("sccv_created_at")]
+        public DateTime? CreatedAt { get; set; }
+
+        [Column("sccv_created_by")]
+        public string CreatedBy { get; set; }
+
+        [Column("sccv_last_modified_at")]
+        public DateTime? LastModifiedAt { get; set; }
+
+        [Column("sccv_last_modified_by")]
+        public string LastModifiedBy { get; set; }
     }
 }

@@ -69,17 +69,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Answers = new List<CaseStatusAnswer>()
             };
 
-            _databaseContext.CaseStatuses.Add(caseStatus);
-
-            foreach (var answer in request.Fields)
+            foreach (var answer in request.Answers)
             {
                 var caseStatusAnswer = new CaseStatusAnswer
                 {
                     CaseStatusId = caseStatus.Id,
-                    Question = answer.Name,
-                    Answer = answer.Selected,
+                    Option = answer.Option,
+                    Value = answer.Value,
                     StartDate = request.StartDate,
-                    CreatedAt = _systemTime.Now
+                    CreatedAt = _systemTime.Now,
+                    CreatedBy = request.CreatedBy
                 };
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
@@ -90,12 +89,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatus.ToDomain();
         }
 
-        public CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request)
+        public CaseStatus UpdateCaseStatus(UpdateCaseStatusRequest request)
         {
-            var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == caseStatusId);
+            var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
             if (caseStatus == null)
             {
-                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+                throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
             if (request.EndDate != null)

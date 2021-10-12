@@ -7,6 +7,7 @@ using Moq;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Helpers;
+using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -39,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenMatchingIDReturnsCaseStatuses()
         {
-            var (caseStatus, person, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var (caseStatus, person, answers) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
             var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
 
@@ -50,7 +51,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             CaseStatusHelper.TrimMilliseconds(responseElement.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
             responseElement.Id.Should().Be(caseStatus.ToDomain().Id);
             responseElement.Type.Should().Be(caseStatus.ToDomain().Type);
-            //responseElement.Answers.Count.Should().Be(answers.Count); //TODO: fix ms error
+            responseElement.Answers.Count.Should().Be(answers.Count);
+
+            //add option to ignore ms differences in DateTime, set to 1s
+            responseElement?.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers,
+                options =>
+                {
+                    options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                    return options;
+                }
+               );
         }
 
         [Test]

@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid CreatePersonCaseStatusRequest received</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        [Route("residents/case-statuses")]
+        [Route("residents/{personId:long}/case-statuses")]
         public IActionResult CreateCaseStatus([FromBody] CreateCaseStatusRequest request)
         {
             var validator = new CreateCaseStatusRequestValidator();
@@ -90,8 +90,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid request received</response>
         [ProducesResponseType(typeof(CaseStatus), 200)]
         [HttpPatch]
-        [Route("residents/case-statuses/{caseStatusId:long}")]
-        public IActionResult UpdateCaseStatus([FromRoute] long caseStatusId, [FromBody] UpdateCaseStatusRequest request)
+        [Route("case-statuses/{caseStatusId:long}")]
+        public IActionResult UpdateCaseStatus([FromBody] UpdateCaseStatusRequest request)
         {
             var validator = new UpdateCaseStatusValidator();
             var validationResults = validator.Validate(request);
@@ -103,7 +103,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                var caseStatus = _caseStatusesUseCase.ExecuteUpdate(caseStatusId, request);
+                var caseStatus = _caseStatusesUseCase.ExecuteUpdate(request);
                 return Ok(caseStatus);
             }
             catch (Exception e) when (

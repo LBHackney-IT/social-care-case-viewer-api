@@ -1,4 +1,5 @@
 using SocialCareCaseViewerApi.V1.Domain;
+using System;
 using System.Collections.Generic;
 
 #nullable enable
@@ -11,10 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Notes { get; set; }
-        public List<CaseStatusField> Fields { get; set; }
+        public List<CaseStatusAnswer> Answers { get; set; }
     }
 }
-
-
-
 

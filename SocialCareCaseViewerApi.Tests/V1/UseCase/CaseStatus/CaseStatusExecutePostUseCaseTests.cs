@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void CallsGatewaysToCheckCaseStatusExists()
+        public void CallsGateways()
         {
             var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
             var worker = TestHelpers.CreateWorker(createdBy: _request.CreatedBy);
@@ -80,10 +80,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
                 .WithMessage($"'createdBy' with '{_request.CreatedBy}' was not found as a worker.");
         }
 
+        [TestCase("a")]
+        [TestCase("z")]
         [Test]
-        public void WhenPersonIsAdultAgeContextItShouldThrowInvalidAgeContextException()
+        public void WhenPersonIsNotInChildAgeContextItShouldThrowInvalidAgeContextException(string ageContext)
         {
-            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "a");
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: ageContext);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);

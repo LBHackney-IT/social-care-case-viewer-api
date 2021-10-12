@@ -33,8 +33,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
             caseStatus.EndDate = null;
             DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
 
-            var response = _caseStatusGateway.UpdateCaseStatus(caseStatus.Id, request);
+            var response = _caseStatusGateway.UpdateCaseStatus(request);
 
             response.EndDate.Should().Be(request.EndDate);
         }
@@ -43,14 +44,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         public void WhenACaseStatusIsNotFoundItThrowsAnException()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
-            const long nonExistentCaseStatusId = 1L;
+            request.CaseStatusId = 1L;
 
-            Action act = () => _caseStatusGateway.UpdateCaseStatus(nonExistentCaseStatusId, request);
+            Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>()
-            .WithMessage($"Case status with {nonExistentCaseStatusId} not found");
+            .WithMessage($"Case status with {request.CaseStatusId} not found");
         }
-
-
     }
 }

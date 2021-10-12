@@ -1,14 +1,15 @@
-using System;
-using System.Linq;
+using Bogus;
 using FluentAssertions;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using Microsoft.EntityFrameworkCore;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
-using System.Collections.Generic;
 using Moq;
+using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -17,6 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
     {
         private CaseStatusGateway _caseStatusGateway;
         private Mock<ISystemTime> _mockSystemTime;
+        private Faker _faker = new Faker();
 
         [SetUp]
         public void Setup()
@@ -32,16 +34,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id);
 
-            var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: requestField);
+            _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = _caseStatusGateway.CreateCaseStatus(request);
+            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
 
-            caseStatus.Fields.Count.Should().Be(1);
-            //caseStatus.Fields.FirstOrDefault()?. ..Selected.Should().Be("N0");
-            caseStatus.Fields.FirstOrDefault()?.Name.Should().Be("reason");
             caseStatus.Notes.Should().Be(request.Notes);
+            caseStatus.PersonId.Should().Be(person.Id);
+            caseStatus.Type.Should().Be(request.Type);
+            caseStatus.StartDate.Should().Be(request.StartDate);
+            caseStatus.EndDate.Should().BeNull();
         }
 
         [Test]
@@ -51,17 +54,56 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: new List<CaseStatusRequestField>());
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, answers: new List<CaseStatusRequestAnswers>());
 
             _caseStatusGateway.CreateCaseStatus(request);
 
-            var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
+            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault();
 
-            caseStatus?.PersonId.Should().Be(request.PersonId);
+            caseStatus?.Answers.Count.Should().Be(0);
+        }
+       
+        [Test]
+        public void CreatesACaseStatusWithAnswers()
+        {
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            var answersOne = new CaseStatusRequestAnswers()
+            {
+                Option = _faker.Random.String2(10),
+                Value = _faker.Random.String2(2)
+            };
+
+            var answersTwo = new CaseStatusRequestAnswers()
+            {
+                Option = _faker.Random.String2(10), 
+                Value = _faker.Random.String2(2)
+            };
+
+            var requestAnswers = new List<CaseStatusRequestAnswers>() { answersOne, answersTwo };
+
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, answers: requestAnswers);
+
+            _caseStatusGateway.CreateCaseStatus(request);
+
+            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault();
+
+            caseStatus.Answers.Count.Should().Be(2);
+            caseStatus.Answers.Any(a => a.Option == answersOne.Option).Should().Be(true);
+            caseStatus.Answers.Any(a => a.Option == answersTwo.Option).Should().Be(true);
+            caseStatus.Answers.Any(a => a.Value == answersOne.Value).Should().Be(true);
+            caseStatus.Answers.Any(a => a.Value == answersTwo.Value).Should().Be(true);
+            caseStatus.Notes.Should().Be(request.Notes);
+            caseStatus.PersonId.Should().Be(person.Id);
+            caseStatus.Type.Should().Be(request.Type);
+            caseStatus.StartDate.Should().Be(request.StartDate);
+            caseStatus.EndDate.Should().BeNull();
         }
 
         [Test]
-        public void SetsStartDateToNow()
+        public void SetsStartDateToProvidedDateTime()
         {
             var fakeTime = new DateTime(2000, 1, 1, 15, 30, 0);
 
@@ -69,8 +111,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, fields: requestField, startDate: fakeTime);
+            var requestField = new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, answers: requestField, startDate: fakeTime);
 
             _caseStatusGateway.CreateCaseStatus(request);
 
@@ -79,20 +121,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void AuditsTheCaseStatus()
+        public void UpdatesCreatedAtAndCreatedByAuditPropertiesForTheCaseStatus()
         {
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var requestField = new List<CaseStatusRequestField> { new CaseStatusRequestField() { Name = "reason", Selected = "N0" } };
-            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, fields: requestField);
+            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, answers: requestField);
 
             _caseStatusGateway.CreateCaseStatus(request);
 
             var caseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
             caseStatus?.CreatedAt.Should().NotBeNull();
             caseStatus?.CreatedBy.Should().Be(request.CreatedBy);
+        }
+
+        [Test]
+        public void UpdatesCreatedAtAndCreatedByAuditPropertiesForTheAnswers()
+        {
+            var person = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            var requestField = new List<CaseStatusRequestAnswers> { new CaseStatusRequestAnswers() {   Option = _faker.Random.String2(10), Value = _faker.Random.String2(2) } };
+            var request = CaseStatusHelper.CreateCaseStatusRequest(person.Id, answers: requestField);
+
+            _caseStatusGateway.CreateCaseStatus(request);
+
+            var caseStatus = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault();
+
+            caseStatus.Answers.First().CreatedAt.Should().NotBeNull();
+            caseStatus.Answers.First().CreatedBy.Should().Be(request.CreatedBy);
         }
     }
 }

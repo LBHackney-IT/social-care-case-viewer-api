@@ -13,6 +13,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         //CaseStatusType? GetCaseStatusTypeWithFields(string caseStatusType);
         CaseStatus CreateCaseStatus(CreateCaseStatusRequest request);
         CaseStatus? GetCasesStatusByCaseStatusId(long id);
-        CaseStatus UpdateCaseStatus(long caseStatusId, UpdateCaseStatusRequest request);
+        CaseStatus UpdateCaseStatus(UpdateCaseStatusRequest request);
     }
 }

@@ -15,6 +15,7 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
+using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -585,8 +586,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             for (var i = 0; i < new Random().Next(1, 10); i++)
             {
                 var value = new Faker<CaseStatusValue>()
-                    .RuleFor(c => c.Name, f => f.Random.String2(1000))
-                    .RuleFor(c => c.Selected, f => f.Random.String2(1000));
+                    .RuleFor(c => c.Option, f => f.Random.String2(1000))
+                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
 
                 caseStatusValues.Add(value);
             }
@@ -605,9 +606,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             {
                 var answer = new Faker<CaseStatusAnswer>()
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
-                    .RuleFor(a => a.Question, f => f.Random.String2(100))
-                    .RuleFor(a => a.Answer, f => f.Random.String2(100))
-                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past()) //TODO: TK check these
+                    .RuleFor(a => a.Option, f => f.Random.String2(100))
+                    .RuleFor(a => a.Value, f => f.Random.String2(100))
+                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past()) 
                     .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
 
                 caseStatusAnswers.Add(answer);
@@ -617,14 +618,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null, long? personId = null)
+            string? notes = null, long? caseStatusId = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
-                .RuleFor(u => u.PersonId, f => personId ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
-                .RuleFor(u => u.Values, CreateCaseStatusValues());
+                .RuleFor(u => u.Answers, CreateCaseStatusValues());
         }
     }
 }

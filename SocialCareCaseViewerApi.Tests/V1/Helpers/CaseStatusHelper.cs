@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CreateCaseStatusRequest CreateCaseStatusRequest(
           long? personId = null,
           string? type = null,
-          List<CaseStatusRequestField>? fields = null,
+          List<CaseStatusRequestAnswers>? answers = null,
           DateTime? startDate = null,
           string? notes = null,
           string? createdBy = null
@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<CreateCaseStatusRequest>()
                 .RuleFor(pr => pr.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(pr => pr.Type, f => type ?? "CIN")
-                .RuleFor(pr => pr.Fields, f => fields ?? new List<CaseStatusRequestField>() { new CaseStatusRequestField() { Name = "placementReason", Selected = "N0" } })
+                .RuleFor(pr => pr.Answers, f => answers ?? new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() { Option = "placementType", Value = "C2" } })
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(-1))
                 .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());

@@ -297,18 +297,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 StartDate = caseStatus.StartDate,
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
-                Resident = caseStatus.Person,
-                Fields = caseStatus.Answers.Select(
-                    o => new CaseStatusField
-                    {
-                        Name = o.Question,
-                        Description = o.Answer,
-                        SelectedOption = new CaseStatusFieldSelectedOption
+                Person = caseStatus.Person,
+                Answers = caseStatus.Answers.Select(
+                    a => new Domain.CaseStatusAnswer
                         {
-                            Name = o.Answer,
-                            Description = o.Question
+                            Option = a.Option,
+                            Value = a.Value,
+                            StartDate = a.StartDate,
+                            CreatedAt = a.CreatedAt.Value
                         }
-                    }).ToList()
+                    ).ToList()
             };
         }
     }

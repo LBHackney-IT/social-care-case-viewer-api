@@ -6,6 +6,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
+using System;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
@@ -35,7 +36,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             CaseStatusHelper.TrimMilliseconds(response?.EndDate).Should().Be(CaseStatusHelper.TrimMilliseconds(caseStatus.ToDomain().EndDate));
             response?.Id.Should().Be(caseStatus.ToDomain().Id);
             response?.Type.Should().Be(caseStatus.ToDomain().Type);
-            //response?.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers);
+
+            response?.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers,
+                options =>
+                {
+                    options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                    return options;
+                }
+               );
         }
 
         [Test]
