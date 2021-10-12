@@ -1,14 +1,12 @@
-using System.Linq;
 using FluentAssertions;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
-using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Factories;
-using System;
 using Moq;
+using NUnit.Framework;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
+using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
