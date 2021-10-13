@@ -46,16 +46,16 @@ insert into dbo.sccv_team (id, name, context) values (20, 'Tristique', 'C');
 insert into dbo.sccv_team (id, name, context) values (24, 'Lectus', 'A');
 
 -- add test workers
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (21, 'zmctague0@example.com', 'Zebedee', 'McTague', 'est');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (37, 'ceastam1@example.com', 'Car', 'Eastam', 'habitasse');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (98, 'cpendlington2@example.com', 'Chris', 'Pendlington', 'vel');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (36, 'ysenten3@example.com', 'Yvonne', 'Senten', 'porttitor');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (46, 'rbrogan4@example.com', 'Raff', 'Brogan', 'proin');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (91, 'bhadfield5@example.com', 'Basilio', 'Hadfield', 'non');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (74, 'abodocs6@example.com', 'Andras', 'Bodocs', 'sollicitudin');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (50, 'twinkworth7@example.com', 'Taddeusz', 'Winkworth', 'volutpat');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (39, 'idorgan8@example.com', 'Ingamar', 'Dorgan', 'pretium');
-insert into dbo.sccv_worker (id, email, first_name, last_name, role) values (18, 'medmead9@example.com', 'Martina', 'Edmead', 'aliquam');
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (21, 'zmctague0@example.com', 'Zebedee', 'McTague', 'est', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (37, 'ceastam1@example.com', 'Car', 'Eastam', 'habitasse', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (98, 'cpendlington2@example.com', 'Chris', 'Pendlington', 'vel', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (36, 'ysenten3@example.com', 'Yvonne', 'Senten', 'porttitor', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (46, 'rbrogan4@example.com', 'Raff', 'Brogan', 'proin', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (91, 'bhadfield5@example.com', 'Basilio', 'Hadfield', 'non', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (74, 'abodocs6@example.com', 'Andras', 'Bodocs', 'sollicitudin', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (50, 'twinkworth7@example.com', 'Taddeusz', 'Winkworth', 'volutpat', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (39, 'idorgan8@example.com', 'Ingamar', 'Dorgan', 'pretium', true);
+insert into dbo.sccv_worker (id, email, first_name, last_name, role, is_active) values (18, 'medmead9@example.com', 'Martina', 'Edmead', 'aliquam', true);
 
 -- add worker teams
 insert into dbo.sccv_workerteam (id, worker_id, team_id) values (35, 21, 35);

@@ -1,3 +1,4 @@
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -12,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Notes { get; set; }
-        public Person Resident { get; set; }
-        public List<CaseStatusField> Fields { get; set; }
+        public Person Person { get; set; }
+        public List<CaseStatusAnswer> Answers { get; set; }
     }
 }

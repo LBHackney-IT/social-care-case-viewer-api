@@ -70,10 +70,6 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public PersonalRelationshipNotFoundException(string message) : base(message) { }
     }
 
-    public class CaseStatusTypeNotFoundException : Exception
-    {
-        public CaseStatusTypeNotFoundException(string message) : base(message) { }
-    }
     public class CaseStatusAlreadyExistsException : Exception
     {
         public CaseStatusAlreadyExistsException(string message) : base(message) { }
@@ -147,6 +143,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class CaseStatusDoesNotMatchPersonException : Exception
     {
         public CaseStatusDoesNotMatchPersonException(string message) : base(message) { }
+    }
+
+    public class CaseStatusAlreadyClosedException : Exception
+    {
+        public CaseStatusAlreadyClosedException(string message) : base(message) { }
     }
 
     public class InvalidAgeContextException : Exception

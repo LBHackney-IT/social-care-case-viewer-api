@@ -4,9 +4,10 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 #nullable enable
@@ -22,23 +23,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             _caseStatusGateway = caseStatusGateway;
             _databaseGateway = databaseGateway;
-        }
-
-        public GetCaseStatusFieldsResponse ExecuteGetFields(GetCaseStatusFieldsRequest request)
-        {
-            var caseStatusType = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
-
-            if (caseStatusType == null)
-            {
-                throw new CaseStatusNotFoundException();
-            }
-
-            return new GetCaseStatusFieldsResponse
-            {
-                Description = caseStatusType.Description,
-                Name = caseStatusType.Name,
-                Fields = caseStatusType.Fields.ToResponse()
-            };
         }
 
         public List<CaseStatusResponse> ExecuteGet(long personId)
@@ -65,10 +49,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
             }
 
-            var type = _caseStatusGateway.GetCaseStatusTypeWithFields(request.Type);
-            var typeDoesNotExist = type == null;
-            if (typeDoesNotExist) throw new CaseStatusTypeNotFoundException($"'type' with '{request.Type}' was not found.");
-
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
             var workerDoesNotExist = worker == null;
             if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
@@ -82,22 +62,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _caseStatusGateway.CreateCaseStatus(request);
         }
 
-        public CaseStatusResponse ExecuteUpdate(long caseStatusId, UpdateCaseStatusRequest request)
+        public CaseStatusResponse ExecuteUpdate(UpdateCaseStatusRequest request)
         {
-            var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(caseStatusId);
+            var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
 
-            ExecuteUpdateValidation(caseStatusId, request, caseStatus);
+            ExecuteUpdateValidation(request, caseStatus);
 
-            var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(caseStatusId, request);
+            var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(request);
 
             return updatedCaseStatus.ToResponse();
         }
 
-        private void ExecuteUpdateValidation(long caseStatusId, UpdateCaseStatusRequest request, CaseStatus? caseStatus)
+        private void ExecuteUpdateValidation(UpdateCaseStatusRequest request, CaseStatus? caseStatus)
         {
             if (caseStatus == null)
             {
-                throw new CaseStatusDoesNotExistException($"Case status with {caseStatusId} not found");
+                throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
             if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
@@ -106,21 +86,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                                                   $"is before the start date of {caseStatus.StartDate:O}");
             }
 
-            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
-            if (person == null)
-            {
-                throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found");
-            }
-            if (person.AgeContext.ToLower() != "c")
+            if (caseStatus.Person.AgeContext.ToLower() != "c")
             {
                 throw new InvalidAgeContextException(
-                    $"Person with the id {person.Id} belongs to the wrong AgeContext for this operation");
-            }
-
-            if (caseStatus.Resident.Id != request.PersonId)
-            {
-                throw new CaseStatusDoesNotMatchPersonException(
-                    $"Retrieved case status does not match the provided person id of {request.PersonId}");
+                    $"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
             }
 
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);

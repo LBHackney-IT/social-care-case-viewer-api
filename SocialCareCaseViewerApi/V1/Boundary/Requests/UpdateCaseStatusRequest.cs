@@ -8,8 +8,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateCaseStatusRequest
     {
-        [JsonPropertyName("personId")]
-        public long PersonId { get; set; }
+        [JsonPropertyName("caseStatusId")]
+        public long CaseStatusId { get; set; }
+
+        [JsonPropertyName("startDate")]
+        public DateTime? StartDate { get; set; }
 
         [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; }
@@ -20,17 +23,17 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("notes")]
         public string? Notes { get; set; }
 
-        [JsonPropertyName("values")]
-        public List<CaseStatusValue>? Values { get; set; }
+        [JsonPropertyName("answers")]
+        public List<CaseStatusValue>? Answers { get; set; }
     }
 
     public class CaseStatusValue
     {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = null!;
+        [JsonPropertyName("option")]
+        public string Option { get; set; } = null!;
 
-        [JsonPropertyName("selected")]
-        public string Selected { get; set; } = null!;
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = null!;
     }
 
     public class UpdateCaseStatusValidator : AbstractValidator<UpdateCaseStatusRequest>
@@ -42,11 +45,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .EmailAddress().WithMessage("'editedBy' must be a valid email address");
             RuleFor(x => x.Notes)
                 .MaximumLength(1000).When(x => x.Notes != null).WithMessage("'notes' must be less than or equal to 1,000 characters.");
-            RuleForEach(x => x.Values)
+            RuleForEach(x => x.Answers)
                 .ChildRules(value =>
                 {
-                    value.RuleFor(x => x.Name).NotNull().WithMessage("Field must have a name");
-                    value.RuleFor(x => x.Selected).NotNull().WithMessage("Field selected value must not be empty");
+                    value.RuleFor(x => x.Option).NotNull().WithMessage("Answer must have value for option");
+                    value.RuleFor(x => x.Value).NotNull().WithMessage("Answer must have value");
                 });
         }
     }
