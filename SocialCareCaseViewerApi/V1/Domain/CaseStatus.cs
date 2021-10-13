@@ -1,6 +1,7 @@
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Domain

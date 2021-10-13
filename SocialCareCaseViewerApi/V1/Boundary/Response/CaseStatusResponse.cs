@@ -15,4 +15,3 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public List<CaseStatusAnswer> Answers { get; set; }
     }
 }
-

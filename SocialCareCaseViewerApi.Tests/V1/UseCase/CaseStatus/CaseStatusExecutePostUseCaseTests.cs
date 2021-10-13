@@ -8,6 +8,8 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
+using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 {
@@ -85,6 +87,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         public void WhenPersonIsNotInChildAgeContextItShouldThrowInvalidAgeContextException(string ageContext)
         {
             var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: ageContext);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
+
+            Action act = () => _caseStatusesUseCase.ExecutePost(_request);
+
+            act.Should().Throw<InvalidAgeContextException>()
+            .WithMessage($"Person with the id {resident.Id} belongs to the wrong AgeContext for this operation");
+        }
+
+        [Test]
+        public void WhenPersonIsAdultAgeContextItShouldThrowInvalidAgeContextException()
+        {
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "a");
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
 
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);

@@ -833,4 +833,3 @@ DROP TABLE IF EXISTS DBO.SCCV_CASE_STATUS_TYPE;
 
 ALTER TABLE dbo.sccv_person_case_status
   DROP COLUMN discarded_at;
-

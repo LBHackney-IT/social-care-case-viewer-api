@@ -99,5 +99,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             if (dt == null) return null;
             return new DateTime(dt.Value.Year, dt.Value.Month, dt.Value.Day, dt.Value.Hour, dt.Value.Minute, dt.Value.Second, 0, dt.Value.Kind);
         }
+
+        public static DateTime? TrimMilliseconds(DateTime? dt)
+        {
+            if (dt == null) return null;
+            return new DateTime(dt.Value.Year, dt.Value.Month, dt.Value.Day, dt.Value.Hour, dt.Value.Minute, dt.Value.Second, 0, dt.Value.Kind);
+        }
     }
 }
