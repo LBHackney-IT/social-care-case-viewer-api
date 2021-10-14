@@ -108,7 +108,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.EndDate = request.EndDate;
             }
 
-            if (request.Answers != null){
+            if (request.Answers != null)
+            {
                 foreach (var answer in request.Answers)
                 {
                     var caseStatusAnswer = new CaseStatusAnswer
