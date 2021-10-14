@@ -108,6 +108,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.EndDate = request.EndDate;
             }
 
+            if (request.Answers != null){
+                foreach (var answer in request.Answers)
+                {
+                    var caseStatusAnswer = new CaseStatusAnswer
+                    {
+                        CaseStatusId = caseStatus.Id,
+                        Option = answer.Option,
+                        Value = answer.Value,
+                        CreatedAt = _systemTime.Now,
+                        CreatedBy = request.EditedBy
+                    };
+                    caseStatus.Answers.Add(caseStatusAnswer);
+                }
+            }
+
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
