@@ -135,7 +135,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Value = answer.Value,
                     CreatedAt = _systemTime.Now //will get overwritten by audit feature 
                 };
-            
+
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
             _databaseContext.SaveChanges();

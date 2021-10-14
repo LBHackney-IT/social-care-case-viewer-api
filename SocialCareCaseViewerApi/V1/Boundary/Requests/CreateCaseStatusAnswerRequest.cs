@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("startDate")]
         public DateTime StartDate { get; set; }
-       
+
         [JsonPropertyName("answers")]
         public List<CaseStatusRequestAnswers> Answers { get; set; } = new List<CaseStatusRequestAnswers>();
 
@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.CaseStatusId)
                 .GreaterThanOrEqualTo(1).WithMessage("'caseStatusId' must be provided");
 
-            RuleFor(pr => pr.Answers).Must(x => x.Count > 0).WithMessage("Answers must be provided"); 
+            RuleFor(pr => pr.Answers).Must(x => x.Count > 0).WithMessage("Answers must be provided");
 
             RuleForEach(pr => pr.Answers)
                 .ChildRules(field =>

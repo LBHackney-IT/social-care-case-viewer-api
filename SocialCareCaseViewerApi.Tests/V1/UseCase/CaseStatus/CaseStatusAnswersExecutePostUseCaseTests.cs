@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _caseStatusesUseCase = new CaseStatusesUseCase(_mockCaseStatusGateway.Object, _mockDatabaseGateway.Object);
             _request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
             _caseStatus = CaseStatusHelper.CreateCaseStatus(type: "LAC").ToDomain();
-            _worker =TestHelpers.CreateWorker();
+            _worker = TestHelpers.CreateWorker();
         }
 
         [Test]

@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.Answers.Count.Should().Be(request.Answers.Count);
         }
-     
+
         [Test]
         public void ThrowsAnExceptionWhenCaseStatusNotFound()
         {
@@ -71,6 +71,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             Action act = () => _caseStatusCateway.CreateCaseStatusAnswer(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>().WithMessage($"Case status id {request.CaseStatusId} does not exist.");
-        }        
+        }
     }
 }

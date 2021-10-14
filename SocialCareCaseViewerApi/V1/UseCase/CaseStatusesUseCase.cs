@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             return caseStatuses.Select(caseStatus => caseStatus.ToResponse()).ToList();
         }
-        
+
         public CaseStatus ExecutePost(CreateCaseStatusRequest request)
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
@@ -75,14 +75,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
 
-            if(worker == null)
+            if (worker == null)
             {
                 throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
             }
 
             var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
 
-            if(caseStatus == null)
+            if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
