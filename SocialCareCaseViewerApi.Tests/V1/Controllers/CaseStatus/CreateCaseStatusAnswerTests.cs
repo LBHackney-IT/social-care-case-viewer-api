@@ -56,7 +56,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             var exceptionMessage = "case status not found";
             _mockCaseStatusesUseCase.Setup(x => x.ExecutePostCaseStatusAnswer(It.IsAny<CreateCaseStatusAnswerRequest>())).Throws(new CaseStatusDoesNotExistException(exceptionMessage));
 
-            var response = _caseStatusController.CreateCaseStatusAnswers(_request) as NotFoundObjectResult;
+            var response = _caseStatusController.CreateCaseStatusAnswers(_request) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
+
+
+        [Test]
+        public void WhenInvalidCaseStatusTypeExceptionIsThrownReturn400()
+        {
+            var exceptionMessage = "invalid case status type";
+
+            _mockCaseStatusesUseCase.Setup(x => x.ExecutePostCaseStatusAnswer(It.IsAny<CreateCaseStatusAnswerRequest>())).Throws(new InvalidCaseStatusTypeException(exceptionMessage));
+
+            var response = _caseStatusController.CreateCaseStatusAnswers(_request) as BadRequestObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(exceptionMessage);

@@ -108,7 +108,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (Exception e) when (
                 e is WorkerNotFoundException ||
-                e is CaseStatusDoesNotExistException)
+                e is CaseStatusDoesNotExistException ||
+                e is InvalidCaseStatusTypeException)
             {
                 return BadRequest(e.Message);
             }
