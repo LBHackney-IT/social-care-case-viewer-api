@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using System;
 using System.Collections.Generic;
 
 #nullable enable
@@ -25,10 +26,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = _createCaseStatusAnswerRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().HaveCount(3);
+            response.Errors.Should().HaveCount(5);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'caseStatusId' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "Answers must be provided");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' must be provided");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must be provided");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
 
         [Test]
@@ -46,19 +49,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = _createCaseStatusAnswerRequestValidator.Validate(requestWithoutAnswers);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "Option must not be empty");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "Value must not be empty");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'option' must not be empty");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'value' must not be empty");
         }
 
         [Test]
-        public void WhenStartDateIsInTheFutureReturnsErrorWithMessage()
+        public void WhenStartDateIsDefaultDateTimeValueeReturnsErrorWithMessage()
         {
-            var badRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest(startDate: System.DateTime.Today.AddDays(1));
+            var badRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest(startDate: DateTime.MinValue);
 
             var response = _createCaseStatusAnswerRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'start_date' must be in the past");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
 
         [Test]

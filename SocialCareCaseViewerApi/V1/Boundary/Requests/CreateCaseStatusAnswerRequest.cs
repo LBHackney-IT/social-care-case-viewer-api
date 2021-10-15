@@ -28,17 +28,19 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.CaseStatusId)
                 .GreaterThanOrEqualTo(1).WithMessage("'caseStatusId' must be provided");
 
-            RuleFor(pr => pr.Answers).Must(x => x.Count > 0).WithMessage("Answers must be provided");
+            RuleFor(pr => pr.Answers).Must(x => x.Count > 0).WithMessage("'answers' must be provided");
 
             RuleForEach(pr => pr.Answers)
                 .ChildRules(field =>
                 {
-                    field.RuleFor(t => t.Option).NotEmpty().WithMessage("Option must not be empty");
-                    field.RuleFor(t => t.Value).NotEmpty().WithMessage("Value must not be empty");
+                    field.RuleFor(t => t.Option).NotEmpty().WithMessage("'option' must not be empty");
+                    field.RuleFor(t => t.Value).NotEmpty().WithMessage("'value' must not be empty");
                 });
 
             RuleFor(x => x.StartDate)
-                .LessThan(DateTime.Now).WithMessage("'start_date' must be in the past");
+                .NotEmpty().WithMessage("'startDate' must be provided")
+                .Must(x => x != DateTime.MinValue)
+                .WithMessage("'startDate' must have a valid value"); 
 
             RuleFor(pr => pr.CreatedBy)
                 .NotNull().WithMessage("'createdBy' must be provided")
