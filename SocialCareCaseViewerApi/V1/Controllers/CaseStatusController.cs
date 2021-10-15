@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <param name="request"></param>
         /// <response code="201">Successfully created case status answers</response>
         /// <response code="400">Invalid CreateCaseStatusAnswerRequest received</response>
-        /// <response code="404">Case status not found</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
         [Route("case-statuses/{id:long}/answers")]
         public IActionResult CreateCaseStatusAnswers(CreateCaseStatusAnswerRequest request)
