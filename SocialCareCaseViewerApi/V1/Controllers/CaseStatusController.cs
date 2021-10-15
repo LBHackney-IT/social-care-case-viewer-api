@@ -107,13 +107,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return CreatedAtAction(nameof(CreateCaseStatusAnswers), "Successfully created case status answers.");
             }
             catch (Exception e) when (
-                e is WorkerNotFoundException)
+                e is WorkerNotFoundException ||
+                e is CaseStatusDoesNotExistException)
             {
                 return BadRequest(e.Message);
-            }
-            catch (CaseStatusDoesNotExistException e)
-            {
-                return NotFound(e.Message);
             }
         }
 
