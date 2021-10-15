@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.StartDate)
                 .NotEmpty().WithMessage("'startDate' must be provided")
                 .Must(x => x != DateTime.MinValue)
-                .WithMessage("'startDate' must have a valid value"); 
+                .WithMessage("'startDate' must have a valid value");
 
             RuleFor(pr => pr.CreatedBy)
                 .NotNull().WithMessage("'createdBy' must be provided")
