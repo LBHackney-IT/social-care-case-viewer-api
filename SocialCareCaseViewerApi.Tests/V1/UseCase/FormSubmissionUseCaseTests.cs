@@ -781,23 +781,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByQueryOnlyGetsFormsWithResidentsMatchingAgeContext()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(ageContext: "A");
+            const string expectedJsonQuery = "{ \"Residents.context_flag\" : \"A\" }";
+            const string ageContext = "A";
+            var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(ageContext: ageContext);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                r => r.AgeContext.ToUpper() == (request.AgeContext != null ? request.AgeContext.ToUpper() : null));
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
 
-            var expectedJsonFilter = filter.RenderToJson();
-            var pagination = new Pagination { Page = request.Page, Size = request.Size };
-
-            _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
-
-            _formSubmissionsUseCase.ExecuteGetByQuery(request);
-
-            _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
 
         [Test]
@@ -811,7 +801,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
-
 
         [Test]
         public void ExecuteGetByQueryGetsFormsUsingAllQueryOptions()

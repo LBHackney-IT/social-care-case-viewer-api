@@ -111,8 +111,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.AgeContext != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.AgeContext.ToUpper() == (request.AgeContext != null ? request.AgeContext.ToUpper() : null));
+                var bsonQuery = "{'Residents.context_flag':" + "\"" + request.AgeContext.ToUpper() + "\"" + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.PersonID != null)
