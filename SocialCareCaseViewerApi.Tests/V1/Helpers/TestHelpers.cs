@@ -509,12 +509,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static ListCasesRequest CreateListCasesRequest(
             long? mosaicId = null,
             string? firstName = null,
-            string? lastName = null)
+            string? lastName = null,
+            string? workerEmail = null)
         {
             return new Faker<ListCasesRequest>()
                 .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString())
                 .RuleFor(r => r.FirstName, firstName)
-                .RuleFor(r => r.LastName, lastName);
+                .RuleFor(r => r.LastName, lastName)
+                .RuleFor(r => r.WorkerEmail, workerEmail);
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(

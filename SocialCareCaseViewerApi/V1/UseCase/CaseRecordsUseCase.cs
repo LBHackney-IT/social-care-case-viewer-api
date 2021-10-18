@@ -96,7 +96,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             if (request.WorkerEmail != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+                var bsonQuery = "{'Workers.email':" + "\"" + request.WorkerEmail + "\"" + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.FormName == "Case Note")
