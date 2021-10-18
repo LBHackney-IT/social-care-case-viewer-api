@@ -60,6 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             response.EndDate.Should().Be(request.EndDate);
             response.Answers.Should().ContainEquivalentOf(updateValue);
+            response.Answers[0].GroupId.Should().NotBeNull();
         }
 
         [Test]
