@@ -537,7 +537,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? notes = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
-            InfrastructurePerson? resident = null)
+            InfrastructurePerson? resident = null,
+            string? type = null)
         {
             resident ??= CreatePerson();
 
@@ -547,7 +548,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(cs => cs.Person, resident)
-                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>());
+                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>())
+                .RuleFor(cs => cs.Type, f => type ?? f.Random.String2(3));
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(

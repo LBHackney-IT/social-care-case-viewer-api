@@ -128,5 +128,35 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatus.ToDomain();
         }
+
+        public CaseStatus CreateCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
+        {
+            var caseStatus = _databaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
+
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status id {request.CaseStatusId} does not exist.");
+            }
+
+            if (caseStatus.Answers == null) caseStatus.Answers = new List<CaseStatusAnswer>();
+
+            foreach (var answer in request.Answers)
+            {
+                var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                {
+                    CaseStatusId = caseStatus.Id,
+                    CreatedBy = request.CreatedBy,
+                    StartDate = request.StartDate,
+                    Option = answer.Option,
+                    Value = answer.Value,
+                    CreatedAt = _systemTime.Now //will get overwritten by audit feature 
+                };
+
+                caseStatus.Answers.Add(caseStatusAnswer);
+            }
+            _databaseContext.SaveChanges();
+
+            return caseStatus.ToDomain();
+        }
     }
 }
