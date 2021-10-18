@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        private static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
+        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -104,7 +104,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.WorkerEmail != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+                var bsonQuery = "{'Workers.email':" + "\"" + request.WorkerEmail + "\"" + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.AgeContext != null)

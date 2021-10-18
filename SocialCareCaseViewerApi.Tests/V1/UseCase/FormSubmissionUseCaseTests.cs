@@ -767,24 +767,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedWorkerEmail()
+        public void GenerateFilterDefinitionWithProvidedWorkerEmail()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(workerEmail: "foo@hackney.gov.uk");
+            const string expectedJsonQuery = "{ \"Workers.email\" : \"foo@hackney.gov.uk\" }";
+            const string workerEmail = "foo@hackney.gov.uk";
+            var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(workerEmail: workerEmail);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
 
-            var expectedJsonFilter = filter.RenderToJson();
-            var pagination = new Pagination { Page = request.Page, Size = request.Size };
-
-            _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
-
-            _formSubmissionsUseCase.ExecuteGetByQuery(request);
-
-            _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
 
         [Test]
