@@ -43,10 +43,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(cs => cs.Answers)
                 .Include(cs => cs.Person).ToList();
 
-            foreach (var caseStatus in caseStatuses){
+            foreach (var caseStatus in caseStatuses)
+            {
                 var caseAnswers = new List<CaseStatusAnswer>();
-                foreach (var answer in caseStatus.Answers){
-                    if (answer.DiscardedAt == null){
+                foreach (var answer in caseStatus.Answers)
+                {
+                    if (answer.DiscardedAt == null)
+                    {
                         caseAnswers.Add(answer);
                     }
                 }
@@ -64,8 +67,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault();
 
             var caseAnswers = new List<CaseStatusAnswer>();
-            foreach (var answer in caseStatus.Answers){
-                if (answer.DiscardedAt == null){
+            foreach (var answer in caseStatus.Answers)
+            {
+                if (answer.DiscardedAt == null)
+                {
                     caseAnswers.Add(answer);
                 }
             }
@@ -146,7 +151,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     caseStatus.Answers.Add(caseStatusAnswer);
                 }
             }
-            
+
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
