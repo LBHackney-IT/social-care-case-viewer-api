@@ -548,8 +548,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
                 .RuleFor(cs => cs.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(cs => cs.Person, resident)
-                .RuleFor(cs => cs.Type, type ?? "CP")
-                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>());
+                .RuleFor(cs => cs.Answers, new List<CaseStatusAnswer>())
+                .RuleFor(cs => cs.Type, f => type ?? f.Random.String2(3));
         }
 
         public static QueryCaseSubmissionsRequest CreateQueryCaseSubmissions(
@@ -588,8 +588,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             for (var i = 0; i < new Random().Next(1, 10); i++)
             {
                 var value = new Faker<CaseStatusValue>()
-                    .RuleFor(c => c.Option, f => f.Random.String2(1000))
-                    .RuleFor(c => c.Value, f => f.Random.String2(1000));
+                    .RuleFor(c => c.Option, f => f.Random.String2(512))
+                    .RuleFor(c => c.Value, f => f.Random.String2(512));
 
                 caseStatusValues.Add(value);
             }
@@ -629,7 +629,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
-                .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(1000))
+                .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(512))
                 .RuleFor(u => u.Answers, CreateCaseStatusValues());
         }
     }

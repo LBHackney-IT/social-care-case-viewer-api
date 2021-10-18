@@ -10,5 +10,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         List<CaseStatusResponse> ExecuteGet(long personId);
         CaseStatus ExecutePost(CreateCaseStatusRequest request);
         CaseStatusResponse ExecuteUpdate(UpdateCaseStatusRequest request);
+        CaseStatusResponse ExecutePostCaseStatusAnswer(CreateCaseStatusAnswerRequest request);
     }
 }
