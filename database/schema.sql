@@ -833,3 +833,9 @@ DROP TABLE IF EXISTS DBO.SCCV_CASE_STATUS_TYPE;
 
 ALTER TABLE dbo.sccv_person_case_status
   DROP COLUMN discarded_at;
+
+ALTER TABLE dbo.sccv_person_case_status_answers
+  ADD COLUMN discarded_at timestamp;
+
+ALTER TABLE dbo.sccv_person_case_status_answers
+  ADD COLUMN group_id varchar(36) not null;

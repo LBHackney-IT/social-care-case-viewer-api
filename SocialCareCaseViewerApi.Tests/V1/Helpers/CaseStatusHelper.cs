@@ -14,15 +14,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var person = TestHelpers.CreatePerson();
             var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatuses.Add(caseStatus);
+            databaseContext.SaveChanges();
+
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id);
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, caseStatusAnswers);
+        }
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithDiscardedAnswerToDatabase(
+          DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
 
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(caseStatus);
 
             databaseContext.SaveChanges();
 
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id);
-            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+            Guid identifier = Guid.NewGuid();
 
+            var legalStatusPast = new CaseStatusAnswer();
+            legalStatusPast.CaseStatusId = caseStatus.Id;
+            legalStatusPast.Option = "legalStatus";
+            legalStatusPast.Value = "C1";
+            legalStatusPast.GroupId = identifier.ToString();
+            legalStatusPast.StartDate = DateTime.Today.AddDays(-10);
+            legalStatusPast.CreatedAt = DateTime.Today.AddDays(-11);
+            legalStatusPast.DiscardedAt = DateTime.Today;
+
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+            caseStatusAnswers.Add(legalStatusPast);
+
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
             databaseContext.SaveChanges();
 
             return (caseStatus, person, caseStatusAnswers);

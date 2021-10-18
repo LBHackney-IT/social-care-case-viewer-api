@@ -62,6 +62,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
                 }
                );
         }
+        [Test]
+        public void WhenMatchingIDReturnsOnlyActiveAnswersInCaseStatuses()
+        {
+            var (caseStatus, person, answers) = CaseStatusHelper.SavePersonCaseStatusWithDiscardedAnswerToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
+            response.Count.Should().Be(1);
+
+            var responseElement = response.First();
+            responseElement.Answers.Count.Should().Be(0);
+        }
 
         [Test]
         public void WhenMatchingIDAndPastCaseStatusReturnEmptyList()
