@@ -600,7 +600,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static List<CaseStatusAnswer> CreateCaseStatusAnswers(
             DateTime? startDate = null,
             DateTime? createdAt = null,
-            long? caseStatusId = null)
+            long? caseStatusId = null,
+            string? groupId = null)
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
@@ -610,6 +611,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
                     .RuleFor(a => a.Option, f => f.Random.String2(100))
                     .RuleFor(a => a.Value, f => f.Random.String2(100))
+                    .RuleFor(a => a.GroupId, f => groupId ?? f.Random.String2(36))
+                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
                     .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
                     .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
 

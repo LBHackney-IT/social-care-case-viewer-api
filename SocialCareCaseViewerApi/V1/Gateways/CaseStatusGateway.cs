@@ -40,8 +40,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .CaseStatuses
                 .Where(cs => cs.PersonId == personId)
                 .Where(cs => cs.EndDate == null || cs.EndDate > DateTime.Today)
-                .Include(cs => cs.Person)
-                .Include(cs => cs.Answers);
+                .Include(cs => cs.Answers)
+                .Include(cs => cs.Person).ToList();
+
+            foreach (var caseStatus in caseStatuses)
+            {
+                var caseAnswers = new List<CaseStatusAnswer>();
+                foreach (var answer in caseStatus.Answers)
+                {
+                    if (answer.DiscardedAt == null)
+                    {
+                        caseAnswers.Add(answer);
+                    }
+                }
+                caseStatus.Answers = caseAnswers;
+            }
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
@@ -51,8 +64,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(cs => cs.StartDate <= date)
                 .Where(cs => cs.EndDate == null || cs.EndDate >= date)
                 .Include(cs => cs.Person)
-                .Include(cs => cs.Answers)
                 .FirstOrDefault();
+
+            var caseAnswers = new List<CaseStatusAnswer>();
+            foreach (var answer in caseStatus.Answers)
+            {
+                if (answer.DiscardedAt == null)
+                {
+                    caseAnswers.Add(answer);
+                }
+            }
+            caseStatus.Answers = caseAnswers;
 
             return caseStatus?.ToDomain();
         }
@@ -69,6 +91,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 Answers = new List<CaseStatusAnswer>()
             };
 
+            Guid identifier = Guid.NewGuid();
+
             foreach (var answer in request.Answers)
             {
                 var caseStatusAnswer = new CaseStatusAnswer
@@ -78,7 +102,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Value = answer.Value,
                     StartDate = request.StartDate,
                     CreatedAt = _systemTime.Now,
-                    CreatedBy = request.CreatedBy
+                    CreatedBy = request.CreatedBy,
+                    GroupId = identifier.ToString()
                 };
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
@@ -110,6 +135,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.Answers != null)
             {
+                Guid identifier = Guid.NewGuid();
+
                 foreach (var answer in request.Answers)
                 {
                     var caseStatusAnswer = new CaseStatusAnswer
@@ -118,6 +145,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         Option = answer.Option,
                         Value = answer.Value,
                         CreatedAt = _systemTime.Now,
+                        GroupId = identifier.ToString(),
                         CreatedBy = request.EditedBy
                     };
                     caseStatus.Answers.Add(caseStatusAnswer);
@@ -142,6 +170,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             foreach (var answer in request.Answers)
             {
+                Guid identifier = Guid.NewGuid();
+
                 var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
@@ -149,6 +179,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     StartDate = request.StartDate,
                     Option = answer.Option,
                     Value = answer.Value,
+                    GroupId = identifier.ToString(),
                     CreatedAt = _systemTime.Now //will get overwritten by audit feature 
                 };
 

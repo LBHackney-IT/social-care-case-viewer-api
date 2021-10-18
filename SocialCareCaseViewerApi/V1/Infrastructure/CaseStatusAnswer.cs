@@ -28,6 +28,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [ForeignKey("CaseStatusId")]
         public CaseStatus CaseStatus { get; set; }
 
+        [Column("discarded_at")]
+        public DateTime? DiscardedAt { get; set; }
+
+        [Column("group_id")]
+        public String GroupId { get; set; }
 
         //audit props
         [Column("sccv_created_at")]
