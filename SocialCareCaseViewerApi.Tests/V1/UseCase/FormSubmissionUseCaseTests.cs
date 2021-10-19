@@ -769,7 +769,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GenerateFilterDefinitionWithProvidedWorkerEmail()
         {
-            const string expectedJsonQuery = "{ \"Workers.email\" : \"foo@hackney.gov.uk\" }";
+            const string expectedJsonQuery = "{ \"CreatedBy.Email\" : \"foo@hackney.gov.uk\" }";
             const string workerEmail = "foo@hackney.gov.uk";
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(workerEmail: workerEmail);
 
@@ -781,7 +781,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteGetByQueryOnlyGetsFormsWithResidentsMatchingAgeContext()
         {
-            const string expectedJsonQuery = "{ \"Residents.context_flag\" : \"A\" }";
+            const string expectedJsonQuery = "{ \"Residents.AgeContext\" : \"A\" }";
             const string ageContext = "A";
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(ageContext: ageContext);
 

@@ -104,14 +104,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.WorkerEmail != null)
             {
-                var bsonQuery = "{'Workers.email':" + "\"" + request.WorkerEmail + "\"" + "}";
+                var bsonQuery = "{'CreatedBy.Email':" + "\"" + request.WorkerEmail + "\"" + "}";
 
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.AgeContext != null)
             {
-                var bsonQuery = "{'Residents.context_flag':" + "\"" + request.AgeContext.ToUpper() + "\"" + "}";
+                var bsonQuery = "{'Residents.AgeContext':" + "\"" + request.AgeContext.ToUpper() + "\"" + "}";
 
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }

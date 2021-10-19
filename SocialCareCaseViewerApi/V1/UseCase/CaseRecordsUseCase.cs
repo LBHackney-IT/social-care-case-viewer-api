@@ -96,7 +96,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             if (request.WorkerEmail != null)
             {
-                var bsonQuery = "{'Workers.email':" + "\"" + request.WorkerEmail + "\"" + "}";
+                var bsonQuery = "{'CreatedBy.Email':" + "\"" + request.WorkerEmail + "\"" + "}";
 
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }

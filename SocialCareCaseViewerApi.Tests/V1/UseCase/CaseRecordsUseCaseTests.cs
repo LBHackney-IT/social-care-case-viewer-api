@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void GenerateFilterDefinitionWithProvidedWorkerEmail()
         {
-            const string expectedJsonQuery = "{ \"Workers.email\" : \"foo@hackney.gov.uk\", \"SubmissionState\" : 1 }";
+            const string expectedJsonQuery = "{ \"CreatedBy.Email\" : \"foo@hackney.gov.uk\", \"SubmissionState\" : 1 }";
             const string workerEmail = "foo@hackney.gov.uk";
             var requestWithLastName = TestHelpers.CreateListCasesRequest(workerEmail: workerEmail);
 
