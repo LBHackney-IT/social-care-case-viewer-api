@@ -33,9 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.EndDate = null;
             DatabaseContext.SaveChanges();
             request.CaseStatusId = caseStatus.Id;
-            
             var response = _caseStatusGateway.UpdateCaseStatus(request);
-
             response.EndDate.Should().Be(request.EndDate);
             response.Answers.Should().ContainEquivalentOf(request.Answers[0]);
         }
