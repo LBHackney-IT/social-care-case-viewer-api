@@ -615,7 +615,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     .RuleFor(a => a.Value, f => f.Random.String2(100))
                     .RuleFor(a => a.GroupId, f => groupId ?? f.Random.String2(36))
                     .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
-                    .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
                     .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
 
                 caseStatusAnswers.Add(answer);
