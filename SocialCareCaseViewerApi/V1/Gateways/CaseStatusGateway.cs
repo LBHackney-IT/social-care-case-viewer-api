@@ -160,7 +160,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     var activeAnswers = GetActiveCaseStatusAnswers(caseStatus.Answers);
                     foreach (var caseStatusAnswer in activeAnswers)
                     {
-                        caseStatusAnswer.DiscardedAt = DateTime.Now;
+                        caseStatusAnswer.DiscardedAt = ystemTime.Now;
                     }
                 }
 
@@ -188,7 +188,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<CaseStatusAnswer> GetActiveCaseStatusAnswers(List<CaseStatusAnswer> answers)
         {
             var active_elm = answers
-                    .Where(csa => csa.StartDate < DateTime.Now) // this is for getting answers valid for the current period
+                    .Where(csa => csa.StartDate < _systemTime.Now) // this is for getting answers valid for the current period
                     .Where(csa => csa.DiscardedAt == null) // this is for getting the answers not discarded
                     .OrderByDescending(csa => csa.StartDate)
                     .FirstOrDefault();
