@@ -118,10 +118,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var response = _caseStatusGateway.UpdateCaseStatus(request);
 
-            response.StartDate.ToShortTimeString().Should().Be(caseStatus.StartDate.ToShortTimeString());
+            response.StartDate.Should().Be(caseStatus.StartDate);
 
-            response.Answers[caseStatusAnswers.Count - 1].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
-            response.Answers[caseStatusAnswers.Count - 2].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
+            response.Answers[caseStatusAnswers.Count - 1].StartDate.Should().Be((DateTime) request.StartDate);
+            response.Answers[caseStatusAnswers.Count - 2].StartDate.Should().Be((DateTime) request.StartDate);
 
             response.Answers.Should().ContainEquivalentOf(legalStatus);
             response.Answers.Should().ContainEquivalentOf(placementType);
