@@ -14,5 +14,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         CaseStatus? GetCasesStatusByCaseStatusId(long id);
         CaseStatus UpdateCaseStatus(UpdateCaseStatusRequest request);
         CaseStatus CreateCaseStatusAnswer(CreateCaseStatusAnswerRequest request);
+        CaseStatus ReplaceCaseStatusAnswer(CreateCaseStatusAnswerRequest request);
     }
 }

@@ -538,11 +538,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? startDate = null,
             DateTime? endDate = null,
             InfrastructurePerson? resident = null,
-            string? type = null)
+            string? type = null,
+            long? id = null)
         {
             resident ??= CreatePerson();
 
             return new Faker<CaseStatus>()
+                .RuleFor(cs => cs.Id, f => id ?? f.UniqueIndex +1)
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
@@ -601,11 +603,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? startDate = null,
             DateTime? createdAt = null,
             long? caseStatusId = null,
-            string? groupId = null)
+            string? groupId = null,
+            int? min = null,
+            int? max = null)
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
-            for (var i = 0; i < new Random().Next(1, 5); i++)
+            for (var i = 0; i < new Random().Next(min ?? 1, max ?? 2); i++)
             {
                 var answer = new Faker<CaseStatusAnswer>()
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
