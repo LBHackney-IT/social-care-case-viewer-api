@@ -189,7 +189,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Option = answer.Option,
                     Value = answer.Value,
                     GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now 
+                    CreatedAt = _systemTime.Now
                 };
 
                 caseStatus.Answers.Add(caseStatusAnswer);
@@ -215,7 +215,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .GroupBy(x => x.GroupId);
 
             //set the current future answers to discarded
-            foreach(var a in activeAnswerGroups.Last())
+            foreach (var a in activeAnswerGroups.Last())
             {
                 a.DiscardedAt = _systemTime.Now;
             }
@@ -232,7 +232,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Option = answer.Option,
                     Value = answer.Value,
                     GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now 
+                    CreatedAt = _systemTime.Now
                 };
 
                 caseStatus.Answers.Add(caseStatusAnswer);

@@ -95,14 +95,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null).GroupBy(x => x.GroupId);
 
             //check whether we have only one active answer group, if so, add a new one for the future
-            if(activeAnswerGroups.Count() == 1)
+            if (activeAnswerGroups.Count() == 1)
             {
                 if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
                 {
                     throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
                 }
             }
-            else if(activeAnswerGroups.Count() == 2)
+            else if (activeAnswerGroups.Count() == 2)
             {
                 if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
                 {

@@ -544,7 +544,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             resident ??= CreatePerson();
 
             return new Faker<CaseStatus>()
-                .RuleFor(cs => cs.Id, f => id ?? f.UniqueIndex +1)
+                .RuleFor(cs => cs.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())

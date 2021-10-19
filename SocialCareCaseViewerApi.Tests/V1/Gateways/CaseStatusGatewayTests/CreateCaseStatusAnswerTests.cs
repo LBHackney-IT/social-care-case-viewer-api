@@ -96,7 +96,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
             var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Now.AddDays(-10), min: 2, max: 2, groupId: groupId1);
-            var currentFutureAnswers  = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Now.AddDays(5), min: 2, max: 2, groupId: groupId2);
+            var currentFutureAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Now.AddDays(5), min: 2, max: 2, groupId: groupId2);
 
             caseStatus.Answers.AddRange(currentActiveAnswers);
             caseStatus.Answers.AddRange(currentFutureAnswers);

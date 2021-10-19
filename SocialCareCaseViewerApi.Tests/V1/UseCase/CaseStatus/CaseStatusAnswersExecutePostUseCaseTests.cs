@@ -112,7 +112,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             var answerGroupId = Guid.NewGuid().ToString();
 
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min:2, max:2);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
             caseStatus.Answers.AddRange(caseStatusAnswers);
 
             _request.StartDate = DateTime.Today.AddDays(-20);
@@ -165,7 +165,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _caseStatusesUseCase.ExecutePostCaseStatusAnswer(_request);
 
             _mockCaseStatusGateway.Verify(x => x.CreateCaseStatusAnswer(_request), Times.Once);
-        }       
+        }
 
         [Test]
         public void WhenThereAreTwoActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsBeforeTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
