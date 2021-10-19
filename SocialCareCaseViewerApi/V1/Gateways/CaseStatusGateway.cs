@@ -142,8 +142,39 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.EndDate = request.EndDate;
             }
 
+            if (request.StartDate != null)
+            {
+                if (caseStatus.Type == "LAC")
+                {
+                    var activeAnswers = GetActiveCaseStatusAnswers(caseStatus.Answers);
+                    foreach (var caseStatusAnswer in activeAnswers)
+                    {
+                        caseStatusAnswer.StartDate = (DateTime) request.StartDate;
+                    }
+                }
+                else
+                {
+                    caseStatus.StartDate = (DateTime) request.StartDate;
+                }
+            }
+
+            if (request.Notes != null)
+            {
+                caseStatus.Notes = request.Notes;
+            }
+
             if (request.Answers != null)
             {
+                if (caseStatus.Type == "LAC")
+                {
+                    var activeAnswers = GetActiveCaseStatusAnswers(caseStatus.Answers);
+                    foreach (var caseStatusAnswer in activeAnswers)
+                    {
+                        caseStatusAnswer.DiscardedAt = DateTime.Now;
+                        caseStatus.Answers.Remove(caseStatusAnswer);
+                    }
+                }
+
                 Guid identifier = Guid.NewGuid();
 
                 foreach (var answer in request.Answers)
@@ -155,7 +186,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         Value = answer.Value,
                         CreatedAt = _systemTime.Now,
                         GroupId = identifier.ToString(),
-                        CreatedBy = request.EditedBy
+                        CreatedBy = request.EditedBy,
+                        StartDate = (DateTime) request.StartDate
                     };
                     caseStatus.Answers.Add(caseStatusAnswer);
                 }
@@ -164,6 +196,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
+        }
+
+        public List<CaseStatusAnswer> GetActiveCaseStatusAnswers(List<CaseStatusAnswer> answers)
+        {
+            var active_elm = answers
+                    .Where(csa => csa.StartDate < DateTime.Now)
+                    .OrderByDescending(csa => csa.StartDate)
+                    .FirstOrDefault();
+
+            var activeAnswersGroup = answers
+                    .Where(csa => csa.GroupId == active_elm.GroupId)
+                    .ToList();
+
+            return activeAnswersGroup;
         }
 
         public CaseStatus CreateCaseStatusAnswer(CreateCaseStatusAnswerRequest request)

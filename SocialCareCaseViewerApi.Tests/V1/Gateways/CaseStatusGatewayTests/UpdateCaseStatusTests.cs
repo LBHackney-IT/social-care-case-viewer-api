@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using System;
+using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -62,6 +63,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             response.Answers.Should().ContainEquivalentOf(updateValue);
             response.Answers[0].GroupId.Should().NotBeNull();
         }
+
+        [Test]
+        public void WhenTypeIsLACUpdateActiveAnswers()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, caseStatusAnswers) = CaseStatusHelper.SavePersonWithPastActivePendingLACCaseStatusToDatabase(DatabaseContext);
+
+            var legalStatus = new CaseStatusValue();
+            legalStatus.Option = "legalStatus";
+            legalStatus.Value = "V4";
+
+            var placementType = new CaseStatusValue();
+            placementType.Option = "placementType";
+            placementType.Value = "H5";
+
+            var answers = new List<CaseStatusValue>();
+            answers.Add(legalStatus);
+            answers.Add(placementType);
+
+            request.StartDate = DateTime.Now;
+            request.Answers = answers;
+            request.CaseStatusId = caseStatus.Id;
+
+            var response = _caseStatusGateway.UpdateCaseStatus(request);
+
+            response.StartDate.ToShortTimeString().Should().Be(caseStatus.StartDate.ToShortTimeString());
+
+            response.Answers[caseStatusAnswers.Count -1].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
+            response.Answers[caseStatusAnswers.Count -2].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
+            
+            response.Answers.Should().ContainEquivalentOf(legalStatus);
+            response.Answers.Should().ContainEquivalentOf(placementType);
+
+            response.Answers.Count.Should().Be(caseStatusAnswers.Count);
+
+            response.Notes.Should().Be(request.Notes);
+        }
+
 
         [Test]
         public void WhenACaseStatusIsNotFoundItThrowsAnException()

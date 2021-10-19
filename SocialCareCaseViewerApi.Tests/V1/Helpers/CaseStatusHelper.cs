@@ -25,6 +25,61 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return (caseStatus, person, caseStatusAnswers);
         }
+
+
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonWithPastActivePendingLACCaseStatusToDatabase(
+          DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person, type: "LAC");
+            caseStatus.EndDate = null;
+
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatuses.Add(caseStatus);
+            databaseContext.SaveChanges();
+
+            Guid identifier = Guid.NewGuid();
+
+            List<CaseStatusAnswer> answers = new List<CaseStatusAnswer>();
+
+            var pastCaseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(
+              caseStatusId: caseStatus.Id,
+              answersNumber: 2,
+              startDate: DateTime.Today.AddDays(-10),
+              groupId: identifier.ToString()
+            );
+            databaseContext.CaseStatusAnswers.AddRange(pastCaseStatusAnswers);
+
+            identifier = Guid.NewGuid();
+
+            var activeCaseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(
+              caseStatusId: caseStatus.Id,
+              answersNumber: 2,
+              startDate: DateTime.Today.AddDays(-1),
+              groupId: identifier.ToString()
+            );
+            databaseContext.CaseStatusAnswers.AddRange(activeCaseStatusAnswers);
+
+            identifier = Guid.NewGuid();
+
+            var pendingCaseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(
+              caseStatusId: caseStatus.Id,
+              answersNumber: 2,
+              startDate: DateTime.Today.AddDays(10),
+              groupId: identifier.ToString()
+            );
+
+            databaseContext.CaseStatusAnswers.AddRange(pendingCaseStatusAnswers);
+
+            answers.AddRange(pastCaseStatusAnswers);
+            answers.AddRange(activeCaseStatusAnswers);
+            answers.AddRange(pendingCaseStatusAnswers);
+
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, answers);
+        }
+
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithDiscardedAnswerToDatabase(
           DatabaseContext databaseContext)
         {

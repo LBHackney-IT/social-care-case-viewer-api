@@ -601,11 +601,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? startDate = null,
             DateTime? createdAt = null,
             long? caseStatusId = null,
-            string? groupId = null)
+            string? groupId = null,
+            int? answersNumber = null)
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
-            for (var i = 0; i < new Random().Next(1, 5); i++)
+            for (var i = 0; i < (answersNumber ?? new Random().Next(1, 5)); i++)
             {
                 var answer = new Faker<CaseStatusAnswer>()
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
