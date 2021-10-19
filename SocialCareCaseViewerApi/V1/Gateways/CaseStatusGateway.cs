@@ -160,7 +160,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     var activeAnswers = GetActiveCaseStatusAnswers(caseStatus.Answers);
                     foreach (var caseStatusAnswer in activeAnswers)
                     {
-                        caseStatusAnswer.DiscardedAt = ystemTime.Now;
+                        caseStatusAnswer.DiscardedAt = _systemTime.Now;
                     }
                 }
 
