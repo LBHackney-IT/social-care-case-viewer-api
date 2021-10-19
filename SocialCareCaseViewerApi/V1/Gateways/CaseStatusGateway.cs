@@ -142,7 +142,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.EndDate = request.EndDate;
             }
 
-            if (request.StartDate != null && caseStatus.Type != "LAC"){
+            if (request.StartDate != null && caseStatus.Type != "LAC")
+            {
                 caseStatus.StartDate = (DateTime) request.StartDate;
             }
 
