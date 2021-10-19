@@ -107,5 +107,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
+
+        [Test]
+        public void GenerateFilterDefinitionWithProvidedWorkerEmail()
+        {
+            const string expectedJsonQuery = "{ \"CreatedBy.Email\" : \"foo@hackney.gov.uk\", \"SubmissionState\" : 1 }";
+            const string workerEmail = "foo@hackney.gov.uk";
+            var requestWithLastName = TestHelpers.CreateListCasesRequest(workerEmail: workerEmail);
+
+            var response = CaseRecordsUseCase.GenerateFilterDefinition(requestWithLastName);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
     }
 }
