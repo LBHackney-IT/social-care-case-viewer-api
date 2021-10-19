@@ -161,9 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     caseStatus.Answers.Add(caseStatusAnswer);
                 }
             }
-            
             _databaseContext.SaveChanges();
-
             return caseStatus.ToDomain();
         }
 
