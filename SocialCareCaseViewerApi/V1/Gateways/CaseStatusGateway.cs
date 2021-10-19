@@ -161,7 +161,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     foreach (var caseStatusAnswer in activeAnswers)
                     {
                         caseStatusAnswer.DiscardedAt = DateTime.Now;
-                        caseStatus.Answers.Remove(caseStatusAnswer);
                     }
                 }
 
