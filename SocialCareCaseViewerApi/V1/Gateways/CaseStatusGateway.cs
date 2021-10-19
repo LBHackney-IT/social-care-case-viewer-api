@@ -143,7 +143,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.EndDate = request.EndDate;
             }
 
-            if (request.StartDate != null && caseStatus.Type != "LAC")
+            if (request.StartDate != null && caseStatus.Type.ToLower() != "LAC")
             {
                 caseStatus.StartDate = (DateTime) request.StartDate;
             }
@@ -155,7 +155,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.Answers != null)
             {
-                if (caseStatus.Type == "LAC")
+                if (caseStatus.Type.ToLower() == "lac")
                 {
                     var activeAnswers = GetActiveCaseStatusAnswers(caseStatus.Answers);
                     foreach (var caseStatusAnswer in activeAnswers)
@@ -188,7 +188,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<CaseStatusAnswer> GetActiveCaseStatusAnswers(List<CaseStatusAnswer> answers)
         {
             var active_elm = answers
-                    .Where(csa => csa.StartDate < DateTime.Now)
+                    .Where(csa => csa.StartDate < DateTime.Now) // this is for getting answers valid for the current period
+                    .Where(csa => csa.DiscardedAt == null) // this is for getting the answers not discarded
                     .OrderByDescending(csa => csa.StartDate)
                     .FirstOrDefault();
 
