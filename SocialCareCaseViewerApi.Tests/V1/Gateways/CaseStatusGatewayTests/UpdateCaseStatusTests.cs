@@ -65,6 +65,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
+        public void WhenTypeIsNotLACUpdateCaseStatus()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+
+            caseStatus.Type = "CP";
+            caseStatus.EndDate = null;
+
+            DatabaseContext.SaveChanges();
+
+            CaseStatusValue updateValue = new CaseStatusValue();
+            updateValue.Option = "NewValue";
+            updateValue.Value = "N3";
+
+            request.EndDate = null;
+            request.CaseStatusId = caseStatus.Id;
+            request.Answers.Add(updateValue);
+            request.StartDate = DateTime.Now;
+            request.Notes = "this is a note";
+
+            var response = _caseStatusGateway.UpdateCaseStatus(request);
+
+            response.StartDate.Should().Be((DateTime) request.StartDate);
+            response.Notes.Should().Be(request.Notes);
+
+            response.Answers.Should().ContainEquivalentOf(updateValue);
+            response.Answers[0].GroupId.Should().NotBeNull();
+        }
+
+        [Test]
         public void WhenTypeIsLACUpdateActiveAnswers()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
@@ -90,9 +120,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             response.StartDate.ToShortTimeString().Should().Be(caseStatus.StartDate.ToShortTimeString());
 
-            response.Answers[caseStatusAnswers.Count -1].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
-            response.Answers[caseStatusAnswers.Count -2].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
-            
+            response.Answers[caseStatusAnswers.Count - 1].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
+            response.Answers[caseStatusAnswers.Count - 2].StartDate.ToShortTimeString().Should().Be(request.StartDate?.ToShortTimeString());
+
             response.Answers.Should().ContainEquivalentOf(legalStatus);
             response.Answers.Should().ContainEquivalentOf(placementType);
 
