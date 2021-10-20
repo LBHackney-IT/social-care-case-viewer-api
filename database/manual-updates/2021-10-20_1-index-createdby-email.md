@@ -11,10 +11,10 @@ Currently the only way to update our indexes.
 ## The plan
 
 1. Connect to DocumentDB instance
-2. Run the query
+2. Run the mongodb scripts
 3. Observe that initial execution states showed a COLLSCAN being performed and that after indexing this became an IXSCAN
 
-## MongoDB query
+## MongoDB scripts
 
 ```
 use resident-case-submissions;
