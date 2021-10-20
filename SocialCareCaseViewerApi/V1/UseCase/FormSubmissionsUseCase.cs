@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        private static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
+        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -105,18 +105,23 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (request.WorkerEmail != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+                var bsonQuery = "{'CreatedBy.Email':" + "\"" + request.WorkerEmail + "\"" + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.AgeContext != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                    r => r.AgeContext.ToUpper() == (request.AgeContext != null ? request.AgeContext.ToUpper() : null));
+                var bsonQuery = "{'Residents.AgeContext':" + "\"" + request.AgeContext.ToUpper() + "\"" + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             if (request.PersonID != null)
             {
-                filter &= Builders<CaseSubmission>.Filter.ElemMatch(s => s.Residents, p => p.Id == request.PersonID);
+                var bsonQuery = "{'Residents._id':" + request.PersonID + "}";
+
+                filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
             return filter;

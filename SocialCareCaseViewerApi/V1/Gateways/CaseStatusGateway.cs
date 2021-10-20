@@ -69,6 +69,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Where(cs => cs.StartDate <= date)
                 .Where(cs => cs.EndDate == null || cs.EndDate >= date)
                 .Include(cs => cs.Person)
+                .Include(cs => cs.Answers)
                 .FirstOrDefault();
 
             if (caseStatus != null && caseStatus.Answers != null)
@@ -160,9 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     caseStatus.Answers.Add(caseStatusAnswer);
                 }
             }
-
             _databaseContext.SaveChanges();
-
             return caseStatus.ToDomain();
         }
 
