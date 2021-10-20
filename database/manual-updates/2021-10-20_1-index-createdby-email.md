@@ -17,7 +17,7 @@ Currently the only way to update our indexes.
 ## MongoDB scripts
 
 ```
-use resident-case-submissions;
+use social_care_db;
 ```
 
 ```
