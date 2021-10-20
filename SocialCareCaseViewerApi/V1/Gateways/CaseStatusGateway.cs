@@ -211,10 +211,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var activeAnswerGroups = caseStatus
                 .Answers
                 .Where(x => x.DiscardedAt == null)
-                .OrderByDescending(x => x.StartDate)
+                .OrderBy(x => x.StartDate)
                 .GroupBy(x => x.GroupId);
 
-            //set the current future answers to discarded
+            var s = activeAnswerGroups.Last().First().GroupId;
+
+            //set the current scheduled answers to discarded
             foreach (var a in activeAnswerGroups.Last())
             {
                 a.DiscardedAt = _systemTime.Now;

@@ -85,9 +85,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             act.Should().Throw<CaseStatusDoesNotExistException>().WithMessage($"Case status id {request.CaseStatusId} does not exist.");
         }
 
-
         [Test]
-        public void ReplacesActiveCaseStatusAnswers()
+        public void ReplacesCurrentScheduledCaseStatusAnswers()
         {
             var personId = 123;
             var groupId1 = Guid.NewGuid().ToString();
@@ -95,11 +94,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
-            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Now.AddDays(-10), min: 2, max: 2, groupId: groupId1);
-            var currentFutureAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Now.AddDays(5), min: 2, max: 2, groupId: groupId2);
+            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 01), min: 2, max: 2, groupId: groupId1);
+            var currentScheduledAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 10), min: 2, max: 2, groupId: groupId2);
 
             caseStatus.Answers.AddRange(currentActiveAnswers);
-            caseStatus.Answers.AddRange(currentFutureAnswers);
+            caseStatus.Answers.AddRange(currentScheduledAnswers);
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();
 
@@ -116,17 +115,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
                     },
             };
 
-            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers);
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
 
             _caseStatusCateway.ReplaceCaseStatusAnswer(request);
 
             var newAnswers = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault().Answers;
 
-            newAnswers.Count.Should().Be(6); //2 new, 2 originals, 2 discardded
+            newAnswers.Count.Should().Be(6);
 
             newAnswers.Where(x => x.StartDate == request.StartDate).Count().Should().Be(2);
             newAnswers.Where(x => x.DiscardedAt != null).Count().Should().Be(2);
             newAnswers.Where(x => x.DiscardedAt == null).Count().Should().Be(4);
+
+            var discardedScheduledAnswers = newAnswers.Where(x => x.GroupId == groupId2);
+            discardedScheduledAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
+
+            var activeAnswers = newAnswers.Where(x => x.GroupId == groupId1);
+            activeAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
+
+            var newScheduledAnsewrs = newAnswers.Where(x => x.DiscardedAt == null && x.GroupId != groupId1);
+            newScheduledAnsewrs.Any(x => x.Option == "placementType" && x.Value == "P1").Should().BeTrue();
+            newScheduledAnsewrs.Any(x => x.Option == "legalStatus" && x.Value == "L1").Should().BeTrue();
+
         }
     }
 }
