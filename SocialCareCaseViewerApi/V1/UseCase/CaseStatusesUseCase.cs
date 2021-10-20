@@ -94,7 +94,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null).GroupBy(x => x.GroupId);
 
-            //check whether we have only one active answer group, if so, add a new one for the future
             if (activeAnswerGroups.Count() == 1)
             {
                 if (request.StartDate <= activeAnswerGroups.First().First().StartDate)

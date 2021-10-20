@@ -127,7 +127,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             act.Should().Throw<InvalidCaseStatusAnswersStartDateException>().WithMessage($"Start date cannot be before the current active date");
         }
 
-        [Test] //new, on the day
+        [Test]
         public void WhenThereIsOnlyOneActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsOnTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
         {
             var answerGroupId = Guid.NewGuid().ToString();
@@ -147,7 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             act.Should().Throw<InvalidCaseStatusAnswersStartDateException>().WithMessage($"Start date cannot be before the current active date");
         }
 
-        [Test] //new, after current active
+        [Test]
         public void WhenThereIsOnlyOneActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsAfterTheCurrentActiveOneItCallsTheGatewayToCreateTheAnswers()
         {
             var answerGroupId = Guid.NewGuid().ToString();

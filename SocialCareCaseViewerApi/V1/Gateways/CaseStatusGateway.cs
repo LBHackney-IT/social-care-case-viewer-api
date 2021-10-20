@@ -214,12 +214,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .OrderBy(x => x.StartDate)
                 .GroupBy(x => x.GroupId);
 
-            var s = activeAnswerGroups.Last().First().GroupId;
-
-            //set the current scheduled answers to discarded
-            foreach (var a in activeAnswerGroups.Last())
+            foreach (var answer in activeAnswerGroups.Last())
             {
-                a.DiscardedAt = _systemTime.Now;
+                answer.DiscardedAt = _systemTime.Now;
             }
 
             Guid identifier = Guid.NewGuid();

@@ -136,7 +136,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var newScheduledAnsewrs = newAnswers.Where(x => x.DiscardedAt == null && x.GroupId != groupId1);
             newScheduledAnsewrs.Any(x => x.Option == "placementType" && x.Value == "P1").Should().BeTrue();
             newScheduledAnsewrs.Any(x => x.Option == "legalStatus" && x.Value == "L1").Should().BeTrue();
-
         }
     }
 }
