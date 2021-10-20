@@ -102,18 +102,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();
 
-            var requestAnswers = new List<CaseStatusRequestAnswers>() {
-                new CaseStatusRequestAnswers()
-                    {
-                        Option = "placementType",
-                        Value = "P1"
-                    },
-                new CaseStatusRequestAnswers()
-                    {
-                        Option = "legalStatus",
-                        Value = "L1"
-                    },
+            var requestAnswer1 = new CaseStatusRequestAnswers()
+            {
+                Option = "placementType",
+                Value = "P1"
             };
+
+            var requestAnswer2 = new CaseStatusRequestAnswers()
+            {
+                Option = "legalStatus",
+                Value = "L1"
+            };
+
+            var requestAnswers = new List<CaseStatusRequestAnswers>() { requestAnswer1, requestAnswer2 };
 
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
 
@@ -134,8 +135,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             activeAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
 
             var newScheduledAnsewrs = newAnswers.Where(x => x.DiscardedAt == null && x.GroupId != groupId1);
-            newScheduledAnsewrs.Any(x => x.Option == "placementType" && x.Value == "P1").Should().BeTrue();
-            newScheduledAnsewrs.Any(x => x.Option == "legalStatus" && x.Value == "L1").Should().BeTrue();
+            newScheduledAnsewrs.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
+            newScheduledAnsewrs.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
         }
     }
 }
