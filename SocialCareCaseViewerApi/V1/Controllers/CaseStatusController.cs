@@ -82,6 +82,40 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Create case status answers
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="201">Successfully created case status answers</response>
+        /// <response code="400">Invalid CreateCaseStatusAnswerRequest received</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost]
+        [Route("case-statuses/{id:long}/answers")]
+        public IActionResult CreateCaseStatusAnswers(CreateCaseStatusAnswerRequest request)
+        {
+            var validator = new CreateCaseStatusAnswerRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                _caseStatusesUseCase.ExecutePostCaseStatusAnswer(request);
+
+                return CreatedAtAction(nameof(CreateCaseStatusAnswers), "Successfully created case status answers.");
+            }
+            catch (Exception e) when (
+                e is WorkerNotFoundException ||
+                e is CaseStatusDoesNotExistException ||
+                e is InvalidCaseStatusTypeException)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
         /// Edit a Case Status
         /// </summary>
         /// <param name="request"></param>

@@ -768,69 +768,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteGetByQueryOnlyGetsFormsWithQueriedWorkerEmail()
+        public void GenerateFilterDefinitionWithProvidedWorkerEmail()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(workerEmail: "foo@hackney.gov.uk");
+            const string expectedJsonQuery = "{ \"CreatedBy.Email\" : \"foo@hackney.gov.uk\" }";
+            const string workerEmail = "foo@hackney.gov.uk";
+            var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(workerEmail: workerEmail);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Workers, w => w.Email == request.WorkerEmail);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
 
-            var expectedJsonFilter = filter.RenderToJson();
-            var pagination = new Pagination { Page = request.Page, Size = request.Size };
-
-            _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
-
-            _formSubmissionsUseCase.ExecuteGetByQuery(request);
-
-            _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
 
         [Test]
         public void ExecuteGetByQueryOnlyGetsFormsWithResidentsMatchingAgeContext()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(ageContext: "A");
+            const string expectedJsonQuery = "{ \"Residents.AgeContext\" : \"A\" }";
+            const string ageContext = "A";
+            var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(ageContext: ageContext);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents,
-                r => r.AgeContext.ToUpper() == (request.AgeContext != null ? request.AgeContext.ToUpper() : null));
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
 
-            var expectedJsonFilter = filter.RenderToJson();
-            var pagination = new Pagination { Page = request.Page, Size = request.Size };
-
-            _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
-
-            _formSubmissionsUseCase.ExecuteGetByQuery(request);
-
-            _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
 
         [Test]
         public void ExecuteGetByQueryOnlyGetsFormsWithQueriedPersonId()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 3);
+            const string expectedJsonQuery = "{ \"Residents._id\" : 5 }";
+            const int residentId = 5;
+            var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(personID: residentId);
 
-            var builder = Builders<CaseSubmission>.Filter;
-            var filter = builder.Empty;
-            filter &= Builders<CaseSubmission>.Filter.ElemMatch(x => x.Residents, p => p.Id == request.PersonID);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
 
-            var expectedJsonFilter = filter.RenderToJson();
-            var pagination = new Pagination { Page = request.Page, Size = request.Size };
-
-            _mockMongoGateway.Setup(m =>
-                m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), pagination));
-
-            _formSubmissionsUseCase.ExecuteGetByQuery(request);
-
-            _mockMongoGateway.Verify(x =>
-                x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter)), It.IsAny<Pagination>()), Times.Once);
+            response.RenderToJson().Should().Be(expectedJsonQuery);
         }
-
 
         [Test]
         public void ExecuteGetByQueryGetsFormsUsingAllQueryOptions()

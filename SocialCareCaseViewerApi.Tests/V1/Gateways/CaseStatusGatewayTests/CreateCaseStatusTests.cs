@@ -95,6 +95,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.Answers.Any(a => a.Option == answersTwo.Option).Should().Be(true);
             caseStatus.Answers.Any(a => a.Value == answersOne.Value).Should().Be(true);
             caseStatus.Answers.Any(a => a.Value == answersTwo.Value).Should().Be(true);
+            caseStatus.Answers[0].GroupId.Should().NotBe(null);
+            caseStatus.Answers[1].GroupId.Should().NotBe(null);
+            caseStatus.Answers[1].GroupId.Should().Equals(caseStatus.Answers[0].GroupId);
             caseStatus.Notes.Should().Be(request.Notes);
             caseStatus.PersonId.Should().Be(person.Id);
             caseStatus.Type.Should().Be(request.Type);

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
@@ -71,6 +69,30 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var updatedCaseStatus = _caseStatusGateway.UpdateCaseStatus(request);
 
             return updatedCaseStatus.ToResponse();
+        }
+
+        public CaseStatusResponse ExecutePostCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
+        {
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
+
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
+            }
+
+            var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
+
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
+            }
+
+            if (caseStatus.Type.ToLower() != "lac")
+            {
+                throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
+            }
+
+            return _caseStatusGateway.CreateCaseStatusAnswer(request).ToResponse();
         }
 
         private void ExecuteUpdateValidation(UpdateCaseStatusRequest request, CaseStatus? caseStatus)

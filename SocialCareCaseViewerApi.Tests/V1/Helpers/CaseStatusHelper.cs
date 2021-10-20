@@ -14,15 +14,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var person = TestHelpers.CreatePerson();
             var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatuses.Add(caseStatus);
+            databaseContext.SaveChanges();
+
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id);
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, caseStatusAnswers);
+        }
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithDiscardedAnswerToDatabase(
+          DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
 
             databaseContext.Persons.Add(person);
             databaseContext.CaseStatuses.Add(caseStatus);
 
             databaseContext.SaveChanges();
 
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id);
-            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+            Guid identifier = Guid.NewGuid();
 
+            var legalStatusPast = new CaseStatusAnswer();
+            legalStatusPast.CaseStatusId = caseStatus.Id;
+            legalStatusPast.Option = "legalStatus";
+            legalStatusPast.Value = "C1";
+            legalStatusPast.GroupId = identifier.ToString();
+            legalStatusPast.StartDate = DateTime.Today.AddDays(-10);
+            legalStatusPast.CreatedAt = DateTime.Today.AddDays(-11);
+            legalStatusPast.DiscardedAt = DateTime.Today;
+
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+            caseStatusAnswers.Add(legalStatusPast);
+
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
             databaseContext.SaveChanges();
 
             return (caseStatus, person, caseStatusAnswers);
@@ -47,7 +76,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
           DateTime? startDate = null,
           DateTime? endDate = null,
           string? notes = null,
-          string? createdBy = null
+          string? createdBy = null,
+          string? type = null
         )
         {
             return new Faker<CaseStatus>()
@@ -56,7 +86,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
               .RuleFor(pr => pr.EndDate, f => endDate ?? DateTime.Today.AddDays(1))
               .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
               .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email())
-              .RuleFor(pr => pr.Answers, new List<CaseStatusAnswer>());
+              .RuleFor(pr => pr.Answers, new List<CaseStatusAnswer>())
+              .RuleFor(pr => pr.Type, f => type ?? f.Random.String2(3));
         }
 
         public static CreateCaseStatusRequest CreateCaseStatusRequest(
@@ -75,6 +106,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(pr => pr.StartDate, f => startDate ?? DateTime.Today.AddDays(-1))
                 .RuleFor(pr => pr.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(pr => pr.CreatedBy, f => createdBy ?? f.Internet.Email());
+        }
+
+        public static CreateCaseStatusAnswerRequest CreateCaseStatusAnswerRequest(
+            List<CaseStatusRequestAnswers>? answers = null,
+            long? caseStatusId = null,
+            string? createdBy = null,
+            DateTime? startDate = null
+           )
+        {
+            return new Faker<CreateCaseStatusAnswerRequest>()
+                .RuleFor(a => a.Answers, f => answers ?? new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() { Option = "placementType", Value = "C2" } })
+                .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.UniqueIndex)
+                .RuleFor(a => a.CreatedBy, f => createdBy ?? f.Internet.Email())
+                .RuleFor(a => a.StartDate, f => startDate ?? DateTime.Today.AddDays(-5));
+        }
+
+        public static List<CaseStatusRequestAnswers> CreateCaseStatusRequestAnswers(int? min = null, int? max = null)
+        {
+            var caseStatusRequestAnswers = new List<CaseStatusRequestAnswers>();
+
+            for (var i = 0; i < new Random().Next(min ?? 1, max ?? 5); i++)
+            {
+                var answer = new Faker<CaseStatusRequestAnswers>()
+                    .RuleFor(a => a.Option, f => f.Random.String2(100))
+                    .RuleFor(a => a.Value, f => f.Random.String2(100));
+
+                caseStatusRequestAnswers.Add(answer);
+            }
+
+            return caseStatusRequestAnswers;
         }
 
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithMultipleCaseStatusToDatabase(
