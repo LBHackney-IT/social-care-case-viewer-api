@@ -45,7 +45,7 @@ data "aws_subnet_ids" "staging" {
  }
 
 module "postgres_db_staging" {
-  source = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/database/postgres"
+  source = "git@github.com:LBHackney-IT/aws-hackney-common-terraform.git//modules/database/postgres"
   environment_name = "staging"
   vpc_id = data.aws_vpc.staging_vpc.id
   db_identifier = "social-care"
