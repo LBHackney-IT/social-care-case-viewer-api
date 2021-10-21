@@ -86,6 +86,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
+        public void SetsTheEndDateForTheCurrentActiveAnswersWhenNewOnesAreaddedAndThereIsNoScheduledChanges()
+        {
+            var personId = 123;
+            var groupId1 = Guid.NewGuid().ToString();
+            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
+
+            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 01), min: 2, max: 2, groupId: groupId1);
+            caseStatus.Answers.AddRange(currentActiveAnswers);
+            DatabaseContext.CaseStatuses.Add(caseStatus);
+            DatabaseContext.SaveChanges();
+
+            var requestAnswer1 = new CaseStatusRequestAnswers()
+            {
+                Option = "placementType",
+                Value = "P1"
+            };
+
+            var requestAnswer2 = new CaseStatusRequestAnswers()
+            {
+                Option = "legalStatus",
+                Value = "L1"
+            };
+
+            var requestAnswers = new List<CaseStatusRequestAnswers>() { requestAnswer1, requestAnswer2 };
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
+
+            _caseStatusCateway.ReplaceCaseStatusAnswer(request);
+
+            var newSetOfAnswers = DatabaseContext.CaseStatuses.FirstOrDefault().Answers;
+
+            newSetOfAnswers.Count.Should().Be(4);
+
+            var previousActiveAnswers = newSetOfAnswers.Where(x => x.GroupId == groupId1);
+
+            previousActiveAnswers.All(x => x.EndDate != null).Should().BeTrue();
+            previousActiveAnswers.All(x => x.EndDate == request.StartDate);
+            previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
+
+            var newActiveAnswers = newSetOfAnswers.Where(x => x.GroupId != groupId1);
+
+            newActiveAnswers.All(x => x.EndDate == null).Should().BeTrue();
+            newActiveAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
+            newActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
+        }
+
+        [Test]
         public void ReplacesCurrentScheduledCaseStatusAnswers()
         {
             var personId = 123;
@@ -124,19 +171,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             newAnswers.Count.Should().Be(6);
 
-            newAnswers.Where(x => x.StartDate == request.StartDate).Count().Should().Be(2);
-            newAnswers.Where(x => x.DiscardedAt != null).Count().Should().Be(2);
-            newAnswers.Where(x => x.DiscardedAt == null).Count().Should().Be(4);
-
             var discardedScheduledAnswers = newAnswers.Where(x => x.GroupId == groupId2);
             discardedScheduledAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
+            discardedScheduledAnswers.All(x => x.EndDate == null).Should().BeTrue();
 
-            var activeAnswers = newAnswers.Where(x => x.GroupId == groupId1);
-            activeAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
-
-            var newScheduledAnsewrs = newAnswers.Where(x => x.DiscardedAt == null && x.GroupId != groupId1);
-            newScheduledAnsewrs.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
-            newScheduledAnsewrs.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
+            var previousActiveAnswers = newAnswers.Where(x => x.GroupId == groupId1);
+            previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
+            previousActiveAnswers.All(x => x.EndDate != null && x.EndDate == request.StartDate).Should().BeTrue();
+            
+            var newScheduledAnswers = newAnswers.Where(x => x.GroupId != groupId1 && x.GroupId!= groupId2);
+            newScheduledAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
+            newScheduledAnswers.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
+            newScheduledAnswers.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
         }
     }
 }

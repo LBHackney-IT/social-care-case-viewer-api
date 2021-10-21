@@ -34,6 +34,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("group_id")]
         public String GroupId { get; set; }
 
+        [Column("end_date")]
+        public DateTime? EndDate { get; set; }
+
         //audit props
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }

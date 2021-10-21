@@ -30,6 +30,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
             RuleFor(pr => pr.Answers).Must(x => x.Count > 0).WithMessage("'answers' must be provided");
 
+            RuleFor(pr => pr.Answers).Must(x => x.Count == 2).WithMessage("'answers' count must be two");
+
             RuleForEach(pr => pr.Answers)
                 .ChildRules(field =>
                 {

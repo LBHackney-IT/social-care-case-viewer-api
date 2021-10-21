@@ -193,6 +193,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
+
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
@@ -209,31 +210,66 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var activeAnswerGroups = caseStatus
                 .Answers
-                .Where(x => x.DiscardedAt == null)
+                .Where(x => x.DiscardedAt == null && x.EndDate == null)
                 .OrderBy(x => x.StartDate)
                 .GroupBy(x => x.GroupId);
 
-            foreach (var answer in activeAnswerGroups.Last())
+            //end the current active answer and add new ones
+            if (activeAnswerGroups.Count() == 1)
             {
-                answer.DiscardedAt = _systemTime.Now;
-            }
-
-            Guid identifier = Guid.NewGuid();
-
-            foreach (var answer in request.Answers)
-            {
-                var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                foreach (var answer in activeAnswerGroups.First())
                 {
-                    CaseStatusId = caseStatus.Id,
-                    CreatedBy = request.CreatedBy,
-                    StartDate = request.StartDate,
-                    Option = answer.Option,
-                    Value = answer.Value,
-                    GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now
-                };
+                    answer.EndDate = request.StartDate;
+                }
 
-                caseStatus.Answers.Add(caseStatusAnswer);
+                Guid identifier = Guid.NewGuid();
+                foreach (var answer in request.Answers)
+                {
+                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                    {
+                        CaseStatusId = caseStatus.Id,
+                        CreatedBy = request.CreatedBy,
+                        StartDate = request.StartDate,
+                        Option = answer.Option,
+                        Value = answer.Value,
+                        GroupId = identifier.ToString(),
+                        CreatedAt = _systemTime.Now
+                    };
+
+                    caseStatus.Answers.Add(caseStatusAnswer);
+                }
+            }
+            else
+            {
+                //discard current scheduled change
+                foreach (var answer in activeAnswerGroups.Last())
+                {
+                    answer.DiscardedAt = _systemTime.Now;
+                }
+
+                //end current active status
+                foreach(var answer in activeAnswerGroups.First())
+                {
+                    answer.EndDate = request.StartDate;
+                }
+
+                Guid identifier = Guid.NewGuid();
+
+                foreach (var answer in request.Answers)
+                {
+                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                    {
+                        CaseStatusId = caseStatus.Id,
+                        CreatedBy = request.CreatedBy,
+                        StartDate = request.StartDate,
+                        Option = answer.Option,
+                        Value = answer.Value,
+                        GroupId = identifier.ToString(),
+                        CreatedAt = _systemTime.Now
+                    };
+
+                    caseStatus.Answers.Add(caseStatusAnswer);
+                }
             }
 
             _databaseContext.SaveChanges();
