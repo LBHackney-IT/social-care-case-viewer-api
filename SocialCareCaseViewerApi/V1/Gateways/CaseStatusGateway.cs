@@ -248,7 +248,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //end current active status
-                foreach(var answer in activeAnswerGroups.First())
+                foreach (var answer in activeAnswerGroups.First())
                 {
                     answer.EndDate = request.StartDate;
                 }

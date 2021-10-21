@@ -178,8 +178,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousActiveAnswers = newAnswers.Where(x => x.GroupId == groupId1);
             previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate != null && x.EndDate == request.StartDate).Should().BeTrue();
-            
-            var newScheduledAnswers = newAnswers.Where(x => x.GroupId != groupId1 && x.GroupId!= groupId2);
+
+            var newScheduledAnswers = newAnswers.Where(x => x.GroupId != groupId1 && x.GroupId != groupId2);
             newScheduledAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
