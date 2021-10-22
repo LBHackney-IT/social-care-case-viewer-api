@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
             }
 
-            var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null).GroupBy(x => x.GroupId);
+            var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null).GroupBy(x => x.GroupId);
 
             if (activeAnswerGroups.Count() == 1)
             {

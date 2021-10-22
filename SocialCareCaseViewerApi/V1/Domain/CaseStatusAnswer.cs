@@ -11,5 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public DateTime StartDate { get; set; }
         public DateTime? DiscardedAt { get; set; }
         public string GroupId { get; set; } = null!;
+        public DateTime? EndDate { get; set; }
     }
 }
