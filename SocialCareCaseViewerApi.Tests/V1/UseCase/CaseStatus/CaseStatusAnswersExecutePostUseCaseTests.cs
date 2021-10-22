@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
 using CaseStatusDomain = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
+using CaseStatusInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
@@ -23,6 +24,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private CreateCaseStatusAnswerRequest _request = null!;
         private CaseStatusDomain _caseStatus = null!;
         private Worker _worker = null!;
+        private readonly string _answerGroupId1 = Guid.NewGuid().ToString();
+        private readonly string _answerGroupId2 = Guid.NewGuid().ToString();
+        private CaseStatusInfrastructure _lacCaseStatus = null!; 
 
         [SetUp]
         public void SetUp()
@@ -33,6 +37,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
             _caseStatus = CaseStatusHelper.CreateCaseStatus(type: "LAC").ToDomain();
             _worker = TestHelpers.CreateWorker();
+            _lacCaseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
+
         }
 
         [Test]
@@ -109,15 +115,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsOnlyOneActiveAnswerGroupCallsTheCreateCaseStatusAnswerMethodOntheGateway()
         {
-            var groupId = Guid.NewGuid().ToString();
-            var groupId2 = Guid.NewGuid().ToString();
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, min: 2, max: 2, groupId: groupId);
-            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, min: 2, max: 2, groupId: groupId2, endDate: DateTime.Today.AddDays(-10));
-            caseStatus.Answers.AddRange(caseStatusAnswers);
-            caseStatus.Answers.AddRange(caseStatusAnswers2);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId1);
+            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId2, endDate: DateTime.Today.AddDays(-10));
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
 
@@ -129,15 +132,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsOnlyOneActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsBeforeTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
             _request.StartDate = DateTime.Today.AddDays(-20);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
 
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
@@ -150,15 +150,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsOnlyOneActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsOnTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
             _request.StartDate = DateTime.Today.AddDays(-10);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
 
@@ -170,15 +167,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsOnlyOneActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsAfterTheCurrentActiveOneItCallsTheGatewayToCreateTheAnswers()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
             _request.StartDate = DateTime.Today.AddDays(1);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
 
@@ -190,15 +184,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereAreTwoActiveAnswerGroupCallsTheReplaceCaseStatusAnswerMethodOntheGateway()
         {
-            var groupId = Guid.NewGuid().ToString();
-            var groupId2 = Guid.NewGuid().ToString();
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, min: 2, max: 2, groupId: groupId, startDate: DateTime.Now.AddDays(-10));
-            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, min: 2, max: 2, groupId: groupId2, startDate: DateTime.Today.AddDays(10));
-            caseStatus.Answers.AddRange(caseStatusAnswers);
-            caseStatus.Answers.AddRange(caseStatusAnswers2);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId1, startDate: DateTime.Now.AddDays(-10));
+            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId2, startDate: DateTime.Today.AddDays(10));
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
             _mockCaseStatusGateway.Setup(x => x.ReplaceCaseStatusAnswer(_request)).Returns(_caseStatus);
 
@@ -210,19 +201,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereAreTwoActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsBeforeTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-            var answerGroupId2 = Guid.NewGuid().ToString();
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
-
-            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers2);
+            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
 
             _request.StartDate = DateTime.Today.AddDays(-20);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
 
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
@@ -235,19 +222,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereAreTwoActiveAnswersGroupAndTheRequestedStartDateForNewAnswersIsOnTheCurrentActiveOneItThrowsAnInvalidCaseStatusAnswersStartDateException()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-            var answerGroupId2 = Guid.NewGuid().ToString();
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
-
-            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers2);
+            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
 
             _request.StartDate = DateTime.Today.AddDays(-10);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
 
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
@@ -260,22 +243,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsAFutureStatusChangeWithExistingAnswerGroupItCallsReplaceCaseStatusAnswerGatewayMethodWithTheRequest()
         {
-            var answerGroupId = Guid.NewGuid().ToString();
-            var answerGroupId2 = Guid.NewGuid().ToString();
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
 
-            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC");
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers);
-
-            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, groupId: answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
-            caseStatus.Answers.AddRange(caseStatusAnswers2);
+            var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, groupId: _answerGroupId2, startDate: DateTime.Today.AddDays(10), min: 2, max: 2);
+            _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
 
             _request.StartDate = DateTime.Today.AddDays(5);
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
             _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
-            _mockCaseStatusGateway.Setup(x => x.ReplaceCaseStatusAnswer(_request)).Returns(caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.ReplaceCaseStatusAnswer(_request)).Returns(_lacCaseStatus.ToDomain());
 
             _caseStatusesUseCase.ExecutePostCaseStatusAnswer(_request);
 
