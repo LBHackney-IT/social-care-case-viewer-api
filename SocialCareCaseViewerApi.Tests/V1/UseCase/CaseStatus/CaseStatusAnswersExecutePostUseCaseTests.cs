@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private Worker _worker = null!;
         private readonly string _answerGroupId1 = Guid.NewGuid().ToString();
         private readonly string _answerGroupId2 = Guid.NewGuid().ToString();
-        private CaseStatusInfrastructure _lacCaseStatus = null!; 
+        private CaseStatusInfrastructure _lacCaseStatus = null!;
 
         [SetUp]
         public void SetUp()
