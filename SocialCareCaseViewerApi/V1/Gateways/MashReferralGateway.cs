@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public void InsertDocument(MashReferral referral)
         {
-
+            _mongoGateway.InsertRecord(_collectionName, referral);
         }
     }
 }

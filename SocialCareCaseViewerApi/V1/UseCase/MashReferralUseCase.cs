@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> {"Sally Samuels"},
+                Clients = new List<string> { "Sally Samuels" },
                 Stage = "Contact",
                 ReferralDocumentURI = "hardcoded-referral-1-URI"
             };
@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "School",
                 CreatedAt = DateTime.Now.AddHours(-5),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> {"Bert Bertram", "c2", "c3", "c4"},
+                Clients = new List<string> { "Bert Bertram", "c2", "c3", "c4" },
                 Stage = "Contact",
                 ReferralDocumentURI = "hardcoded-referral-2-URI"
             };
@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Family",
                 CreatedAt = DateTime.Now.AddHours(-10),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> {"Bertie Stephens", "c2", "c3", "c4"},
+                Clients = new List<string> { "Bertie Stephens", "c2", "c3", "c4" },
                 Stage = "Contact",
                 ReferralDocumentURI = "hardcoded-referral-3-URI"
             };

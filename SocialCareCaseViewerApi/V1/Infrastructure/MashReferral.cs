@@ -13,25 +13,17 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public ObjectId Id { get; set; }
-
         public string Referrer { get; set; }
-
         public string RequestedSupport { get; set; }
 
         public Worker AssignedTo { get; set; }
-
         public DateTime CreatedAt { get; set; }
-
         public IEnumerable<string> Clients { get; set; }
-
         public string ReferralDocumentURI { get; set; }
-
-        public string Stage { get; set }
-
+        public string Stage { get; set; }
         public string InitialDecision { get; set; }
         public string ScreeningDecision { get; set; }
         public string FinalDecision { get; set; }
-
         public string ReferralCategory { get; set; }
     }
 }
