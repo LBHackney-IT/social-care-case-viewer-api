@@ -17,14 +17,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
     [TestFixture]
     public class CreateCaseStatusAnswerTests : DatabaseTests
     {
-        private CaseStatusGateway _caseStatusCateway = null!;
+        private CaseStatusGateway _caseStatusGateway = null!;
         private Mock<ISystemTime> _mockSystemTime = null!;
 
         [SetUp]
         public void SetUp()
         {
             _mockSystemTime = new Mock<ISystemTime>();
-            _caseStatusCateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
+            _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id);
 
-            _caseStatusCateway.CreateCaseStatusAnswer(request);
+            _caseStatusGateway.CreateCaseStatusAnswer(request);
 
             var caseStatusAnswer = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault(x => x.Id == caseStatus.Id).Answers.FirstOrDefault();
 
@@ -58,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id);
             request.Answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 2);
 
-            _caseStatusCateway.CreateCaseStatusAnswer(request);
+            _caseStatusGateway.CreateCaseStatusAnswer(request);
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault();
 
@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
 
-            Action act = () => _caseStatusCateway.CreateCaseStatusAnswer(request);
+            Action act = () => _caseStatusGateway.CreateCaseStatusAnswer(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>().WithMessage($"Case status id {request.CaseStatusId} does not exist.");
         }
@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
 
-            Action act = () => _caseStatusCateway.ReplaceCaseStatusAnswer(request);
+            Action act = () => _caseStatusGateway.ReplaceCaseStatusAnswer(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>().WithMessage($"Case status id {request.CaseStatusId} does not exist.");
         }
@@ -113,7 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
 
-            _caseStatusCateway.ReplaceCaseStatusAnswer(request);
+            _caseStatusGateway.ReplaceCaseStatusAnswer(request);
 
             var newSetOfAnswers = DatabaseContext.CaseStatuses.FirstOrDefault().Answers;
 
@@ -165,7 +165,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
 
-            _caseStatusCateway.ReplaceCaseStatusAnswer(request);
+            _caseStatusGateway.ReplaceCaseStatusAnswer(request);
 
             var newAnswers = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault().Answers;
 
