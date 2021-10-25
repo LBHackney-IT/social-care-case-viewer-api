@@ -117,7 +117,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenAnswersAreNotProvidedForTypesThatRequireThemReturnsAnErrorWithMessages(string type)
         {
             var answersWithoutValues = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 2, max: 2);
-           
+
             foreach (var a in answersWithoutValues)
             {
                 a.Option = "";
@@ -187,7 +187,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.IsValid.Should().BeTrue();
         }
 
-        [Test]      
+        [Test]
         public void WhenTypeIsNotCPorCINorLACReturnsErrorWithMessage()
         {
             var validRequest = CaseStatusHelper.CreateCaseStatusRequest(type: "random");
@@ -206,7 +206,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var validRequest = CaseStatusHelper.CreateCaseStatusRequest(type: type);
 
-            if(type == "LAC")
+            if (type == "LAC")
             {
                 validRequest.Answers.AddRange(CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 1, max: 1));
             }
