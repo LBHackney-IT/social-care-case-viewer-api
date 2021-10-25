@@ -38,20 +38,19 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         public CreateCaseStatusRequestValidator()
         {
+            List<string> conditions = new List<string>() { "CIN", "CP", "LAC" };
+
             RuleFor(pr => pr.PersonId)
                 .GreaterThanOrEqualTo(1).WithMessage("'personId' must be provided.");
-            RuleFor(pr => pr.Type)
-                .NotNull().WithMessage("'type' must be provided.");
 
-            RuleForEach(pr => pr.Answers)
-                .ChildRules(field =>
-                {
-                    field.RuleFor(t => t.Option).NotNull().WithMessage("Field must have a name");
-                    field.RuleFor(t => t.Value).NotNull().WithMessage("Field selected value must not be empty");
-                });
+            RuleFor(pr => pr.Type)
+                .NotNull().WithMessage("'type' must be provided.")
+                .Must(x => conditions.Contains(x))
+                .WithMessage("'type' must be CIN, CP or LAC.");
 
             RuleFor(x => x.StartDate)
-                .LessThan(DateTime.Now).WithMessage("'start_date' must be in the past");
+                .NotEqual(DateTime.MinValue).WithMessage("'startDate' must be provided.")
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("'start_date' must be today or in the past");
 
             RuleFor(pr => pr.Notes)
                 .MaximumLength(1000).WithMessage("'notes' must be less than or equal to 1,000 characters.");
@@ -59,6 +58,24 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(pr => pr.CreatedBy)
                 .NotNull().WithMessage("'createdBy' must be provided.")
                 .EmailAddress().WithMessage("'createdBy' must be an email address.");
+
+            RuleFor(pr => pr.Answers)
+                .Must(x => x.Count == 1)
+                .When(x => x.Type == "CP")
+                .WithMessage("CP type must have one answer only");
+
+            RuleFor(pr => pr.Answers)
+               .Must(x => x.Count == 2)
+               .When(x => x.Type == "LAC")
+               .WithMessage("LAC type must have two answers only");
+
+            RuleForEach(pr => pr.Answers)
+               .ChildRules(field =>
+               {
+                   field.RuleFor(t => t.Option).NotEmpty().WithMessage("'option' must not be empty");
+                   field.RuleFor(t => t.Value).NotEmpty().WithMessage("'value' must not be empty");
+               })
+               .When(x => x.Type == "CP" || x.Type == "LAC");
         }
     }
 }

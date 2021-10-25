@@ -26,10 +26,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = _createCaseStatusAnswerRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().HaveCount(5);
+            response.Errors.Should().HaveCount(6);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'caseStatusId' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' must be provided");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
@@ -54,7 +55,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenStartDateIsDefaultDateTimeValueeReturnsErrorWithMessage()
+        [TestCase(1)]
+        [TestCase(3)]
+        public void WhenAnswerCountIsNotTwoReturnsErrorWithMessage(int answerCount)
+        {
+            var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: answerCount, max: answerCount);
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answers);
+
+            var response = _createCaseStatusAnswerRequestValidator.Validate(request);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
+        }
+
+        [Test]
+        public void WhenAnswerCountIsTwoReturnsItIsValid()
+        {
+            var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 2, max: 2);
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answers);
+
+            var response = _createCaseStatusAnswerRequestValidator.Validate(request);
+
+            response.IsValid.Should().BeTrue();
+        }
+
+        [Test]
+        public void WhenStartDateIsDefaultDateTimeValueReturnsErrorWithMessage()
         {
             var badRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest(startDate: DateTime.MinValue);
 
@@ -79,6 +107,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenRequestIsValidReturnsIsValid()
         {
             var validRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest();
+
+            validRequest.Answers.Add(new CaseStatusRequestAnswers() { Option = "legalStatus", Value = "L1" });
 
             var response = _createCaseStatusAnswerRequestValidator.Validate(validRequest);
 

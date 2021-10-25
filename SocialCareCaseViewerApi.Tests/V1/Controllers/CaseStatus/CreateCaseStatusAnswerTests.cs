@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         {
             _mockCaseStatusesUseCase = new Mock<ICaseStatusesUseCase>();
             _caseStatusController = new CaseStatusController(_mockCaseStatusesUseCase.Object);
-            _request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
+            _request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 2, max:2)); //TODO: use DI for validator setup for easy mocking
         }
 
         [Test]
@@ -61,7 +61,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(exceptionMessage);
         }
-
 
         [Test]
         public void WhenInvalidCaseStatusTypeExceptionIsThrownReturn400()
