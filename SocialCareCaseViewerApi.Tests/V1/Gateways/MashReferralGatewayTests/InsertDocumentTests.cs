@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 {
     [TestFixture]

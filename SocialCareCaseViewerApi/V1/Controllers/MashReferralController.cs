@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
     [Route("api/v1/mash-referral")]

@@ -1,6 +1,7 @@
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class MashReferralGateway : IMashReferralGateway

@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests

@@ -1,5 +1,3 @@
-
-
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -7,13 +5,14 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Controllers;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
 {
     [TestFixture]
     public class ResetMashReferralsTests
     {
-        private MashReferralController _mashReferralController;
-        private Mock<IMashReferralUseCase> _mashReferralUseCase;
+        private MashReferralController _mashReferralController = null!;
+        private Mock<IMashReferralUseCase> _mashReferralUseCase = null!;
 
         [SetUp]
         public void Setup()
