@@ -154,27 +154,43 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.EndDate != null)
             {
                 caseStatus.EndDate = request.EndDate;
-            }
 
-            if (request.Answers != null)
-            {
-                Guid identifier = Guid.NewGuid();
-
-                foreach (var answer in request.Answers)
+                if (caseStatus.Type.ToLower() == "lac")
                 {
-                    var caseStatusAnswer = new CaseStatusAnswer
+                    var activeAnswerGroups = caseStatus
+                                                .Answers
+                                                .Where(x => x.DiscardedAt == null && x.EndDate == null)
+                                                .OrderBy(x => x.StartDate)
+                                                .GroupBy(x => x.GroupId);
+
+                    if (activeAnswerGroups?.Count() == 1)
                     {
-                        CaseStatusId = caseStatus.Id,
-                        Option = answer.Option,
-                        Value = answer.Value,
-                        CreatedAt = _systemTime.Now,
-                        GroupId = identifier.ToString(),
-                        CreatedBy = request.EditedBy
-                    };
-                    caseStatus.Answers.Add(caseStatusAnswer);
+                        foreach (var answer in activeAnswerGroups.First())
+                        {
+                            answer.EndDate = request.EndDate;
+                        }
+                    }
+                    else if(activeAnswerGroups?.Count() > 1)
+                    {
+                        //end the current active one
+                        foreach (var answer in activeAnswerGroups.First())
+                        {
+                            answer.EndDate = request.EndDate;
+                        }
+                        //discard the rest if the date is in the future (first group won't be in the collection anymore)
+                        foreach (var g in activeAnswerGroups)
+                        {
+                            foreach (var a in g.Where(x => x.StartDate > DateTime.Today))
+                            {
+                                a.DiscardedAt = _systemTime.Now;
+                            }
+                        }
+                    }
                 }
             }
+
             _databaseContext.SaveChanges();
+
             return caseStatus.ToDomain();
         }
 

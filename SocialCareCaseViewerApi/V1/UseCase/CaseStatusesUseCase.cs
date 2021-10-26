@@ -123,10 +123,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
+            //end date validation for CP and CIN
+            if (request.EndDate != null
+                && request.EndDate < caseStatus.StartDate
+                && (caseStatus.Type.ToLower() == "cp" || caseStatus.Type.ToLower() == "cin"))
             {
                 throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
                                                   $"is before the start date of {caseStatus.StartDate:O}");
+            }
+
+            //end date validation for LAC
+            if(request.EndDate != null && caseStatus.Type.ToLower() == "lac")
+            {
+                if(caseStatus.Answers.Any(x => x.DiscardedAt == null && x.EndDate == null && x.StartDate > request.EndDate))
+                {
+                    throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
+                }
             }
 
             if (caseStatus.Person.AgeContext.ToLower() != "c")

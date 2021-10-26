@@ -609,7 +609,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? groupId = null,
             int? min = null,
             int? max = null,
-            DateTime? endDate = null)
+            DateTime? endDate = null,
+            DateTime? discardedAt = null)
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
@@ -622,7 +623,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     .RuleFor(a => a.GroupId, f => groupId ?? f.Random.String2(36))
                     .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
                     .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past())
-                    .RuleFor(a => a.EndDate, f => endDate);
+                    .RuleFor(a => a.EndDate, f => endDate)
+                    .RuleFor(a => a.DiscardedAt, f => discardedAt);
 
                 caseStatusAnswers.Add(answer);
             }
