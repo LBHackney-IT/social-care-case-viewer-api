@@ -305,9 +305,29 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         Value = a.Value,
                         StartDate = a.StartDate,
                         CreatedAt = a.CreatedAt.Value,
-                        GroupId = a.GroupId
+                        GroupId = a.GroupId,
+                        EndDate = a.EndDate
                     }
                     ).ToList()
+            };
+        }
+
+        public static Domain.MashReferral ToDomain(this Infrastructure.MashReferral mashReferral)
+        {
+            return new Domain.MashReferral
+            {
+                Id = mashReferral.Id.ToString(),
+                Clients = mashReferral.Clients,
+                Referrer = mashReferral.Referrer,
+                Stage = mashReferral.Stage,
+                AssignedTo = mashReferral.AssignedTo?.ToDomain(true),
+                CreatedAt = mashReferral.CreatedAt,
+                FinalDecision = mashReferral.FinalDecision,
+                InitialDecision = mashReferral.InitialDecision,
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ReferralCategory = mashReferral.ReferralCategory,
+                RequestedSupport = mashReferral.RequestedSupport,
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI
             };
         }
     }

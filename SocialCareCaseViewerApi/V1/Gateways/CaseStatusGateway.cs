@@ -189,10 +189,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (caseStatus.Answers == null) caseStatus.Answers = new List<CaseStatusAnswer>();
 
+            Guid identifier = Guid.NewGuid();
+
             foreach (var answer in request.Answers)
             {
-                Guid identifier = Guid.NewGuid();
-
                 var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
@@ -201,11 +201,90 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Option = answer.Option,
                     Value = answer.Value,
                     GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now //will get overwritten by audit feature
+                    CreatedAt = _systemTime.Now
                 };
 
                 caseStatus.Answers.Add(caseStatusAnswer);
             }
+
+            _databaseContext.SaveChanges();
+
+            return caseStatus.ToDomain();
+        }
+
+        public CaseStatus ReplaceCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
+        {
+            var caseStatus = _databaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
+
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status id {request.CaseStatusId} does not exist.");
+            }
+
+            var activeAnswerGroups = caseStatus
+                .Answers
+                .Where(x => x.DiscardedAt == null && x.EndDate == null)
+                .OrderBy(x => x.StartDate)
+                .GroupBy(x => x.GroupId);
+
+            //end the current active answer and add new ones
+            if (activeAnswerGroups.Count() == 1)
+            {
+                foreach (var answer in activeAnswerGroups.First())
+                {
+                    answer.EndDate = request.StartDate;
+                }
+
+                Guid identifier = Guid.NewGuid();
+                foreach (var answer in request.Answers)
+                {
+                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                    {
+                        CaseStatusId = caseStatus.Id,
+                        CreatedBy = request.CreatedBy,
+                        StartDate = request.StartDate,
+                        Option = answer.Option,
+                        Value = answer.Value,
+                        GroupId = identifier.ToString(),
+                        CreatedAt = _systemTime.Now
+                    };
+
+                    caseStatus.Answers.Add(caseStatusAnswer);
+                }
+            }
+            else
+            {
+                //discard current scheduled change
+                foreach (var answer in activeAnswerGroups.Last())
+                {
+                    answer.DiscardedAt = _systemTime.Now;
+                }
+
+                //end current active status
+                foreach (var answer in activeAnswerGroups.First())
+                {
+                    answer.EndDate = request.StartDate;
+                }
+
+                Guid identifier = Guid.NewGuid();
+
+                foreach (var answer in request.Answers)
+                {
+                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
+                    {
+                        CaseStatusId = caseStatus.Id,
+                        CreatedBy = request.CreatedBy,
+                        StartDate = request.StartDate,
+                        Option = answer.Option,
+                        Value = answer.Value,
+                        GroupId = identifier.ToString(),
+                        CreatedAt = _systemTime.Now
+                    };
+
+                    caseStatus.Answers.Add(caseStatusAnswer);
+                }
+            }
+
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
