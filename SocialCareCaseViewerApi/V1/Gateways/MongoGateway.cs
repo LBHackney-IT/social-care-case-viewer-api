@@ -96,8 +96,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var data = collection.Find(filter).ToList();
             return (data, data.Count);
         }
-    }
 
+        public List<MashReferral> LoadMashReferralsByFilter(string collectionName, FilterDefinition<MashReferral> filter)
+        {
+            var collection = _mongoDatabase.GetCollection<MashReferral>(collectionName);
+
+            return collection.Find(filter).ToList();
+        }
+    }
 
     public static class MongoConnectionStrings
     {
