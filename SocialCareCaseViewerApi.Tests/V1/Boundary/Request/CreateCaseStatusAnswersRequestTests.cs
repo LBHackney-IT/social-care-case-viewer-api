@@ -108,8 +108,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var validRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest();
 
-            validRequest.Answers.Add(new CaseStatusRequestAnswers() { Option = "legalStatus", Value = "L1" });
-
             var response = _createCaseStatusAnswerRequestValidator.Validate(validRequest);
 
             response.IsValid.Should().BeTrue();

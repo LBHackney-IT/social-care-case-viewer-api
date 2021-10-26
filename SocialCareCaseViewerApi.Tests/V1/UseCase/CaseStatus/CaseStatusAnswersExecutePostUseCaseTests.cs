@@ -115,7 +115,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenThereIsOnlyOneActiveAnswerGroupCallsTheCreateCaseStatusAnswerMethodOntheGateway()
         {
-            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId1);
+            var caseStatusAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId1, startDate: DateTime.Today.AddDays(-20));
             var caseStatusAnswers2 = TestHelpers.CreateCaseStatusAnswers(caseStatusId: _lacCaseStatus.Id, min: 2, max: 2, groupId: _answerGroupId2, endDate: DateTime.Today.AddDays(-10));
             _lacCaseStatus.Answers.AddRange(caseStatusAnswers);
             _lacCaseStatus.Answers.AddRange(caseStatusAnswers2);
