@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var caseStatuses = _caseStatusGateway.GetCaseStatusesByPersonId(personId);
+            var caseStatuses = _caseStatusGateway.GetActiveCaseStatusesByPersonId(personId);
 
             return caseStatuses.Select(caseStatus => caseStatus.ToResponse()).ToList();
         }
@@ -41,6 +41,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
             if (person == null) throw new PersonNotFoundException($"'personId' with '{request.PersonId}' was not found.");
+
             if (person.AgeContext.ToLower() != "c")
             {
                 throw new InvalidAgeContextException(
@@ -51,11 +52,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var workerDoesNotExist = worker == null;
             if (workerDoesNotExist) throw new WorkerNotFoundException($"'createdBy' with '{request.CreatedBy}' was not found as a worker.");
 
-            // check if case status exists for the period
-            var personCaseStatus = _caseStatusGateway.GetCaseStatusesByPersonIdDate(request.PersonId, request.StartDate);
+            var personActiveCaseStatuses = _caseStatusGateway.GetActiveCaseStatusesByPersonId(request.PersonId);
+            var personCaseStatusAlreadyExists = personActiveCaseStatuses?.Count > 0;
+            if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException("Active case status already exists for this person.");
 
-            var personCaseStatusAlreadyExists = personCaseStatus != null;
-            if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException($"Case Status already exists for the period.");
+            var overlappingClosedCaseStatuses = _caseStatusGateway.GetClosedCaseStatusesByPersonIdAndDate(request.PersonId, request.StartDate);
+            if (overlappingClosedCaseStatuses != null) throw new InvalidStartDateException("Invalid start date.");
 
             return _caseStatusGateway.CreateCaseStatus(request);
         }

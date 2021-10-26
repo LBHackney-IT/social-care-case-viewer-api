@@ -1,18 +1,18 @@
+using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
+using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
-using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using System;
-using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
     [TestFixture]
-    public class GetCaseStatusesByPersonIdTests : DatabaseTests
+    public class GetActiveCaseStatusesByPersonIdTests : DatabaseTests
     {
         private CaseStatusGateway _caseStatusGateway;
         private Mock<ISystemTime> _mockSystemTime;
@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
 
             response.Should().BeEmpty();
         }
@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var (caseStatus, person, answers) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
-            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
 
             response.Count.Should().Be(1);
             var responseElement = response.First();
@@ -60,6 +60,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
                     return options;
                 }
                );
+        }
+        [Test]
+        public void WhenMatchingIDReturnsOnlyActiveAnswersInCaseStatuses()
+        {
+            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithDiscardedAnswerToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
+            response.Count.Should().Be(1);
+
+            var responseElement = response.First();
+            responseElement.Answers.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void WhenMatchingIDAndPastCaseStatusReturnEmptyList()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
+
+            response.Should().BeEmpty();
+        }
+
+        [Test]
+        public void WhenMatchingIDReturnsActiveCaseStatusesWhenMultiple()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithMultipleCaseStatusToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
+
+            response.Count.Should().Be(2);
         }
     }
 }

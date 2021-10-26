@@ -67,6 +67,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         }
 
         [Test]
+        public void WhenInvalidStartDateExceptionIsThrownReturns400WithMessage()
+        {
+            var exceptionMessage = "error message";
+            _mockCaseStatusesUseCase.Setup(x => x.ExecutePost(It.IsAny<CreateCaseStatusRequest>()))
+                .Throws(new InvalidStartDateException(exceptionMessage));
+            var request = CaseStatusHelper.CreateCaseStatusRequest();
+
+            var response = _caseStatusController.CreateCaseStatus(request) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
+
+        [Test]
         public void WhenRequestIsValidReturnsSuccessfulResponse()
         {
             var caseStatus = CaseStatusHelper.CreateCaseStatus();

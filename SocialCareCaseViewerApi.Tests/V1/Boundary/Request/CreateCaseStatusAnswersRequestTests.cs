@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.Errors.Should().Contain(e => e.ErrorMessage == "'caseStatusId' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' must be provided");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' count must be two");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
@@ -57,20 +57,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         [TestCase(1)]
         [TestCase(3)]
-        public void WhenProvidedAnswersCountIsNotTwoReturnsAnErrorWithAmessage(int count)
+        public void WhenAnswerCountIsNotTwoReturnsErrorWithMessage(int answerCount)
         {
-            var answer = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: count, max: count);
+            var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: answerCount, max: answerCount);
 
-            var requestWithInvalidAmountOfAnswers = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answer);
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answers);
 
-            var response = _createCaseStatusAnswerRequestValidator.Validate(requestWithInvalidAmountOfAnswers);
+            var response = _createCaseStatusAnswerRequestValidator.Validate(request);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' count must be two");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
         }
 
         [Test]
-        public void WhenStartDateIsDefaultDateTimeValueeReturnsErrorWithMessage()
+        public void WhenAnswerCountIsTwoReturnsItIsValid()
+        {
+            var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 2, max: 2);
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answers);
+
+            var response = _createCaseStatusAnswerRequestValidator.Validate(request);
+
+            response.IsValid.Should().BeTrue();
+        }
+
+        [Test]
+        public void WhenStartDateIsDefaultDateTimeValueReturnsErrorWithMessage()
         {
             var badRequest = CaseStatusHelper.CreateCaseStatusAnswerRequest(startDate: DateTime.MinValue);
 

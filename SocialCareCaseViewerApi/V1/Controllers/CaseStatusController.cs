@@ -74,7 +74,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch (Exception e) when (
                 e is PersonNotFoundException ||
                 e is CaseStatusAlreadyExistsException ||
-                e is WorkerNotFoundException
+                e is WorkerNotFoundException ||
+                e is InvalidStartDateException
             )
             {
                 return BadRequest(e.Message);

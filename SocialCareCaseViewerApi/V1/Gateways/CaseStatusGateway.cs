@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 ?.ToDomain();
         }
 
-        public List<CaseStatus> GetCaseStatusesByPersonId(long personId)
+        public List<CaseStatus> GetActiveCaseStatusesByPersonId(long personId)
         {
             var caseStatuses = _databaseContext
                 .CaseStatuses
@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     foreach (var answer in caseStatus.Answers)
                     {
-                        if (answer.DiscardedAt == null)
+                        if (answer.DiscardedAt == null && answer.EndDate == null)
                         {
                             caseAnswers.Add(answer);
                         }
@@ -63,30 +63,43 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
-        public CaseStatus? GetCaseStatusesByPersonIdDate(long personId, DateTime date)
+
+        public List<CaseStatus> GetCaseStatusesByPersonId(long personId)
         {
-            var caseStatus = _databaseContext.CaseStatuses.Where(cs => cs.PersonId == personId)
-                .Where(cs => cs.StartDate <= date)
-                .Where(cs => cs.EndDate == null || cs.EndDate >= date)
-                .Include(cs => cs.Person)
+            var caseStatuses = _databaseContext
+                .CaseStatuses
+                .Where(cs => cs.PersonId == personId)
                 .Include(cs => cs.Answers)
-                .FirstOrDefault();
+                .Include(cs => cs.Person).ToList();
 
-            if (caseStatus != null && caseStatus.Answers != null)
+            return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
+        }
+
+        public List<CaseStatus> GetClosedCaseStatusesByPersonIdAndDate(long personId, DateTime date)
+        {
+            var caseStatuses = _databaseContext.CaseStatuses
+                .Where(cs => cs.PersonId == personId && cs.EndDate < date)
+                .Include(cs => cs.Person)
+                .Include(cs => cs.Answers).ToList();
+
+            foreach (var caseStatus in caseStatuses)
             {
-                var caseAnswers = new List<CaseStatusAnswer>();
-
-                foreach (var answer in caseStatus.Answers)
+                if (caseStatus.Answers != null)
                 {
-                    if (answer.DiscardedAt == null)
+                    var caseAnswers = new List<CaseStatusAnswer>();
+
+                    foreach (var answer in caseStatus.Answers)
                     {
-                        caseAnswers.Add(answer);
+                        if (answer.DiscardedAt == null && answer.EndDate == null)
+                        {
+                            caseAnswers.Add(answer);
+                        }
                     }
+                    caseStatus.Answers = caseAnswers;
                 }
-                caseStatus.Answers = caseAnswers;
             }
 
-            return caseStatus?.ToDomain();
+            return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
 
         public CaseStatus CreateCaseStatus(CreateCaseStatusRequest request)
