@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
-using SocialCareCaseViewerApi.V1.Gateways;
+using System.Linq;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class MashReferralUseCase : IMashReferralUseCase
@@ -14,6 +19,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public MashReferralUseCase(IMashReferralGateway mashReferralGateway)
         {
             _mashReferralGateway = mashReferralGateway;
+        }
+
+        public Boundary.Response.MashReferral? GetMashReferralUsingId(string requestId)
+        {
+            return _mashReferralGateway
+                .GetReferralUsingId(requestId)
+                ?.ToResponse();
+        }
+
+        public IEnumerable<Boundary.Response.MashReferral> GetMashReferrals(QueryMashReferrals request)
+        {
+            var filter = GenerateFilter(request);
+
+            return _mashReferralGateway
+                .GetReferralsUsingFilter(filter)
+                .Select(x => x.ToResponse());
         }
 
         public void Reset()
@@ -151,6 +172,19 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway.InsertDocument(referral10);
             _mashReferralGateway.InsertDocument(referral11);
             _mashReferralGateway.InsertDocument(referral12);
+        }
+
+        public static FilterDefinition<MashReferral> GenerateFilter(QueryMashReferrals request)
+        {
+            var builder = Builders<MashReferral>.Filter;
+            var filter = builder.Empty;
+
+            if (request.Id != null)
+            {
+                filter &= Builders<MashReferral>.Filter.Eq(x => x.Id, ObjectId.Parse(request.Id));
+            }
+
+            return filter;
         }
     }
 }

@@ -19,7 +19,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void Setup()
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
-
             _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object);
         }
 

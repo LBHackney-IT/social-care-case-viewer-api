@@ -651,10 +651,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20));
         }
 
-        public static QueryMashReferrals CreateQueryMashReferral()
+        public static QueryMashReferrals CreateQueryMashReferral(string? id = null)
         {
             return new Faker<QueryMashReferrals>()
-                .RuleFor(x => x.Id, f => f.Random.String2(24, "0123456789abcdef"));
+                .RuleFor(x => x.Id, f => id ?? f.Random.String2(24, "0123456789abcdef"));
         }
     }
 }
