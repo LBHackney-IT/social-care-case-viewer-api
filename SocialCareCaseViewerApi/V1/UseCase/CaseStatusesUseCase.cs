@@ -92,6 +92,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
             }
 
+            var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null).GroupBy(x => x.GroupId);
+
+            if (activeAnswerGroups.Count() == 1)
+            {
+                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
+                {
+                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
+                }
+            }
+            else if (activeAnswerGroups.Count() == 2)
+            {
+                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
+                {
+                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
+                }
+
+                return _caseStatusGateway.ReplaceCaseStatusAnswer(request).ToResponse();
+            }
+
             return _caseStatusGateway.CreateCaseStatusAnswer(request).ToResponse();
         }
 

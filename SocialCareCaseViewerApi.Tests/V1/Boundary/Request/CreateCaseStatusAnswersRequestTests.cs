@@ -26,10 +26,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = _createCaseStatusAnswerRequestValidator.Validate(badRequest);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().HaveCount(5);
+            response.Errors.Should().HaveCount(6);
             response.Errors.Should().Contain(e => e.ErrorMessage == "'caseStatusId' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' must be provided");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' count must be two");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
@@ -51,6 +52,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.IsValid.Should().BeFalse();
             response.Errors.Should().Contain(e => e.ErrorMessage == "'option' must not be empty");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'value' must not be empty");
+        }
+
+        [Test]
+        [TestCase(1)]
+        [TestCase(3)]
+        public void WhenProvidedAnswersCountIsNotTwoReturnsAnErrorWithAmessage(int count)
+        {
+            var answer = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: count, max: count);
+
+            var requestWithInvalidAmountOfAnswers = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answer);
+
+            var response = _createCaseStatusAnswerRequestValidator.Validate(requestWithInvalidAmountOfAnswers);
+
+            response.IsValid.Should().BeFalse();
+            response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' count must be two");
         }
 
         [Test]

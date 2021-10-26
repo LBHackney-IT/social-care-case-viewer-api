@@ -165,6 +165,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public InvalidCaseStatusTypeException(string message) : base(message) { }
     }
 
+    public class InvalidCaseStatusAnswersStartDateException : Exception
+    {
+        public InvalidCaseStatusAnswersStartDateException(string message) : base(message) { }
+    }
+
     public class CustomException : Exception
     {
         public CustomException(string message) : base(message)

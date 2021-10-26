@@ -116,7 +116,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
            )
         {
             return new Faker<CreateCaseStatusAnswerRequest>()
-                .RuleFor(a => a.Answers, f => answers ?? new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() { Option = "placementType", Value = "C2" } })
+                .RuleFor(a => a.Answers, f => answers ??
+                    new List<CaseStatusRequestAnswers>() {
+                        new CaseStatusRequestAnswers() {
+                            Option = "placementType",
+                            Value = "C2"
+                        },
+                        new CaseStatusRequestAnswers{
+                        Option = "legalStatus",
+                        Value = "L2"
+                        }
+                    }
+                 )
                 .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.UniqueIndex)
                 .RuleFor(a => a.CreatedBy, f => createdBy ?? f.Internet.Email())
                 .RuleFor(a => a.StartDate, f => startDate ?? DateTime.Today.AddDays(-5));
