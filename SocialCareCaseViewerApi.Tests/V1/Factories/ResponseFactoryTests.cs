@@ -517,5 +517,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             response.Should().BeEquivalentTo(expectedResponse);
         }
+
+        [Test]
+        public void ConvertMashReferralFromDomainToResponse()
+        {
+            var domainReferral = TestHelpers.CreateMashReferral().ToDomain();
+
+            var responseReferral = domainReferral.ToResponse();
+
+            responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral
+            {
+                Id = domainReferral.Id,
+                Clients = domainReferral.Clients,
+                Referrer = domainReferral.Referrer,
+                Stage = domainReferral.Stage,
+                AssignedTo = domainReferral.AssignedTo?.ToResponse(),
+                CreatedAt = domainReferral.CreatedAt.ToString("O"),
+                FinalDecision = domainReferral.FinalDecision,
+                InitialDecision = domainReferral.InitialDecision,
+                ScreeningDecision = domainReferral.ScreeningDecision,
+                ReferralCategory = domainReferral.ReferralCategory,
+                RequestedSupport = domainReferral.RequestedSupport,
+                ReferralDocumentURI = domainReferral.ReferralDocumentURI
+            });
+        }
     }
 }

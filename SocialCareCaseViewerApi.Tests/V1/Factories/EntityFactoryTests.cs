@@ -559,6 +559,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             response.DateOfEvent.Should().Be("2021-07-18T14:40:30.0000000");
         }
+
+        [Test]
+        public void ConvertMashReferralFromInfrastructureToDomain()
+        {
+            var infrastructureReferral = TestHelpers.CreateMashReferral();
+
+            var domainReferral = infrastructureReferral.ToDomain();
+
+            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral
+            {
+                Id = infrastructureReferral.Id.ToString(),
+                Clients = infrastructureReferral.Clients,
+                Referrer = infrastructureReferral.Referrer,
+                Stage = infrastructureReferral.Stage,
+                AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
+                CreatedAt = infrastructureReferral.CreatedAt,
+                FinalDecision = infrastructureReferral.FinalDecision,
+                InitialDecision = infrastructureReferral.InitialDecision,
+                ScreeningDecision = infrastructureReferral.ScreeningDecision,
+                ReferralCategory = infrastructureReferral.ReferralCategory,
+                RequestedSupport = infrastructureReferral.RequestedSupport,
+                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
+            });
+        }
     }
 }
 

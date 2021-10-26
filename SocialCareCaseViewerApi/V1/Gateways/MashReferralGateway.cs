@@ -1,5 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Infrastructure;
+using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -14,12 +19,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _mongoGateway = mongoGateway;
         }
 
+        public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter)
+        {
+            return _mongoGateway
+                .LoadMashReferralsByFilter(_collectionName, filter)
+                .Select(x => x.ToDomain());
+        }
+
+        public MashReferral? GetReferralUsingId(string requestId)
+        {
+            return _mongoGateway
+                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId))
+                ?.ToDomain();
+        }
+
         public void Reset()
         {
             _mongoGateway.DropCollection(_collectionName);
         }
 
-        public void InsertDocument(MashReferral referral)
+        public void InsertDocument(Infrastructure.MashReferral referral)
         {
             _mongoGateway.InsertRecord(_collectionName, referral);
         }

@@ -19,7 +19,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         public void Setup()
         {
             _mongoGateway = new Mock<IMongoGateway>();
-
             _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object);
         }
 
