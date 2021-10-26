@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
-    #nullable enable
+#nullable enable
     public class QueryMashReferrals
     {
         [FromQuery(Name = "id")]
