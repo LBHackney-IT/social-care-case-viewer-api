@@ -14,6 +14,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
+using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -341,6 +342,25 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate?.ToString("O"),
                 Notes = caseStatus.Notes,
                 Answers = caseStatus.Answers
+            };
+        }
+
+        public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
+        {
+            return new MashReferral
+            {
+                Id = mashReferral.Id,
+                Clients = mashReferral.Clients,
+                Referrer = mashReferral.Referrer,
+                Stage = mashReferral.Stage,
+                AssignedTo = mashReferral.AssignedTo?.ToResponse(),
+                CreatedAt = mashReferral.CreatedAt.ToString("O"),
+                FinalDecision = mashReferral.FinalDecision,
+                InitialDecision = mashReferral.InitialDecision,
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ReferralCategory = mashReferral.ReferralCategory,
+                RequestedSupport = mashReferral.RequestedSupport,
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI
             };
         }
     }

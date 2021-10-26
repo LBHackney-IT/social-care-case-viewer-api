@@ -96,19 +96,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var data = collection.Find(filter).ToList();
             return (data, data.Count);
         }
-    }
 
+        public List<MashReferral> LoadMashReferralsByFilter(string collectionName, FilterDefinition<MashReferral> filter)
+        {
+            var collection = _mongoDatabase.GetCollection<MashReferral>(collectionName);
+
+            return collection.Find(filter).ToList();
+        }
+    }
 
     public static class MongoConnectionStrings
     {
         public static readonly Dictionary<Collection, string> Map = new Dictionary<Collection, string>
         {
-            {Collection.ResidentCaseSubmissions, "resident-case-submissions"}
+            {Collection.ResidentCaseSubmissions, "resident-case-submissions"},
+            {Collection.MashReferrals, "mash-referrals" }
         };
     }
 
     public enum Collection
     {
-        ResidentCaseSubmissions
+        ResidentCaseSubmissions,
+        MashReferrals
     }
 }
