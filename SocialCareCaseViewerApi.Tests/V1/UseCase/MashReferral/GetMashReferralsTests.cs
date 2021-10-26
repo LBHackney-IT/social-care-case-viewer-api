@@ -48,8 +48,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void FilterWillQueryForEverythingIfNoValuesPassed()
         {
             var filter = MashReferralUseCase.GenerateFilter(new QueryMashReferrals());
+            const string expectedJson = "{ }";
 
-            filter.RenderToJson().Should().Be("{ }");
+            filter.RenderToJson().Should().Be(expectedJson);
         }
 
         [Test]
@@ -57,10 +58,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var mashReferralId = _faker.Random.String2(24, "0123456789abcdef");
             var query = TestHelpers.CreateQueryMashReferral(mashReferralId);
+            var expectedJson = "{ \"_id\" : ObjectId(\"" + mashReferralId + "\") }";
 
             var filter = MashReferralUseCase.GenerateFilter(query);
 
-            filter.RenderToJson().Should().Be("{ \"_id\" : ObjectId(\"" + mashReferralId + "\") }");
+            filter.RenderToJson().Should().Be(expectedJson);
         }
     }
 }
