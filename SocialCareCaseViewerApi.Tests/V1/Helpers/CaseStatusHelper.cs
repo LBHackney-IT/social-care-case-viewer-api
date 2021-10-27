@@ -57,6 +57,69 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (caseStatus, person, caseStatusAnswers);
         }
 
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithEndingAnswersToDatabase(
+          DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
+
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatuses.Add(caseStatus);
+
+            databaseContext.SaveChanges();
+
+            Guid identifier = Guid.NewGuid();
+
+            var legalStatus = new CaseStatusAnswer();
+            legalStatus.CaseStatusId = caseStatus.Id;
+            legalStatus.Option = "legalStatus";
+            legalStatus.Value = "C1";
+            legalStatus.GroupId = identifier.ToString();
+            legalStatus.StartDate = DateTime.Today.AddDays(-10);
+            legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
+            legalStatus.EndDate = DateTime.Today.AddDays(10);
+
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+            caseStatusAnswers.Add(legalStatus);
+
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, caseStatusAnswers);
+        }
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithEndedAnswersToDatabase(
+          DatabaseContext databaseContext)
+        {
+            var person = TestHelpers.CreatePerson();
+
+            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
+
+            databaseContext.Persons.Add(person);
+            databaseContext.CaseStatuses.Add(caseStatus);
+
+            databaseContext.SaveChanges();
+
+            Guid identifier = Guid.NewGuid();
+
+            var legalStatus = new CaseStatusAnswer();
+            legalStatus.CaseStatusId = caseStatus.Id;
+            legalStatus.Option = "legalStatus";
+            legalStatus.Value = "C1";
+            legalStatus.GroupId = identifier.ToString();
+            legalStatus.StartDate = DateTime.Today.AddDays(-10);
+            legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
+            legalStatus.EndDate = DateTime.Today.AddDays(-5);
+
+            var caseStatusAnswers = new List<CaseStatusAnswer>();
+            caseStatusAnswers.Add(legalStatus);
+
+            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
+            databaseContext.SaveChanges();
+
+            return (caseStatus, person, caseStatusAnswers);
+        }
+
         public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person) SavePersonWithPastCaseStatusToDatabase(
           DatabaseContext databaseContext)
         {

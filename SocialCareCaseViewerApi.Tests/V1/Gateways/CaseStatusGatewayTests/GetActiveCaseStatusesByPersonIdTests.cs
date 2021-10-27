@@ -92,5 +92,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             response.Count.Should().Be(2);
         }
+
+        [Test]
+        public void WhenMatchingIDReturnsActiveCaseStatusesWithActiveAnswers()
+        {
+            var (_, person, answers) = CaseStatusHelper.SavePersonCaseStatusWithEndingAnswersToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
+
+            response.First().Answers.Count.Should().Be(1);
+            response.First().Answers.First().EndDate.Should().NotBeNull();
+        }
+
+        [Test]
+        public void WhenMatchingIDReturnsActiveCaseStatusesWithNoActiveAnswers()
+        {
+            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithEndedAnswersToDatabase(DatabaseContext);
+
+            var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
+
+            response.First().Answers.Count.Should().Be(1);
+            response.First().Answers.First().EndDate.Should().NotBeNull();
+        }
     }
 }
