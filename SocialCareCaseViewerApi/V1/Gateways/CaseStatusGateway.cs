@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<CaseStatus> GetClosedCaseStatusesByPersonIdAndDate(long personId, DateTime date)
         {
             var caseStatuses = _databaseContext.CaseStatuses
-                .Where(cs => cs.PersonId == personId && cs.EndDate < date)
+                .Where(cs => cs.PersonId == personId && cs.EndDate > date)
                 .Include(cs => cs.Person)
                 .Include(cs => cs.Answers).ToList();
 
