@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenMatchingIDReturnsOnlyActiveAnswersInCaseStatuses()
         {
-            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithDiscardedAnswerToDatabase(DatabaseContext);
+            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithAnswersToDatabase(DatabaseContext, discardedAt: DateTime.Today);
 
             var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
             response.Count.Should().Be(1);
@@ -96,7 +96,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenMatchingIDReturnsActiveCaseStatusesWithActiveAnswers()
         {
-            var (_, person, answers) = CaseStatusHelper.SavePersonCaseStatusWithEndingAnswersToDatabase(DatabaseContext);
+            var (_, person, answers) = CaseStatusHelper.SavePersonCaseStatusWithAnswersToDatabase(DatabaseContext, endDate: DateTime.Today.AddDays(10));
 
             var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
 
@@ -107,7 +107,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenMatchingIDReturnsActiveCaseStatusesWithNoActiveAnswers()
         {
-            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithEndedAnswersToDatabase(DatabaseContext);
+            var (_, person, _) = CaseStatusHelper.SavePersonCaseStatusWithAnswersToDatabase(DatabaseContext, endDate: DateTime.Today.AddDays(-1));
 
             var response = _caseStatusGateway.GetActiveCaseStatusesByPersonId(person.Id);
 

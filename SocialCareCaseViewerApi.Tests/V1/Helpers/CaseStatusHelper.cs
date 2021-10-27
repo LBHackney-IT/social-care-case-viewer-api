@@ -25,40 +25,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return (caseStatus, person, caseStatusAnswers);
         }
-        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithDiscardedAnswerToDatabase(
-          DatabaseContext databaseContext)
-        {
-            var person = TestHelpers.CreatePerson();
 
-            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
-
-            databaseContext.Persons.Add(person);
-            databaseContext.CaseStatuses.Add(caseStatus);
-
-            databaseContext.SaveChanges();
-
-            Guid identifier = Guid.NewGuid();
-
-            var legalStatusPast = new CaseStatusAnswer();
-            legalStatusPast.CaseStatusId = caseStatus.Id;
-            legalStatusPast.Option = "legalStatus";
-            legalStatusPast.Value = "C1";
-            legalStatusPast.GroupId = identifier.ToString();
-            legalStatusPast.StartDate = DateTime.Today.AddDays(-10);
-            legalStatusPast.CreatedAt = DateTime.Today.AddDays(-11);
-            legalStatusPast.DiscardedAt = DateTime.Today;
-
-            var caseStatusAnswers = new List<CaseStatusAnswer>();
-            caseStatusAnswers.Add(legalStatusPast);
-
-            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
-            databaseContext.SaveChanges();
-
-            return (caseStatus, person, caseStatusAnswers);
-        }
-
-        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithEndingAnswersToDatabase(
-          DatabaseContext databaseContext)
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithAnswersToDatabase(
+          DatabaseContext databaseContext, DateTime? endDate = null, DateTime? discardedAt = null)
         {
             var person = TestHelpers.CreatePerson();
 
@@ -78,38 +47,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             legalStatus.GroupId = identifier.ToString();
             legalStatus.StartDate = DateTime.Today.AddDays(-10);
             legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
-            legalStatus.EndDate = DateTime.Today.AddDays(10);
 
-            var caseStatusAnswers = new List<CaseStatusAnswer>();
-            caseStatusAnswers.Add(legalStatus);
+            if (discardedAt != null){
+                legalStatus.DiscardedAt = discardedAt;
+            }
 
-            databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
-            databaseContext.SaveChanges();
-
-            return (caseStatus, person, caseStatusAnswers);
-        }
-        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithEndedAnswersToDatabase(
-          DatabaseContext databaseContext)
-        {
-            var person = TestHelpers.CreatePerson();
-
-            var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person);
-
-            databaseContext.Persons.Add(person);
-            databaseContext.CaseStatuses.Add(caseStatus);
-
-            databaseContext.SaveChanges();
-
-            Guid identifier = Guid.NewGuid();
-
-            var legalStatus = new CaseStatusAnswer();
-            legalStatus.CaseStatusId = caseStatus.Id;
-            legalStatus.Option = "legalStatus";
-            legalStatus.Value = "C1";
-            legalStatus.GroupId = identifier.ToString();
-            legalStatus.StartDate = DateTime.Today.AddDays(-10);
-            legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
-            legalStatus.EndDate = DateTime.Today.AddDays(-5);
+            if (endDate != null)
+            {
+                legalStatus.EndDate = endDate;
+            }
 
             var caseStatusAnswers = new List<CaseStatusAnswer>();
             caseStatusAnswers.Add(legalStatus);
