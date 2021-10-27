@@ -48,6 +48,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             var worker = TestHelpers.CreateWorker(createdBy: _request.CreatedBy);
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(_request.PersonId)).Returns(resident);
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(worker);
+            _mockCaseStatusGateway.Setup(x => x.GetClosedCaseStatusesByPersonIdAndDate(It.IsAny<long>(), It.IsAny<DateTime>())).Returns(new List<DomainCaseStatus>());
 
             _caseStatusesUseCase.ExecutePost(_request);
 
@@ -156,6 +157,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             Action act = () => _caseStatusesUseCase.ExecutePost(_request);
 
             act.Should().Throw<InvalidStartDateException>().WithMessage("Invalid start date.");
+        }
+
+        [Test]
+        public void WhenThereAreNoOverlappingClosedCaseStatusesItCallsTheGatewayToCreateTheCaseStatus()
+        {
+            var caseStatus = TestHelpers.CreateCaseStatus(personId: _request.PersonId, endDate: DateTime.Now.AddDays(-5)).ToDomain();
+            var resident = TestHelpers.CreatePerson(_request.PersonId, ageContext: "c");
+            var worker = TestHelpers.CreateWorker(createdBy: _request.CreatedBy);
+            _request.StartDate = DateTime.Now.AddDays(-6);
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(worker);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(resident);
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(It.IsAny<long>())).Returns(new List<DomainCaseStatus>() { });
+            _mockCaseStatusGateway.Setup(x => x.GetClosedCaseStatusesByPersonIdAndDate(It.IsAny<long>(), It.IsAny<DateTime>())).Returns(new List<DomainCaseStatus>() { });
+
+            _caseStatusesUseCase.ExecutePost(_request);
+
+            _mockCaseStatusGateway.Verify(x => x.GetClosedCaseStatusesByPersonIdAndDate(_request.PersonId, _request.StartDate));
         }
     }
 }

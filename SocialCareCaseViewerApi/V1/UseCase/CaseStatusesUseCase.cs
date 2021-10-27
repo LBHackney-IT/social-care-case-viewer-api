@@ -57,7 +57,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException("Active case status already exists for this person.");
 
             var overlappingClosedCaseStatuses = _caseStatusGateway.GetClosedCaseStatusesByPersonIdAndDate(request.PersonId, request.StartDate);
-            if (overlappingClosedCaseStatuses != null) throw new InvalidStartDateException("Invalid start date.");
+            if (overlappingClosedCaseStatuses?.Count > 0) throw new InvalidStartDateException("Invalid start date.");
 
             return _caseStatusGateway.CreateCaseStatus(request);
         }
