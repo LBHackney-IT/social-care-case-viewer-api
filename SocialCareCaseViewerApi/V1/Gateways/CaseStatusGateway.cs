@@ -51,14 +51,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     foreach (var answer in caseStatus.Answers)
                     {
-                        if (answer.DiscardedAt == null && answer.EndDate == null)
+                        if (answer.DiscardedAt == null)
                         {
                             caseAnswers.Add(answer);
                         }
                     }
                     caseStatus.Answers = caseAnswers;
                 }
-
             }
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
