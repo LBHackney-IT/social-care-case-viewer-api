@@ -48,7 +48,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             legalStatus.StartDate = DateTime.Today.AddDays(-10);
             legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
 
-            if (discardedAt != null){
+            if (discardedAt != null)
+            {
                 legalStatus.DiscardedAt = discardedAt;
             }
 
