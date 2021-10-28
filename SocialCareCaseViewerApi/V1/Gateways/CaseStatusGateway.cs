@@ -205,21 +205,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         a.DiscardedAt = _systemTime.Now;
                     }
 
-                    Guid identifier = Guid.NewGuid();
-
-                    foreach (var a in request?.Answers)
-                    {
-                        caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
-                        {
-                            CaseStatusId = caseStatus.Id,
-                            CreatedBy = request.EditedBy,
-                            StartDate = (DateTime) request.StartDate,
-                            Option = a.Option,
-                            Value = a.Value,
-                            GroupId = identifier.ToString(),
-                            CreatedAt = _systemTime.Now
-                        });
-                    }
+                    AddNewAnswers(request, caseStatus);
                 }
                 if(caseStatus.Type.ToLower() == "lac")
                 {
@@ -273,21 +259,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             a.DiscardedAt = _systemTime.Now;
                         }
 
-                        Guid identifier = Guid.NewGuid();
-
-                        foreach (var a in request?.Answers)
-                        {
-                            caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
-                            {
-                                CaseStatusId = caseStatus.Id,
-                                CreatedBy = request.EditedBy,
-                                StartDate = (DateTime) request.StartDate,
-                                Option = a.Option,
-                                Value = a.Value,
-                                GroupId = identifier.ToString(),
-                                CreatedAt = _systemTime.Now
-                            });
-                        }
+                        AddNewAnswers(request, caseStatus);
                     }
                 }
             }
@@ -295,6 +267,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
+        }
+
+        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus)
+        {
+            Guid identifier = Guid.NewGuid();
+
+            foreach (var a in request?.Answers)
+            {
+                caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
+                {
+                    CaseStatusId = caseStatus.Id,
+                    CreatedBy = request.EditedBy,
+                    StartDate = (DateTime) request.StartDate,
+                    Option = a.Option,
+                    Value = a.Value,
+                    GroupId = identifier.ToString(),
+                    CreatedAt = _systemTime.Now
+                });
+            }
         }
 
         public CaseStatus CreateCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
