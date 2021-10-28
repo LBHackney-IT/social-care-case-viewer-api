@@ -4,6 +4,7 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
@@ -57,7 +58,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (personCaseStatusAlreadyExists) throw new CaseStatusAlreadyExistsException("Active case status already exists for this person.");
 
             var overlappingClosedCaseStatuses = _caseStatusGateway.GetClosedCaseStatusesByPersonIdAndDate(request.PersonId, request.StartDate);
-            if (overlappingClosedCaseStatuses != null) throw new InvalidStartDateException("Invalid start date.");
+            if (overlappingClosedCaseStatuses?.Count > 0) throw new InvalidStartDateException("Invalid start date.");
 
             return _caseStatusGateway.CreateCaseStatus(request);
         }
@@ -124,20 +125,34 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             //end date validation for CP and CIN
-            if (request.EndDate != null
-                && request.EndDate < caseStatus.StartDate
-                && (caseStatus.Type.ToLower() == "cp" || caseStatus.Type.ToLower() == "cin"))
-            {
-                throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
-                                                  $"is before the start date of {caseStatus.StartDate:O}");
+            if (request.EndDate != null) {
+                if(request.EndDate < caseStatus.StartDate && (caseStatus.Type.ToLower() == "cp" || caseStatus.Type.ToLower() == "cin"))
+                {
+                    throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
+                                                      $"is before the start date of {caseStatus.StartDate:O}");
+                }
+
+                //end date validation for LAC
+                if (caseStatus.Type.ToLower() == "lac")
+                {
+                    if (caseStatus.Answers.Any(x => x.DiscardedAt == null && x.EndDate == null && x.StartDate > request.EndDate))
+                    {
+                        throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
+                    }
+                }
             }
 
-            //end date validation for LAC
-            if(request.EndDate != null && caseStatus.Type.ToLower() == "lac")
+            //when end date is not provided
+            if (request.EndDate == null)
             {
-                if(caseStatus.Answers.Any(x => x.DiscardedAt == null && x.EndDate == null && x.StartDate > request.EndDate))
+                //CIN, CP and LAC
+                if (request.StartDate > DateTime.Today)
                 {
-                    throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
+                    throw new InvalidStartDateException("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
+                }
+                if(caseStatus.Type.ToLower() == "cp" && (request.StartDate == null || request.StartDate == DateTime.MinValue))
+                {
+                    throw new InvalidStartDateException("You must provide a valid date for CP");
                 }
             }
 

@@ -151,6 +151,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
             }
 
+            //end date provided
             if (request.EndDate != null)
             {
                 caseStatus.EndDate = request.EndDate;
@@ -184,6 +185,108 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             {
                                 a.DiscardedAt = _systemTime.Now;
                             }
+                        }
+                    }
+                }
+            }
+            //end date not provided
+            else
+            {
+                if(caseStatus.Type.ToLower() == "cin")
+                {
+                    caseStatus.Notes = request.Notes;
+                }
+                if(caseStatus.Type.ToLower() == "cp")
+                {
+                    caseStatus.StartDate = (DateTime) request.StartDate;
+
+                    foreach(var a in caseStatus.Answers)
+                    {
+                        a.DiscardedAt = _systemTime.Now;
+                    }
+
+                    Guid identifier = Guid.NewGuid();
+
+                    foreach (var a in request?.Answers)
+                    {
+                        caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
+                        {
+                            CaseStatusId = caseStatus.Id,
+                            CreatedBy = request.EditedBy,
+                            StartDate = (DateTime) request.StartDate,
+                            Option = a.Option,
+                            Value = a.Value,
+                            GroupId = identifier.ToString(),
+                            CreatedAt = _systemTime.Now
+                        });
+                    }
+                }
+                if(caseStatus.Type.ToLower() == "lac")
+                {
+                    var existingAnswerGroups = caseStatus
+                                                .Answers
+                                                .Where(x => x.DiscardedAt == null)
+                                                .OrderBy(x => x.StartDate)
+                                                .GroupBy(x => x.GroupId);
+
+                    //check for overlapping dates
+                    if (existingAnswerGroups?.Count() > 1)
+                    {
+                        foreach(var g in existingAnswerGroups)
+                        {
+                            foreach(var a in g)
+                            {
+                                if(request.StartDate <= a.StartDate)
+                                {
+                                    throw new InvalidStartDateException("Start date overlaps with previous status start date.");
+                                }
+                            }
+                        }
+
+                        Guid identifier = Guid.NewGuid();
+
+                        //discard current answers and add new replacements
+                        foreach (var a in existingAnswerGroups.LastOrDefault())
+                        {
+                            a.DiscardedAt = _systemTime.Now;
+                            a.EndDate = request.StartDate;
+
+                            caseStatus.Answers.Add(new CaseStatusAnswer()
+                            {
+                                CaseStatusId = caseStatus.Id,
+                                CreatedBy = request.EditedBy,
+                                StartDate = (DateTime) request.StartDate,
+                                Option = a.Option,
+                                Value = a.Value,
+                                GroupId = identifier.ToString(),
+                                CreatedAt = _systemTime.Now
+                            });
+                        }
+                    }
+
+                    if (existingAnswerGroups?.Count() == 1)
+                    {
+                        caseStatus.StartDate = (DateTime) request.StartDate;
+
+                        foreach (var a in caseStatus.Answers)
+                        {
+                            a.DiscardedAt = _systemTime.Now;
+                        }
+
+                        Guid identifier = Guid.NewGuid();
+
+                        foreach (var a in request?.Answers)
+                        {
+                            caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
+                            {
+                                CaseStatusId = caseStatus.Id,
+                                CreatedBy = request.EditedBy,
+                                StartDate = (DateTime) request.StartDate,
+                                Option = a.Option,
+                                Value = a.Value,
+                                GroupId = identifier.ToString(),
+                                CreatedAt = _systemTime.Now
+                            });
                         }
                     }
                 }
