@@ -51,14 +51,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     foreach (var answer in caseStatus.Answers)
                     {
-                        if (answer.DiscardedAt == null && answer.EndDate == null)
+                        if (answer.DiscardedAt == null)
                         {
                             caseAnswers.Add(answer);
                         }
                     }
                     caseStatus.Answers = caseAnswers;
                 }
-
             }
 
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
@@ -78,7 +77,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<CaseStatus> GetClosedCaseStatusesByPersonIdAndDate(long personId, DateTime date)
         {
             var caseStatuses = _databaseContext.CaseStatuses
-                .Where(cs => cs.PersonId == personId && cs.EndDate < date)
+                .Where(cs => cs.PersonId == personId && cs.EndDate > date)
                 .Include(cs => cs.Person)
                 .Include(cs => cs.Answers).ToList();
 

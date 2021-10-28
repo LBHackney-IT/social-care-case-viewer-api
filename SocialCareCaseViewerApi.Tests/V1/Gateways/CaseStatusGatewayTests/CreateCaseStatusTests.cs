@@ -157,5 +157,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.Answers.First().CreatedAt.Should().NotBeNull();
             caseStatus.Answers.First().CreatedBy.Should().Be(request.CreatedBy);
         }
+
+        [Test]
+        public void CreatesACaseStatusWithoutAnswersShouldPassIfNoOverlappingCaseStatusExists()
+        {
+            var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
+
+            var request = CaseStatusHelper.CreateCaseStatusRequest(personId: person.Id, answers: new List<CaseStatusRequestAnswers>(), startDate: DateTime.Today);
+
+            _caseStatusGateway.CreateCaseStatus(request);
+
+            var caseStatus = DatabaseContext.CaseStatuses.OrderByDescending(cs => cs.StartDate).FirstOrDefault();
+
+            caseStatus.EndDate.Should().BeNull();
+            caseStatus.StartDate.Should().Be(DateTime.Today);
+        }
     }
 }
