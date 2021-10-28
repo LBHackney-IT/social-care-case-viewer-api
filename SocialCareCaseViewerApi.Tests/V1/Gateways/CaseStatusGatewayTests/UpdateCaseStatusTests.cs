@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -326,7 +325,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.StartDate.Should().Be(request.StartDate.Value);
-
             updatedCaseStatus.Answers.Count.Should().Be(4);
 
             var discardedAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
@@ -463,7 +461,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             newAnswers.Any(x => x.Value == activeAnswers.FirstOrDefault().Value).Should().BeTrue();
             newAnswers.Any(x => x.Option == activeAnswers.LastOrDefault().Option).Should().BeTrue();
             newAnswers.Any(x => x.Value == activeAnswers.LastOrDefault().Value).Should().BeTrue();
-
         }
     }
 }

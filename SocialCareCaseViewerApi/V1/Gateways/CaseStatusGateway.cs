@@ -141,15 +141,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
 
-            if (caseStatus == null)
-            {
-                throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
-            }
-
-            if (caseStatus.EndDate != null)
-            {
-                throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
-            }
+            ValidateUpdate(request, caseStatus);
 
             //end date provided
             if (request.EndDate != null)
@@ -171,7 +163,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             answer.EndDate = request.EndDate;
                         }
                     }
-                    else if(activeAnswerGroups?.Count() > 1)
+                    else if (activeAnswerGroups?.Count() > 1)
                     {
                         //end the current active one
                         foreach (var answer in activeAnswerGroups.First())
@@ -192,81 +184,102 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //end date not provided
             else
             {
-                if(caseStatus.Type.ToLower() == "cin")
+                switch (caseStatus.Type.ToLower())
                 {
-                    caseStatus.Notes = request.Notes;
-                }
-                if(caseStatus.Type.ToLower() == "cp")
-                {
-                    caseStatus.StartDate = (DateTime) request.StartDate;
+                    case "cin":
+                        caseStatus.Notes = request.Notes;
+                        break;
 
-                    foreach(var a in caseStatus.Answers)
-                    {
-                        a.DiscardedAt = _systemTime.Now;
-                    }
+                    case "cp":
+                        caseStatus.StartDate = (DateTime) request.StartDate;
 
-                    AddNewAnswers(request, caseStatus);
-                }
-                if(caseStatus.Type.ToLower() == "lac")
-                {
-                    var existingAnswerGroups = caseStatus
+                        //discard current answers
+                        foreach (var a in caseStatus.Answers)
+                        {
+                            a.DiscardedAt = _systemTime.Now;
+                        }
+                        //add new ones
+                        AddNewAnswers(request, caseStatus);
+                        break;
+
+                    case "lac":
+                        var existingAnswerGroups = caseStatus
                                                 .Answers
                                                 .Where(x => x.DiscardedAt == null)
                                                 .OrderBy(x => x.StartDate)
                                                 .GroupBy(x => x.GroupId);
 
-                    //check for overlapping dates
-                    if (existingAnswerGroups?.Count() > 1)
-                    {
-                        foreach(var g in existingAnswerGroups)
+                        if (existingAnswerGroups?.Count() > 1)
                         {
-                            foreach(var a in g)
+                            //check for overlapping dates
+                            foreach (var g in existingAnswerGroups)
                             {
-                                if(request.StartDate <= a.StartDate)
+                                foreach (var a in g)
                                 {
-                                    throw new InvalidStartDateException("Start date overlaps with previous status start date.");
+                                    if (request.StartDate <= a.StartDate)
+                                    {
+                                        throw new InvalidStartDateException("Start date overlaps with previous status start date.");
+                                    }
                                 }
                             }
+                            //replace current active answers
+                            ReplaceCurrentGroupAnswers(request, caseStatus, existingAnswerGroups);
                         }
 
-                        Guid identifier = Guid.NewGuid();
-
-                        //discard current answers and add new replacements
-                        foreach (var a in existingAnswerGroups.LastOrDefault())
+                        //no scheduled answers, replace the current answers and case start date
+                        if (existingAnswerGroups?.Count() == 1)
                         {
-                            a.DiscardedAt = _systemTime.Now;
-                            a.EndDate = request.StartDate;
+                            caseStatus.StartDate = (DateTime) request.StartDate;
 
-                            caseStatus.Answers.Add(new CaseStatusAnswer()
+                            foreach (var a in caseStatus.Answers)
                             {
-                                CaseStatusId = caseStatus.Id,
-                                CreatedBy = request.EditedBy,
-                                StartDate = (DateTime) request.StartDate,
-                                Option = a.Option,
-                                Value = a.Value,
-                                GroupId = identifier.ToString(),
-                                CreatedAt = _systemTime.Now
-                            });
+                                a.DiscardedAt = _systemTime.Now;
+                            }
+
+                            AddNewAnswers(request, caseStatus);
                         }
-                    }
-
-                    if (existingAnswerGroups?.Count() == 1)
-                    {
-                        caseStatus.StartDate = (DateTime) request.StartDate;
-
-                        foreach (var a in caseStatus.Answers)
-                        {
-                            a.DiscardedAt = _systemTime.Now;
-                        }
-
-                        AddNewAnswers(request, caseStatus);
-                    }
+                        break;
                 }
             }
 
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
+        }
+
+        private static void ValidateUpdate(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus)
+        {
+            if (caseStatus == null)
+            {
+                throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
+            }
+
+            if (caseStatus.EndDate != null)
+            {
+                throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
+            }
+        }
+
+        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<IGrouping<string, CaseStatusAnswer>>? existingAnswerGroups)
+        {
+            Guid identifier = Guid.NewGuid();
+       
+            foreach (var a in existingAnswerGroups.LastOrDefault())
+            {
+                a.DiscardedAt = _systemTime.Now;
+                a.EndDate = request.StartDate;
+
+                caseStatus.Answers.Add(new CaseStatusAnswer()
+                {
+                    CaseStatusId = caseStatus.Id,
+                    CreatedBy = request.EditedBy,
+                    StartDate = (DateTime) request.StartDate,
+                    Option = a.Option,
+                    Value = a.Value,
+                    GroupId = identifier.ToString(),
+                    CreatedAt = _systemTime.Now
+                });
+            }
         }
 
         private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus)
