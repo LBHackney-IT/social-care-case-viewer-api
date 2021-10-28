@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
         //CIN
         [Test]
-        public void WhenValidEndDateIsProvidedAndTheTypeIsCINitUpdatesTheStatusWithNewEndDateWithoutSettingEndDateOrDiscardedAtForAnswers()
+        public void WhenTypeIsCINAndValidEndDateIsProvidedItUpdatesTheStatusWithNewEndDateWithoutSettingEndDateOrDiscardedAtForAnswers()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
 
@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
         //CP
         [Test]
-        public void WhenValidEndDateIsProvidedAndTheTypeIsCPitUpdatesTheStatusWithNewEndDateWithoutAddingAnswers()
+        public void WhenTypeIsCPAndValidEndDateIsProvidedItUpdatesTheStatusWithNewEndDateWithoutAddingAnswers()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
 
@@ -104,7 +104,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
         //LAC
         [Test]
-        public void WhenValidEndDateIsProvidedAndTheTypeIsLACitUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
+        public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
 
@@ -132,7 +132,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
         //LAC
         [Test]
-        public void WhenValidEndDateIsProvidedAndTheTypeIsLACAndThereAreScheduledAnswersItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDateAndSetsDiscardedDateToTheScheduledAnswers()
+        public void WhenTypeIsLACAndValidEndDateIsProvidedAndThereAreScheduledAnswersItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDateAndSetsDiscardedDateToTheScheduledAnswers()
         {
             var activeGroupId = Guid.NewGuid().ToString();
             var scheduledGroupId = Guid.NewGuid().ToString();

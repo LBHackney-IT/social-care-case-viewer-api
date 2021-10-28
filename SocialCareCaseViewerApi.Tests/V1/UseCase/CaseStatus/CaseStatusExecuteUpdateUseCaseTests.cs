@@ -102,7 +102,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         [TestCase("CP")]
         [TestCase("CIN")]
-        public void WhenRequestedEndDateIsBeforeCaseStatusStartDateAndTypeIsCINorCPInvalidEndDateExceptionThrown(string type)
+        public void WhenTypeIsCPorCINAndRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown(string type)
         {
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: type);
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1));
@@ -121,7 +121,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         [TestCase("CP")]
         [TestCase("CIN")]
-        public void WhenRequestedEndDateIsOnCaseStatusStartDateAndTypeIsCINorCPItCallsTheGatewayToUpdateTheRecords(string type)
+        public void WhenTypeIsCINorCPItAndRequestedEndDateIsOnCaseStatusStartDateCallsTheGatewayToUpdateTheRecords(string type)
         {
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: type);
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
@@ -157,7 +157,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void WhenRequestedEndDateIsOnActiveCaseStatusAnswerStartDateAndTypeIsLACItCallsTheGateway()
+        public void WhenTypeIsLACAndRequestedEndDateIsOnActiveCaseStatusAnswerStartDateItCallsTheGateway()
         {
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: "LAC");
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
