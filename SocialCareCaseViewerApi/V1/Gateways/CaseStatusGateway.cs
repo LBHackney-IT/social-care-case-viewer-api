@@ -259,11 +259,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<IGrouping<string, CaseStatusAnswer>>? existingAnswerGroups)
+        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<IGrouping<string, CaseStatusAnswer>>? answerGroups)
         {
             Guid identifier = Guid.NewGuid();
 
-            foreach (var a in existingAnswerGroups.LastOrDefault())
+            foreach (var a in answerGroups.LastOrDefault())
             {
                 a.DiscardedAt = _systemTime.Now;
                 a.EndDate = request.StartDate;
