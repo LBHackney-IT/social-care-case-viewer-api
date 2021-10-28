@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
+using DomainCaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
@@ -99,10 +100,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void TestWhenRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown()
+        [TestCase("CP")]
+        [TestCase("CIN")]
+        public void WhenTypeIsCPorCINAndRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown(string type)
         {
-            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1));
-            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: DateTime.Now.AddDays(-1));
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: type);
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1));
 
             _mockCaseStatusGateway
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
@@ -113,6 +116,140 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             act.Should().Throw<InvalidEndDateException>()
                 .WithMessage($"requested end date of {_updateCaseStatusRequest.EndDate?.ToString("O")} " +
                              $"is before the start date of {_caseStatus.StartDate:O}");
+        }
+
+        [Test]
+        [TestCase("CP")]
+        [TestCase("CIN")]
+        public void WhenTypeIsCINorCPItAndRequestedEndDateIsOnCaseStatusStartDateCallsTheGatewayToUpdateTheRecords(string type)
+        {
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: type);
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(_updateCaseStatusRequest)).Returns(new DomainCaseStatus());
+
+            _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));
+        }
+
+        [Test]
+        public void WhenTypeIsLACandTheProvidedEndIsBeforeTheCurrentlyActiveAnswersStartDateItThrowsInvalidEndDateException()
+        {
+            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2021, 11, 3));
+
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1), type: "LAC");
+            _caseStatus.Answers.AddRange(answers);
+
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage("requested end date is before the start date of the currently active answer");
+        }
+
+        [Test]
+        public void WhenTypeIsLACAndRequestedEndDateIsOnActiveCaseStatusAnswerStartDateItCallsTheGateway()
+        {
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: "LAC");
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(_updateCaseStatusRequest)).Returns(new DomainCaseStatus());
+
+            _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));
+        }
+
+        //when end date not provided
+        //CIN
+        [Test]
+        public void WhenTypeIsCINandEndDateIsNotProvidedAndStartDateIsIntheFutureItThrowsInvalidStartDateException()
+        {
+            _updateCaseStatusRequest.StartDate = DateTime.Now.AddDays(1);
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "CIN";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
+        }
+
+        //CP
+        [Test]
+        public void WhenTypeIsCPandEndDateIsNotProvidedAndStartDateIsInteFutureItThrowsInvalidStartDateException()
+        {
+            _updateCaseStatusRequest.StartDate = DateTime.Now.AddDays(1);
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "CP";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
+        }
+
+        [Test]
+        public void WhenTypeIsCPandEndDateIsNotProvidedAndStartDateIsNotProvidedtThrowsInvalidStartDateException()
+        {
+            _updateCaseStatusRequest.StartDate = null;
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "CP";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("You must provide a valid date for CP");
+        }
+
+        [Test]
+        public void WhenTypeIsCPandEndDateIsNotProvidedAndDefaultStartDateIsProvidedtThrowsInvalidStartDateException()
+        {
+            _updateCaseStatusRequest.StartDate = DateTime.MinValue;
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "CP";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("You must provide a valid date for CP");
+        }
+
+
+        //LAC
+        [Test]
+        public void WhenTypeIsLACandEndDateIsNotProvidedAndStartDateIsInteFutureItThrowsInvalidStartDateException()
+        {
+            _updateCaseStatusRequest.StartDate = DateTime.Now.AddDays(1);
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "LAC";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
         }
 
         [Test]

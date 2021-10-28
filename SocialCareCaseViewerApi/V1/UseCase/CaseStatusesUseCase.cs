@@ -4,6 +4,7 @@ using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
@@ -13,7 +14,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseStatusesUseCase : ICaseStatusesUseCase
     {
-
         private readonly ICaseStatusGateway _caseStatusGateway;
         private readonly IDatabaseGateway _databaseGateway;
 
@@ -123,16 +123,46 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            if (request.EndDate != null && request.EndDate < caseStatus.StartDate)
+            //end date validation for CP and CIN
+            if (request.EndDate != null)
             {
-                throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " +
-                                                  $"is before the start date of {caseStatus.StartDate:O}");
+
+                switch (caseStatus.Type.ToLower())
+                {
+                    case "cp":
+                    case "cin":
+                        if (request.EndDate < caseStatus.StartDate)
+                        {
+                            throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " + $"is before the start date of {caseStatus.StartDate:O}");
+                        }
+                        break;
+                    case "lac":
+                        if (caseStatus.Answers.Any(x => x.DiscardedAt == null && x.EndDate == null && x.StartDate > request.EndDate))
+                        {
+                            throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
+                        }
+                        break;
+                }
+            }
+
+            //when end date is not provided
+            if (request.EndDate == null)
+            {
+                //CIN, CP and LAC
+                if (request.StartDate > DateTime.Today)
+                {
+                    throw new InvalidStartDateException("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
+                }
+                //CP
+                if (caseStatus.Type.ToLower() == "cp" && (request.StartDate == null || request.StartDate == DateTime.MinValue))
+                {
+                    throw new InvalidStartDateException("You must provide a valid date for CP");
+                }
             }
 
             if (caseStatus.Person.AgeContext.ToLower() != "c")
             {
-                throw new InvalidAgeContextException(
-                    $"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
+                throw new InvalidAgeContextException($"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
             }
 
             var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
