@@ -124,7 +124,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             //end date validation for CP and CIN
-            if (request.EndDate != null) {
+            if (request.EndDate != null)
+            {
 
                 switch (caseStatus.Type.ToLower())
                 {
@@ -153,7 +154,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     throw new InvalidStartDateException("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
                 }
                 //CP
-                if(caseStatus.Type.ToLower() == "cp" && (request.StartDate == null || request.StartDate == DateTime.MinValue))
+                if (caseStatus.Type.ToLower() == "cp" && (request.StartDate == null || request.StartDate == DateTime.MinValue))
                 {
                     throw new InvalidStartDateException("You must provide a valid date for CP");
                 }

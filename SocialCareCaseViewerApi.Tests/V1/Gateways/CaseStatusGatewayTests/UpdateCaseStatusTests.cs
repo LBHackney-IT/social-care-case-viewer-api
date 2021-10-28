@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             _mockSystemTime = new Mock<ISystemTime>();
             _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
         }
-                
+
         [Test]
         public void WhenACaseStatusIsNotFoundItThrowsAnException()
         {
@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             caseStatus.Answers = answers;
             caseStatus.Type = "LAC";
-            caseStatus.EndDate = null;            
+            caseStatus.EndDate = null;
 
             DatabaseContext.SaveChanges();
             request.CaseStatusId = caseStatus.Id;
@@ -372,7 +372,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             act.Should().Throw<InvalidStartDateException>().WithMessage("Start date overlaps with previous status start date.");
 
-            DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);            
+            DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
         }
 
         [Test]

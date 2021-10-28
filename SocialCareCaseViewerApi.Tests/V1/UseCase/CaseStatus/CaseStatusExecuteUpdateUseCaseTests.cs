@@ -133,7 +133,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
-            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));          
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));
         }
 
         [Test]
