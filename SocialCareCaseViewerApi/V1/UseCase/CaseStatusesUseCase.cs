@@ -155,7 +155,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 switch (caseStatus.Type.ToLower())
                 {
                     case "cp":
-                        if(request.StartDate == null || request.StartDate == DateTime.MinValue)
+                        if (request.StartDate == null || request.StartDate == DateTime.MinValue)
                         {
                             throw new InvalidStartDateException("You must provide a valid date for CP");
                         }
@@ -167,7 +167,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         }
                         break;
                     case "lac":
-                        if(request?.Answers?.Count != 2
+                        if (request?.Answers?.Count != 2
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
                         {
