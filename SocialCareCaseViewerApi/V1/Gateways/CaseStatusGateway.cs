@@ -257,7 +257,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            if (caseStatus.EndDate != null)
+            if (caseStatus.EndDate != null && request.EndDate < DateTime.Today)
             {
                 throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
             }
