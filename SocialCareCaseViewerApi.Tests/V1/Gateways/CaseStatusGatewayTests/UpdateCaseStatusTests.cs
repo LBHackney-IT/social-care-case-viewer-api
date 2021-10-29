@@ -49,8 +49,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
 
-            act.Should().Throw<CaseStatusAlreadyClosedException>()
-                .WithMessage($"Case status with {request.CaseStatusId} has already been closed.");
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage($"Invalid end date.");
         }
 
         [Test]

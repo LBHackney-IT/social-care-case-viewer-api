@@ -259,7 +259,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (caseStatus.EndDate != null && request.EndDate < DateTime.Today)
             {
-                throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
+                throw new InvalidEndDateException($"Invalid end date.");
             }
         }
 
