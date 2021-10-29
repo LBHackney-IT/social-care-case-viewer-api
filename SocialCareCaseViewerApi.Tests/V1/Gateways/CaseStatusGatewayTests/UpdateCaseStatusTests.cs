@@ -39,17 +39,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void WhenCaseStatusHasEndDateAlreadyItThrowsAnException()
+        public void WhenCaseStatusHasEndDateAlreadyAndTheProvidedEndDateIsInThePastItThrowsAnException()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
             DatabaseContext.SaveChanges();
             request.CaseStatusId = caseStatus.Id;
+            request.EndDate = DateTime.Today.AddDays(-2);
 
             Action act = () => _caseStatusGateway.UpdateCaseStatus(request);
 
-            act.Should().Throw<CaseStatusAlreadyClosedException>()
-                .WithMessage($"Case status with {request.CaseStatusId} has already been closed.");
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage($"Invalid end date.");
+        }
+
+        [Test]
+        public void WhenCaseStatusHasEndDateAlreadyAndTheProvidedEndDateIsInTheFutureItUpdatesTheEnd()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            DatabaseContext.SaveChanges();
+
+            request.CaseStatusId = caseStatus.Id;
+            request.EndDate = DateTime.Today.AddDays(1);
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.EndDate.Should().Be(request.EndDate);
+        }
+
+        [Test]
+        public void WhenCaseStatusHasEndDateAlreadyAndTheProvidedEndDateIsTodayItUpdatesTheEnd()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            DatabaseContext.SaveChanges();
+
+            request.CaseStatusId = caseStatus.Id;
+            request.EndDate = DateTime.Today;
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.EndDate.Should().Be(request.EndDate);
         }
 
         //CIN
@@ -76,6 +109,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             updatedCaseStatus.Answers.Count.Should().Be(1);
             updatedCaseStatus.Answers.First().EndDate.Should().BeNull();
             updatedCaseStatus.Answers.First().DiscardedAt.Should().BeNull();
+        }
+
+        [Test]
+        public void WhenTypeIsCINAndEndDateIsNotProvidedAndStartDateIsProvidedItUpdatesTheStartDate()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            caseStatus.Type = "CIN";
+            caseStatus.EndDate = null;
+
+            DatabaseContext.SaveChanges();
+
+            request.CaseStatusId = caseStatus.Id;
+            request.StartDate = DateTime.Today.AddDays(-1);
+            request.EndDate = null;
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+
+            updatedCaseStatus.StartDate.Should().Be((DateTime) request.StartDate);
         }
 
         //CP
