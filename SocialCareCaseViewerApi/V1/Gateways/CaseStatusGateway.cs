@@ -187,6 +187,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     case "cin":
                         caseStatus.Notes = request.Notes;
+                        if (request.StartDate != null)
+                        {
+                            caseStatus.StartDate = (DateTime) request.StartDate;
+                        }
                         break;
 
                     case "cp":
