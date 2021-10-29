@@ -187,6 +187,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     case "cin":
                         caseStatus.Notes = request.Notes;
+                        if (request.StartDate != null)
+                        {
+                            caseStatus.StartDate = (DateTime) request.StartDate;
+                        }
                         break;
 
                     case "cp":
@@ -253,9 +257,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            if (caseStatus.EndDate != null)
+            if (caseStatus.EndDate != null && request.EndDate < DateTime.Today)
             {
-                throw new CaseStatusAlreadyClosedException($"Case status with {request.CaseStatusId} has already been closed.");
+                throw new InvalidEndDateException($"Invalid end date.");
             }
         }
 
