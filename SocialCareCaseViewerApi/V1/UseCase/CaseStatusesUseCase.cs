@@ -140,6 +140,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }
+                        if (request?.Answers?.Count != 1
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
+                        {
+                            throw new InvalidCaseStatusUpdateRequestException("Invalid LAC episode ending answer");
+                        }
                         break;
                 }
             }

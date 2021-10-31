@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private UpdateCaseStatusRequest _updateCaseStatusRequest = null!;
         private SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus _updatedCaseStatus = null!;
 
-        private static object[] _invalidLACAnswers = {
+        private static readonly object[] _invalidLACAnswers = {
             new List<CaseStatusValue>() { },
             new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "" }, new CaseStatusValue() { Option = "", Value = "" } },
             new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "value" }, new CaseStatusValue() { Option = "option", Value = "value" } },
@@ -36,7 +36,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = " " }, new CaseStatusValue() { Option = "option", Value = "value" } }
         };
 
-        private static object[] _invalidPCAnswers = {
+        private static readonly object[] _invalidLACEpisodeEndingAnswer = {
+            new List<CaseStatusValue>() { },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "value" }},
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = "" }},
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = " " }}
+        };
+
+        private static readonly object[] _invalidPCAnswers = {
             new List<CaseStatusValue>() { },
             new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "" } },
             new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "value" } } ,
@@ -300,6 +308,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
             act.Should().Throw<InvalidCaseStatusUpdateRequestException>().WithMessage("Invalid LAC answers");
+        }
+
+        [Test]
+        [TestCaseSource(nameof(_invalidLACEpisodeEndingAnswer))]
+        public void WhenTypeIsLACandEndDateIsProvidedAndEpisodeEndingAnswersIsNotValidItThrowsInvalidCaseStatusUpdateRequestException(List<CaseStatusValue> answers)
+        {
+            _updateCaseStatusRequest.EndDate = DateTime.Today.Date;
+            _updateCaseStatusRequest.Answers = answers;
+            _caseStatus.Type = "LAC";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidCaseStatusUpdateRequestException>().WithMessage("Invalid LAC episode ending answer");
         }
 
         [Test]
