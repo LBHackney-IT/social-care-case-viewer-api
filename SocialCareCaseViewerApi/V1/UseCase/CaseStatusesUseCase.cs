@@ -126,7 +126,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //end date validation for CP and CIN
             if (request.EndDate != null)
             {
-
                 switch (caseStatus.Type.ToLower())
                 {
                     case "cp":
@@ -148,15 +147,33 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //when end date is not provided
             if (request.EndDate == null)
             {
-                //CIN, CP and LAC
                 if (request.StartDate > DateTime.Today)
                 {
                     throw new InvalidStartDateException("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
                 }
-                //CP
-                if (caseStatus.Type.ToLower() == "cp" && (request.StartDate == null || request.StartDate == DateTime.MinValue))
+
+                switch (caseStatus.Type.ToLower())
                 {
-                    throw new InvalidStartDateException("You must provide a valid date for CP");
+                    case "cp":
+                        if (request.StartDate == null || request.StartDate == DateTime.MinValue)
+                        {
+                            throw new InvalidStartDateException("You must provide a valid date for CP");
+                        }
+                        if (request?.Answers?.Count != 1
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
+                        {
+                            throw new InvalidCaseStatusUpdateRequestException("Invalid PC answer");
+                        }
+                        break;
+                    case "lac":
+                        if (request?.Answers?.Count != 2
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
+                            || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
+                        {
+                            throw new InvalidCaseStatusUpdateRequestException("Invalid LAC answers");
+                        }
+                        break;
                 }
             }
 

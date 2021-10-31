@@ -110,5 +110,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
         }
+
+        [Test]
+        public void UpdateCaseStatusReturns400WithErrorMessageWhenInvalidCaseStatusUpdateRequestExceptionIsThrown()
+        {
+            var resident = TestHelpers.CreatePerson();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            const string errorMessage = "error-message";
+
+            _mockCaseStatusesUseCase
+                .Setup(x => x.ExecuteUpdate(request))
+                .Throws(new InvalidCaseStatusUpdateRequestException(errorMessage));
+
+            var response = _caseStatusController.UpdateCaseStatus(request) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
+        }
     }
 }
