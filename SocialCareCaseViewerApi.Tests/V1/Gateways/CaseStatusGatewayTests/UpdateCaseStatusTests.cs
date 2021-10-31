@@ -188,7 +188,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenTypeIsLACAndValidEndDateIsProvidedItAddsTheEpisodeEndingReasonAnswer()
         {
-            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max:1);
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
             var newRequestAnswer = request.Answers.FirstOrDefault();
 
             var groupId = Guid.NewGuid().ToString();
@@ -337,7 +337,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max:1);
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
             var newRequestAnswer = request.Answers.FirstOrDefault();
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
@@ -420,7 +420,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max:2);
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max: 2);
             request.EndDate = null;
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
@@ -486,7 +486,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max:2);
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max: 2);
             request.EndDate = null;
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
