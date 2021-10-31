@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
+using System.Collections.Generic;
 using DomainCaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 #nullable enable
@@ -26,6 +27,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus _caseStatus = null!;
         private UpdateCaseStatusRequest _updateCaseStatusRequest = null!;
         private SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus _updatedCaseStatus = null!;
+
+        private static object[] _invalidLACAnswers = {
+            new List<CaseStatusValue>() { },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "" }, new CaseStatusValue() { Option = "", Value = "" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "value" }, new CaseStatusValue() { Option = "option", Value = "value" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = "" }, new CaseStatusValue() { Option = "option", Value = "value" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = " " }, new CaseStatusValue() { Option = "option", Value = "value" } }
+        };
+
+        private static object[] _invalidPCAnswers = {
+            new List<CaseStatusValue>() { },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "", Value = "value" } } ,
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = "" } },
+            new List<CaseStatusValue>() { new CaseStatusValue() { Option = "option", Value = " " } }
+        };
 
         [SetUp]
         public void SetUp()
@@ -235,6 +252,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
                 .WithMessage("You must provide a valid date for CP");
         }
 
+        [Test]
+        [TestCaseSource(nameof(_invalidPCAnswers))]
+        public void WhenTypeIsPCAndProvidedAnswerIsNotValidItThrowsInvalidUpdateRequestException(List<CaseStatusValue> answers)
+        {
+            _updateCaseStatusRequest.Answers = answers;
+            _updateCaseStatusRequest.EndDate = null;
+            _updateCaseStatusRequest.StartDate = DateTime.Today.AddDays(-10);
+
+            _caseStatus.Type = "CP";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidCaseStatusUpdateRequestException>().WithMessage("Invalid PC answer");
+        }
+
 
         //LAC
         [Test]
@@ -253,11 +287,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
+        [TestCaseSource(nameof(_invalidLACAnswers))]
+        public void WhenTypeIsLACAndProvidedAnswersAreNotValidItThrowsInvalidUpdateRequestException(List<CaseStatusValue> answers)
+        {
+            _updateCaseStatusRequest.Answers = answers;
+
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "LAC";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidCaseStatusUpdateRequestException>().WithMessage("Invalid LAC answers");
+        }
+
+        [Test]
         public void TestUpdatingACaseStatusReturnsUpdatedCaseStatusResponse()
         {
             var response = _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
             response.Should().BeEquivalentTo(_updatedCaseStatus.ToDomain().ToResponse());
         }
+
     }
 }
