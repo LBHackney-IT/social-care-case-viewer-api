@@ -161,7 +161,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         [Test]
         public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
         {
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -180,9 +180,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
 
-            updatedCaseStatus.Answers.Count.Should().Be(2);
+            updatedCaseStatus.Answers.Count.Should().Be(3);
             updatedCaseStatus.Answers.All(x => x.EndDate != null).Should().BeTrue();
             updatedCaseStatus.Answers.All(x => x.DiscardedAt == null).Should().BeTrue();
+        }
+
+        [Test]
+        public void WhenTypeIsLACAndValidEndDateIsProvidedItAddsTheEpisodeEndingReasonAnswer()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max:1);
+            var newRequestAnswer = request.Answers.FirstOrDefault();
+
+            var groupId = Guid.NewGuid().ToString();
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+
+            var currentAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: groupId);
+
+            caseStatus.Answers = currentAnswers;
+            caseStatus.Type = "LAC";
+            caseStatus.EndDate = null;
+
+            DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+
+            updatedCaseStatus.EndDate.Should().NotBeNull();
+
+            updatedCaseStatus.Answers.Count.Should().Be(3);
+            updatedCaseStatus.Answers.All(x => x.EndDate != null).Should().BeTrue();
+            updatedCaseStatus.Answers.All(x => x.DiscardedAt == null).Should().BeTrue();
+
+            var episodeEndingAnswer = updatedCaseStatus.Answers.Where(x => x.GroupId != groupId).FirstOrDefault();
+
+            episodeEndingAnswer.Option.Should().Be(newRequestAnswer.Option);
+            episodeEndingAnswer.Value.Should().Be(newRequestAnswer.Value);
+            episodeEndingAnswer.EndDate.Value.Date.Should().Be(DateTime.Today.Date);
+            episodeEndingAnswer.StartDate.Date.Should().Be(DateTime.Today.Date);
         }
 
         //LAC
@@ -192,7 +229,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var activeGroupId = Guid.NewGuid().ToString();
             var scheduledGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -214,7 +251,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
 
-            updatedCaseStatus.Answers.Count.Should().Be(4);
+            updatedCaseStatus.Answers.Count.Should().Be(5);
 
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.EndDate != null).Should().BeTrue();
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.DiscardedAt == null).Should().BeTrue();
@@ -300,18 +337,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var newRequestAnswer =
-                new CaseStatusValue()
-                {
-                    Option = "new option",
-                    Value = "new value"
-                };
-
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
-            request.Answers = new List<CaseStatusValue>
-            {
-                newRequestAnswer
-            };
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max:1);
+            var newRequestAnswer = request.Answers.FirstOrDefault();
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -353,14 +380,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max: 2);
             request.EndDate = null;
             request.StartDate = DateTime.Today.AddDays(-1);
-
-            var newRequestAnswer = new CaseStatusValue() { Option = "new option", Value = "new value" };
-            var newRequestAnswer2 = new CaseStatusValue() { Option = "new option", Value = "new value" };
-
-            request.Answers = new List<CaseStatusValue>() { newRequestAnswer, newRequestAnswer2 };
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -398,13 +420,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max:2);
             request.EndDate = null;
-
-            var newRequestAnswer = new CaseStatusValue() { Option = "new option", Value = "new value" };
-            var newRequestAnswer2 = new CaseStatusValue() { Option = "new option", Value = "new value" };
-
-            request.Answers = new List<CaseStatusValue>() { newRequestAnswer, newRequestAnswer2 };
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -436,13 +453,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 2);
             request.EndDate = null;
-
-            var newRequestAnswer = new CaseStatusValue() { Option = "new option", Value = "new value" };
-            var newRequestAnswer2 = new CaseStatusValue() { Option = "new option", Value = "new value" };
-
-            request.Answers = new List<CaseStatusValue>() { newRequestAnswer, newRequestAnswer2 };
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
@@ -474,13 +486,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
 
-            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max:2);
             request.EndDate = null;
-
-            var newRequestAnswer = new CaseStatusValue() { Option = "new option 1", Value = "new value 1" };
-            var newRequestAnswer2 = new CaseStatusValue() { Option = "new option 2", Value = "new value 2" };
-
-            request.Answers = new List<CaseStatusValue>() { newRequestAnswer, newRequestAnswer2 };
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 

@@ -586,11 +586,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
         }
 
-        private static List<CaseStatusValue> CreateCaseStatusValues()
+        private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
         {
             var caseStatusValues = new List<CaseStatusValue>();
 
-            for (var i = 0; i < new Random().Next(1, 10); i++)
+            for (var i = 0; i < new Random().Next(min ?? 1, max ?? 10); i++)
             {
                 var value = new Faker<CaseStatusValue>()
                     .RuleFor(c => c.Option, f => f.Random.String2(512))
@@ -633,14 +633,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null, long? caseStatusId = null)
+            string? notes = null, long? caseStatusId = null, int? min = null, int? max = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
                 .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(512))
-                .RuleFor(u => u.Answers, CreateCaseStatusValues());
+                .RuleFor(u => u.Answers, CreateCaseStatusValues(min ?? null, max ?? null));
         }
 
         public static MashReferral CreateMashReferral()
