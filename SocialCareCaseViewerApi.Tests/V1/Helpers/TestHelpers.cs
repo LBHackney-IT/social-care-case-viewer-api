@@ -633,14 +633,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null, long? caseStatusId = null, int? min = null, int? max = null)
+            string? notes = null, long? caseStatusId = null, int? min = null, int? max = null, DateTime? startDate = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
                 .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(512))
-                .RuleFor(u => u.Answers, CreateCaseStatusValues(min ?? null, max ?? null));
+                .RuleFor(u => u.Answers, CreateCaseStatusValues(min ?? null, max ?? null))
+                .RuleFor(u => u.StartDate, f => startDate ?? null);
         }
 
         public static MashReferral CreateMashReferral()

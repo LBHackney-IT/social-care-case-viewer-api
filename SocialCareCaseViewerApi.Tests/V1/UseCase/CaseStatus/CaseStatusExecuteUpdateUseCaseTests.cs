@@ -162,12 +162,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void WhenTypeIsLACandTheProvidedEndIsBeforeTheCurrentlyActiveAnswersStartDateItThrowsInvalidEndDateException()
+        public void WhenTypeIsLACandThereAreNoScheduledAnswersAndProvidedEndIsBeforeTheCurrentlyActiveAnswersStartDateItThrowsInvalidEndDateException()
         {
-            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2021, 11, 3));
-
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1), type: "LAC");
-            _caseStatus.Answers.AddRange(answers);
+            _caseStatus.Answers = new List<CaseStatusAnswer>();
+            _caseStatus.Answers.AddRange(TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2021, 11, 3)));
 
             _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1), min: 1, max: 1);
 
@@ -175,10 +174,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
                 .Returns(_caseStatus.ToDomain());
 
+            _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(It.IsAny<UpdateCaseStatusRequest>())).Returns(new DomainCaseStatus());
+
             Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
             act.Should().Throw<InvalidEndDateException>()
                 .WithMessage("requested end date is before the start date of the currently active answer");
+        }
+
+        [Test]
+        public void WhenTypeIsLACandTheProvidedEndDateIsValidAndThereAreScheduledAnswersItCallsTheGateway()
+        {
+            var activeAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2000, 01, 11));
+            var scheduledAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2040, 02, 01));
+
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(200, 01, 11), type: "LAC");
+            _caseStatus.Answers = new List<CaseStatusAnswer>();
+            _caseStatus.Answers.AddRange(activeAnswers);
+            _caseStatus.Answers.AddRange(scheduledAnswers);
+
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(200, 01, 11), min: 1, max: 1);
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(It.IsAny<UpdateCaseStatusRequest>())).Returns(new DomainCaseStatus());
+
+            _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));
         }
 
         [Test]

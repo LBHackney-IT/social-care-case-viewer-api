@@ -583,6 +583,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
             });
         }
+
+        [Test]
+        public void ConvertCaseStatusInfrastructureToDomain()
+        {
+            var infraStructureCaseStatus = TestHelpers.CreateCaseStatus();
+            infraStructureCaseStatus.Answers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: infraStructureCaseStatus.Id);
+
+            var domainCaseStatus = infraStructureCaseStatus.ToDomain();
+
+            domainCaseStatus.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.CaseStatus()
+            {
+                EndDate = infraStructureCaseStatus.EndDate,
+                Id = infraStructureCaseStatus.Id,
+                StartDate = infraStructureCaseStatus.StartDate,
+                Notes = infraStructureCaseStatus.Notes,
+                Person = infraStructureCaseStatus.Person,
+                Type = infraStructureCaseStatus.Type,
+                Answers = infraStructureCaseStatus.Answers.Select(
+                    a => new SocialCareCaseViewerApi.V1.Domain.CaseStatusAnswer
+                    {
+                        Option = a.Option,
+                        Value = a.Value,
+                        StartDate = a.StartDate,
+                        CreatedAt = a.CreatedAt.Value,
+                        GroupId = a.GroupId,
+                        EndDate = a.EndDate,
+                        DiscardedAt = a.DiscardedAt
+                    }
+                    ).ToList()
+            });
+        }
     }
 }
 
