@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways

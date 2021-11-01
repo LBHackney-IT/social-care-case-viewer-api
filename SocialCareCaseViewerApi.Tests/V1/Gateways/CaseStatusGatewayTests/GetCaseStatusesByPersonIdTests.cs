@@ -1,13 +1,13 @@
-using System.Linq;
 using FluentAssertions;
-using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Gateways;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
 using System;
+using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 {
@@ -53,7 +53,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             responseElement.Type.Should().Be(caseStatus.ToDomain().Type);
             responseElement.Answers.Count.Should().Be(answers.Count);
 
-            //add option to ignore ms differences in DateTime, set to 1s
             responseElement?.Answers.Should().BeEquivalentTo(caseStatus.ToDomain().Answers,
                 options =>
                 {
@@ -61,37 +60,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
                     return options;
                 }
                );
-        }
-        [Test]
-        public void WhenMatchingIDReturnsOnlyActiveAnswersInCaseStatuses()
-        {
-            var (caseStatus, person, answers) = CaseStatusHelper.SavePersonCaseStatusWithDiscardedAnswerToDatabase(DatabaseContext);
-
-            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
-            response.Count.Should().Be(1);
-
-            var responseElement = response.First();
-            responseElement.Answers.Count.Should().Be(0);
-        }
-
-        [Test]
-        public void WhenMatchingIDAndPastCaseStatusReturnEmptyList()
-        {
-            var (_, person) = CaseStatusHelper.SavePersonWithPastCaseStatusToDatabase(DatabaseContext);
-
-            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
-
-            response.Should().BeEmpty();
-        }
-
-        [Test]
-        public void WhenMatchingIDReturnsActiveCaseStatusesWhenMultiple()
-        {
-            var (_, person) = CaseStatusHelper.SavePersonWithMultipleCaseStatusToDatabase(DatabaseContext);
-
-            var response = _caseStatusGateway.GetCaseStatusesByPersonId(person.Id);
-
-            response.Count.Should().Be(2);
         }
     }
 }

@@ -839,3 +839,6 @@ ALTER TABLE dbo.sccv_person_case_status_answers
 
 ALTER TABLE dbo.sccv_person_case_status_answers
   ADD COLUMN group_id varchar(36) not null;
+  
+ALTER TABLE dbo.sccv_person_case_status_answers
+	ADD COLUMN end_date timestamp;

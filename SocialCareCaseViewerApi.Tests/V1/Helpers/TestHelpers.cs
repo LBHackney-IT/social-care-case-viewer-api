@@ -541,11 +541,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? startDate = null,
             DateTime? endDate = null,
             InfrastructurePerson? resident = null,
-            string? type = null)
+            string? type = null,
+            long? id = null)
         {
             resident ??= CreatePerson();
 
             return new Faker<CaseStatus>()
+                .RuleFor(cs => cs.Id, f => id ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(cs => cs.Notes, f => notes ?? f.Random.String2(1000))
                 .RuleFor(cs => cs.StartDate, f => startDate ?? f.Date.Past())
@@ -584,11 +586,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
         }
 
-        private static List<CaseStatusValue> CreateCaseStatusValues()
+        private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
         {
             var caseStatusValues = new List<CaseStatusValue>();
 
-            for (var i = 0; i < new Random().Next(1, 10); i++)
+            for (var i = 0; i < new Random().Next(min ?? 1, max ?? 10); i++)
             {
                 var value = new Faker<CaseStatusValue>()
                     .RuleFor(c => c.Option, f => f.Random.String2(512))
@@ -604,11 +606,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             DateTime? startDate = null,
             DateTime? createdAt = null,
             long? caseStatusId = null,
-            string? groupId = null)
+            string? groupId = null,
+            int? min = null,
+            int? max = null,
+            DateTime? endDate = null,
+            DateTime? discardedAt = null)
         {
             var caseStatusAnswers = new List<CaseStatusAnswer>();
 
-            for (var i = 0; i < new Random().Next(1, 5); i++)
+            for (var i = 0; i < new Random().Next(min ?? 1, max ?? 2); i++)
             {
                 var answer = new Faker<CaseStatusAnswer>()
                     .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.Random.Long())
@@ -616,7 +622,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                     .RuleFor(a => a.Value, f => f.Random.String2(100))
                     .RuleFor(a => a.GroupId, f => groupId ?? f.Random.String2(36))
                     .RuleFor(a => a.StartDate, f => startDate ?? f.Date.Past())
-                    .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past());
+                    .RuleFor(a => a.CreatedAt, f => createdAt ?? f.Date.Past())
+                    .RuleFor(a => a.EndDate, f => endDate)
+                    .RuleFor(a => a.DiscardedAt, f => discardedAt);
 
                 caseStatusAnswers.Add(answer);
             }
@@ -625,14 +633,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateCaseStatusRequest CreateUpdateCaseStatusRequest(DateTime? endDate = null, string? email = null,
-            string? notes = null, long? caseStatusId = null)
+            string? notes = null, long? caseStatusId = null, int? min = null, int? max = null, DateTime? startDate = null)
         {
             return new Faker<UpdateCaseStatusRequest>()
                 .RuleFor(u => u.CaseStatusId, f => caseStatusId ?? f.UniqueIndex + 1)
                 .RuleFor(u => u.EndDate, f => endDate ?? f.Date.Future())
                 .RuleFor(u => u.EditedBy, f => email ?? f.Person.Email)
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(512))
-                .RuleFor(u => u.Answers, CreateCaseStatusValues());
+                .RuleFor(u => u.Answers, CreateCaseStatusValues(min ?? null, max ?? null))
+                .RuleFor(u => u.StartDate, f => startDate ?? null);
         }
 
         public static MashReferral CreateMashReferral()

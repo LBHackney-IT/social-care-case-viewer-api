@@ -25,8 +25,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return (caseStatus, person, caseStatusAnswers);
         }
-        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithDiscardedAnswerToDatabase(
-          DatabaseContext databaseContext)
+
+        public static (CaseStatus, SocialCareCaseViewerApi.V1.Infrastructure.Person, List<CaseStatusAnswer>) SavePersonCaseStatusWithAnswersToDatabase(
+          DatabaseContext databaseContext, DateTime? endDate = null, DateTime? discardedAt = null)
         {
             var person = TestHelpers.CreatePerson();
 
@@ -39,17 +40,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             Guid identifier = Guid.NewGuid();
 
-            var legalStatusPast = new CaseStatusAnswer();
-            legalStatusPast.CaseStatusId = caseStatus.Id;
-            legalStatusPast.Option = "legalStatus";
-            legalStatusPast.Value = "C1";
-            legalStatusPast.GroupId = identifier.ToString();
-            legalStatusPast.StartDate = DateTime.Today.AddDays(-10);
-            legalStatusPast.CreatedAt = DateTime.Today.AddDays(-11);
-            legalStatusPast.DiscardedAt = DateTime.Today;
+            var legalStatus = new CaseStatusAnswer();
+            legalStatus.CaseStatusId = caseStatus.Id;
+            legalStatus.Option = "legalStatus";
+            legalStatus.Value = "C1";
+            legalStatus.GroupId = identifier.ToString();
+            legalStatus.StartDate = DateTime.Today.AddDays(-10);
+            legalStatus.CreatedAt = DateTime.Today.AddDays(-11);
+
+            if (discardedAt != null)
+            {
+                legalStatus.DiscardedAt = discardedAt;
+            }
+
+            if (endDate != null)
+            {
+                legalStatus.EndDate = endDate;
+            }
 
             var caseStatusAnswers = new List<CaseStatusAnswer>();
-            caseStatusAnswers.Add(legalStatusPast);
+            caseStatusAnswers.Add(legalStatus);
 
             databaseContext.CaseStatusAnswers.AddRange(caseStatusAnswers);
             databaseContext.SaveChanges();
@@ -116,7 +126,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
            )
         {
             return new Faker<CreateCaseStatusAnswerRequest>()
-                .RuleFor(a => a.Answers, f => answers ?? new List<CaseStatusRequestAnswers>() { new CaseStatusRequestAnswers() { Option = "placementType", Value = "C2" } })
+                .RuleFor(a => a.Answers, f => answers ??
+                    new List<CaseStatusRequestAnswers>() {
+                        new CaseStatusRequestAnswers() {
+                            Option = "placementType",
+                            Value = "C2"
+                        },
+                        new CaseStatusRequestAnswers{
+                        Option = "legalStatus",
+                        Value = "L2"
+                        }
+                    }
+                 )
                 .RuleFor(a => a.CaseStatusId, f => caseStatusId ?? f.UniqueIndex)
                 .RuleFor(a => a.CreatedBy, f => createdBy ?? f.Internet.Email())
                 .RuleFor(a => a.StartDate, f => startDate ?? DateTime.Today.AddDays(-5));

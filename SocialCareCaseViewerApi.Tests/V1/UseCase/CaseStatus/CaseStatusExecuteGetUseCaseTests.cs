@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenPersonIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetCaseStatusExceptionWithMessage()
         {
-            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusesByPersonId(1234));
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(1234));
 
             _caseStatusesUseCase.Invoking(x => x.ExecuteGet(1234))
                 .Should().Throw<GetCaseStatusesException>()
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
                 .Setup(x => x.GetPersonByMosaicId(person.Id))
                 .Returns(person);
             _mockCaseStatusGateway
-                .Setup(x => x.GetCaseStatusesByPersonId(person.Id))
+                .Setup(x => x.GetActiveCaseStatusesByPersonId(person.Id))
                 .Returns(new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus>());
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
@@ -64,7 +64,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             var response = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus> { caseStatus.ToDomain() };
 
             _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(person.Id)).Returns(person);
-            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusesByPersonId(person.Id)).Returns(response);
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(person.Id)).Returns(response);
 
             var result = _caseStatusesUseCase.ExecuteGet(person.Id);
 
