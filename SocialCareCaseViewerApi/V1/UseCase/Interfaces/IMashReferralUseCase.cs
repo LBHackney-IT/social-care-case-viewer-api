@@ -9,6 +9,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
     {
         public MashReferral? GetMashReferralUsingId(string requestId);
         public IEnumerable<MashReferral> GetMashReferrals(QueryMashReferrals request);
+        public MashReferral UpdateMashReferral(UpdateMashReferral request);
         public void Reset();
     }
 }

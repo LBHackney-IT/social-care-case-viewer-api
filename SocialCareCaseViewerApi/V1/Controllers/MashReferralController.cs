@@ -1,8 +1,10 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -67,7 +69,22 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpPatch]
         public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request)
         {
+            var validator = new UpdateMashReferralValidator();
+            var validation = validator.Validate(request);
+            if (!validation.IsValid)
+            {
+                return BadRequest(validation.ToString());
+            }
 
+            try
+            {
+                var updatedReferral = _mashReferralUseCase.UpdateMashReferral(request);
+                return Ok(updatedReferral);
+            }
+            catch (Exception e) when (e is MashReferralNotFoundException)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]

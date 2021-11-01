@@ -1,6 +1,4 @@
 using System;
-using Microsoft.EntityFrameworkCore.Metadata;
-using MongoDB.Driver;
 
 namespace SocialCareCaseViewerApi.V1.Exceptions
 {
@@ -179,6 +177,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class InvalidCaseStatusUpdateRequestException : Exception
     {
         public InvalidCaseStatusUpdateRequestException(string message) : base(message) { }
+    }
+
+    public class MashReferralNotFoundException : Exception
+    {
+        public MashReferralNotFoundException(string message) : base(message) { }
     }
 
     public class CustomException : Exception
