@@ -57,6 +57,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return Ok(referrals);
         }
 
+        /// <summary>
+        /// Update a mash referral
+        /// </summary>
+        /// <response code="200">Successful request. Referrals returned</response>
+        /// <response code="400">Invalid request</response>
+        /// <response code="500">There was a server side error getting the mash referrals</response>
+        [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
+        [HttpPatch]
+        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request)
+        {
+
+        }
+
         [HttpPost]
         [Route("reset")]
         public IActionResult ResetMashReferrals()
