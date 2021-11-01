@@ -669,7 +669,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? decision = null,
             bool? requiresUrgentContact = null)
         {
-            var updateTypes = new List<string> {"SCREENING-DECISION"};
+            var updateTypes = new List<string> { "SCREENING-DECISION" };
 
             return new Faker<UpdateMashReferral>()
                 .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
