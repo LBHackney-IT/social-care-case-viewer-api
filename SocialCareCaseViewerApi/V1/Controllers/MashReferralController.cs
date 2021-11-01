@@ -82,7 +82,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 var updatedReferral = _mashReferralUseCase.UpdateMashReferral(request, referralId);
                 return Ok(updatedReferral);
             }
-            catch (Exception e) when (e is MashReferralNotFoundException)
+            catch (Exception e) when (
+                e is MashReferralNotFoundException ||
+                e is WorkerNotFoundException)
             {
                 return BadRequest(e.Message);
             }
