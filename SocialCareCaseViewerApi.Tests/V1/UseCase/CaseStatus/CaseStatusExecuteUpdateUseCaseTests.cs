@@ -169,7 +169,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1), type: "LAC");
             _caseStatus.Answers.AddRange(answers);
 
-            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1));
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1), min: 1, max: 1);
 
             _mockCaseStatusGateway
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
@@ -185,7 +185,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         public void WhenTypeIsLACAndRequestedEndDateIsOnActiveCaseStatusAnswerStartDateItCallsTheGateway()
         {
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: "LAC");
-            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3), min: 1, max: 1);
 
             _mockCaseStatusGateway
                 .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
