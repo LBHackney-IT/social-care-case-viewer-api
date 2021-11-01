@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         {
             _mashReferralUseCase.Setup(x => x.Reset());
 
-            var response = _mashReferralController.ResetMashReferrals() as OkObjectResult;
+            var response = _mashReferralController.ResetMashReferrals() as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
