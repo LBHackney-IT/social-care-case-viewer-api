@@ -306,7 +306,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                         StartDate = a.StartDate,
                         CreatedAt = a.CreatedAt.Value,
                         GroupId = a.GroupId,
-                        EndDate = a.EndDate
+                        EndDate = a.EndDate,
+                        DiscardedAt = a.DiscardedAt
                     }
                     ).ToList()
             };

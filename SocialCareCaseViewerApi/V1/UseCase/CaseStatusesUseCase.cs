@@ -123,7 +123,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            //end date validation for CP and CIN
+            //end date validation
             if (request.EndDate != null)
             {
                 switch (caseStatus.Type.ToLower())
@@ -136,7 +136,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         }
                         break;
                     case "lac":
-                        if (caseStatus.Answers.Any(x => x.DiscardedAt == null && x.EndDate == null && x.StartDate > request.EndDate))
+                        var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
+
+                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }
