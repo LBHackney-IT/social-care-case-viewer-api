@@ -178,6 +178,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             }
                         }
                     }
+                    //add the episode ending answer, set start and end date to be today
+                    var today = DateTime.Today.Date;
+                    AddNewAnswers(request, caseStatus, startDate: today, endDate: today);
                 }
             }
             //end date not provided
@@ -285,7 +288,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus)
+        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, DateTime? startDate = null, DateTime? endDate = null)
         {
             Guid identifier = Guid.NewGuid();
 
@@ -295,7 +298,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     CaseStatusId = caseStatus.Id,
                     CreatedBy = request.EditedBy,
-                    StartDate = (DateTime) request.StartDate,
+                    StartDate = startDate ?? (DateTime) request.StartDate,
+                    EndDate = endDate ?? null,
                     Option = a.Option,
                     Value = a.Value,
                     GroupId = identifier.ToString(),
