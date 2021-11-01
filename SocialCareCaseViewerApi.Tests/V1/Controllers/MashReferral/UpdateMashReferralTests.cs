@@ -1,3 +1,4 @@
+using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -14,14 +15,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
     [TestFixture]
     public class UpdateMashReferralTests
     {
+        private readonly Faker _faker = new Faker();
         private MashReferralController _mashReferralController = null!;
         private Mock<IMashReferralUseCase> _mashReferralUseCase = null!;
+        private string _fakeReferralId = null!;
 
         [SetUp]
         public void Setup()
         {
             _mashReferralUseCase = new Mock<IMashReferralUseCase>();
             _mashReferralController = new MashReferralController(_mashReferralUseCase.Object);
+            _fakeReferralId = _faker.Random.String2(20, "0123456789abcdef");
         }
 
         [Test]
@@ -29,9 +33,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         {
             var request = TestHelpers.CreateUpdateMashReferral();
             var updatedReferral = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
-            _mashReferralUseCase.Setup(x => x.UpdateMashReferral(request)).Returns(updatedReferral);
+            _mashReferralUseCase.Setup(x => x.UpdateMashReferral(request, _fakeReferralId)).Returns(updatedReferral);
 
-            var response = _mashReferralController.UpdateMashReferral(request) as ObjectResult;
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(updatedReferral);
@@ -43,10 +47,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             var request = TestHelpers.CreateUpdateMashReferral();
             const string errorMessage = "test-error-message";
             _mashReferralUseCase
-                .Setup(x => x.UpdateMashReferral(request))
+                .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
                 .Throws(new MashReferralNotFoundException(errorMessage));
 
-            var response = _mashReferralController.UpdateMashReferral(request) as ObjectResult;
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
@@ -58,7 +62,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             var request = TestHelpers.CreateUpdateMashReferral();
             request.Decision = null;
 
-            var response = _mashReferralController.UpdateMashReferral(request) as ObjectResult;
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Must provide a decision");
@@ -70,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             var request = TestHelpers.CreateUpdateMashReferral();
             request.Decision = "";
 
-            var response = _mashReferralController.UpdateMashReferral(request) as ObjectResult;
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Must provide a decision");
@@ -82,7 +86,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             var request = TestHelpers.CreateUpdateMashReferral();
             request.RequiresUrgentContact = null;
 
-            var response = _mashReferralController.UpdateMashReferral(request) as ObjectResult;
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Must provide if urgent contact is required");

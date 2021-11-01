@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 .Select(x => x.ToResponse());
         }
 
-        public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request)
+        public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
         {
             return null;
         }
