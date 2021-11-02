@@ -84,7 +84,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
             catch (Exception e) when (
                 e is MashReferralNotFoundException ||
-                e is WorkerNotFoundException)
+                e is WorkerNotFoundException ||
+                e is MashReferralStageMismatchException)
             {
                 return BadRequest(e.Message);
             }

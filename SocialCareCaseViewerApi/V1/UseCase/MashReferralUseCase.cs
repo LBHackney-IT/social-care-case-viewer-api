@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 if (!referral.Stage.Equals("screening", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"${referral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
                 }
 
                 referral.Screening = new Screening
