@@ -17,6 +17,7 @@ using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 using MashReferral = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
+using Screening = SocialCareCaseViewerApi.V1.Infrastructure.Screening;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -643,8 +644,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(u => u.Answers, CreateCaseStatusValues());
         }
 
+        public static Screening CreateMashReferralScreening()
+        {
+            return new Faker<Screening>()
+                .RuleFor(x => x.UrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.Decision, f => f.Random.String2(100))
+                .RuleFor(x => x.CreatedAt, f => f.Date.Recent());
+        }
+
         public static MashReferral CreateMashReferral()
         {
+            var screening = CreateMashReferralScreening();
+
             return new Faker<MashReferral>()
                 .RuleFor(x => x.Id, f => ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(x => x.Clients, f => new List<string> { f.Random.String2(20) })
@@ -652,7 +663,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Stage, f => f.Random.String2(20))
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(20))
+                .RuleFor(x => x.Screening, screening)
                 .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))

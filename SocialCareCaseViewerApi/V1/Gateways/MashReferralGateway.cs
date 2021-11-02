@@ -33,6 +33,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 ?.ToDomain();
         }
 
+        public Infrastructure.MashReferral? GetInfrastructureUsingId(string requestId)
+        {
+            return _mongoGateway
+                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId));
+        }
+
+        public void UpsertRecord(Infrastructure.MashReferral referral)
+        {
+            _mongoGateway.UpsertRecord(_collectionName, referral.Id, referral);
+        }
+
         public void Reset()
         {
             _mongoGateway.DropCollection(_collectionName);

@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class MashReferralUseCase : IMashReferralUseCase
     {
-        private ISystemTime _systemTime;
+        private readonly ISystemTime _systemTime;
         private readonly IWorkerGateway _workerGateway;
         private readonly IMashReferralGateway _mashReferralGateway;
 
@@ -51,29 +51,32 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new WorkerNotFoundException($"Worker with {request.WorkerId} not found");
             }
 
-            var referral = _mashReferralGateway.GetReferralUsingId(referralId);
+            var referral = _mashReferralGateway.GetInfrastructureUsingId(referralId);
 
             if (referral == null)
             {
                 throw new MashReferralNotFoundException($"MASH referral with id {referralId} not found");
             }
 
-            if (request.UpdateType.Equals("staging-decision", StringComparison.OrdinalIgnoreCase))
+            if (request.UpdateType.Equals("screening-decision", StringComparison.OrdinalIgnoreCase))
             {
-                if (referral.Stage.Equals("screening", StringComparison.OrdinalIgnoreCase))
+                if (!referral.Stage.Equals("screening", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage ${referral.Stage}, this request requires the referral to be in stage screening");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"${referral.Stage}\", this request requires the referral to be in stage \"screening\"");
                 }
 
                 referral.Screening = new Screening
                 {
                     CreatedAt = _systemTime.Now,
-                    Decision = request.Decision,
-                    UrgentContactRequired = request.RequiresUrgentContact?.Value
-                }
+                    Decision = request.Decision!,
+                    UrgentContactRequired = request.RequiresUrgentContact!.Value
+                };
+                referral.Stage = "Final";
             }
 
-            return referral.ToResponse();
+            _mashReferralGateway.UpsertRecord(referral);
+
+            return referral.ToDomain().ToResponse();
         }
 
         public void Reset()

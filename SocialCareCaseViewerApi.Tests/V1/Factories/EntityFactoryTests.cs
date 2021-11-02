@@ -577,7 +577,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CreatedAt = infrastructureReferral.CreatedAt,
                 FinalDecision = infrastructureReferral.FinalDecision,
                 InitialDecision = infrastructureReferral.InitialDecision,
-                ScreeningDecision = infrastructureReferral.ScreeningDecision,
+                Screening = infrastructureReferral.Screening,
                 ReferralCategory = infrastructureReferral.ReferralCategory,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
