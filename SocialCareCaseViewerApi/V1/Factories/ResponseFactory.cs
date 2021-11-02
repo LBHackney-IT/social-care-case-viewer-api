@@ -16,6 +16,7 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
+using Screening = SocialCareCaseViewerApi.V1.Boundary.Response.Screening;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
@@ -345,6 +346,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static Screening ToResponse(this Infrastructure.Screening screening)
+        {
+            return new Screening
+            {
+                Decision = screening.Decision,
+                UrgentContactRequired = screening.UrgentContactRequired,
+                CreatedAt = screening.CreatedAt.ToString("O")
+            };
+        }
+
         public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
         {
             return new MashReferral
@@ -357,7 +368,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
-                ScreeningDecision = mashReferral.ScreeningDecision,
+                Screening = mashReferral.Screening?.ToResponse(),
                 ReferralCategory = mashReferral.ReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI

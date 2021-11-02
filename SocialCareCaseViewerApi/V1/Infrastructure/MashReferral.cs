@@ -23,8 +23,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? InitialDecision { get; set; }
-        public string? ScreeningDecision { get; set; }
+        public Screening? Screening { get; set; }
         public string? FinalDecision { get; set; }
         public string? ReferralCategory { get; set; }
+    }
+
+    public class Screening
+    {
+        public string Decision { get; set; } = null!;
+        public bool UrgentContactRequired { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
