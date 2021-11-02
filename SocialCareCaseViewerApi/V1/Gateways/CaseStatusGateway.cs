@@ -160,6 +160,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         foreach (var answer in activeAnswerGroups.First())
                         {
                             answer.EndDate = request.EndDate;
+                            answer.LastModifiedBy = request.EditedBy;
                         }
                     }
                     else if (activeAnswerGroups?.Count() > 1)
@@ -168,6 +169,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         foreach (var answer in activeAnswerGroups.First())
                         {
                             answer.EndDate = request.EndDate;
+                            answer.LastModifiedBy = request.EditedBy;
                         }
                         //discard the rest if the date is in the future (first group won't be in the collection anymore)
                         foreach (var g in activeAnswerGroups)
@@ -175,12 +177,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             foreach (var a in g.Where(x => x.StartDate > DateTime.Today))
                             {
                                 a.DiscardedAt = _systemTime.Now;
+                                a.LastModifiedBy = request.EditedBy;
                             }
                         }
                     }
-                    //add the episode ending answer, set start and end date to be today
-                    var today = DateTime.Today.Date;
-                    AddNewAnswers(request, caseStatus, startDate: today, endDate: today);
+                    //add episode ending answer
+                    AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
                 }
             }
             //end date not provided
@@ -203,6 +205,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         foreach (var a in caseStatus.Answers)
                         {
                             a.DiscardedAt = _systemTime.Now;
+                            a.LastModifiedBy = request.EditedBy;
                         }
                         //add new ones
                         AddNewAnswers(request, caseStatus);
@@ -240,6 +243,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             foreach (var a in caseStatus.Answers)
                             {
                                 a.DiscardedAt = _systemTime.Now;
+                                a.LastModifiedBy = request.EditedBy;
                             }
 
                             AddNewAnswers(request, caseStatus);
@@ -248,6 +252,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            caseStatus.LastModifiedBy = request.EditedBy;
             _databaseContext.SaveChanges();
 
             return caseStatus.ToDomain();
@@ -274,6 +279,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 a.DiscardedAt = _systemTime.Now;
                 a.EndDate = request.StartDate;
+                a.LastModifiedBy = request.EditedBy;
 
                 caseStatus.Answers.Add(new CaseStatusAnswer()
                 {
@@ -363,6 +369,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 foreach (var answer in activeAnswerGroups.First())
                 {
                     answer.EndDate = request.StartDate;
+                    answer.LastModifiedBy = request.CreatedBy;
                 }
 
                 Guid identifier = Guid.NewGuid();
@@ -388,12 +395,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 foreach (var answer in activeAnswerGroups.Last())
                 {
                     answer.DiscardedAt = _systemTime.Now;
+                    answer.LastModifiedBy = request.CreatedBy;
                 }
 
                 //end current active status
                 foreach (var answer in activeAnswerGroups.First())
                 {
                     answer.EndDate = request.StartDate;
+                    answer.LastModifiedBy = request.CreatedBy;
                 }
 
                 Guid identifier = Guid.NewGuid();
