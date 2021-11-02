@@ -184,6 +184,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public MashReferralNotFoundException(string message) : base(message) { }
     }
 
+    public class MashReferralStageMismatchException : Exception
+    {
+        public MashReferralStageMismatchException(string message) : base(message) { }
+    }
+
     public class CustomException : Exception
     {
         public CustomException(string message) : base(message)
