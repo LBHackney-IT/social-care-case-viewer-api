@@ -100,12 +100,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
-                Screening = new SocialCareCaseViewerApi.V1.Boundary.Response.Screening()
-                {
-                    Decision = request.Decision!,
-                    UrgentContactRequired = request.RequiresUrgentContact!.Value,
-                    CreatedAt = _dateTime.ToString("O")
-                },
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = _dateTime.ToString("O"),
                 ReferralCategory = mashReferral.ReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
