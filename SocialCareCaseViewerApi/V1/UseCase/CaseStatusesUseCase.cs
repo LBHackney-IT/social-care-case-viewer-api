@@ -124,10 +124,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                             throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " + $"is before the start date of {caseStatus.StartDate:O}");
                         }
                         break;
-                    case "lac": //TODO: TK check PR from Rachel
-                        var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
+                    case "lac":
+                        var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-                        if (activeAnswers.Any(x => x.StartDate > request.EndDate))
+                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }

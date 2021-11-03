@@ -189,18 +189,29 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         break;
 
                     case "lac":
-                        caseStatus.StartDate = (DateTime) request.StartDate;
-                        var activeAnswers = caseStatus
+                        var existingAnswerGroups = caseStatus
                                                 .Answers
-                                                .Where(x => x.DiscardedAt == null && x.EndDate == null).ToList(); //TODO: check end date handlinf re: active
+                                                .Where(x => x.DiscardedAt == null)
+                                                .OrderBy(x => x.StartDate)
+                                                .GroupBy(x => x.GroupId);
 
-                        if (activeAnswers.Any(x => x.StartDate >= request.StartDate))
+                        //multiple existing answers, check for overlapping dates
+                        if (existingAnswerGroups?.Count() > 1)
                         {
-                            throw new InvalidStartDateException("Start date overlaps with previous status start date.");
+                            foreach (var g in existingAnswerGroups)
+                            {
+                                foreach (var a in g)
+                                {
+                                    if (request.StartDate <= a.StartDate)
+                                    {
+                                        throw new InvalidStartDateException("Start date overlaps with previous status start date.");
+                                    }
+                                }
+                            }
                         }
 
-                        //discard current answers, but copy the values over to the new ones
-                        ReplaceLACAnswers(request, caseStatus, activeAnswers);
+                        caseStatus.StartDate = (DateTime) request.StartDate;
+                        ReplaceCurrentGroupAnswers(request, caseStatus, existingAnswerGroups.LastOrDefault().ToList());
 
                         break;
                 }
@@ -225,13 +236,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void ReplaceLACAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<CaseStatusAnswer> answers)
+        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> caseStatusAnswers)
         {
             Guid identifier = Guid.NewGuid();
 
-            foreach (var a in answers)
+            foreach (var a in caseStatusAnswers)
             {
                 a.DiscardedAt = _systemTime.Now;
+                a.EndDate = request.StartDate;
                 a.LastModifiedBy = request.EditedBy;
 
                 caseStatus.Answers.Add(new CaseStatusAnswer()
@@ -241,7 +253,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     StartDate = (DateTime) request.StartDate,
                     Option = a.Option,
                     Value = a.Value,
-                    GroupId = identifier.ToString()
+                    GroupId = identifier.ToString(),
+                    CreatedAt = _systemTime.Now
                 });
             }
         }

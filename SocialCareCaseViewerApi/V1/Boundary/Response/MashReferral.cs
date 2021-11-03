@@ -16,6 +16,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string Stage { get; set; } = null!;
         public string? InitialDecision { get; set; }
         public string? ScreeningDecision { get; set; }
+        public bool? ScreeningUrgentContactRequired { get; set; }
+        public string? ScreeningCreatedAt { get; set; }
         public string? FinalDecision { get; set; }
         public string? ReferralCategory { get; set; }
     }

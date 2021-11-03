@@ -24,6 +24,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Stage { get; set; } = null!;
         public string? InitialDecision { get; set; }
         public string? ScreeningDecision { get; set; }
+        public bool? ScreeningUrgentContactRequired { get; set; }
+        public DateTime? ScreeningCreatedAt { get; set; }
         public string? FinalDecision { get; set; }
         public string? ReferralCategory { get; set; }
     }

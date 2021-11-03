@@ -326,9 +326,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
                 ScreeningDecision = mashReferral.ScreeningDecision,
-                ReferralCategory = mashReferral.ReferralCategory,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 RequestedSupport = mashReferral.RequestedSupport,
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
+                ReferralCategory = mashReferral.ReferralCategory
             };
         }
     }

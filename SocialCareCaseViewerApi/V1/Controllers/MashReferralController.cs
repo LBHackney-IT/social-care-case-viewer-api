@@ -1,8 +1,10 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -55,6 +57,38 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             var referrals = _mashReferralUseCase.GetMashReferrals(request).ToList();
 
             return Ok(referrals);
+        }
+
+        /// <summary>
+        /// Update a mash referral
+        /// </summary>
+        /// <response code="200">Successful request. Referrals returned</response>
+        /// <response code="400">Invalid request</response>
+        /// <response code="500">There was a server side error getting the mash referrals</response>
+        [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("{referralId}")]
+        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, string referralId)
+        {
+            var validator = new UpdateMashReferralValidator();
+            var validation = validator.Validate(request);
+            if (!validation.IsValid)
+            {
+                return BadRequest(validation.ToString());
+            }
+
+            try
+            {
+                var updatedReferral = _mashReferralUseCase.UpdateMashReferral(request, referralId);
+                return Ok(updatedReferral);
+            }
+            catch (Exception e) when (
+                e is MashReferralNotFoundException ||
+                e is WorkerNotFoundException ||
+                e is MashReferralStageMismatchException)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]
