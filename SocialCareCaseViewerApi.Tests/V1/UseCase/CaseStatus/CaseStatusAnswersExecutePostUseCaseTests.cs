@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
+using System.Collections.Generic;
 using CaseStatusDomain = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using CaseStatusInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 
@@ -132,6 +133,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             Action act = () => _caseStatusesUseCase.ExecutePostCaseStatusAnswer(_request);
 
             act.Should().Throw<InvalidCaseStatusAnswersStartDateException>().WithMessage($"Start date cannot be before the current active date");
+        }
+
+
+        [Test]
+        public void WhenTypeIsLACandTheProvidedStarDateIsValidAndThereAreScheduledAnswersItCallsTheGateway()
+        {
+            var activeAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2000, 01, 11), endDate: new DateTime(2040, 02, 01));
+            var scheduledAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2040, 02, 01));
+
+            _lacCaseStatus.Answers.AddRange(activeAnswers);
+            _lacCaseStatus.Answers.AddRange(scheduledAnswers);
+
+            _request.StartDate = new DateTime(2000, 01, 11);
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_lacCaseStatus.ToDomain());
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_request.CreatedBy)).Returns(_worker);
+            _mockCaseStatusGateway.Setup(x => x.ReplaceCaseStatusAnswers(_request)).Returns(_caseStatus);
+            _mockCaseStatusGateway.Setup(x => x.CreateCaseStatusAnswer(_request)).Returns(_caseStatus);
+            _caseStatusesUseCase.ExecutePostCaseStatusAnswer(_request);
+
+            _mockCaseStatusGateway.Verify(x => x.GetCasesStatusByCaseStatusId(_request.CaseStatusId));
         }
 
         [Test]

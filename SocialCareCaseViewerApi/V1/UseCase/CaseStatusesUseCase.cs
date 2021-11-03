@@ -95,9 +95,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             //check for overlapping dates
-            var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
+            var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-            if (activeAnswers.Any(x => x.StartDate >= request.StartDate))
+            if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate >= request.StartDate)
             {
                 throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
             }
@@ -110,6 +110,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
+            }
+
+            if (caseStatus.Person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException($"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
+            }
+
+            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
 
             //end date validation
@@ -127,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     case "lac":
                         var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-                        if (activeAnswers.FirstOrDefault()?.StartDate > request.EndDate)
+                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate) //TODO: TK test for this?
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }
@@ -172,17 +183,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         }
                         break;
                 }
-            }
-
-            if (caseStatus.Person.AgeContext.ToLower() != "c")
-            {
-                throw new InvalidAgeContextException($"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
-            }
-
-            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
         }
     }
