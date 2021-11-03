@@ -136,7 +136,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         }
                         break;
                     case "lac":
-                        var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
+                        var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
                         if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
                         {
