@@ -110,6 +110,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.CaseStatus.LAC
             var createScheduledAnswersResponse = await Client.PostAsync(postScheduledAnswersUri, scheduledAnswersRequestContent).ConfigureAwait(true);
             createScheduledAnswersResponse.StatusCode.Should().Be(201);
 
+            //Get request to check that the scheduled answers were added
+            var getCaseStatusesResponseAfterScheduledUpdate = await Client.GetAsync(getUri).ConfigureAwait(true);
+
+            getCaseStatusesResponseAfterScheduledUpdate.StatusCode.Should().Be(200);
+
+            var updatedScheduledContent = await getCaseStatusesResponseAfterScheduledUpdate.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var updatedScheduledCaseStatusResponse = JsonConvert.DeserializeObject<List<CaseStatusResponse>>(updatedScheduledContent).ToList();
+
+            updatedScheduledCaseStatusResponse.Count.Should().Be(1);
+            updatedScheduledCaseStatusResponse.Single().Answers.Count.Should().Be(4);
+            // updatedScheduledCaseStatusResponse.Single().Answers.First().EndDate.Should().Be(addScheduledAnswersRequest.StartDate); -thought this should work
+            updatedScheduledCaseStatusResponse.Single().Answers.Last().StartDate.Should().Be(addScheduledAnswersRequest.StartDate);
+
             //patch case status to end it
             var endRequest = TestHelpers.CreateUpdateCaseStatusRequest(endDate: new DateTime(2000, 01, 11), email: _worker.Email, caseStatusId: caseStatusId, min: 1, max: 1);
             patchRequest.Notes = null;
