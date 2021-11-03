@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     case "lac":
                         var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate) //TODO: TK test for this?
+                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }
