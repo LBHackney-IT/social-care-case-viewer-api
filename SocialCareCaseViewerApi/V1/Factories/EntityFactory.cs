@@ -328,7 +328,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 RequestedSupport = mashReferral.RequestedSupport,
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
+                ReferralCategory = mashReferral.ReferralCategory
             };
         }
     }
