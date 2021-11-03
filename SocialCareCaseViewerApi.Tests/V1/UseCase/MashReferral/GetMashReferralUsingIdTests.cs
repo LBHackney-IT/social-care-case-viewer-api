@@ -1,6 +1,4 @@
-using System;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;

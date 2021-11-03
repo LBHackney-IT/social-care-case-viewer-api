@@ -652,7 +652,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent());
         }
 
-        public static MashReferral CreateMashReferral()
+        public static MashReferral CreateMashReferral(string? stage = null)
         {
             var screening = CreateMashReferralScreening();
 
@@ -660,7 +660,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Id, f => ObjectId.Parse(f.Random.String2(24, "0123456789abcdef")))
                 .RuleFor(x => x.Clients, f => new List<string> { f.Random.String2(20) })
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
-                .RuleFor(x => x.Stage, f => f.Random.String2(20))
+                .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.Screening, screening)
