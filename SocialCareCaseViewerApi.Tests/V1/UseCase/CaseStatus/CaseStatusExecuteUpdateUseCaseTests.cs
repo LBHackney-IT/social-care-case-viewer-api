@@ -181,19 +181,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             act.Should().Throw<InvalidEndDateException>()
                 .WithMessage("requested end date is before the start date of the currently active answer");
         }
-
+        //TODO: TK check after PR merge
         [Test]
         public void WhenTypeIsLACandTheProvidedEndDateIsValidAndThereAreScheduledAnswersItCallsTheGateway()
         {
-            var activeAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2000, 01, 11));
             var scheduledAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2040, 02, 01));
+            var previousAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: new DateTime(2000, 01, 11), endDate: new DateTime(2040, 02, 01));
 
-            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(200, 01, 11), type: "LAC");
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2000, 01, 11), type: "LAC");
             _caseStatus.Answers = new List<CaseStatusAnswer>();
-            _caseStatus.Answers.AddRange(activeAnswers);
             _caseStatus.Answers.AddRange(scheduledAnswers);
+            _caseStatus.Answers.AddRange(previousAnswers);
 
-            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(200, 01, 11), min: 1, max: 1);
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2000, 02, 11), min: 1, max: 1);
 
             _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
             _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(It.IsAny<UpdateCaseStatusRequest>())).Returns(new DomainCaseStatus());

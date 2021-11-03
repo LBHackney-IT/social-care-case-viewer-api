@@ -75,13 +75,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseStatusResponse ExecutePostCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
-
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
-            }
-
             var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
 
             if (caseStatus == null)
@@ -94,26 +87,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
             }
 
-            var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null).GroupBy(x => x.GroupId);
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
 
-            if (activeAnswerGroups.Count() == 1)
+            if (worker == null)
             {
-                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
-                {
-                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
-                }
-            }
-            else if (activeAnswerGroups.Count() == 2)
-            {
-                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
-                {
-                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
-                }
-
-                return _caseStatusGateway.ReplaceCaseStatusAnswer(request).ToResponse();
+                throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
             }
 
-            return _caseStatusGateway.CreateCaseStatusAnswer(request).ToResponse();
+            //check for overlapping dates
+            var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
+
+            if (activeAnswers.Any(x => x.StartDate >= request.StartDate))
+            {
+                throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
+            }
+
+            return _caseStatusGateway.ReplaceCaseStatusAnswers(request).ToResponse();
         }
 
         private void ExecuteUpdateValidation(UpdateCaseStatusRequest request, CaseStatus? caseStatus)
@@ -135,10 +124,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                             throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " + $"is before the start date of {caseStatus.StartDate:O}");
                         }
                         break;
-                    case "lac":
+                    case "lac": //TODO: TK check PR from Rachel
                         var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null);
 
-                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
+                        if (activeAnswers.Any(x => x.StartDate > request.EndDate))
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }

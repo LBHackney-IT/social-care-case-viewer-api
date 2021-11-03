@@ -149,37 +149,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 if (caseStatus.Type.ToLower() == "lac")
                 {
-                    var activeAnswerGroups = caseStatus
+                    var activeAnswers = caseStatus
                                                 .Answers
-                                                .Where(x => x.DiscardedAt == null && x.EndDate == null)
-                                                .OrderBy(x => x.StartDate)
-                                                .GroupBy(x => x.GroupId);
+                                                .Where(x => x.DiscardedAt == null && x.EndDate == null); //TODO: TK check validtion in use case
 
-                    if (activeAnswerGroups?.Count() == 1)
+                    foreach (var answer in activeAnswers)
                     {
-                        foreach (var answer in activeAnswerGroups.First())
-                        {
-                            answer.EndDate = request.EndDate;
-                            answer.LastModifiedBy = request.EditedBy;
-                        }
-                    }
-                    else if (activeAnswerGroups?.Count() > 1)
-                    {
-                        //end the current active one
-                        foreach (var answer in activeAnswerGroups.First())
-                        {
-                            answer.EndDate = request.EndDate;
-                            answer.LastModifiedBy = request.EditedBy;
-                        }
-                        //discard the rest if the date is in the future (first group won't be in the collection anymore)
-                        foreach (var g in activeAnswerGroups)
-                        {
-                            foreach (var a in g.Where(x => x.StartDate > DateTime.Today))
-                            {
-                                a.DiscardedAt = _systemTime.Now;
-                                a.LastModifiedBy = request.EditedBy;
-                            }
-                        }
+                        answer.EndDate = request.EndDate;
+                        answer.LastModifiedBy = request.EditedBy;
                     }
                     //add episode ending answer
                     AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
@@ -212,42 +189,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         break;
 
                     case "lac":
-                        var existingAnswerGroups = caseStatus
+                        caseStatus.StartDate = (DateTime) request.StartDate;
+                        var activeAnswers = caseStatus
                                                 .Answers
-                                                .Where(x => x.DiscardedAt == null)
-                                                .OrderBy(x => x.StartDate)
-                                                .GroupBy(x => x.GroupId);
+                                                .Where(x => x.DiscardedAt == null && x.EndDate == null).ToList(); //TODO: check end date handlinf re: active
 
-                        if (existingAnswerGroups?.Count() > 1)
+                        if (activeAnswers.Any(x => x.StartDate >= request.StartDate))
                         {
-                            //check for overlapping dates
-                            foreach (var g in existingAnswerGroups)
-                            {
-                                foreach (var a in g)
-                                {
-                                    if (request.StartDate <= a.StartDate)
-                                    {
-                                        throw new InvalidStartDateException("Start date overlaps with previous status start date.");
-                                    }
-                                }
-                            }
-                            //replace current active answers
-                            ReplaceCurrentGroupAnswers(request, caseStatus, existingAnswerGroups);
+                            throw new InvalidStartDateException("Start date overlaps with previous status start date.");
                         }
 
-                        //no scheduled answers, replace the current answers and case start date
-                        if (existingAnswerGroups?.Count() == 1)
-                        {
-                            caseStatus.StartDate = (DateTime) request.StartDate;
+                        //discard current answers, but copy the values over to the new ones
+                        ReplaceLACAnswers(request, caseStatus, activeAnswers);
 
-                            foreach (var a in caseStatus.Answers)
-                            {
-                                a.DiscardedAt = _systemTime.Now;
-                                a.LastModifiedBy = request.EditedBy;
-                            }
-
-                            AddNewAnswers(request, caseStatus);
-                        }
                         break;
                 }
             }
@@ -271,14 +225,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<IGrouping<string, CaseStatusAnswer>>? answerGroups)
+        private void ReplaceLACAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, IEnumerable<CaseStatusAnswer> answers)
         {
             Guid identifier = Guid.NewGuid();
 
-            foreach (var a in answerGroups.LastOrDefault())
+            foreach (var a in answers)
             {
                 a.DiscardedAt = _systemTime.Now;
-                a.EndDate = request.StartDate;
                 a.LastModifiedBy = request.EditedBy;
 
                 caseStatus.Answers.Add(new CaseStatusAnswer()
@@ -288,8 +241,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     StartDate = (DateTime) request.StartDate,
                     Option = a.Option,
                     Value = a.Value,
-                    GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now
+                    GroupId = identifier.ToString()
                 });
             }
         }
@@ -348,7 +300,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatus.ToDomain();
         }
 
-        public CaseStatus ReplaceCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
+        public CaseStatus ReplaceCaseStatusAnswers(CreateCaseStatusAnswerRequest request)
         {
             var caseStatus = _databaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
 
@@ -357,71 +309,45 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new CaseStatusDoesNotExistException($"Case status id {request.CaseStatusId} does not exist.");
             }
 
-            var activeAnswerGroups = caseStatus
-                .Answers
-                .Where(x => x.DiscardedAt == null && x.EndDate == null)
-                .OrderBy(x => x.StartDate)
-                .GroupBy(x => x.GroupId);
-
-            //end the current active answer and add new ones
-            if (activeAnswerGroups.Count() == 1)
+            var activeAnswers = caseStatus
+                                    .Answers
+                                    .Where(x => x.DiscardedAt == null && x.EndDate == null);
+            //discard future ones
+            if(activeAnswers.Any(x => x.StartDate > DateTime.Today.Date))
             {
-                foreach (var answer in activeAnswerGroups.First())
-                {
-                    answer.EndDate = request.StartDate;
-                    answer.LastModifiedBy = request.CreatedBy;
-                }
-
-                Guid identifier = Guid.NewGuid();
-                foreach (var answer in request.Answers)
-                {
-                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
-                    {
-                        CaseStatusId = caseStatus.Id,
-                        CreatedBy = request.CreatedBy,
-                        StartDate = request.StartDate,
-                        Option = answer.Option,
-                        Value = answer.Value,
-                        GroupId = identifier.ToString(),
-                        CreatedAt = _systemTime.Now
-                    };
-
-                    caseStatus.Answers.Add(caseStatusAnswer);
-                }
-            }
-            else
-            {
-                //discard current scheduled change
-                foreach (var answer in activeAnswerGroups.Last())
+                foreach (var answer in activeAnswers)
                 {
                     answer.DiscardedAt = _systemTime.Now;
                     answer.LastModifiedBy = request.CreatedBy;
                 }
-
-                //end current active status
-                foreach (var answer in activeAnswerGroups.First())
+            }
+            //end the current ones
+            else
+            {
+                foreach (var answer in activeAnswers)
                 {
                     answer.EndDate = request.StartDate;
                     answer.LastModifiedBy = request.CreatedBy;
                 }
+            }
 
-                Guid identifier = Guid.NewGuid();
+            //add new ones
+            Guid identifier = Guid.NewGuid();
 
-                foreach (var answer in request.Answers)
+            foreach (var answer in request.Answers)
+            {
+                var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
                 {
-                    var caseStatusAnswer = new Infrastructure.CaseStatusAnswer()
-                    {
-                        CaseStatusId = caseStatus.Id,
-                        CreatedBy = request.CreatedBy,
-                        StartDate = request.StartDate,
-                        Option = answer.Option,
-                        Value = answer.Value,
-                        GroupId = identifier.ToString(),
-                        CreatedAt = _systemTime.Now
-                    };
+                    CaseStatusId = caseStatus.Id,
+                    CreatedBy = request.CreatedBy,
+                    StartDate = request.StartDate,
+                    Option = answer.Option,
+                    Value = answer.Value,
+                    GroupId = identifier.ToString(),
+                    CreatedAt = _systemTime.Now
+                };
 
-                    caseStatus.Answers.Add(caseStatusAnswer);
-                }
+                caseStatus.Answers.Add(caseStatusAnswer);
             }
 
             _databaseContext.SaveChanges();
