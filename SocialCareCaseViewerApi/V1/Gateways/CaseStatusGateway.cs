@@ -151,7 +151,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     var activeAnswers = caseStatus
                                                 .Answers
-                                                .Where(x => x.DiscardedAt == null && x.EndDate == null); //TODO: TK check validtion in use case
+                                                .Where(x => x.DiscardedAt == null && x.EndDate == null);
 
                     foreach (var answer in activeAnswers)
                     {
@@ -331,7 +331,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                     .Answers
                                     .Where(x => x.DiscardedAt == null && x.EndDate == null);
             //discard future ones
-            if(activeAnswers.Any(x => x.StartDate > DateTime.Today.Date))
+            if (activeAnswers.Any(x => x.StartDate > DateTime.Today.Date))
             {
                 foreach (var answer in activeAnswers)
                 {
