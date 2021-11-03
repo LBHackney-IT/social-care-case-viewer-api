@@ -195,7 +195,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                                 .OrderBy(x => x.StartDate)
                                                 .GroupBy(x => x.GroupId);
 
-                        //multiple existing answers, check for overlapping dates
+                        //multiple answer groups, check for overlapping dates
                         if (existingAnswerGroups?.Count() > 1)
                         {
                             foreach (var g in existingAnswerGroups)
@@ -211,7 +211,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         }
 
                         caseStatus.StartDate = (DateTime) request.StartDate;
-                        ReplaceCurrentGroupAnswers(request, caseStatus, existingAnswerGroups.LastOrDefault().ToList());
+
+                        var currentActiveAnswers = caseStatus.Answers
+                                                .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today))
+                                                .OrderBy(x => x.StartDate).ToList();
+
+                        ReplaceCurrentActiveAnswers(request, caseStatus, currentActiveAnswers);
 
                         break;
                 }
@@ -236,7 +241,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void ReplaceCurrentGroupAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> caseStatusAnswers)
+        private void ReplaceCurrentActiveAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> caseStatusAnswers)
         {
             Guid identifier = Guid.NewGuid();
 
