@@ -1,11 +1,10 @@
-using System;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -16,13 +15,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     public class GetMashReferralUsingIdTests
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
+        private Mock<IWorkerGateway> _workerGateway = null!;
+        private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
 
         [SetUp]
         public void Setup()
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object);
+            _workerGateway = new Mock<IWorkerGateway>();
+            _systemTime = new Mock<ISystemTime>();
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _workerGateway.Object, _systemTime.Object);
         }
 
         [Test]
@@ -45,6 +48,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             response?.Stage.Should().BeEquivalentTo(referral.Stage);
             response?.InitialDecision.Should().BeEquivalentTo(referral.InitialDecision);
             response?.ScreeningDecision.Should().BeEquivalentTo(referral.ScreeningDecision);
+            response?.ScreeningCreatedAt.Should().BeEquivalentTo(referral.ScreeningCreatedAt?.ToString("O"));
+            response?.ScreeningUrgentContactRequired.Should().Be(referral.ScreeningUrgentContactRequired);
             response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
             response?.ReferralCategory.Should().BeEquivalentTo(referral.ReferralCategory);
         }

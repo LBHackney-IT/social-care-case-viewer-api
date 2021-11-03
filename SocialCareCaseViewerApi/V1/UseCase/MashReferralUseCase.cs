@@ -4,8 +4,10 @@ using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -14,10 +16,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class MashReferralUseCase : IMashReferralUseCase
     {
+        private readonly ISystemTime _systemTime;
+        private readonly IWorkerGateway _workerGateway;
         private readonly IMashReferralGateway _mashReferralGateway;
 
-        public MashReferralUseCase(IMashReferralGateway mashReferralGateway)
+        public MashReferralUseCase(IMashReferralGateway mashReferralGateway, IWorkerGateway workerGateway, ISystemTime systemTime)
         {
+            _systemTime = systemTime;
+            _workerGateway = workerGateway;
             _mashReferralGateway = mashReferralGateway;
         }
 
@@ -35,6 +41,39 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _mashReferralGateway
                 .GetReferralsUsingFilter(filter)
                 .Select(x => x.ToResponse());
+        }
+
+        public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
+        {
+            var worker = _workerGateway.GetWorkerByWorkerId(request.WorkerId);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with {request.WorkerId} not found");
+            }
+
+            var referral = _mashReferralGateway.GetInfrastructureUsingId(referralId);
+
+            if (referral == null)
+            {
+                throw new MashReferralNotFoundException($"MASH referral with id {referralId} not found");
+            }
+
+            if (request.UpdateType.Equals("screening-decision", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!referral.Stage.Equals("screening", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                }
+
+                referral.ScreeningCreatedAt = _systemTime.Now;
+                referral.ScreeningDecision = request.Decision;
+                referral.ScreeningUrgentContactRequired = request.RequiresUrgentContact;
+                referral.Stage = "Final";
+            }
+
+            _mashReferralGateway.UpsertRecord(referral);
+
+            return referral.ToDomain().ToResponse();
         }
 
         public void Reset()
@@ -141,11 +180,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 CreatedAt = DateTime.Now.AddHours(-3),
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "John Smith" },
-                Stage = "Screening",
+                Stage = "Final",
                 ReferralDocumentURI = "hardcoded-referral-11-URI",
                 InitialDecision = "DAIS",
                 ReferralCategory = "Emotional abuse",
-                ScreeningDecision = "DAIS"
+                ScreeningDecision = "DAIS",
+                ScreeningCreatedAt = DateTime.Now.AddHours(-2),
+                ScreeningUrgentContactRequired = true
             };
             var referral12 = new MashReferral
             {
@@ -153,11 +194,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 CreatedAt = DateTime.Now.AddHours(-1),
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Jack Owens", "c1", "c2" },
-                Stage = "Screening",
+                Stage = "Final",
                 ReferralDocumentURI = "hardcoded-referral-12-URI",
                 InitialDecision = "DAIS",
                 ReferralCategory = "Emotional abuse",
-                ScreeningDecision = "DAIS"
+                ScreeningDecision = "DAIS",
+                ScreeningCreatedAt = DateTime.Now.AddHours(-1),
+                ScreeningUrgentContactRequired = true
             };
 
             _mashReferralGateway.InsertDocument(referral1);
