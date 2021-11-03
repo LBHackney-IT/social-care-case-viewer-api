@@ -7,6 +7,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
+        public void CaseStatusAClassImplementsIAuditEntityInterface()
+        {
+            var caseStatusAnswer = new CaseStatus();
+            (caseStatusAnswer is IAuditEntity).Should().BeTrue();
+        }
+
+        [Test]
         public void CreatesACaseStatus()
         {
             var person = TestHelpers.CreatePerson();
@@ -45,6 +53,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.Type.Should().Be(request.Type);
             caseStatus.StartDate.Should().Be(request.StartDate);
             caseStatus.EndDate.Should().BeNull();
+            caseStatus.CreatedBy.Should().Be(request.CreatedBy);
+            caseStatus.CreatedAt.Should().NotBeNull();
         }
 
         [Test]
@@ -103,6 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.Type.Should().Be(request.Type);
             caseStatus.StartDate.Should().Be(request.StartDate);
             caseStatus.EndDate.Should().BeNull();
+            caseStatus.Answers.All(x => x.CreatedBy == request.CreatedBy).Should().BeTrue();
         }
 
         [Test]

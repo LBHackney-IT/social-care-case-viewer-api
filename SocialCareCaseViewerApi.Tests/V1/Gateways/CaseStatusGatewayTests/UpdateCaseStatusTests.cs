@@ -2,7 +2,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
@@ -54,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void WhenCaseStatusHasEndDateAlreadyAndTheProvidedEndDateIsInTheFutureItUpdatesTheEnd()
+        public void WhenCaseStatusHasEndDateAlreadyAndTheProvidedEndDateIsInTheFutureItUpdatesTheEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest();
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
@@ -67,6 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
             updatedCaseStatus.EndDate.Should().Be(request.EndDate);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         [Test]
@@ -83,6 +83,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
             updatedCaseStatus.EndDate.Should().Be(request.EndDate);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         //CIN
@@ -105,6 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.Answers.Count.Should().Be(1);
             updatedCaseStatus.Answers.First().EndDate.Should().BeNull();
@@ -131,6 +133,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.StartDate.Should().Be((DateTime) request.StartDate);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         //CP
@@ -153,7 +156,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
-
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
             updatedCaseStatus.Answers.Count.Should().Be(0);
         }
 
@@ -162,10 +165,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
         {
             var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
+            var activeGroupId = Guid.NewGuid().ToString();
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
-            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: Guid.NewGuid().ToString());
+            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: activeGroupId);
 
             caseStatus.Answers = answers;
             caseStatus.Type = "LAC";
@@ -179,10 +183,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.Answers.Count.Should().Be(3);
             updatedCaseStatus.Answers.All(x => x.EndDate != null).Should().BeTrue();
             updatedCaseStatus.Answers.All(x => x.DiscardedAt == null).Should().BeTrue();
+
+            var activeAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
+            activeAnswers.All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
         }
 
         [Test]
@@ -209,6 +217,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.Answers.Count.Should().Be(3);
             updatedCaseStatus.Answers.All(x => x.EndDate != null).Should().BeTrue();
@@ -218,8 +227,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             episodeEndingAnswer.Option.Should().Be(newRequestAnswer.Option);
             episodeEndingAnswer.Value.Should().Be(newRequestAnswer.Value);
-            episodeEndingAnswer.EndDate.Value.Date.Should().Be(DateTime.Today.Date);
-            episodeEndingAnswer.StartDate.Date.Should().Be(DateTime.Today.Date);
+            episodeEndingAnswer.EndDate.Value.Date.Should().Be(request.EndDate.Value.Date);
+            episodeEndingAnswer.StartDate.Date.Should().Be(request.EndDate.Value.Date);
+            episodeEndingAnswer.CreatedBy.Should().Be(request.EditedBy);
         }
 
         //LAC
@@ -250,14 +260,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.EndDate.Should().NotBeNull();
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.Answers.Count.Should().Be(5);
 
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.EndDate != null).Should().BeTrue();
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.DiscardedAt == null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
 
             updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.EndDate == null).Should().BeTrue();
             updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.DiscardedAt != null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
         }
 
         //tests when end date is not provided
@@ -286,6 +299,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             updatedCaseStatus.Type.Should().Be(caseStatus.Type);
             updatedCaseStatus.StartDate.Should().Be(caseStatus.StartDate);
             updatedCaseStatus.Notes.Should().Be(request.Notes);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         //CIN
@@ -309,6 +323,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.Notes.Should().Be(request.Notes);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         //CP
@@ -330,6 +345,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
             updatedCaseStatus.StartDate.Date.Should().Be((DateTime) request.StartDate?.Date);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
         }
 
         [Test]
@@ -360,10 +376,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             updatedCaseStatus.Answers.Count.Should().Be(2);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             var discardedAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
 
             discardedAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
+            discardedAnswers.All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
 
             var newAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId);
 
@@ -400,6 +418,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             _caseStatusGateway.UpdateCaseStatus(request);
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.StartDate.Should().Be(request.StartDate.Value);
             updatedCaseStatus.Answers.Count.Should().Be(4);
@@ -407,6 +426,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var discardedAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
 
             discardedAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
+            discardedAnswers.All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
 
             var newAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId);
 
@@ -476,8 +496,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             _caseStatusGateway.UpdateCaseStatus(request);
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.DiscardedAt != null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
         }
 
         [Test]
@@ -515,9 +537,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             _caseStatusGateway.UpdateCaseStatus(request);
 
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
 
             var newAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != previousGroupId && x.GroupId != activeGroupId);
             var previousActiveAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
+            previousActiveAnswers.All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
 
             newAnswers.Any(x => x.Option == activeAnswers.FirstOrDefault().Option).Should().BeTrue();
             newAnswers.Any(x => x.Value == activeAnswers.FirstOrDefault().Value).Should().BeTrue();

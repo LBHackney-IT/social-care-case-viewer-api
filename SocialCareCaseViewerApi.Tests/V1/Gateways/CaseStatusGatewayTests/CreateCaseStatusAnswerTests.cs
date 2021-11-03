@@ -7,9 +7,11 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CaseStatusAnswerInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
@@ -25,6 +27,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             _mockSystemTime = new Mock<ISystemTime>();
             _caseStatusGateway = new CaseStatusGateway(DatabaseContext, _mockSystemTime.Object);
+        }
+
+        [Test]
+        public void CreateCaseStatusAnswerClassImplementsIAuditEntityInterface()
+        {
+            var caseStatusAnswer = new CaseStatusAnswerInfrastructure();
+            (caseStatusAnswer is IAuditEntity).Should().BeTrue();
         }
 
         [Test]
@@ -46,6 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatusAnswer.Option.Should().Be(request.Answers.First().Option);
             caseStatusAnswer.Value.Should().Be(request.Answers.First().Value);
             caseStatusAnswer.StartDate.Should().Be(request.StartDate);
+            caseStatusAnswer.CreatedAt.Should().NotBeNull();
         }
 
         [Test]
@@ -86,7 +96,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void SetsTheEndDateForTheCurrentActiveAnswersWhenNewOnesAreaddedAndThereIsNoScheduledChanges()
+        public void SetsTheEndDateForTheCurrentActiveAnswersWhenNewOnesAreAddedAndThereIsNoScheduledChanges()
         {
             var personId = 123;
             var groupId1 = Guid.NewGuid().ToString();
@@ -124,6 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             previousActiveAnswers.All(x => x.EndDate != null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate == request.StartDate);
             previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
+            previousActiveAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
 
             var newActiveAnswers = newSetOfAnswers.Where(x => x.GroupId != groupId1);
 
@@ -174,10 +185,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var discardedScheduledAnswers = newAnswers.Where(x => x.GroupId == groupId2);
             discardedScheduledAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
             discardedScheduledAnswers.All(x => x.EndDate == null).Should().BeTrue();
+            discardedScheduledAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
 
             var previousActiveAnswers = newAnswers.Where(x => x.GroupId == groupId1);
             previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate != null && x.EndDate == request.StartDate).Should().BeTrue();
+            previousActiveAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
 
             var newScheduledAnswers = newAnswers.Where(x => x.GroupId != groupId1 && x.GroupId != groupId2);
             newScheduledAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
