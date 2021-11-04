@@ -234,7 +234,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
         //LAC
         [Test]
-        public void WhenTypeIsLACAndValidEndDateIsProvidedAndThereAreScheduledAnswersItSetsTheEndDateToScheduledAnswers()
+        public void WhenTypeIsLACAndValidEndDateIsProvidedAndThereAreScheduledAnswersItDiscardsTheScheduledAnswers()
         {
             var scheduledGroupId = Guid.NewGuid().ToString();
 
@@ -261,8 +261,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.Answers.Count.Should().Be(3);
 
-            updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.EndDate != null).Should().BeTrue();
-            updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.DiscardedAt == null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.EndDate == null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.DiscardedAt != null).Should().BeTrue();
             updatedCaseStatus.Answers.Where(x => x.GroupId == scheduledGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
         }
 
