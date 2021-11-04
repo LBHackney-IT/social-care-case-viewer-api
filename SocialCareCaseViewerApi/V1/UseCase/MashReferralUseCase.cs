@@ -17,13 +17,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
     public class MashReferralUseCase : IMashReferralUseCase
     {
         private readonly ISystemTime _systemTime;
-        private readonly IWorkerGateway _workerGateway;
+        private readonly IDatabaseGateway _databaseGateway;
         private readonly IMashReferralGateway _mashReferralGateway;
 
-        public MashReferralUseCase(IMashReferralGateway mashReferralGateway, IWorkerGateway workerGateway, ISystemTime systemTime)
+        public MashReferralUseCase(IMashReferralGateway mashReferralGateway, IDatabaseGateway databaseGateway, ISystemTime systemTime)
         {
             _systemTime = systemTime;
-            _workerGateway = workerGateway;
+            _databaseGateway = databaseGateway;
             _mashReferralGateway = mashReferralGateway;
         }
 
@@ -45,10 +45,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
         {
-            var worker = _workerGateway.GetWorkerByWorkerId(request.WorkerId);
+            var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with {request.WorkerId} not found");
+                throw new WorkerNotFoundException($"Worker with email \"{request.WorkerEmail}\" not found");
             }
 
             var referral = _mashReferralGateway.GetInfrastructureUsingId(referralId);
