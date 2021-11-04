@@ -509,7 +509,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
 
             var newAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId && x.GroupId != previousGroupId && x.EndDate == null);
-            
+
             newAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
         }
 
