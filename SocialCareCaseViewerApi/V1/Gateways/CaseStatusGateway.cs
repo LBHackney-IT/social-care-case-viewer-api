@@ -208,7 +208,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             {
                                 foreach (var a in g)
                                 {
-                                    if (request.StartDate <= a.StartDate)
+                                    if (request.StartDate <= a.StartDate && a.EndDate != null && a.EndDate < DateTime.Today)
                                     {
                                         throw new InvalidStartDateException("Start date overlaps with previous status start date.");
                                     }
@@ -295,7 +295,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CaseStatusId = caseStatus.Id,
                     CreatedBy = request.EditedBy,
                     StartDate = a.StartDate,
-                    EndDate = request.EndDate,
+                    EndDate = request.StartDate,
                     Option = a.Option,
                     Value = a.Value,
                     GroupId = identifier.ToString(),
