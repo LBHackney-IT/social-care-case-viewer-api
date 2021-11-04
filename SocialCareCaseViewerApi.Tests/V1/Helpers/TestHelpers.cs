@@ -586,7 +586,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
         }
 
-        private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
+        public static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
         {
             var caseStatusValues = new List<CaseStatusValue>();
 

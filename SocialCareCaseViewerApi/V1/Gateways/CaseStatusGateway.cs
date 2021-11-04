@@ -216,13 +216,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             }
                         }
 
-                        caseStatus.StartDate = (DateTime) request.StartDate;
+                        if (existingAnswerGroups?.Count() == 1)
+                        {
+                            caseStatus.StartDate = (DateTime) request.StartDate;
+                        }
 
                         var currentActiveAnswers = caseStatus.Answers
-                                                .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today))
+                                                .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today) && x.StartDate <= DateTime.Today)
                                                 .OrderBy(x => x.StartDate).ToList();
 
                         ReplaceCurrentActiveAnswers(request, caseStatus, currentActiveAnswers);
+
+                        var previousCaseStatusAnswers = caseStatus.Answers
+                                                .Where(x => x.DiscardedAt == null && x.EndDate != null)
+                                                .OrderByDescending(x => x.StartDate).Take(2).ToList();
+
+                        CopyAndDiscardPreviousAnswers(request, caseStatus, previousCaseStatusAnswers);
 
                         break;
                 }
@@ -254,14 +263,39 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             foreach (var a in caseStatusAnswers)
             {
                 a.DiscardedAt = _systemTime.Now;
-                a.EndDate = request.StartDate;
-                a.LastModifiedBy = request.EditedBy;
+                a.LastModifiedBy = request.EditedBy; 
+            }
 
+            foreach (var ra in request.Answers)
+            {
                 caseStatus.Answers.Add(new CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
                     CreatedBy = request.EditedBy,
                     StartDate = (DateTime) request.StartDate,
+                    Option = ra.Option,
+                    Value = ra.Value,
+                    GroupId = identifier.ToString(),
+                    CreatedAt = _systemTime.Now
+                });
+            }
+        }
+
+        private void CopyAndDiscardPreviousAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> previousCaseStatusAnswers)
+        {
+            Guid identifier = Guid.NewGuid();
+
+            foreach (var a in previousCaseStatusAnswers)
+            {
+                a.DiscardedAt = _systemTime.Now;
+                a.LastModifiedBy = request.EditedBy;
+           
+                caseStatus.Answers.Add(new CaseStatusAnswer()
+                {
+                    CaseStatusId = caseStatus.Id,
+                    CreatedBy = request.EditedBy,
+                    StartDate = a.StartDate,
+                    EndDate = request.EndDate,
                     Option = a.Option,
                     Value = a.Value,
                     GroupId = identifier.ToString(),

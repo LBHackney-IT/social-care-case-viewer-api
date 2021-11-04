@@ -387,7 +387,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         //LAC
 
         [Test]
-        public void WhenTypeIsLACAndEndDateIsNotProvidedItUpdatesTheCaseStartDate()
+        public void WhenTypeIsLACAndEndDateIsNotProvidedItUpdatesTheCaseStartDateWhenThereIsOnlyOneSetOfAnswers()
         {
             var activeGroupId = Guid.NewGuid().ToString();
 
@@ -413,6 +413,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
             updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
             updatedCaseStatus.StartDate.Should().Be(request.StartDate.Value);
+        }
+
+        [Test]
+        public void WhenTypeIsLACAndEndDateIsNotProvidedItDoesNotUpdateTheCaseStartDateWhenThereIsMoreThanOneSetOfAnswers()
+        {
+            var activeGroupId = Guid.NewGuid().ToString();
+            var activeGroupId2 = Guid.NewGuid().ToString();
+
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max: 2);
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+
+            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(-3), endDate: DateTime.Today.AddDays(-2), discardedAt: null, groupId: activeGroupId);
+            var answers2 = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(-2), endDate: null, discardedAt: null, groupId: activeGroupId2);
+
+            caseStatus.Answers = answers;
+            caseStatus.Type = "LAC";
+            caseStatus.EndDate = null;
+
+            DatabaseContext.SaveChanges();
+
+            request.EndDate = null;
+            request.CaseStatusId = caseStatus.Id;
+            request.StartDate = DateTime.Now.AddDays(-1);
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
+            updatedCaseStatus.StartDate.Should().Be(caseStatus.StartDate);
         }
 
         [Test]
@@ -449,7 +479,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void WhenTypeIsLACAndEndDateIsNotProvidedAndThereAreMoreThanOneGroupOfAnswersItDiscardsTheMostRecentAnswers()
+        public void WhenTypeIsLACAndEndDateIsNotProvidedAndThereAreMoreThanOneGroupOfAnswersItDiscardsThePastAndActiveAnswers()
         {
             var previousGroupId = Guid.NewGuid().ToString();
             var activeGroupId = Guid.NewGuid().ToString();
@@ -481,10 +511,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.DiscardedAt != null).Should().BeTrue();
             updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == previousGroupId).All(x => x.DiscardedAt != null).Should().BeTrue();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == previousGroupId).All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
         }
 
         [Test]
-        public void WhenTypeIsLACAndEndDateIsNotProvidedItAddsNewAnswersCopyingTheAnswersFromTheDiscardedPreviousAnswers()
+        public void WhenTypeIsLACAndEndDateIsNotProvidedItAddsNewAnswersWithTheUpdatedAnswers()
         {
             var activeGroupId = Guid.NewGuid().ToString();
 
@@ -504,6 +536,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             request.CaseStatusId = caseStatus.Id;
             request.StartDate = DateTime.Now.AddDays(-1);
+            request.Answers = TestHelpers.CreateCaseStatusValues(min: 2, max: 2);
 
             _caseStatusGateway.UpdateCaseStatus(request);
 
@@ -512,10 +545,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var newAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId);
 
-            newAnswers.Any(x => x.Option == activeAnswers.FirstOrDefault().Option).Should().BeTrue();
-            newAnswers.Any(x => x.Value == activeAnswers.FirstOrDefault().Value).Should().BeTrue();
-            newAnswers.Any(x => x.Option == activeAnswers.LastOrDefault().Option).Should().BeTrue();
-            newAnswers.Any(x => x.Value == activeAnswers.LastOrDefault().Value).Should().BeTrue();
+            newAnswers.Any(x => x.Option == request.Answers.FirstOrDefault().Option).Should().BeTrue();
+            newAnswers.Any(x => x.Value == request.Answers.FirstOrDefault().Value).Should().BeTrue();
+            newAnswers.Any(x => x.Option == request.Answers.LastOrDefault().Option).Should().BeTrue();
+            newAnswers.Any(x => x.Value == request.Answers.LastOrDefault().Value).Should().BeTrue();
             newAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
 
             var previousActiveAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId == activeGroupId);
@@ -523,5 +556,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             previousActiveAnswers.All(x => x.LastModifiedBy == request.EditedBy).Should().BeTrue();
             previousActiveAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
         }
+
+        [Test]
+        public void WhenTypeIsLACAndEndDateIsNotProvidedAndThereAreMoreThanOneGroupOfAnswersItUpdatesTheEndDateOfThePreviousAnswers()
+        {
+            var previousGroupId = Guid.NewGuid().ToString();
+            var activeGroupId = Guid.NewGuid().ToString();
+
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 2);
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+
+            var previousAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(-50), endDate: DateTime.Today.AddDays(-40), discardedAt: null, groupId: previousGroupId);
+            var activeAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(-40), endDate: null, discardedAt: null, groupId: activeGroupId);
+
+            caseStatus.Answers = new List<CaseStatusAnswer>();
+            caseStatus.Answers.AddRange(previousAnswers);
+            caseStatus.Answers.AddRange(activeAnswers);
+
+            caseStatus.Type = "LAC";
+            caseStatus.EndDate = null;
+
+            DatabaseContext.SaveChanges();
+
+            request.EndDate = null;
+            request.CaseStatusId = caseStatus.Id;
+            request.StartDate = DateTime.Now.AddDays(-1);
+            request.Answers = TestHelpers.CreateCaseStatusValues(min: 2, max: 2);
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+
+            var newPreviousAnswers = updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId && x.GroupId != previousGroupId && x.EndDate != null);
+
+            // newPreviousAnswers.Any(x => x.Option == previousAnswers.FirstOrDefault().Option).Should().BeTrue();
+            // newPreviousAnswers.Any(x => x.Value == previousAnswers.FirstOrDefault().Value).Should().BeTrue();
+            // newPreviousAnswers.Any(x => x.Option == previousAnswers.LastOrDefault().Option).Should().BeTrue();
+            // newPreviousAnswers.Any(x => x.Value == previousAnswers.LastOrDefault().Value).Should().BeTrue();
+            newPreviousAnswers.All(x => x.EndDate == request.StartDate).Should().BeTrue();
+
+        }
+
     }
 }
