@@ -10,7 +10,6 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
-using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
@@ -19,25 +18,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     public class UpdateMashReferralTests
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
-        private Mock<IWorkerGateway> _workerGateway = null!;
+        private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
         private DateTime _dateTime;
-        private readonly Worker _worker = TestHelpers.CreateWorker().ToDomain(false);
+        private readonly SocialCareCaseViewerApi.V1.Infrastructure.Worker _worker = TestHelpers.CreateWorker();
         private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void Setup()
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
-            _workerGateway = new Mock<IWorkerGateway>();
+            _databaseGateway = new Mock<IDatabaseGateway>();
             _systemTime = new Mock<ISystemTime>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _workerGateway.Object, _systemTime.Object);
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
 
             _dateTime = DateTime.Now;
             _systemTime.Setup(x => x.Now).Returns(_dateTime);
 
-            _workerGateway.Setup(x => x.GetWorkerByWorkerId(It.IsAny<int>())).Returns(_worker);
+            _databaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>())).Returns(_worker);
         }
 
         [Test]
@@ -45,12 +44,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var mashReferralId = _faker.Random.String2(20, "0123456789abcdef");
             var request = TestHelpers.CreateUpdateMashReferral();
-            _workerGateway.Setup(x => x.GetWorkerByWorkerId(request.WorkerId));
+            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
 
             Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferralId);
 
             act.Should().Throw<WorkerNotFoundException>()
-                .WithMessage($"Worker with {request.WorkerId} not found");
+                .WithMessage($"Worker with email \"{request.WorkerEmail}\" not found");
         }
 
         [Test]

@@ -15,17 +15,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     public class GetMashReferralUsingIdTests
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
-        private Mock<IWorkerGateway> _workerGateway = null!;
+        private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
+        private readonly SocialCareCaseViewerApi.V1.Infrastructure.Worker _worker = TestHelpers.CreateWorker();
 
         [SetUp]
         public void Setup()
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
-            _workerGateway = new Mock<IWorkerGateway>();
+            _databaseGateway = new Mock<IDatabaseGateway>();
             _systemTime = new Mock<ISystemTime>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _workerGateway.Object, _systemTime.Object);
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
+
+            _databaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>())).Returns(_worker);
         }
 
         [Test]

@@ -669,7 +669,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateMashReferral CreateUpdateMashReferral(
-            int? workerId = null,
+            string? workerEmail = null,
             string? updateType = null,
             string? decision = null,
             bool? requiresUrgentContact = null)
@@ -677,7 +677,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var updateTypes = new List<string> { "SCREENING-DECISION" };
 
             return new Faker<UpdateMashReferral>()
-                .RuleFor(x => x.WorkerId, f => workerId ?? f.IndexFaker)
+                .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email)
                 .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
                 .RuleFor(x => x.Decision, f => decision ?? f.Random.String2(100))
                 .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool());

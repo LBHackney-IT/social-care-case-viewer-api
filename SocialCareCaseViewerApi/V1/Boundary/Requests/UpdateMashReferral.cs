@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateMashReferral
     {
-        public int WorkerId { get; set; }
+        public string WorkerEmail { get; set; } = null!;
         public string UpdateType { get; set; } = null!;
         public string? Decision { get; set; }
         public bool? RequiresUrgentContact { get; set; }
