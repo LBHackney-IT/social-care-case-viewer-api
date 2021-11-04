@@ -263,7 +263,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             foreach (var a in caseStatusAnswers)
             {
                 a.DiscardedAt = _systemTime.Now;
-                a.LastModifiedBy = request.EditedBy; 
+                a.LastModifiedBy = request.EditedBy;
             }
 
             foreach (var ra in request.Answers)
@@ -289,7 +289,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 a.DiscardedAt = _systemTime.Now;
                 a.LastModifiedBy = request.EditedBy;
-           
+
                 caseStatus.Answers.Add(new CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
