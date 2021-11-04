@@ -90,19 +90,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         {
             var request = CaseStatusHelper.CreateCaseStatusAnswerRequest();
 
-            Action act = () => _caseStatusGateway.ReplaceCaseStatusAnswer(request);
+            Action act = () => _caseStatusGateway.ReplaceCaseStatusAnswers(request);
 
             act.Should().Throw<CaseStatusDoesNotExistException>().WithMessage($"Case status id {request.CaseStatusId} does not exist.");
         }
 
         [Test]
-        public void SetsTheEndDateForTheCurrentActiveAnswersWhenNewOnesAreAddedAndThereIsNoScheduledChanges()
+        public void UpdatesTheEndDateOnActiveAnswersAndAddsNewAnswers()
         {
             var personId = 123;
-            var groupId1 = Guid.NewGuid().ToString();
+            var groupId = Guid.NewGuid().ToString();
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
-            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 01), min: 2, max: 2, groupId: groupId1);
+            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Today.AddDays(-10), min: 2, max: 2, groupId: groupId);
             caseStatus.Answers.AddRange(currentActiveAnswers);
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();
@@ -121,22 +121,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var requestAnswers = new List<CaseStatusRequestAnswers>() { requestAnswer1, requestAnswer2 };
 
-            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: DateTime.Today.AddDays(-2));
 
-            _caseStatusGateway.ReplaceCaseStatusAnswer(request);
+            _caseStatusGateway.ReplaceCaseStatusAnswers(request);
 
-            var newSetOfAnswers = DatabaseContext.CaseStatuses.FirstOrDefault().Answers;
+            var caseStatusAnswers = DatabaseContext.CaseStatuses.FirstOrDefault().Answers;
 
-            newSetOfAnswers.Count.Should().Be(4);
+            caseStatusAnswers.Count.Should().Be(4);
 
-            var previousActiveAnswers = newSetOfAnswers.Where(x => x.GroupId == groupId1);
+            var previousActiveAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId);
 
             previousActiveAnswers.All(x => x.EndDate != null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate == request.StartDate);
             previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
             previousActiveAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
 
-            var newActiveAnswers = newSetOfAnswers.Where(x => x.GroupId != groupId1);
+            var newActiveAnswers = caseStatusAnswers.Where(x => x.GroupId != groupId);
 
             newActiveAnswers.All(x => x.EndDate == null).Should().BeTrue();
             newActiveAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
@@ -144,18 +144,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
-        public void ReplacesCurrentScheduledCaseStatusAnswers()
+        public void UpdatesTheEndDateOnActiveAnswersAndReplacesCurrentScheduledCaseStatusAnswers()
         {
             var personId = 123;
-            var groupId1 = Guid.NewGuid().ToString();
-            var groupId2 = Guid.NewGuid().ToString();
+            var groupId = Guid.NewGuid().ToString();
 
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
-            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 01), min: 2, max: 2, groupId: groupId1);
-            var currentScheduledAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: new DateTime(2021, 10, 10), min: 2, max: 2, groupId: groupId2);
+            var currentScheduledAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Today.AddDays(10).Date, min: 2, max: 2, groupId: groupId);
 
-            caseStatus.Answers.AddRange(currentActiveAnswers);
             caseStatus.Answers.AddRange(currentScheduledAnswers);
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();
@@ -174,25 +171,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var requestAnswers = new List<CaseStatusRequestAnswers>() { requestAnswer1, requestAnswer2 };
 
-            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: new DateTime(2021, 10, 03));
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswers, startDate: DateTime.Today.AddDays(20));
 
-            _caseStatusGateway.ReplaceCaseStatusAnswer(request);
+            _caseStatusGateway.ReplaceCaseStatusAnswers(request);
 
-            var newAnswers = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault().Answers;
+            var caseStatusAnswers = DatabaseContext.CaseStatuses.Include(x => x.Answers).FirstOrDefault().Answers;
 
-            newAnswers.Count.Should().Be(6);
+            caseStatusAnswers.Count.Should().Be(4);
 
-            var discardedScheduledAnswers = newAnswers.Where(x => x.GroupId == groupId2);
+            var discardedScheduledAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId);
+
             discardedScheduledAnswers.All(x => x.DiscardedAt != null).Should().BeTrue();
             discardedScheduledAnswers.All(x => x.EndDate == null).Should().BeTrue();
             discardedScheduledAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
 
-            var previousActiveAnswers = newAnswers.Where(x => x.GroupId == groupId1);
-            previousActiveAnswers.All(x => x.DiscardedAt == null).Should().BeTrue();
-            previousActiveAnswers.All(x => x.EndDate != null && x.EndDate == request.StartDate).Should().BeTrue();
-            previousActiveAnswers.All(x => x.LastModifiedBy == request.CreatedBy).Should().BeTrue();
+            var newScheduledAnswers = caseStatusAnswers.Where(x => x.GroupId != groupId);
 
-            var newScheduledAnswers = newAnswers.Where(x => x.GroupId != groupId1 && x.GroupId != groupId2);
             newScheduledAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
