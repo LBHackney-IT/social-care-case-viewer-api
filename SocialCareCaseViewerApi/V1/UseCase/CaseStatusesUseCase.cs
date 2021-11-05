@@ -23,18 +23,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
-        public List<CaseStatusResponse> ExecuteGet(long personId)
+        public List<CaseStatusResponse> ExecuteGet(ListCaseStatusesRequest request)
         {
-            var person = _databaseGateway.GetPersonByMosaicId(personId);
+            var person = _databaseGateway.GetPersonByMosaicId(request.PersonId);
 
             if (person == null)
             {
                 throw new GetCaseStatusesException("Person not found");
             }
 
-            var caseStatuses = _caseStatusGateway.GetActiveCaseStatusesByPersonId(personId);
+            if (!request.IncludeClosedCases)
+            {
+                return _caseStatusGateway.GetActiveCaseStatusesByPersonId(request.PersonId).Select(caseStatus => caseStatus.ToResponse()).ToList();
+            }
 
-            return caseStatuses.Select(caseStatus => caseStatus.ToResponse()).ToList();
+            return _caseStatusGateway.GetCaseStatusesByPersonId(request.PersonId).Select(caseStatus => caseStatus.ToResponse()).ToList();
         }
 
         public CaseStatus ExecutePost(CreateCaseStatusRequest request)

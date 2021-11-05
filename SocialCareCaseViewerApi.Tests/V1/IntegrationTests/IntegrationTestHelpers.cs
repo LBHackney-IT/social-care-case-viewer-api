@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
+using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using DbPerson = SocialCareCaseViewerApi.V1.Infrastructure.Person;
+using InfrastructureCaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
@@ -115,6 +118,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(c => c.AllocationStartDate, f => f.Date.Recent()).Generate();
 
             return createAllocationRequest;
+        }
+
+        public static (List<InfrastructureCaseStatus>, DbPerson) SavePersonWithMultipleCaseStatusesToDatabase(
+          DatabaseContext databaseContext, bool addClosedCaseStatuses = false, bool setEndDates = true)
+        {
+            var caseStatuses = new List<InfrastructureCaseStatus>();
+            var person = TestHelpers.CreatePerson();
+
+            for (var i = 0; i < new Random().Next(1, 5); i++)
+            {
+                var caseStatus = TestHelpers.CreateCaseStatus(person.Id, resident: person, startDate: DateTime.Today.AddDays(-(20 + 2 * i)));
+                caseStatus.EndDate = null;
+                caseStatuses.Add(caseStatus);
+            }
+
+            if (addClosedCaseStatuses)
+            {
+                for (var i = 0; i < new Random().Next(1, 5); i++)
+                {
+                    var startDate = DateTime.Today.AddDays(-(20 + 2 * i));
+                    var endDate = setEndDates == true ? startDate.AddDays(2) : (DateTime?) default;
+                    caseStatuses.Add(TestHelpers.CreateCaseStatus(person.Id, resident: person, startDate: startDate, endDate: endDate));
+                }
+            }
+
+            databaseContext.CaseStatuses.AddRange(caseStatuses);
+            databaseContext.Persons.Add(person);
+            databaseContext.SaveChanges();
+
+            return (caseStatuses, person);
         }
     }
 }
