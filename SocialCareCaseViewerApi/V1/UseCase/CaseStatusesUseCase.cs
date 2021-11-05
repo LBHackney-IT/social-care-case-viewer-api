@@ -78,13 +78,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CaseStatusResponse ExecutePostCaseStatusAnswer(CreateCaseStatusAnswerRequest request)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
-
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
-            }
-
             var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
 
             if (caseStatus == null)
@@ -97,26 +90,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
             }
 
-            var activeAnswerGroups = caseStatus.Answers.Where(x => x.DiscardedAt == null && x.EndDate == null).GroupBy(x => x.GroupId);
+            var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
 
-            if (activeAnswerGroups.Count() == 1)
+            if (worker == null)
             {
-                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
-                {
-                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
-                }
-            }
-            else if (activeAnswerGroups.Count() == 2)
-            {
-                if (request.StartDate <= activeAnswerGroups.First().First().StartDate)
-                {
-                    throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
-                }
-
-                return _caseStatusGateway.ReplaceCaseStatusAnswer(request).ToResponse();
+                throw new WorkerNotFoundException($"Worker with email `{request.CreatedBy}` was not found");
             }
 
-            return _caseStatusGateway.CreateCaseStatusAnswer(request).ToResponse();
+            //check for overlapping dates
+            var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+
+            if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate >= request.StartDate)
+            {
+                throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
+            }
+
+            return _caseStatusGateway.ReplaceCaseStatusAnswers(request).ToResponse();
         }
 
         private void ExecuteUpdateValidation(UpdateCaseStatusRequest request, CaseStatus? caseStatus)
@@ -124,6 +113,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
+            }
+
+            if (caseStatus.Person.AgeContext.ToLower() != "c")
+            {
+                throw new InvalidAgeContextException($"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
+            }
+
+            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
+            if (worker == null)
+            {
+                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
 
             //end date validation
@@ -186,17 +186,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         }
                         break;
                 }
-            }
-
-            if (caseStatus.Person.AgeContext.ToLower() != "c")
-            {
-                throw new InvalidAgeContextException($"Person with the id {caseStatus.Person.Id} belongs to the wrong AgeContext for this operation");
-            }
-
-            var worker = _databaseGateway.GetWorkerByEmail(request.EditedBy);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
         }
     }

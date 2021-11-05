@@ -325,6 +325,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = mashReferral.CreatedAt,
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
+                InitialCreatedAt = mashReferral.InitialCreatedAt,
+                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
