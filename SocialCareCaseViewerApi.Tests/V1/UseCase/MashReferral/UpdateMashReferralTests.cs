@@ -69,7 +69,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForScreeningDecisionAndReferralIsNotInScreeningStage()
         {
             var mashReferral = TestHelpers.CreateMashReferral(stage: "not-screening");
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "screening-decision");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
             _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
 
             Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
@@ -81,8 +81,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForInitialDecisionAndReferralIsNotInInitialStage()
         {
-            var mashReferral = TestHelpers.CreateMashReferral(stage: "not initial decision");
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "initial-decision");
+            var mashReferral = TestHelpers.CreateMashReferral(stage: "not initial");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
             _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
 
             Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
@@ -94,8 +94,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void SuccessfulUpdateOfMashReferralFromScreeningToFinalUpsertsUpdateReferralIntoMashReferralGatewayAndReturnsMashReferralResponse()
         {
-            var mashReferral = TestHelpers.CreateMashReferral(stage: "screening");
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "screening-decision");
+            var mashReferral = TestHelpers.CreateMashReferral(stage: "SCREENING");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
             _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
 
             var response = _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
@@ -107,7 +107,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 Id = mashReferral.Id.ToString(),
                 Clients = mashReferral.Clients,
                 Referrer = mashReferral.Referrer,
-                Stage = "Final",
+                Stage = "FINAL",
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
@@ -126,8 +126,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void SuccessfulUpdateOfMashReferralFromInitialToScreeningUpsertsUpdateReferralIntoMashReferralGatewayAndReturnsMashReferralResponse()
         {
-            var mashReferral = TestHelpers.CreateMashReferral(stage: "initial decision");
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "initial-decision");
+            var mashReferral = TestHelpers.CreateMashReferral(stage: "INITIAL");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
             _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
 
             var response = _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
@@ -139,7 +139,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 Id = mashReferral.Id.ToString(),
                 Clients = mashReferral.Clients,
                 Referrer = mashReferral.Referrer,
-                Stage = "screening",
+                Stage = "SCREENING",
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
