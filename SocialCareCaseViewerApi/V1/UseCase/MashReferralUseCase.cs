@@ -81,7 +81,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 referral.InitialCreatedAt = _systemTime.Now;
                 referral.InitialDecision = request.Decision;
                 referral.InitialUrgentContactRequired = request.RequiresUrgentContact;
-                referral.ReferralCategory = request.RerralCategory;
+                referral.ReferralCategory = request.ReferralCategory;
                 referral.Stage = "screening";
             }
 

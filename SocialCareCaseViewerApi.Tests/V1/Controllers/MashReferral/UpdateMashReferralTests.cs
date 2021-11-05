@@ -162,7 +162,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndNoReferralCategorySelected()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            request.RerralCategory = null;
+            request.ReferralCategory = null;
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
@@ -174,7 +174,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndReferralCategoryIsEmpty()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            request.RerralCategory = "";
+            request.ReferralCategory = "";
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
