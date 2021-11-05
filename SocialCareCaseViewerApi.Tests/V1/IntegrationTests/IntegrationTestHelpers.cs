@@ -137,7 +137,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             {
                 for (var i = 0; i < new Random().Next(1, 5); i++)
                 {
-                    var startDate = DateTime.Today.AddDays(-(20 + 2 * i));
+                    var startDate = DateTime.Today.AddDays(-(50 + 2 * i));
                     var endDate = startDate.AddDays(2);
                     caseStatuses.Add(TestHelpers.CreateCaseStatus(person.Id, resident: person, startDate: startDate, endDate: endDate));
                 }
