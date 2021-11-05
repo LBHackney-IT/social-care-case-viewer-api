@@ -89,7 +89,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void ValidationReturnsBadRequestIfUpdateTypeIsScreeningDecisionAndNullDecisionProvided()
         {
-            var request = TestHelpers.CreateUpdateMashReferral();
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
             request.Decision = null;
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void ValidationReturnsBadRequestIfUpdateTypeIsScreeningDecisionAndEmptyDecisionProvided()
         {
-            var request = TestHelpers.CreateUpdateMashReferral();
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
             request.Decision = "";
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
@@ -113,13 +113,73 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void ValidationReturnsBadRequestIfUpdateTypeIsScreeningDecisionAndNoUrgentContactOptionSelected()
         {
-            var request = TestHelpers.CreateUpdateMashReferral();
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
             request.RequiresUrgentContact = null;
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Must provide if urgent contact is required");
+        }
+
+        [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndNullDecisionProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.Decision = null;
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide a decision");
+        }
+
+        [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndEmptyDecisionProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.Decision = "";
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide a decision");
+        }
+
+        [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndNoUrgentContactOptionSelected()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.RequiresUrgentContact = null;
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide if urgent contact is required");
+        }
+
+        [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndNoReferralCategorySelected()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.RerralCategory = null;
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide a referral category");
+        }
+
+        [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsInitialDecisionAndReferralCategoryIsEmpty()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.RerralCategory = "";
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide a referral category");
         }
     }
 }
