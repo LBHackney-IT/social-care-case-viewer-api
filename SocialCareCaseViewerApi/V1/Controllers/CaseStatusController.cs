@@ -34,11 +34,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(List<CaseStatusResponse>), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("residents/{personId:long}/case-statuses")]
-        public IActionResult ListCaseStatuses(long personId)
+        public IActionResult ListCaseStatuses([FromQuery] ListCaseStatusesRequest request)
         {
             try
             {
-                return Ok(_caseStatusesUseCase.ExecuteGet(personId));
+                return Ok(_caseStatusesUseCase.ExecuteGet(request));
             }
             catch (GetCaseStatusesException ex)
             {
