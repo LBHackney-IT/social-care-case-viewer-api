@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void WhenIncludeClosedCasesFlagIsFalseItCallsTheGetActiveCaseStatusesByPersonIdGatewayMethdod()
+        public void WhenIncludeClosedCasesFlagIsFalseItCallsTheGetActiveCaseStatusesByPersonIdGatewayMethdodWithCorrectPersonId()
         {
             var response = new List<DomainCaseStatus> { _caseStatus.ToDomain() };
 
@@ -79,11 +79,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             _caseStatusesUseCase.ExecuteGet(_request);
 
-            _mockCaseStatusGateway.Verify(x => x.GetActiveCaseStatusesByPersonId(It.IsAny<long>()));
+            _mockCaseStatusGateway.Verify(x => x.GetActiveCaseStatusesByPersonId(_request.PersonId));
         }
 
         [Test]
-        public void WhenIncludeClosedCasesFlagIsTrueItCallsGetCaseStatusesByPersonIdGatewayMethod()
+        public void WhenIncludeClosedCasesFlagIsTrueItCallsGetCaseStatusesByPersonIdGatewayMethodWithCorrectPersonId()
         {
             var response = new List<DomainCaseStatus> { _caseStatus.ToDomain() };
 
@@ -93,7 +93,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
             _caseStatusesUseCase.ExecuteGet(_request);
 
-            _mockCaseStatusGateway.Verify(x => x.GetCaseStatusesByPersonId(It.IsAny<long>()));
+            _mockCaseStatusGateway.Verify(x => x.GetCaseStatusesByPersonId(_request.PersonId));
         }
     }
 }
