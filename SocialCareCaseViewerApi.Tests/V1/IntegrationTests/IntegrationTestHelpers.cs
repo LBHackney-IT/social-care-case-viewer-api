@@ -121,7 +121,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         }
 
         public static (List<InfrastructureCaseStatus>, DbPerson) SavePersonWithMultipleCaseStatusesToDatabase(
-          DatabaseContext databaseContext, bool addClosedCaseStatuses = false, bool setEndDates = true)
+          DatabaseContext databaseContext, bool addClosedCaseStatuses = false)
         {
             var caseStatuses = new List<InfrastructureCaseStatus>();
             var person = TestHelpers.CreatePerson();
@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 for (var i = 0; i < new Random().Next(1, 5); i++)
                 {
                     var startDate = DateTime.Today.AddDays(-(20 + 2 * i));
-                    var endDate = setEndDates == true ? startDate.AddDays(2) : (DateTime?) default;
+                    var endDate = startDate.AddDays(2);
                     caseStatuses.Add(TestHelpers.CreateCaseStatus(person.Id, resident: person, startDate: startDate, endDate: endDate));
                 }
             }
