@@ -86,7 +86,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            request.RerralCategory = null;
+            request.ReferralCategory = null;
 
             var validationResult = _validator.Validate(request);
 
@@ -97,7 +97,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            request.RerralCategory = "";
+            request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
 

@@ -684,7 +684,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
                 .RuleFor(x => x.Decision, f => decision ?? f.Random.String2(100))
                 .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
-                .RuleFor(x => x.RerralCategory, f => referralCategory ?? f.Random.String2(100));
+                .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100));
 
         }
     }
