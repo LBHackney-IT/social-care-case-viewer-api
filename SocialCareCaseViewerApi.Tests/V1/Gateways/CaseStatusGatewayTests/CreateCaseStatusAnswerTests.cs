@@ -152,7 +152,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
             var currentScheduledAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Today.AddDays(10).Date, min: 2, max: 2, groupId: groupId);
-
             caseStatus.Answers.AddRange(currentScheduledAnswers);
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();

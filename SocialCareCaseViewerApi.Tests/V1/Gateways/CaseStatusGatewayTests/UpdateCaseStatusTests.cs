@@ -113,6 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             updatedCaseStatus.Answers.First().DiscardedAt.Should().BeNull();
         }
 
+        //CP
         [Test]
         public void WhenTypeIsCINAndEndDateIsNotProvidedAndStartDateIsProvidedItUpdatesTheStartDate()
         {
@@ -123,6 +124,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             caseStatus.EndDate = null;
 
             DatabaseContext.SaveChanges();
+            request.CaseStatusId = caseStatus.Id;
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+
+            updatedCaseStatus.EndDate.Should().NotBeNull();
+
+            updatedCaseStatus.Answers.Count.Should().Be(0);
+        }
+
+        //LAC
+        [Test]
+        public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
+        {
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
             request.CaseStatusId = caseStatus.Id;
             request.StartDate = DateTime.Today.AddDays(-1);
