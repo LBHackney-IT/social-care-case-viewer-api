@@ -134,27 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             updatedCaseStatus.Answers.Count.Should().Be(0);
         }
-
-        //LAC
-        [Test]
-        public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
-        {
-            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 1, max: 1);
-
-            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
-
-            request.CaseStatusId = caseStatus.Id;
-            request.StartDate = DateTime.Today.AddDays(-1);
-            request.EndDate = null;
-
-            _caseStatusGateway.UpdateCaseStatus(request);
-
-            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
-
-            updatedCaseStatus.StartDate.Should().Be((DateTime) request.StartDate);
-            updatedCaseStatus.LastModifiedBy.Should().Be(request.EditedBy);
-        }
-
+        
         //CP
         [Test]
         public void WhenTypeIsCPAndValidEndDateIsProvidedItUpdatesTheStatusWithNewEndDateWithoutAddingAnswers()
