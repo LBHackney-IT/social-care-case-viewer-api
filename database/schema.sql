@@ -889,3 +889,9 @@ CREATE TABLE IF NOT EXISTS dbo.REF_MASH_RESIDENTS
 	FOREIGN KEY (fk_ref_mash_referrals_id)
 	  REFERENCES dbo.ref_mash_referrals (id)
 );
+
+ALTER TABLE IF EXISTS dbo.sccv_person_case_status
+	ALTER start_date type timestamp;
+
+ALTER TABLE IF EXISTS dbo.sccv_person_case_status
+	ALTER end_date type timestamp;
