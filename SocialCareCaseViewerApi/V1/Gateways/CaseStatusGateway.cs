@@ -216,7 +216,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             }
                         }
 
-                        if (existingAnswerGroups?.Count() == 1)
+                        if (existingAnswerGroups?.Count() == 1 || (existingAnswerGroups?.Count() == 2 && caseStatus.Answers.Any(x => x.StartDate > DateTime.Today && x.EndDate == null)))
                         {
                             caseStatus.StartDate = (DateTime) request.StartDate;
                         }
