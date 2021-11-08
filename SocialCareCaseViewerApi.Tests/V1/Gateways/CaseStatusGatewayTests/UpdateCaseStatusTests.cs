@@ -416,6 +416,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
         }
 
         [Test]
+        public void WhenTypeIsLACAndEndDateIsNotProvidedItUpdatesTheCaseStartDateWhenThereIsOneActiveSetOfAnswersAndAlsoScheduledAnswers()
+        {
+            var activeGroupId = Guid.NewGuid().ToString();
+            var scheduledGroupId = Guid.NewGuid().ToString();
+
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            caseStatus.Type = "LAC";
+            caseStatus.EndDate = null;
+            caseStatus.StartDate = new DateTime(2021, 11, 01);
+
+            var activeAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(-20), endDate: DateTime.Today.AddDays(50), groupId: activeGroupId);
+            var scheduledAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, startDate: DateTime.Today.AddDays(50), endDate: null, groupId: scheduledGroupId);
+
+            caseStatus.Answers = new List<CaseStatusAnswer>();
+            caseStatus.Answers.AddRange(activeAnswers);
+            caseStatus.Answers.AddRange(scheduledAnswers);
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateCaseStatusRequest(min: 2, max: 2);
+            request.EndDate = null;
+            request.CaseStatusId = caseStatus.Id;
+            request.StartDate = DateTime.Today.AddDays(-17);
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+            updatedCaseStatus.StartDate.Should().Be(request.StartDate.Value);
+            updatedCaseStatus.Answers.Where(x => x.GroupId != activeGroupId && x.GroupId != scheduledGroupId).All(x => x.StartDate == request.StartDate).Should().BeTrue();
+        }
+
+        [Test]
         public void WhenTypeIsLACAndEndDateIsNotProvidedItDoesNotUpdateTheCaseStartDateWhenThereIsMoreThanOneSetOfAnswers()
         {
             var activeGroupId = Guid.NewGuid().ToString();
