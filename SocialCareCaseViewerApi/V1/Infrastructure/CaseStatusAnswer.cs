@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_person_case_status_answers", Schema = "dbo")]
-    public class CaseStatusAnswer
+    public class CaseStatusAnswer : IAuditEntity
     {
         //TODO: add column lenghts
         [Column("id")]

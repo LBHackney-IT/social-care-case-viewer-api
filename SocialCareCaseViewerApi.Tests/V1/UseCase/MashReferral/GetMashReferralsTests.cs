@@ -19,6 +19,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     public class GetMashReferralsTests
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
+        private Mock<IDatabaseGateway> _databaseGateway = null!;
+        private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
         private readonly Faker _faker = new Faker();
 
@@ -26,7 +28,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void Setup()
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object);
+            _databaseGateway = new Mock<IDatabaseGateway>();
+            _systemTime = new Mock<ISystemTime>();
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
         }
 
         [Test]

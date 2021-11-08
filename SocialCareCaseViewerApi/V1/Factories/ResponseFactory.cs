@@ -357,7 +357,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
+                InitialCreatedAt = mashReferral.InitialCreatedAt?.ToString("O"),
+                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
                 ReferralCategory = mashReferral.ReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI

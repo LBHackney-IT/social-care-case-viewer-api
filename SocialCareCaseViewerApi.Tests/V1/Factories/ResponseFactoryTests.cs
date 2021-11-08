@@ -535,7 +535,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CreatedAt = domainReferral.CreatedAt.ToString("O"),
                 FinalDecision = domainReferral.FinalDecision,
                 InitialDecision = domainReferral.InitialDecision,
+                InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
+                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
                 ScreeningDecision = domainReferral.ScreeningDecision,
+                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
+                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
                 ReferralCategory = domainReferral.ReferralCategory,
                 RequestedSupport = domainReferral.RequestedSupport,
                 ReferralDocumentURI = domainReferral.ReferralDocumentURI
