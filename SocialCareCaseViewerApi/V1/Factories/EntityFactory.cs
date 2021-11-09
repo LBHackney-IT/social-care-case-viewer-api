@@ -298,18 +298,20 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
                 Person = caseStatus.Person,
-                Answers = caseStatus.Answers.Select(
-                    a => new Domain.CaseStatusAnswer
-                    {
-                        Option = a.Option,
-                        Value = a.Value,
-                        StartDate = a.StartDate,
-                        CreatedAt = a.CreatedAt.Value,
-                        GroupId = a.GroupId,
-                        EndDate = a.EndDate,
-                        DiscardedAt = a.DiscardedAt
-                    }
-                    ).ToList()
+                Answers = caseStatus.Answers.Select(a => a.ToDomain()).ToList()
+            };
+        }
+        public static Domain.CaseStatusAnswer ToDomain(this Infrastructure.CaseStatusAnswer caseStatusAnswer)
+        {
+            return new Domain.CaseStatusAnswer()
+            {
+                Option = caseStatusAnswer.Option,
+                Value = caseStatusAnswer.Value,
+                StartDate = caseStatusAnswer.StartDate,
+                CreatedAt = caseStatusAnswer.CreatedAt,
+                GroupId = caseStatusAnswer.GroupId,
+                EndDate = caseStatusAnswer.EndDate,
+                DiscardedAt = caseStatusAnswer.DiscardedAt
             };
         }
 
