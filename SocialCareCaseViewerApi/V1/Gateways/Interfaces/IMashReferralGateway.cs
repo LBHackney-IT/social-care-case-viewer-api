@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Domain;
+using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
+
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
@@ -13,5 +15,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter);
         public void UpsertRecord(Infrastructure.MashReferral referral);
         public Infrastructure.MashReferral? GetInfrastructureUsingId(string requestId);
+        public MashReferral_2? GetReferralUsingId_2(string requestId);
+        // public MashResident? GetMashResidentsByReferral(string requestId);
+
     }
 }

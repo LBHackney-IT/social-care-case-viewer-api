@@ -34,6 +34,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 ?.ToResponse();
         }
 
+
+        public Boundary.Response.MashReferral_2? GetMashReferralUsingId_2(string requestId)
+        {
+            return _mashReferralGateway.GetReferralUsingId_2(requestId)?.ToResponse();
+        }
+
+        // public Boundary.Response.MashResident? GetMashResidentsByReferral(string requestId)
+        // {
+        //     return _mashReferralGateway.GetMashResidentsByReferral(requestId);
+        // }         
+
         public IEnumerable<Boundary.Response.MashReferral> GetMashReferrals(QueryMashReferrals request)
         {
             var filter = GenerateFilter(request);

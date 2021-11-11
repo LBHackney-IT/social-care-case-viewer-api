@@ -10,10 +10,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("ref_mash_referrals", Schema = "dbo")]
     public class MashReferral_2 : IAuditEntity
     {
+
+
+
         [Column("id")]
         [MaxLength(16)]
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Column("referrer")]
         public string Referrer { get; set; } = null!;
         [Column("requested_support")]
@@ -22,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public Worker? AssignedTo { get; set; }
         [Column("created_at")]
         public DateTime ReferralCreatedAt { get; set; }
-        public IEnumerable<string> Clients { get; set; } = null!;
+        public List<MashResident> Clients { get; set; } = null!;
 
         [Column("referral_doc_url")]
         public string ReferralDocumentURI { get; set; } = null!;
@@ -34,28 +37,28 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("initial_decision")]
         public string? InitialDecision { get; set; }
         [Column("initial_decision_referral_category")]
-        public string? InitialDecisionReferralCategory { get; set; }        
+        public string? InitialDecisionReferralCategory { get; set; }
         [Column("initial_decision_urgent_contact")]
-        public string? InitialDecisionUrgentContactRequired { get; set; }        
+        public bool? InitialDecisionUrgentContactRequired { get; set; }
         [Column("initial_decision_created_at")]
-        public DateTime? InitialDecisionCreatedAt { get; set; }        
+        public DateTime? InitialDecisionCreatedAt { get; set; }
 
         [Column("screening_decision")]
         public string? ScreeningDecision { get; set; }
         [Column("screening_decision_urgent_contact")]
-        public string? ScreeningUrgentContactRequired { get; set; }
+        public bool? ScreeningUrgentContactRequired { get; set; }
         [Column("screening_decision_created_at")]
         public DateTime? ScreeningCreatedAt { get; set; }
         [Column("final_decision")]
         public string? FinalDecision { get; set; }
         [Column("final_decision_referral_category")]
-        public string? FinalDecisionReferralCategory { get; set; }        
+        public string? FinalDecisionReferralCategory { get; set; }
         [Column("final_decision_urgent_contact")]
-        public string? FinalDecisionUrgentContactRequired { get; set; }        
-        [Column("final_decision_created_at")]        
-        public DateTime? FinalDecisionCreatedAt { get; set; }        
+        public bool? FinalDecisionUrgentContactRequired { get; set; }
+        [Column("final_decision_created_at")]
+        public DateTime? FinalDecisionCreatedAt { get; set; }
 
-   
+
         //audit fields
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }
@@ -67,6 +70,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? LastModifiedAt { get; set; }
 
         [Column("sccv_last_modified_by")]
-        public string LastModifiedBy { get; set; }        
+        public string LastModifiedBy { get; set; }
     }
 }

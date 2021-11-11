@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class MashReferral_2
     {
+
         public string Id { get; set; }
         public string Referrer { get; set; } = null!;
         public string RequestedSupport { get; set; } = null!;
         public Worker? AssignedTo { get; set; }
         public DateTime ReferralCreatedAt { get; set; }
-        public IEnumerable<string> Clients { get; set; } = null!;
+        public List<MashResident> Clients { get; set; } = null!;
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? ReferralCategory { get; set; }

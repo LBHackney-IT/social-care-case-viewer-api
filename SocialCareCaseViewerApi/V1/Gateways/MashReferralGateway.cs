@@ -4,7 +4,10 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
+using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
+
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -14,9 +17,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private readonly IMongoGateway _mongoGateway;
         private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.MashReferrals];
 
-        public MashReferralGateway(IMongoGateway mongoGateway)
+        private readonly DatabaseContext _databaseContext;
+
+        public MashReferralGateway(IMongoGateway mongoGateway, DatabaseContext databaseContext)
         {
             _mongoGateway = mongoGateway;
+            _databaseContext = databaseContext;
+
         }
 
         public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter)
@@ -53,5 +60,21 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             _mongoGateway.InsertRecord(_collectionName, referral);
         }
+
+        public MashReferral_2? GetReferralUsingId_2(string requestId)
+        {
+            return _databaseContext.MashReferral_2
+                    .Where(x => x.Id.ToString() == requestId)
+                    .FirstOrDefault().ToDomain();
+
+        }
+
+        // public MashResident? GetMashResidentsByReferral(string requestId)        {
+        //     return _databaseContext.MashResident
+        //             .Where(x => x.ReferralId.ToString() == requestId)
+        //             .FirstOrDefault();
+
+        // }
+
     }
 }

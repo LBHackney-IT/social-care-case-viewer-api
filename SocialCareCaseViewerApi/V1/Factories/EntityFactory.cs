@@ -333,30 +333,29 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ReferralCategory = mashReferral.ReferralCategory
             };
         }
-       public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral_2)
+        public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral_2)
         {
             return new Domain.MashReferral_2
             {
                 Id = mashReferral_2.Id.ToString(),
-                Clients = mashReferral_2.Clients,
                 ReferralDocumentURI = mashReferral_2.ReferralDocumentURI,
                 Referrer = mashReferral_2.Referrer,
-                Stage = mashReferral_2.Stage,                
+                Stage = mashReferral_2.Stage,
                 ReferralCategory = mashReferral_2.ReferralCategory,
                 ReferralCreatedAt = mashReferral_2.ReferralCreatedAt,
                 InitialDecision = mashReferral_2.InitialDecision,
                 InitialDecisionReferralCategory = mashReferral_2.InitialDecisionReferralCategory,
-                InitialDecisionUrgentContactRequired = mashReferral_2.InitialDecisionUrgentContactRequired,                                                
+                InitialDecisionUrgentContactRequired = mashReferral_2.InitialDecisionUrgentContactRequired,
                 InitialDecisionCreatedAt = mashReferral_2.InitialDecisionCreatedAt,
                 ScreeningDecision = mashReferral_2.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral_2.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = mashReferral_2.ScreeningCreatedAt,
                 FinalDecision = mashReferral_2.InitialDecision,
                 FinalDecisionReferralCategory = mashReferral_2.InitialDecisionReferralCategory,
-                FinalDecisionUrgentContactRequired = mashReferral_2.InitialDecisionUrgentContactRequired,                                                
-                FinalDecisionCreatedAt = mashReferral_2.InitialDecisionCreatedAt,                
+                FinalDecisionUrgentContactRequired = mashReferral_2.InitialDecisionUrgentContactRequired,
+                FinalDecisionCreatedAt = mashReferral_2.InitialDecisionCreatedAt,
                 RequestedSupport = mashReferral_2.RequestedSupport
             };
-        }        
+        }
     }
 }
