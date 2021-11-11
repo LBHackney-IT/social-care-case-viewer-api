@@ -113,7 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             updatedCaseStatus.Answers.First().DiscardedAt.Should().BeNull();
         }
 
-        //CP
+        //CIN
         [Test]
         public void WhenTypeIsCINAndEndDateIsNotProvidedAndStartDateIsProvidedItUpdatesTheStartDate()
         {
@@ -160,6 +160,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             updatedCaseStatus.Answers.Count.Should().Be(0);
         }
 
+        [Test]
+        public void WhenTypeIsCPAndValidEndDateIsProvidedItUpdatesTheAnswersWithEndDate()
+        {
+            var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
+            var answer = TestHelpers.CreateCaseStatusAnswers(min: 1, max: 1).FirstOrDefault();
+            answer.DiscardedAt = null;
+
+            caseStatus.Answers = new List<CaseStatusAnswer>() { answer };
+            caseStatus.Type = "CP";
+            caseStatus.EndDate = null;
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateCaseStatusRequest();
+            request.CaseStatusId = caseStatus.Id;
+
+            _caseStatusGateway.UpdateCaseStatus(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault(x => x.Id == caseStatus.Id);
+
+            updatedCaseStatus.Answers.Where(x => x.DiscardedAt == null).All(x => x.EndDate == request.EndDate).Should().BeTrue();
+        }
+
         //LAC
         [Test]
         public void WhenTypeIsLACAndValidEndDateIsProvidedItUpdatesTheStatusAndTheCurrentActiveAnswersWithEndDate()
@@ -169,11 +191,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
-            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: activeGroupId);
+            var answers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: activeGroupId, startDate: DateTime.Today.AddDays(-10));
 
             caseStatus.Answers = answers;
             caseStatus.Type = "LAC";
             caseStatus.EndDate = null;
+            caseStatus.StartDate = DateTime.Today.AddDays(-10);
 
             DatabaseContext.SaveChanges();
             request.CaseStatusId = caseStatus.Id;
@@ -203,11 +226,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var (caseStatus, _, _) = CaseStatusHelper.SavePersonWithCaseStatusToDatabase(DatabaseContext);
 
-            var currentAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: groupId);
+            var currentAnswers = TestHelpers.CreateCaseStatusAnswers(min: 2, max: 2, endDate: null, discardedAt: null, groupId: groupId, startDate: DateTime.Today.AddDays(-10));
 
             caseStatus.Answers = currentAnswers;
             caseStatus.Type = "LAC";
             caseStatus.EndDate = null;
+            caseStatus.StartDate = DateTime.Today.AddDays(-10);
 
             DatabaseContext.SaveChanges();
             request.CaseStatusId = caseStatus.Id;
