@@ -164,19 +164,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                                     .Answers
                                                     .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
+                        //discard future ones
                         foreach (var a in activeLACAnswers.Where(x => x.StartDate > DateTime.Today))
                         {
                             a.DiscardedAt = _systemTime.Now;
                             a.LastModifiedBy = request.EditedBy;
                         }
 
+                        //save start date and group id from the current answer and use them in the end reason
+                        var activeAnswer = activeLACAnswers.Where(x => x.StartDate <= DateTime.Today).First();
+
+                        //end current ones
                         foreach (var a in activeLACAnswers.Where(x => x.StartDate <= DateTime.Today))
                         {
                             a.EndDate = request.EndDate;
                             a.LastModifiedBy = request.EditedBy;
                         }
 
-                        AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
+                        AddNewAnswers(request, caseStatus, startDate: activeAnswer.StartDate, endDate: request.EndDate, groupId: activeAnswer.GroupId);
                         break;
                 }
             }
@@ -316,7 +321,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, DateTime? startDate = null, DateTime? endDate = null)
+        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, DateTime? startDate = null, DateTime? endDate = null, string? groupId = null)
         {
             Guid identifier = Guid.NewGuid();
 
@@ -330,7 +335,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     EndDate = endDate ?? null,
                     Option = a.Option,
                     Value = a.Value,
-                    GroupId = identifier.ToString(),
+                    GroupId = groupId ?? identifier.ToString(),
                     CreatedAt = _systemTime.Now
                 });
             }
