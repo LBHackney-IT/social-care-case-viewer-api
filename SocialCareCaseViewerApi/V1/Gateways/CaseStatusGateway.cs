@@ -382,6 +382,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var activeAnswers = caseStatus
                                     .Answers
                                     .Where(x => x.DiscardedAt == null && x.EndDate == null);
+
             //discard future ones
             if (activeAnswers.Any(x => x.StartDate > DateTime.Today.Date))
             {
@@ -391,9 +392,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     answer.LastModifiedBy = request.CreatedBy;
                 }
             }
-            //end the current ones
+            //end the current ones and add new episode end reason (hard coded for data migration purposes)
             else
             {
+                caseStatus.Answers.Add(new CaseStatusAnswer()
+                {
+                    CreatedBy = request.CreatedBy,
+                    EndDate = request.StartDate,
+                    StartDate = activeAnswers.First().StartDate,
+                    Option = LACAnswerOption.EpisodeReason,
+                    Value = LACAnswerValue.X1,
+                    GroupId = activeAnswers.First().GroupId
+                });
+
                 foreach (var answer in activeAnswers)
                 {
                     answer.EndDate = request.StartDate;
@@ -424,5 +435,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatus.ToDomain();
         }
+    }
+
+    public static class LACAnswerOption
+    {
+        public const string EpisodeReason = "episodeReason";
+    }
+    public static class LACAnswerValue
+    {
+        public const string X1 = "X1";
     }
 }
