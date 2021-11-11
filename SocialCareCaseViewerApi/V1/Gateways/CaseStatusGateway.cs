@@ -147,25 +147,37 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 caseStatus.EndDate = request.EndDate;
 
-                if (caseStatus.Type.ToLower() == "lac")
+                switch (caseStatus.Type.ToLower())
                 {
-                    var activeAnswers = caseStatus
-                                                .Answers
-                                                .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+                    case "cp":
+                        var activeCPAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null);
 
-                    foreach (var a in activeAnswers.Where(x => x.StartDate > DateTime.Today))
-                    {
-                        a.DiscardedAt = _systemTime.Now;
-                        a.LastModifiedBy = request.EditedBy;
-                    }
+                        foreach (var a in activeCPAnswers)
+                        {
+                            a.EndDate = request.EndDate;
+                        }
 
-                    foreach (var a in activeAnswers.Where(x => x.StartDate <= DateTime.Today))
-                    {
-                        a.EndDate = request.EndDate;
-                        a.LastModifiedBy = request.EditedBy;
-                    }
+                        break;
 
-                    AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
+                    case "lac":
+                        var activeLACAnswers = caseStatus
+                                                    .Answers
+                                                    .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+
+                        foreach (var a in activeLACAnswers.Where(x => x.StartDate > DateTime.Today))
+                        {
+                            a.DiscardedAt = _systemTime.Now;
+                            a.LastModifiedBy = request.EditedBy;
+                        }
+
+                        foreach (var a in activeLACAnswers.Where(x => x.StartDate <= DateTime.Today))
+                        {
+                            a.EndDate = request.EndDate;
+                            a.LastModifiedBy = request.EditedBy;
+                        }
+
+                        AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
+                        break;
                 }
             }
             //end date not provided
