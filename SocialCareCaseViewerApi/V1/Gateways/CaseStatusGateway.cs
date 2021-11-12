@@ -147,25 +147,42 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 caseStatus.EndDate = request.EndDate;
 
-                if (caseStatus.Type.ToLower() == "lac")
+                switch (caseStatus.Type.ToLower())
                 {
-                    var activeAnswers = caseStatus
-                                                .Answers
-                                                .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+                    case "cp":
+                        var activeCPAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null);
 
-                    foreach (var a in activeAnswers.Where(x => x.StartDate > DateTime.Today))
-                    {
-                        a.DiscardedAt = _systemTime.Now;
-                        a.LastModifiedBy = request.EditedBy;
-                    }
+                        foreach (var a in activeCPAnswers)
+                        {
+                            a.EndDate = request.EndDate;
+                        }
 
-                    foreach (var a in activeAnswers.Where(x => x.StartDate <= DateTime.Today))
-                    {
-                        a.EndDate = request.EndDate;
-                        a.LastModifiedBy = request.EditedBy;
-                    }
+                        break;
 
-                    AddNewAnswers(request, caseStatus, startDate: request.EndDate, endDate: request.EndDate);
+                    case "lac":
+                        var activeLACAnswers = caseStatus
+                                                    .Answers
+                                                    .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+
+                        //discard future ones
+                        foreach (var a in activeLACAnswers.Where(x => x.StartDate > DateTime.Today))
+                        {
+                            a.DiscardedAt = _systemTime.Now;
+                            a.LastModifiedBy = request.EditedBy;
+                        }
+
+                        //save start date and group id from the current answer and use them in the end reason
+                        var activeAnswer = activeLACAnswers.Where(x => x.StartDate <= DateTime.Today).First();
+
+                        //end current ones
+                        foreach (var a in activeLACAnswers.Where(x => x.StartDate <= DateTime.Today))
+                        {
+                            a.EndDate = request.EndDate;
+                            a.LastModifiedBy = request.EditedBy;
+                        }
+
+                        AddNewAnswers(request, caseStatus, startDate: activeAnswer.StartDate, endDate: request.EndDate, groupId: activeAnswer.GroupId);
+                        break;
                 }
             }
             //end date not provided
@@ -304,7 +321,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
         }
 
-        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, DateTime? startDate = null, DateTime? endDate = null)
+        private void AddNewAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, DateTime? startDate = null, DateTime? endDate = null, string? groupId = null)
         {
             Guid identifier = Guid.NewGuid();
 
@@ -318,7 +335,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     EndDate = endDate ?? null,
                     Option = a.Option,
                     Value = a.Value,
-                    GroupId = identifier.ToString(),
+                    GroupId = groupId ?? identifier.ToString(),
                     CreatedAt = _systemTime.Now
                 });
             }
@@ -370,6 +387,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var activeAnswers = caseStatus
                                     .Answers
                                     .Where(x => x.DiscardedAt == null && x.EndDate == null);
+
             //discard future ones
             if (activeAnswers.Any(x => x.StartDate > DateTime.Today.Date))
             {
@@ -379,9 +397,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     answer.LastModifiedBy = request.CreatedBy;
                 }
             }
-            //end the current ones
+            //end the current ones and add new episode end reason (hard coded for data migration purposes)
             else
             {
+                caseStatus.Answers.Add(new CaseStatusAnswer()
+                {
+                    CreatedBy = request.CreatedBy,
+                    EndDate = request.StartDate,
+                    StartDate = activeAnswers.First().StartDate,
+                    Option = LACAnswerOption.EpisodeReason,
+                    Value = LACAnswerValue.X1,
+                    GroupId = activeAnswers.First().GroupId
+                });
+
                 foreach (var answer in activeAnswers)
                 {
                     answer.EndDate = request.StartDate;
@@ -412,5 +440,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return caseStatus.ToDomain();
         }
+    }
+
+    public static class LACAnswerOption
+    {
+        public const string EpisodeReason = "episodeReason";
+    }
+    public static class LACAnswerValue
+    {
+        public const string X1 = "X1";
     }
 }
