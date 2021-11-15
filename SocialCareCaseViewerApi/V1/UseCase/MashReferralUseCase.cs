@@ -37,6 +37,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public Boundary.Response.MashReferral_2? GetMashReferralUsingId_2(string requestId)
         {
+            if (requestId == null)
+            {
+                throw new MashReferralNotFoundException($"MASH referral with id {requestId} not found");
+            }
+
             return _mashReferralGateway.GetReferralUsingId_2(requestId)?.ToResponse();
         }
 

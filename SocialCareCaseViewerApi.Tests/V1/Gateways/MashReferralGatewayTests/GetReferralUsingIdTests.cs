@@ -14,7 +14,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 {
     [TestFixture]
-    public class GetReferralUsingIdTests
+    public class GetReferralUsingIdTests : DatabaseTests
     {
         private Mock<IMongoGateway> _mongoGateway = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         public void Setup()
         {
             _mongoGateway = new Mock<IMongoGateway>();
-            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object);
+            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, DatabaseContext);
         }
 
         [Test]

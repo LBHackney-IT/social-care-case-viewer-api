@@ -341,6 +341,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ReferralDocumentURI = mashReferral_2.ReferralDocumentURI,
                 Referrer = mashReferral_2.Referrer,
                 Stage = mashReferral_2.Stage,
+                AssignedTo = mashReferral_2.AssignedTo?.ToDomain(true),
                 ReferralCategory = mashReferral_2.ReferralCategory,
                 ReferralCreatedAt = mashReferral_2.ReferralCreatedAt,
                 InitialDecision = mashReferral_2.InitialDecision,
