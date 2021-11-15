@@ -283,7 +283,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 a.DiscardedAt = _systemTime.Now;
                 a.LastModifiedBy = request.EditedBy;
                 var currentEndDate = a.EndDate;
-                if (currentEndDate.HasValue) 
+                if (currentEndDate.HasValue)
                 {
                     currentStatusEndDate = currentEndDate;
                 }
