@@ -127,9 +127,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             var caseStatusAnswers = DatabaseContext.CaseStatuses.FirstOrDefault().Answers;
 
-            caseStatusAnswers.Count.Should().Be(4);
+            caseStatusAnswers.Count.Should().Be(5);
 
-            var previousActiveAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId);
+            var previousActiveAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId && x.Option != LACAnswerOption.EpisodeReason);
 
             previousActiveAnswers.All(x => x.EndDate != null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate == request.StartDate);
@@ -152,7 +152,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
 
             var currentScheduledAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: DateTime.Today.AddDays(10).Date, min: 2, max: 2, groupId: groupId);
-
             caseStatus.Answers.AddRange(currentScheduledAnswers);
             DatabaseContext.CaseStatuses.Add(caseStatus);
             DatabaseContext.SaveChanges();
@@ -190,6 +189,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             newScheduledAnswers.All(x => x.StartDate == request.StartDate).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer1.Option && x.Value == requestAnswer1.Value).Should().BeTrue();
             newScheduledAnswers.Any(x => x.Option == requestAnswer2.Option && x.Value == requestAnswer2.Value).Should().BeTrue();
+        }
+
+        [Test]
+        public void AddsNewEpisodeReasonAnswerUsingTheStartAndEndDateOfTheCurrentAnswers()
+        {
+            var personId = 123;
+            var groupId = Guid.NewGuid().ToString();
+            var currentActiveAnswersStartDate = DateTime.Today.AddDays(-10);
+
+            var caseStatus = TestHelpers.CreateCaseStatus(type: "LAC", personId: personId);
+
+            var currentActiveAnswers = TestHelpers.CreateCaseStatusAnswers(caseStatusId: caseStatus.Id, startDate: currentActiveAnswersStartDate, min: 2, max: 2, groupId: groupId);
+            caseStatus.Answers = new List<CaseStatusAnswerInfrastructure>();
+            caseStatus.Answers.AddRange(currentActiveAnswers);
+            DatabaseContext.CaseStatuses.Add(caseStatus);
+            DatabaseContext.SaveChanges();
+
+            var requestAnswer = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 1, max: 1);
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(caseStatusId: caseStatus.Id, answers: requestAnswer, startDate: DateTime.Today.AddDays(-2));
+
+            _caseStatusGateway.ReplaceCaseStatusAnswers(request);
+
+            var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
+            updatedCaseStatus.Answers.Where(x => x.GroupId == groupId).Count().Should().Be(3);
+
+            var episodeEndReasonAnswer = updatedCaseStatus.Answers.Where(x => x.GroupId == groupId && x.Option == LACAnswerOption.EpisodeReason && x.Value == LACAnswerValue.X1).FirstOrDefault();
+            episodeEndReasonAnswer.Should().NotBeNull();
+            episodeEndReasonAnswer.StartDate.Should().Be(currentActiveAnswersStartDate);
+            episodeEndReasonAnswer.EndDate.Should().Be(request.StartDate);
+            episodeEndReasonAnswer.CreatedBy = request.CreatedBy;
         }
     }
 }
