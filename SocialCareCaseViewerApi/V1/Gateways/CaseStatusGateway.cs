@@ -245,7 +245,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         ReplaceCurrentActiveAnswers(request, caseStatus, currentActiveAnswers);
 
                         var previousCaseStatusAnswers = caseStatus.Answers
-                                                .Where(x => x.DiscardedAt == null && x.EndDate != null)
+                                                .Where(x => x.DiscardedAt == null && x.EndDate != null && x.EndDate <= DateTime.Today)
                                                 .OrderByDescending(x => x.StartDate).Take(2).ToList();
 
                         CopyAndDiscardPreviousAnswers(request, caseStatus, previousCaseStatusAnswers);
@@ -276,11 +276,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private void ReplaceCurrentActiveAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> caseStatusAnswers)
         {
             Guid identifier = Guid.NewGuid();
+            DateTime? currentStatusEndDate = null;
 
             foreach (var a in caseStatusAnswers)
             {
                 a.DiscardedAt = _systemTime.Now;
                 a.LastModifiedBy = request.EditedBy;
+                var currentEndDate = a.EndDate;
+                if (currentEndDate.HasValue)
+                {
+                    currentStatusEndDate = currentEndDate;
+                }
             }
 
             foreach (var ra in request.Answers)
@@ -293,7 +299,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Option = ra.Option,
                     Value = ra.Value,
                     GroupId = identifier.ToString(),
-                    CreatedAt = _systemTime.Now
+                    CreatedAt = _systemTime.Now,
+                    EndDate = currentStatusEndDate
                 });
             }
         }
