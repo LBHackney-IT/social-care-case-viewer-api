@@ -25,7 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public Worker? AssignedTo { get; set; }
         [Column("created_at")]
         public DateTime ReferralCreatedAt { get; set; }
-        public List<MashResident> Clients { get; set; } = null!;
 
         [Column("referral_doc_url")]
         public string ReferralDocumentURI { get; set; } = null!;

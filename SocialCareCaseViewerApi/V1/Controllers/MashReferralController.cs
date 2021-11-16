@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get a mash referrals using id value
+        /// Get a mash referral from Postgres using id value
         /// </summary>
         /// <response code="200">Successful request. Referrals returned</response>
         /// <response code="404">Mash referral not found</response>
@@ -55,23 +55,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("_2/{referralId}")]
         public IActionResult GetMashReferral_2(string referralId)
         {
-            try
-            {
-                var referral = _mashReferralUseCase.GetMashReferralUsingId_2(referralId);
+            Console.WriteLine("before assigning");
+            var referral = _mashReferralUseCase.GetMashReferralUsingId_2(referralId);
+            Console.WriteLine("after assigning");
 
-                if (referral != null)
-                {
-                    return Ok(referral);
-                }
-            }
-            catch (Exception e) when (
-            e is MashReferralNotFoundException ||
-            e is WorkerNotFoundException ||
-            e is MashReferralStageMismatchException)
+            if (referral != null)
             {
-                return BadRequest(e.Message);
+                return Ok(referral);
             }
-            return NotFound();
+            else return NotFound();
         }
 
 

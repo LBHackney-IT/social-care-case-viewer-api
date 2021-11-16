@@ -11,7 +11,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string RequestedSupport { get; set; } = null!;
         public WorkerResponse? AssignedTo { get; set; }
         public string ReferralCreatedAt { get; set; }
-        public List<MashResident> Clients { get; set; } = null!;
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? ReferralCategory { get; set; }

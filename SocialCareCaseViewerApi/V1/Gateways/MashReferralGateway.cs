@@ -65,16 +65,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             return _databaseContext.MashReferral_2
                     .Where(x => x.Id.ToString() == requestId)
-                    .FirstOrDefault().ToDomain();
+                    .FirstOrDefault()?.ToDomain();
 
         }
 
-        // public MashResident? GetMashResidentsByReferral(string requestId)        {
-        //     return _databaseContext.MashResident
-        //             .Where(x => x.ReferralId.ToString() == requestId)
-        //             .FirstOrDefault();
-
-        // }
 
     }
 }

@@ -16,7 +16,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         public void UpsertRecord(Infrastructure.MashReferral referral);
         public Infrastructure.MashReferral? GetInfrastructureUsingId(string requestId);
         public MashReferral_2? GetReferralUsingId_2(string requestId);
-        // public MashResident? GetMashResidentsByReferral(string requestId);
 
     }
 }

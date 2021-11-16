@@ -335,13 +335,13 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
         public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral_2)
         {
+            Console.WriteLine(mashReferral_2);
             return new Domain.MashReferral_2
             {
                 Id = mashReferral_2.Id.ToString(),
                 ReferralDocumentURI = mashReferral_2.ReferralDocumentURI,
                 Referrer = mashReferral_2.Referrer,
                 Stage = mashReferral_2.Stage,
-                AssignedTo = mashReferral_2.AssignedTo?.ToDomain(true),
                 ReferralCategory = mashReferral_2.ReferralCategory,
                 ReferralCreatedAt = mashReferral_2.ReferralCreatedAt,
                 InitialDecision = mashReferral_2.InitialDecision,

@@ -16,8 +16,6 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2;
-using MashResident = SocialCareCaseViewerApi.V1.Boundary.Response.MashResident;
-using dbMashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -369,23 +367,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        // public static List<MashResident> ToResponse(this List<dbMashResident> mashResidents)
-        // {
-        //     return mashResidents.Select (mashResident => new MashResident
-        //     {
-        //         FirstName = mashResident.FirstName,
-        //         LastName = mashResident.LastName
-        //     }).ToList();
-        // }
-
-        // public static MashResident ToResponse(this dbMashResident mashResident)
-        // {
-        //     return new MashResident()
-        //     {
-        //         FirstName = mashResident.FirstName,
-        //         LastName = mashResident.LastName
-        //     };
-        // }
 
         public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral_2)
         {
