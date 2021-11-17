@@ -375,7 +375,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Id = mashReferral_2.Id,
                 Referrer = mashReferral_2.Referrer,
                 Stage = mashReferral_2.Stage,
-                AssignedTo = mashReferral_2.AssignedTo?.ToResponse(),
                 ReferralCreatedAt = mashReferral_2.ReferralCreatedAt.ToString("O"),
                 InitialDecision = mashReferral_2.InitialDecision,
                 InitialDecisionReferralCategory = mashReferral_2.InitialDecisionReferralCategory,

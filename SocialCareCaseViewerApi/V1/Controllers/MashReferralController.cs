@@ -55,15 +55,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("_2/{referralId}")]
         public IActionResult GetMashReferral_2(string referralId)
         {
-            Console.WriteLine("before assigning");
             var referral = _mashReferralUseCase.GetMashReferralUsingId_2(referralId);
-            Console.WriteLine("after assigning");
 
             if (referral != null)
             {
                 return Ok(referral);
             }
-            else return NotFound();
+            return NotFound();
         }
 
 

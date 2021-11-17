@@ -6,11 +6,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class MashReferral_2
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
         public string Referrer { get; set; } = null!;
         public string RequestedSupport { get; set; } = null!;
-        public WorkerResponse? AssignedTo { get; set; }
-        public string ReferralCreatedAt { get; set; }
+        public string? ReferralCreatedAt { get; set; }
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? ReferralCategory { get; set; }

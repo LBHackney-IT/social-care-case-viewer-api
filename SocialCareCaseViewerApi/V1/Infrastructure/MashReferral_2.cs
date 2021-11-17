@@ -21,8 +21,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Referrer { get; set; } = null!;
         [Column("requested_support")]
         public string RequestedSupport { get; set; } = null!;
-        [ForeignKey("worker_id")]
-        public Worker? AssignedTo { get; set; }
         [Column("created_at")]
         public DateTime ReferralCreatedAt { get; set; }
 

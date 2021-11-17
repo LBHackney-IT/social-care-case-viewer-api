@@ -338,7 +338,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             Console.WriteLine(mashReferral_2);
             return new Domain.MashReferral_2
             {
-                Id = mashReferral_2.Id.ToString(),
+                Id = mashReferral_2.Id,
                 ReferralDocumentURI = mashReferral_2.ReferralDocumentURI,
                 Referrer = mashReferral_2.Referrer,
                 Stage = mashReferral_2.Stage,
