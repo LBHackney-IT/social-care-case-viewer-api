@@ -117,7 +117,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = _dateTime.ToString("O"),
-                ReferralCategory = mashReferral.ReferralCategory,
+                InitialReferralCategory = mashReferral.InitialReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
             });
@@ -149,7 +149,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                ReferralCategory = mashReferral.ReferralCategory,
+                InitialReferralCategory = mashReferral.InitialReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
             });

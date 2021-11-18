@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 referral.InitialCreatedAt = _systemTime.Now;
                 referral.InitialDecision = request.Decision;
                 referral.InitialUrgentContactRequired = request.RequiresUrgentContact;
-                referral.ReferralCategory = request.ReferralCategory;
+                referral.InitialReferralCategory = request.ReferralCategory;
                 referral.Stage = "SCREENING";
             }
 
@@ -175,7 +175,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-9-URI",
                 InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse"
+                InitialReferralCategory = "Emotional abuse"
             };
             var referral10 = new MashReferral
             {
@@ -186,7 +186,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-10-URI",
                 InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse"
+                InitialReferralCategory = "Emotional abuse"
             };
             var referral11 = new MashReferral
             {
@@ -197,7 +197,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-11-URI",
                 InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse",
+                InitialReferralCategory = "Emotional abuse",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-2),
                 ScreeningUrgentContactRequired = true
@@ -211,7 +211,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-12-URI",
                 InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse",
+                InitialReferralCategory = "Emotional abuse",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-1),
                 ScreeningUrgentContactRequired = true

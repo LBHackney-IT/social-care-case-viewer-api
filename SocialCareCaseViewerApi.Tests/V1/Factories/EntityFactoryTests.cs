@@ -582,7 +582,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ScreeningDecision = domainReferral.ScreeningDecision,
                 ScreeningCreatedAt = domainReferral.ScreeningCreatedAt,
                 ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                ReferralCategory = infrastructureReferral.ReferralCategory,
+                InitialReferralCategory = infrastructureReferral.InitialReferralCategory,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
             });

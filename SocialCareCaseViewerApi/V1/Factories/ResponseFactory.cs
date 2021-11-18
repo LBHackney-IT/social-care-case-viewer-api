@@ -362,7 +362,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                ReferralCategory = mashReferral.ReferralCategory,
+                InitialReferralCategory = mashReferral.InitialReferralCategory,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
             };
