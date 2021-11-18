@@ -9,6 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string WorkerEmail { get; set; } = null!;
         public string UpdateType { get; set; } = null!;
         public string? Decision { get; set; }
+        public string? ReferralCategory { get; set; }
         public bool? RequiresUrgentContact { get; set; }
     }
 
@@ -17,14 +18,25 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public UpdateMashReferralValidator()
         {
             RuleFor(x => x.Decision)
-                .NotNull().When(x => x.UpdateType.ToUpper() == "SCREENING-DECISION")
-                .WithMessage("Must provide a decision");
+                .NotNull()
+                    .When(x => x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "INITIAL-DECISION")
+                    .WithMessage("Must provide a decision");
             RuleFor(x => x.Decision)
-                .MinimumLength(1).When(x => x.UpdateType.ToUpper() == "SCREENING-DECISION")
-                .WithMessage("Must provide a decision");
+                .MinimumLength(1)
+                    .When(x => x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "INITIAL-DECISION")
+                    .WithMessage("Must provide a decision");
+            RuleFor(x => x.ReferralCategory)
+                .NotNull()
+                    .When(x => x.UpdateType == "INITIAL-DECISION")
+                    .WithMessage("Must provide a referral category");
+            RuleFor(x => x.ReferralCategory)
+                .MinimumLength(1)
+                    .When(x => x.UpdateType == "INITIAL-DECISION")
+                    .WithMessage("Must provide a referral category");
             RuleFor(x => x.RequiresUrgentContact)
-                .NotNull().When(x => x.UpdateType.ToUpper() == "SCREENING-DECISION")
-                .WithMessage("Must provide if urgent contact is required");
+                .NotNull()
+                    .When(x => x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "INITIAL-DECISION")
+                    .WithMessage("Must provide if urgent contact is required");
         }
     }
 }
