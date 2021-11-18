@@ -655,11 +655,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.InitialCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.InitialReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(100))
                 .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
                 .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.InitialReferralCategory, f => f.Random.String2(20))
+                .RuleFor(x => x.FinalCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.FinalUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.FinalReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20));
         }
