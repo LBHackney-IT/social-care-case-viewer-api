@@ -6,7 +6,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
 {
     public class MashReferral_2
     {
-
         public long Id { get; set; }
         public string Referrer { get; set; } = null!;
         public string RequestedSupport { get; set; } = null!;

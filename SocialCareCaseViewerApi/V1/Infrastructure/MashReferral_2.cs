@@ -10,9 +10,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("ref_mash_referrals", Schema = "dbo")]
     public class MashReferral_2 : IAuditEntity
     {
-
-
-
         [Column("id")]
         [MaxLength(16)]
         [Key]
