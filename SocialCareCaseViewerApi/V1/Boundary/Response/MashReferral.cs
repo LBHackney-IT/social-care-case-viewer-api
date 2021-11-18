@@ -22,5 +22,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public bool? ScreeningUrgentContactRequired { get; set; }
         public string? ScreeningCreatedAt { get; set; }
         public string? FinalDecision { get; set; }
+        public string? FinalReferralCategory { get; set; }
+        public bool? FinalUrgentContactRequired { get; set; }
+        public string? FinalCreatedAt { get; set; }
     }
 }

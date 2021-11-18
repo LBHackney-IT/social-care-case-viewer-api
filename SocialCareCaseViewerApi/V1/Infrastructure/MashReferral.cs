@@ -30,6 +30,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public bool? ScreeningUrgentContactRequired { get; set; }
         public DateTime? ScreeningCreatedAt { get; set; }
         public string? FinalDecision { get; set; }
+        public string? FinalReferralCategory { get; set; }
+        public bool? FinalUrgentContactRequired { get; set; }
+        public DateTime? FinalCreatedAt { get; set; }
 
     }
 }
