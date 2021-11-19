@@ -575,6 +575,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = infrastructureReferral.Stage,
                 AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
                 CreatedAt = infrastructureReferral.CreatedAt,
+                ContactUrgentContactRequired = infrastructureReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = infrastructureReferral.ContactCreatedAt,
                 InitialDecision = infrastructureReferral.InitialDecision,
                 InitialCreatedAt = infrastructureReferral.InitialCreatedAt,
                 InitialReferralCategory = infrastructureReferral.InitialReferralCategory,

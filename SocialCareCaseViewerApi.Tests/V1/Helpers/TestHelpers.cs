@@ -652,6 +652,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ContactCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ContactUrgentContactRequired, f => f.Random.Bool())
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.InitialCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialUrgentContactRequired, f => f.Random.Bool())

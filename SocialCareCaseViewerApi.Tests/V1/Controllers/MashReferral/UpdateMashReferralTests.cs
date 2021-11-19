@@ -29,6 +29,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         }
 
         [Test]
+        public void ValidationReturnsBadRequestIfUpdateTypeIsContactDecisionAndNoUrgentContactOptionSelected()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            request.RequiresUrgentContact = null;
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Must provide if urgent contact is required");
+        }
+
+        [Test]
         public void OnSuccessReturnUpdatedReferralFromMashReferralUseCaseUpdateMashReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
