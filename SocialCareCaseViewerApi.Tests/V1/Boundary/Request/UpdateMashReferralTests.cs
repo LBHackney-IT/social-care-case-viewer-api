@@ -50,9 +50,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenUpdateTypeIsInitialDecisionADecisionMustNotBeNull()
+        public void WhenUpdateTypeIsFinalDecisionADecisionMustNotBeNull()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
             request.Decision = null;
 
             var validationResult = _validator.Validate(request);
@@ -61,9 +61,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenUpdateTypeIsInitialDecisionDecisionMustHaveALength()
+        public void WhenUpdateTypeIsFinalDecisionDecisionMustHaveALength()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
             request.Decision = "";
 
             var validationResult = _validator.Validate(request);
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void WhenUpdateTypeIsInitialDecisionRequiresUrgentContactMustBeProvided()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
             request.RequiresUrgentContact = null;
 
             var validationResult = _validator.Validate(request);
@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustNotBeNull()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
             request.ReferralCategory = null;
 
             var validationResult = _validator.Validate(request);
@@ -96,7 +96,62 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustHaveALength()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a referral category");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsInitialDecisionADecisionMustNotBeNull()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.Decision = null;
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a decision");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsInitialDecisionDecisionMustHaveALength()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.Decision = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a decision");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsFinalDecisionRequiresUrgentContactMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.RequiresUrgentContact = null;
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide if urgent contact is required");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsFinalDecisionReferralCategoryMustNotBeNull()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.ReferralCategory = null;
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a referral category");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsFinalDecisionReferralCategoryMustHaveALength()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
