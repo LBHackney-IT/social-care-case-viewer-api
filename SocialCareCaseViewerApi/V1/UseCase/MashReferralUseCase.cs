@@ -62,7 +62,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 if (!referral.Stage.Equals("INITIAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial decision\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial\"");
                 }
 
                 referral.InitialCreatedAt = _systemTime.Now;
@@ -89,7 +89,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 if (!referral.Stage.Equals("FINAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"final\"");
                 }
 
                 referral.FinalCreatedAt = _systemTime.Now;
