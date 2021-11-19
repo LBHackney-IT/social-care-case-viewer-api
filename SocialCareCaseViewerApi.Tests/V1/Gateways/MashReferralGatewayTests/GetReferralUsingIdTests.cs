@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
+
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 {
@@ -18,6 +19,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
     {
         private Mock<IMongoGateway> _mongoGateway = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
+
+        private Mock<DatabaseGateway> _databaseGateway = null!;
+
+        private readonly DatabaseContext _databaseContext = null!;
         private readonly Faker _faker = new Faker();
         private const string CollectionName = "mash-referrals";
 
@@ -26,6 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             _mongoGateway = new Mock<IMongoGateway>();
             _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, DatabaseContext);
+            _databaseGateway = new Mock<DatabaseGateway>();
         }
 
         [Test]
@@ -50,6 +56,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             response.Should().BeEquivalentTo(referral.ToDomain());
         }
+
+        [Test]
+        public void GetReferralFromPostgresUsingIdReturnsDomainMashReferral()
+        {
+            var referral = new MashReferral_2
+            {
+                Id = _faker.Random.Number(500),
+                Referrer = "GP - red",
+                CreatedAt = DateTime.Now.AddHours(-3),
+                RequestedSupport = "Safeguarding",
+                Stage = "Contact",
+                ReferralDocumentURI = "hardcoded-referral-1-URI"
+            };
+
+            _databaseGateway
+                .Setup(_databaseContext.MashReferral_2
+                    .Where(x => x.Id.ToString() == referral.Id)
+                    .FirstOrDefault()?.ToDomain())
+                .Returns(referral);
+
+            var response = _mashReferralGateway.GetReferralUsingId_2(referral.Id.ToString());
+
+            response.Should().BeEquivalentTo(referral);
+        }        
 
         [Test]
         public void GetReferralUsingIdReturnsNullIfNoMashReferralFound()
