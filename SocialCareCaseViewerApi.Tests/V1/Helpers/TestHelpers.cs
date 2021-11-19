@@ -653,11 +653,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.InitialCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.InitialUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.InitialReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(100))
                 .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
                 .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
+                .RuleFor(x => x.FinalCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.FinalUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.FinalReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20));
         }
@@ -672,15 +677,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? workerEmail = null,
             string? updateType = null,
             string? decision = null,
-            bool? requiresUrgentContact = null)
+            bool? requiresUrgentContact = null,
+            string? referralCategory = null)
         {
-            var updateTypes = new List<string> { "SCREENING-DECISION" };
+            var updateTypes = new List<string> { "SCREENING-DECISION", "INITIAL-DECISION" };
 
             return new Faker<UpdateMashReferral>()
                 .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email)
                 .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
                 .RuleFor(x => x.Decision, f => decision ?? f.Random.String2(100))
-                .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool());
+                .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
+                .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100));
 
         }
     }

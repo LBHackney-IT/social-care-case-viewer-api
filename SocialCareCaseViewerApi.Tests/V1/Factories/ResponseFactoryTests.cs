@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
-using CaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
@@ -533,12 +532,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = domainReferral.Stage,
                 AssignedTo = domainReferral.AssignedTo?.ToResponse(),
                 CreatedAt = domainReferral.CreatedAt.ToString("O"),
-                FinalDecision = domainReferral.FinalDecision,
                 InitialDecision = domainReferral.InitialDecision,
+                InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
+                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
+                InitialReferralCategory = domainReferral.InitialReferralCategory,
                 ScreeningDecision = domainReferral.ScreeningDecision,
                 ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
                 ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                ReferralCategory = domainReferral.ReferralCategory,
+                FinalDecision = domainReferral.FinalDecision,
+                FinalReferralCategory = domainReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = domainReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = domainReferral.FinalCreatedAt?.ToString("O"),
                 RequestedSupport = domainReferral.RequestedSupport,
                 ReferralDocumentURI = domainReferral.ReferralDocumentURI
             });

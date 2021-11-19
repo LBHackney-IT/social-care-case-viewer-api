@@ -298,18 +298,20 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate,
                 Notes = caseStatus.Notes,
                 Person = caseStatus.Person,
-                Answers = caseStatus.Answers.Select(
-                    a => new Domain.CaseStatusAnswer
-                    {
-                        Option = a.Option,
-                        Value = a.Value,
-                        StartDate = a.StartDate,
-                        CreatedAt = a.CreatedAt.Value,
-                        GroupId = a.GroupId,
-                        EndDate = a.EndDate,
-                        DiscardedAt = a.DiscardedAt
-                    }
-                    ).ToList()
+                Answers = caseStatus.Answers.Select(a => a.ToDomain()).ToList()
+            };
+        }
+        public static Domain.CaseStatusAnswer ToDomain(this Infrastructure.CaseStatusAnswer caseStatusAnswer)
+        {
+            return new Domain.CaseStatusAnswer()
+            {
+                Option = caseStatusAnswer.Option,
+                Value = caseStatusAnswer.Value,
+                StartDate = caseStatusAnswer.StartDate,
+                CreatedAt = caseStatusAnswer.CreatedAt,
+                GroupId = caseStatusAnswer.GroupId,
+                EndDate = caseStatusAnswer.EndDate,
+                DiscardedAt = caseStatusAnswer.DiscardedAt
             };
         }
 
@@ -323,14 +325,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Stage = mashReferral.Stage,
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true),
                 CreatedAt = mashReferral.CreatedAt,
-                FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
+                InitialCreatedAt = mashReferral.InitialCreatedAt,
+                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                FinalDecision = mashReferral.FinalDecision,
+                FinalReferralCategory = mashReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = mashReferral.FinalCreatedAt,
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI,
-                ReferralCategory = mashReferral.ReferralCategory
+                InitialReferralCategory = mashReferral.InitialReferralCategory
             };
         }
     }
