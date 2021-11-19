@@ -58,6 +58,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new MashReferralNotFoundException($"MASH referral with id {referralId} not found");
             }
 
+            if (request.UpdateType.Equals("CONTACT-DECISION"))
+            {
+                if (!referral.Stage.Equals("CONTACT"))
+                {
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"contact\"");
+                }
+
+                referral.FinalCreatedAt = _systemTime.Now;
+                referral.FinalDecision = request.Decision;
+                referral.FinalUrgentContactRequired = request.RequiresUrgentContact;
+                referral.Con = request.ReferralCategory;
+                referral.Stage = "INITIAL";
+            }
+
             if (request.UpdateType.Equals("INITIAL-DECISION"))
             {
                 if (!referral.Stage.Equals("INITIAL"))
@@ -166,6 +180,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Sally Stephens" },
                 Stage = "INITIAL",
@@ -175,6 +191,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now,
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Barry Smith", "Bert Smith", "Sally Smith" },
                 Stage = "INITIAL",
@@ -184,6 +202,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Sophie Owens" },
                 Stage = "SCREENING",
@@ -195,6 +215,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Max Smith", "Georgie Smith", "Hugh Smith" },
                 Stage = "SCREENING",
@@ -206,6 +228,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "John Smith" },
                 Stage = "FINAL",
@@ -220,6 +244,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Jack Owens", "Stuart Owens", "Katie Owens" },
                 Stage = "FINAL",
