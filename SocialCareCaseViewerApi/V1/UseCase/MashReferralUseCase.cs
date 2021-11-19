@@ -108,7 +108,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "School",
                 CreatedAt = DateTime.Now.AddHours(-5),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Bert Bertram", "c2", "c3", "c4" },
+                Clients = new List<string> { "Bert Bertram", "Courtney Bushell", "Jake Bucks", "Frank Gallagher" },
                 Stage = "CONTACT",
                 ReferralDocumentURI = "hardcoded-referral-2-URI"
             };
@@ -117,7 +117,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Family",
                 CreatedAt = DateTime.Now.AddHours(-10),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Bertie Stephens", "c2", "c3", "c4" },
+                Clients = new List<string> { "Bertie Stephens", "Katie Ryans", "Hannah Stephens", "Will Stephens" },
                 Stage = "CONTACT",
                 ReferralDocumentURI = "hardcoded-referral-3-URI"
             };
@@ -162,7 +162,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Barry Smith", "c1", "c2" },
+                Clients = new List<string> { "Barry Smith", "Bert Smith", "Sally Smith" },
                 Stage = "INITIAL",
                 ReferralDocumentURI = "hardcoded-referral-8-URI"
             };
@@ -174,7 +174,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Clients = new List<string> { "Sophie Owens" },
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-9-URI",
-                InitialDecision = "DAIS",
+                InitialDecision = "CSC Screening required in MASH",
                 InitialReferralCategory = "Emotional abuse"
             };
             var referral10 = new MashReferral
@@ -182,11 +182,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Max Smith", "c1", "c2" },
+                Clients = new List<string> { "Max Smith", "Georgie Smith", "Hugh Smith" },
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-10-URI",
-                InitialDecision = "DAIS",
-                InitialReferralCategory = "Emotional abuse"
+                InitialReferralCategory = "Emotional abuse",
+                InitialDecision = "EH Screening required in MASH",
             };
             var referral11 = new MashReferral
             {
@@ -196,8 +196,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Clients = new List<string> { "John Smith" },
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-11-URI",
-                InitialDecision = "DAIS",
                 InitialReferralCategory = "Emotional abuse",
+                InitialDecision = "CSC Screening required in MASH",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-2),
                 ScreeningUrgentContactRequired = true
@@ -207,10 +207,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Jack Owens", "c1", "c2" },
+                Clients = new List<string> { "Jack Owens", "Stuart Owens", "Katie Owens" },
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-12-URI",
-                InitialDecision = "DAIS",
+                InitialDecision = "CSC Screening required in MASH",
                 InitialReferralCategory = "Emotional abuse",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-1),
