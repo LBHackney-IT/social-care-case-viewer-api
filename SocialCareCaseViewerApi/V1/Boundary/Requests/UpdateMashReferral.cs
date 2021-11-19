@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                     .WithMessage("Must provide a referral category");
             RuleFor(x => x.RequiresUrgentContact)
                 .NotNull()
-                    .When(x =>  x.UpdateType == "CONTACT-DECISION" || x.UpdateType == "INITIAL-DECISION" || x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "FINAL-DECISION")
+                    .When(x => x.UpdateType == "CONTACT-DECISION" || x.UpdateType == "INITIAL-DECISION" || x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "FINAL-DECISION")
                     .WithMessage("Must provide if urgent contact is required");
         }
     }
