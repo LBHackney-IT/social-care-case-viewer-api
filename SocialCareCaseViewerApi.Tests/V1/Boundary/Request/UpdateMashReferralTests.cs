@@ -17,6 +17,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void WhenUpdateTypeIsContactDecisionRequiresUrgentContactMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            request.RequiresUrgentContact = null;
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide if urgent contact is required");
+        }
+
+        [Test]
         public void WhenUpdateTypeIsInitialDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
