@@ -532,6 +532,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = domainReferral.Stage,
                 AssignedTo = domainReferral.AssignedTo?.ToResponse(),
                 CreatedAt = domainReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = domainReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = domainReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = domainReferral.InitialDecision,
                 InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
                 InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
