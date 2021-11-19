@@ -85,6 +85,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 referral.Stage = "FINAL";
             }
 
+            if (request.UpdateType.Equals("FINAL-DECISION"))
+            {
+                if (!referral.Stage.Equals("FINAL"))
+                {
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                }
+
+                referral.FinalCreatedAt = _systemTime.Now;
+                referral.FinalDecision = request.Decision;
+                referral.FinalUrgentContactRequired = request.RequiresUrgentContact;
+                referral.FinalReferralCategory = request.ReferralCategory;
+                referral.Stage = "POST-FINAL";
+            }
+
             _mashReferralGateway.UpsertRecord(referral);
 
             return referral.ToDomain().ToResponse();
