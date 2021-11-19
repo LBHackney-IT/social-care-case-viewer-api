@@ -25,10 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .MinimumLength(1)
                     .When(x => x.UpdateType == "INITIAL-DECISION" || x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "FINAL-DECISION")
                 .WithMessage("Must provide a decision");
-            RuleFor(x => x.Decision)
-                .MinimumLength(1)
-                    .When(x => x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "INITIAL-DECISION" || x.UpdateType == "FINAL-DECISION")
-                .WithMessage("Must provide a decision");
             RuleFor(x => x.ReferralCategory)
                 .NotNull()
                     .When(x => x.UpdateType == "INITIAL-DECISION" || x.UpdateType == "FINAL-DECISION")
