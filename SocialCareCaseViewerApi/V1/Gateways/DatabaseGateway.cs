@@ -41,67 +41,50 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId, long workerId)
+        public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail)
         {
             List<Allocation> allocations = new List<Allocation>();
+            IQueryable<AllocationSet> query = _databaseContext.Allocations;
 
-            //TODO: optimise these queries
             if (mosaicId != 0)
             {
-                allocations = _databaseContext.Allocations
-                    .Where(x => x.PersonId == mosaicId)
-                    .Include(x => x.Team)
-                    .Include(x => x.Person)
-                    .ThenInclude(y => y.Addresses)
-                    .Select(x => new Allocation()
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PersonDateOfBirth = x.Person.DateOfBirth,
-                        PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
-                        AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
-                        AllocatedWorkerTeam = x.Team.Name,
-                        WorkerType = x.Worker.Role,
-                        AllocationStartDate = x.AllocationStartDate,
-                        AllocationEndDate = x.AllocationEndDate,
-                        CaseStatus = x.CaseStatus,
-                        PersonAddress =
-                                x.Person.Addresses.FirstOrDefault(x =>
-                                    !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") ==
-                                null
-                                    ? null
-                                    : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
-                                        .AddressLines
-                    }
-                    ).AsNoTracking().ToList();
+                query = query.Where(x => x.PersonId == mosaicId);
             }
             else if (workerId != 0)
             {
-                allocations = _databaseContext.Allocations
-                    .Where(x => x.WorkerId == workerId)
-                    .Include(x => x.Team)
+                query = query.Where(x => x.WorkerId == workerId);
+            }
+            else if (!String.IsNullOrEmpty(workerEmail))
+            {
+                query = query.Include(x => x.Worker)
+                    .Where(x => x.Worker.Email == workerEmail);
+            }
+
+            if (query != null)
+            {
+                allocations = query.Include(x => x.Team)
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PersonDateOfBirth = x.Person.DateOfBirth,
-                        PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
-                        AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
-                        AllocatedWorkerTeam = x.Team.Name,
-                        WorkerType = x.Worker.Role,
-                        AllocationStartDate = x.AllocationStartDate,
-                        AllocationEndDate = x.AllocationEndDate,
-                        CaseStatus = x.CaseStatus,
-                        PersonAddress =
+                        {
+                            Id = x.Id,
+                            PersonId = x.PersonId,
+                            PersonDateOfBirth = x.Person.DateOfBirth,
+                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
+                            AllocatedWorkerTeam = x.Team.Name,
+                            WorkerType = x.Worker.Role,
+                            AllocationStartDate = x.AllocationStartDate,
+                            AllocationEndDate = x.AllocationEndDate,
+                            CaseStatus = x.CaseStatus,
+                            PersonAddress =
                                 x.Person.Addresses.FirstOrDefault(x =>
-                                    !string.IsNullOrEmpty(x.IsDisplayAddress) && x.IsDisplayAddress.ToUpper() == "Y") ==
-                                null
+                                    !string.IsNullOrEmpty(x.IsDisplayAddress) &&
+                                    x.IsDisplayAddress.ToUpper() == "Y") == null
                                     ? null
                                     : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
                                         .AddressLines
-                    }
+                        }
                     ).AsNoTracking().ToList();
             }
 
