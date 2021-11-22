@@ -957,6 +957,118 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 Count = totalCount
             });
         }
+
+        [Test]
+        public void ExecuteDeleteThrowsWorkerNotFoundWhenDeletedByWorkerNotFound()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission();
+
+            Action act = () => _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<WorkerNotFoundException>().WithMessage($"Worker with email { request.DeletedBy} not found");
+        }
+
+        [Test]
+        public void ExecuteDeleteThrowsGetSubmissionExceptionWhenRequestedSubmissionDoesNotExist()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId));
+
+            Action act = () => _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<DeleteSubmissionException>().WithMessage($"Submission with ID { submission.SubmissionId} not found");
+        }
+
+        [Test]
+        public void ExecuteDeleteThrowsSubmissionAlreadyDeletedExceptionWhenSubmissionHasAlreadyBeenDeleted()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission(deleted: true);
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId)).Returns(submission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<SubmissionAlreadyDeletedException>().WithMessage($"Submission with ID { submission.SubmissionId} has already been deleted");
+        }
+
+        [Test]
+        public void ExecuteDeleteSuccessfullySetsTheDeletedValueForSubmissionRecordToTrue()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission(deleted: false, formId: FormIdName.ChildCaseNote);
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId)).Returns(submission);
+
+            _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(m => m.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission), Times.Once);
+
+            submission.Deleted.Should().BeTrue();
+        }
+
+        [Test]
+        public void ExecuteDeleteSuccessfullySetsDeletionDetailValuesForTheSubmission()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission(deleted: false, formId: FormIdName.ChildCaseNote);
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId)).Returns(submission);
+
+            _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(m => m.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission), Times.Once);
+
+            submission.DeletionDetails.Should().NotBeNull();
+
+            submission.DeletionDetails?.DeletedBy.Should().Be(request.DeletedBy);
+            submission.DeletionDetails?.DeleteReason.Should().Be(request.DeleteReason);
+            submission.DeletionDetails?.DeleteRequestedBy.Should().Be(request.DeleteRequestedBy);
+            submission.DeletionDetails?.DeletedAt.Should().BeCloseTo(DateTime.Now, precision: 2000);
+        }
+
+        [Test]
+        public void ExcecuteDeleteThrowsUnsupportedSubmissionTypeIfTheSubmissionTypeIsNotSupported()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission();
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId)).Returns(submission);
+
+            Action act = () => _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            act.Should().Throw<UnsupportedSubmissionTypeException>().WithMessage($"Submission type { submission.FormId} cannot be deleted");
+        }
+
+        [Test]
+        [TestCase(FormIdName.ChildCaseNote)]
+        [TestCase(FormIdName.AdultCaseNote)]
+        public void ExcecuteDeleteCallsMongoDbGaetwayWhenTheSubmissionTypeIsSupported(string formId)
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var submission = TestHelpers.CreateCaseSubmission(formId: formId);
+            var worker = TestHelpers.CreateWorker();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.DeletedBy)).Returns(worker);
+            _mockMongoGateway.Setup(m => m.LoadRecordById<CaseSubmission>(CollectionName, submission.SubmissionId)).Returns(submission);
+            _mockMongoGateway.Setup(m => m.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission));
+
+            _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission), Times.Once);
+        }
     }
 }
-
