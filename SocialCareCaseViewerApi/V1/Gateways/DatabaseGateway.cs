@@ -66,25 +66,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
-                        {
-                            Id = x.Id,
-                            PersonId = x.PersonId,
-                            PersonDateOfBirth = x.Person.DateOfBirth,
-                            PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
-                            AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
-                            AllocatedWorkerTeam = x.Team.Name,
-                            WorkerType = x.Worker.Role,
-                            AllocationStartDate = x.AllocationStartDate,
-                            AllocationEndDate = x.AllocationEndDate,
-                            CaseStatus = x.CaseStatus,
-                            PersonAddress =
-                                x.Person.Addresses.FirstOrDefault(x =>
-                                    !string.IsNullOrEmpty(x.IsDisplayAddress) &&
-                                    x.IsDisplayAddress.ToUpper() == "Y") == null
-                                    ? null
-                                    : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
-                                        .AddressLines
-                        }
+                    {
+                        Id = x.Id,
+                        PersonId = x.PersonId,
+                        PersonDateOfBirth = x.Person.DateOfBirth,
+                        PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
+                        AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
+                        AllocatedWorkerTeam = x.Team.Name,
+                        WorkerType = x.Worker.Role,
+                        AllocationStartDate = x.AllocationStartDate,
+                        AllocationEndDate = x.AllocationEndDate,
+                        CaseStatus = x.CaseStatus,
+                        PersonAddress =
+                            x.Person.Addresses.FirstOrDefault(x =>
+                                !string.IsNullOrEmpty(x.IsDisplayAddress) &&
+                                x.IsDisplayAddress.ToUpper() == "Y") == null
+                                ? null
+                                : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
+                                    .AddressLines
+                    }
                     ).AsNoTracking().ToList();
             }
 
