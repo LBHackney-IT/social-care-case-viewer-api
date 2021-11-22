@@ -11,6 +11,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "worker_id")]
         public long WorkerId { get; set; }
+
+        [FromQuery(Name = "worker_email")]
+        public string WorkerEmail { get; set; }
     }
 
     public class ListAllocationsRequestValidator : ValidationAttribute
