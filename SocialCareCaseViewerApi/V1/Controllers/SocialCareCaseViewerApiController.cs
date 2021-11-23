@@ -42,6 +42,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("allocations")]
         public IActionResult GetAllocations([FromQuery] ListAllocationsRequest request)
         {
+            var validator = new ListAllocationsRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             return Ok(_allocationUseCase.Execute(request));
         }
 
