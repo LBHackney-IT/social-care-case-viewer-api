@@ -269,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null, deleted: true);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -287,10 +287,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission1.FormAnswers,
                 Title = null,
                 LastEdited = databaseCaseSubmission1.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = true,
+                DeletionDetails = databaseCaseSubmission1.DeletionDetails
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title", deleted: false);
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -308,7 +310,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission2.FormAnswers,
                 Title = "test-title",
                 LastEdited = databaseCaseSubmission2.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = false,
+                DeletionDetails = null
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
