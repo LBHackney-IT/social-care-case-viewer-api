@@ -802,7 +802,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const int residentId = 5;
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(personID: residentId);
 
-            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName,false);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName, false);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
@@ -838,7 +838,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
 
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
-        
+
             var expectedJsonFilter = filter.RenderToJson();
 
             _mockMongoGateway.Setup(x => x.GetRecordsCountByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));

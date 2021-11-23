@@ -170,11 +170,11 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 _formSubmissionsUseCase.ExecuteDelete(submissionId, request);
             }
-            catch(WorkerNotFoundException e)
+            catch (WorkerNotFoundException e)
             {
                 return UnprocessableEntity(e.Message);
             }
-            catch(DeleteSubmissionException e)
+            catch (DeleteSubmissionException e)
             {
                 return UnprocessableEntity(e.Message);
             }

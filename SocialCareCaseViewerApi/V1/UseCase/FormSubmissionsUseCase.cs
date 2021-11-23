@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var submissionToBeDeleted = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
-            if(submissionToBeDeleted == null)
+            if (submissionToBeDeleted == null)
             {
                 throw new DeleteSubmissionException($"Submission with ID {submissionId} not found");
             }
