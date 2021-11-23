@@ -583,7 +583,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? ageContext = null,
             string? workerEmail = null,
             long? personID = null,
-            bool? pruneUnfinished = null)
+            bool? pruneUnfinished = null,
+            bool? includeDeletedRecords = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -597,7 +598,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.AgeContext, ageContext)
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID)
-                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
+                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeDeletedRecords, f => includeDeletedRecords ?? f.Random.Bool());
         }
 
         private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)

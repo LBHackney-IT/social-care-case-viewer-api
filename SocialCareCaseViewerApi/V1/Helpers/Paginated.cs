@@ -6,5 +6,6 @@ namespace SocialCareCaseViewerApi.V1.Helpers
     {
         public List<T> Items { get; set; }
         public long Count { get; set; }
+        public long DeletedItemsCount { get; set; }
     }
 }

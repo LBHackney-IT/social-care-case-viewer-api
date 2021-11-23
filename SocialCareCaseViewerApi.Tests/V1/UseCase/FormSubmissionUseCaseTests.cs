@@ -682,11 +682,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetByQueryOnlyGetsFormsWithQueriedFormId()
         {
             const string testFormId = "foo";
-            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId);
+            var request = TestHelpers.CreateQueryCaseSubmissions(formId: testFormId, includeDeletedRecords: false);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Eq(s => s.FormId, testFormId);
+            filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
@@ -705,11 +706,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var submissionStates = new List<SubmissionState>() { SubmissionState.InProgress };
             var submissionStatesRequest = new List<string>() { "in_progress" };
-            var request = TestHelpers.CreateQueryCaseSubmissions(submissionStates: submissionStatesRequest);
+            var request = TestHelpers.CreateQueryCaseSubmissions(submissionStates: submissionStatesRequest, includeDeletedRecords: false);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
+            filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
@@ -727,11 +729,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetByQueryOnlyGetsFormsAfterCreatedAtQueriedDate()
         {
             var createdAfterTime = DateTime.Now;
-            var request = TestHelpers.CreateQueryCaseSubmissions(createdAfter: createdAfterTime);
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdAfter: createdAfterTime, includeDeletedRecords: false);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfterTime);
+            filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
@@ -749,11 +752,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteGetByQueryOnlyGetsFormsBeforeCreatedAtQueriedDate()
         {
             var createdBeforeTime = DateTime.Now;
-            var request = TestHelpers.CreateQueryCaseSubmissions(createdBefore: createdBeforeTime);
+            var request = TestHelpers.CreateQueryCaseSubmissions(createdBefore: createdBeforeTime, includeDeletedRecords: false);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
             filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBeforeTime);
+            filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
@@ -774,7 +778,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const string workerEmail = "foo@hackney.gov.uk";
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(workerEmail: workerEmail);
 
-            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName, false);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
@@ -786,7 +790,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const string ageContext = "A";
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(ageContext: ageContext);
 
-            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName, false);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
         }
@@ -798,9 +802,78 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             const int residentId = 5;
             var requestWithLastName = TestHelpers.CreateQueryCaseSubmissions(personID: residentId);
 
-            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithLastName,false);
 
             response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryDoesNotReturnDeletedRecordsByDefault()
+        {
+            const string expectedJsonQuery = "{ \"Deleted\" : { \"$ne\" : true } }";
+            var requestWithDeletedRecordsSetToFalse = TestHelpers.CreateQueryCaseSubmissions(includeDeletedRecords: false);
+            var response = FormSubmissionsUseCase.GenerateFilter(requestWithDeletedRecordsSetToFalse);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void ExecuteByQueryGetsBothActiveAndDeletedRecordsWhenDeletedFlagIsSetToTrue()
+        {
+            const string expectedJsonQuery = "{ \"$or\" : [{ \"Deleted\" : true }, { \"Deleted\" : { \"$ne\" : true } }] }";
+            var requesttWitkDeletedRecordsEnabled = TestHelpers.CreateQueryCaseSubmissions(includeDeletedRecords: true);
+            var response = FormSubmissionsUseCase.GenerateFilter(requesttWitkDeletedRecordsEnabled);
+
+            response.RenderToJson().Should().Be(expectedJsonQuery);
+        }
+
+        [Test]
+        public void ExecuteByQueryCallsGatewayToGetDeletedRecordsCount()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 123);
+            var bsonQuery = "{'Residents._id':" + request.PersonID + "}";
+
+            var builder = Builders<CaseSubmission>.Filter;
+            var filter = builder.Empty;
+            filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
+
+            filter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
+        
+            var expectedJsonFilter = filter.RenderToJson();
+
+            _mockMongoGateway.Setup(x => x.GetRecordsCountByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x =>
+                           x.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                           It.Is<FilterDefinition<CaseSubmission>>(innerFilter => innerFilter.RenderToJson().Equals(expectedJsonFilter))
+                           ), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteGetByQueryReturnsTheDeletedRecordsCount()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo");
+            var submissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
+            const long totalCount = 20;
+            const long deletedRecordsCount = 5;
+
+            _mockMongoGateway.Setup(m =>
+                    m.LoadRecordsByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((submissions, totalCount));
+
+            _mockMongoGateway.Setup(m =>
+                    m.GetRecordsCountByFilter(It.IsAny<string>(), It.IsAny<FilterDefinition<CaseSubmission>>())).Returns(deletedRecordsCount);
+
+            var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            response.Should().BeEquivalentTo(new Paginated<CaseSubmissionResponse>
+            {
+                Items = submissions.Select(x => x.ToDomain().ToResponse()).ToList(),
+                Count = totalCount,
+                DeletedItemsCount = deletedRecordsCount
+            });
         }
 
         [Test]
@@ -811,7 +884,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var submissionStatesRequest = new List<string>() { "in_progress" };
             var createdBefore = DateTime.Now.AddDays(1);
             var createdAfter = DateTime.Now.AddDays(-1);
-            var request = TestHelpers.CreateQueryCaseSubmissions(testFormId, submissionStatesRequest, createdBefore, createdAfter);
+            var request = TestHelpers.CreateQueryCaseSubmissions(testFormId, submissionStatesRequest, createdBefore, createdAfter, includeDeletedRecords: true);
 
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -819,6 +892,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
             filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfter);
             filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBefore);
+            filter &= (Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true) | Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true));
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };

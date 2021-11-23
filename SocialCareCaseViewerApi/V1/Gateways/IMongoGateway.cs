@@ -21,6 +21,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public (List<CaseSubmission>, long) LoadRecordsByFilter(string collectionName, FilterDefinition<CaseSubmission> filter, Pagination? pagination);
 
+        public long GetRecordsCountByFilter(string collectionName, FilterDefinition<CaseSubmission> filter);
+
         public List<MashReferral> LoadMashReferralsByFilter(string collectionName, FilterDefinition<MashReferral> filter);
     }
 }

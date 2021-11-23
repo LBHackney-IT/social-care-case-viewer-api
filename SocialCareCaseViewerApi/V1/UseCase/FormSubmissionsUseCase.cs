@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submissionToBeDeleted);
         }
 
-        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
+        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request, bool addDeletedRecordsFilter = true)
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -158,6 +158,18 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
+            if (addDeletedRecordsFilter)
+            {
+                if (request.IncludeDeletedRecords)
+                {
+                    filter &= (Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true) | Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true));
+                }
+                else
+                {
+                    filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
+                }
+            }
+
             return filter;
         }
 
@@ -175,6 +187,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             var filter = GenerateFilter(request);
+
+            var deletedRecordsFilter = GenerateFilter(request, addDeletedRecordsFilter: false);
+            deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
+
+            var deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(_collectionName, deletedRecordsFilter);
+
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             var (foundSubmission, totalCount) = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
@@ -182,7 +200,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return new Paginated<CaseSubmissionResponse>
             {
                 Count = totalCount,
-                Items = foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory, request.PruneUnfinished).ToResponse()).ToList()
+                Items = foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory, request.PruneUnfinished).ToResponse()).ToList(),
+                DeletedItemsCount = deletedRecordsCount
             };
         }
 

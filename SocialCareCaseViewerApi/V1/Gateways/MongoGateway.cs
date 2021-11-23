@@ -97,6 +97,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (data, data.Count);
         }
 
+        public long GetRecordsCountByFilter(string collectionName, FilterDefinition<CaseSubmission> filter)
+        {
+            var collection = _mongoDatabase.GetCollection<CaseSubmission>(collectionName);
+
+            return collection.Find(filter).CountDocuments();
+        }
+
         public List<MashReferral> LoadMashReferralsByFilter(string collectionName, FilterDefinition<MashReferral> filter)
         {
             var collection = _mongoDatabase.GetCollection<MashReferral>(collectionName);
