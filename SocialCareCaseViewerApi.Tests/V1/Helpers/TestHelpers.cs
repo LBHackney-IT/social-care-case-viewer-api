@@ -509,12 +509,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.Title, title)
                 .RuleFor(s => s.Deleted, deleted)
                 .RuleFor(s => s.DeletionDetails, f => deleted == true ? new DeletionDetails()
-                    {
-                        DeletedAt = f.Date.Recent(),
-                        DeletedBy = f.Person.Email,
-                        DeleteReason = f.Random.String2(200),
-                        DeleteRequestedBy = f.Person.FullName
-                    } : null
+                {
+                    DeletedAt = f.Date.Recent(),
+                    DeletedBy = f.Person.Email,
+                    DeleteReason = f.Random.String2(200),
+                    DeleteRequestedBy = f.Person.FullName
+                } : null
                 );
         }
 

@@ -248,7 +248,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastEdited = caseSubmission.LastEdited?.ToString("O"),
                 CompletedSteps = caseSubmission.CompletedSteps,
                 Deleted = caseSubmission.Deleted,
-                DeletionDetails = caseSubmission.DeletionDetails               
+                DeletionDetails = caseSubmission.DeletionDetails
             };
         }
 

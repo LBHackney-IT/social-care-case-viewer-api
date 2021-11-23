@@ -180,7 +180,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastEdited = caseSubmission.EditHistory.Last().EditTime,
                 CompletedSteps = caseSubmission.FormAnswers.Count,
                 Deleted = caseSubmission.Deleted ?? false,
-                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null 
+                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
             };
         }
 
