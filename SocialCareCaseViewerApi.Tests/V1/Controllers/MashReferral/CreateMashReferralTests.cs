@@ -23,12 +23,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void CallsMashReferralUseCaseToInsertNewReferral()
         {
-            _mashReferralUseCase.Setup(x => x.InsertMashReferral(It.IsAny<CreateReferralRequest>()));
-            var request = TestHelpers.GenerateCreateReferralRequest();
+            _mashReferralUseCase.Setup(x => x.CreateNewMashReferral(It.IsAny<CreateReferralRequest>()));
+            var request = TestHelpers.CreateNewMashReferralRequest();
 
             _mashReferralController.CreateNewContact(request);
 
-            _mashReferralUseCase.Verify(x => x.InsertMashReferral(request));
+            _mashReferralUseCase.Verify(x => x.CreateNewMashReferral(request));
         }
     }
 }

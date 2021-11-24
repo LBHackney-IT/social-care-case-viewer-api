@@ -43,10 +43,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var badRequests = new List<(CreateReferralRequest, string)>()
             {
-                (TestHelpers.GenerateCreateReferralRequest(""), "Referrer must have at least one character"),
-                (TestHelpers.GenerateCreateReferralRequest(requestedSupport: ""), "Requested support must have at least one character"),
-                (TestHelpers.GenerateCreateReferralRequest(referralUri: ""), "Referral document url must have at least one character"),
-                (TestHelpers.GenerateCreateReferralRequest(clients: new List<string> {string.Empty}), "List of referred clients can not contain empty strings")
+                (TestHelpers.CreateNewMashReferralRequest(""), "Referrer must have at least one character"),
+                (TestHelpers.CreateNewMashReferralRequest(requestedSupport: ""), "Requested support must have at least one character"),
+                (TestHelpers.CreateNewMashReferralRequest(referralUri: ""), "Referral document url must have at least one character"),
+                (TestHelpers.CreateNewMashReferralRequest(clients: new List<string> {string.Empty}), "List of referred clients can not contain empty strings")
             };
 
             var validator = new CreateReferralRequestValidator();

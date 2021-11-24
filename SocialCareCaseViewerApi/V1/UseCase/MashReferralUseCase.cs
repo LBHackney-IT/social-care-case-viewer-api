@@ -43,7 +43,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 .Select(x => x.ToResponse());
         }
 
-        public void InsertMashReferral(CreateReferralRequest request)
+        public void CreateNewMashReferral(CreateReferralRequest request)
         {
             var newContact = new MashReferral
             {

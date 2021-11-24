@@ -716,7 +716,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static CreateReferralRequest GenerateCreateReferralRequest(
+        public static CreateReferralRequest CreateNewMashReferralRequest(
             string? referrer = null,
             string? requestedSupport = null,
             string? referralUri = null,

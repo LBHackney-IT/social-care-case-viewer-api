@@ -11,7 +11,7 @@ using MashReferralBoundaryResponse = SocialCareCaseViewerApi.V1.Boundary.Respons
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
 {
     [TestFixture]
-    public class InsertMashReferralTests
+    public class CreateNewMashReferralTests
     {
         private Mock<IMashReferralGateway> _mashReferralGateway;
         private Mock<IDatabaseGateway> _databaseGateway;
@@ -34,9 +34,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void CallsTheGatewayToInsertTheNewReferral()
         {
-            var request = TestHelpers.GenerateCreateReferralRequest();
+            var request = TestHelpers.CreateNewMashReferralRequest();
 
-            _mashReferralUseCase.InsertMashReferral(request);
+            _mashReferralUseCase.CreateNewMashReferral(request);
 
             _mashReferralGateway.Verify(x => x.InsertDocument(It.IsAny<MashReferralEntity>()), Times.Once);
         }

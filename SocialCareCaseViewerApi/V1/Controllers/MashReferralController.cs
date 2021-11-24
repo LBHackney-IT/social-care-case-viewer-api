@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [HttpPost]
         public IActionResult CreateNewContact([FromBody] CreateReferralRequest request)
         {
-            _mashReferralUseCase.InsertMashReferral(request);
+            _mashReferralUseCase.CreateNewMashReferral(request);
 
             return CreatedAtAction(nameof(CreateNewContact), "Successfully created new contact referral");
         }

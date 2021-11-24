@@ -10,7 +10,7 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
 {
     [TestFixture]
-    public class CreateMashReferralTests : IntegrationTestSetup<Startup>
+    public class CreateNewMashReferralTests : IntegrationTestSetup<Startup>
     {
         [SetUp]
         public void Setup()
@@ -19,11 +19,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         }
 
         [Test]
-        public async Task AddMashReferral()
+        public async Task SuccessfulPostReturns201()
         {
             var postUri = new Uri($"/api/v1/mash-referral", UriKind.Relative);
 
-            var request = TestHelpers.GenerateCreateReferralRequest();
+            var request = TestHelpers.CreateNewMashReferralRequest();
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
 
