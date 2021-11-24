@@ -43,6 +43,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 .Select(x => x.ToResponse());
         }
 
+        public void InsertMashReferral(CreateReferralRequest request)
+        {
+            var newContact = new MashReferral
+            {
+                Referrer = request.Referrer,
+                RequestedSupport = request.RequestedSupport,
+                ReferralDocumentURI = request.ReferralUri,
+                Clients = request.Clients,
+                Stage = "CONTACT",
+                CreatedAt = DateTime.Now
+            };
+
+            _mashReferralGateway.InsertDocument(newContact);
+        }
+
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
