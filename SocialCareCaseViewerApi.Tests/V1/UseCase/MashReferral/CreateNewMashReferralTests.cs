@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -39,6 +40,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             _mashReferralUseCase.CreateNewMashReferral(request);
 
             _mashReferralGateway.Verify(x => x.InsertDocument(It.IsAny<MashReferralEntity>()), Times.Once);
+        }
+
+        [Test]
+        [Ignore("Incomplete as current gateway action does not return an object, may need to update")]
+        public void ReturnsAResponseWhenSuccessful()
+        {
         }
     }
 }
