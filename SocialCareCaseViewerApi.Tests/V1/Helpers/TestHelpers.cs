@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -715,6 +714,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
                 .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100));
 
+        }
+
+        public static CreateReferralRequest GenerateCreateReferralRequest(
+            string? referrer = null,
+            string? requestedSupport = null,
+            string? referralUri = null,
+            List<string>? clients = null)
+        {
+            return new Faker<CreateReferralRequest>()
+                .RuleFor(x => x.Clients, f => clients ?? new List<string> { f.Random.String2(20) })
+                .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
+                .RuleFor(x => x.RequestedSupport, f => requestedSupport ?? f.Random.String2(20))
+                .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20));
         }
     }
 }
