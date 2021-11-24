@@ -33,9 +33,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find allocations by Mosaic ID or officer email
+        /// Find allocations by Mosaic ID, Worker ID or Worker Email
         /// </summary>
-        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
+        /// <response code="200">Success. Returns allocations related to the specified Mosaic ID, Worker ID or Worker Email</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
         [ProducesResponseType(typeof(AllocationList), StatusCodes.Status200OK)]
         [HttpGet]
