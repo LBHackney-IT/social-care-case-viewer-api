@@ -1,36 +1,56 @@
-using System.ComponentModel.DataAnnotations;
+using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListAllocationsRequest
     {
-        [ListAllocationsRequestValidator]
         [FromQuery(Name = "mosaic_id")]
         public long MosaicId { get; set; }
 
         [FromQuery(Name = "worker_id")]
         public long WorkerId { get; set; }
+
+        [FromQuery(Name = "worker_email")]
+        public string WorkerEmail { get; set; }
     }
 
-    public class ListAllocationsRequestValidator : ValidationAttribute
+    public class ListAllocationsRequestValidator : AbstractValidator<ListAllocationsRequest>
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        public ListAllocationsRequestValidator()
         {
-            var request = (ListAllocationsRequest) validationContext.ObjectInstance;
-            var mosaicId = request.MosaicId;
-            var workerId = request.WorkerId;
+            RuleFor(x => x)
+                .Must(OneIsSet)
+                .WithMessage("Please provide either mosaic_id, worker_id or worker_email");
 
-            if (mosaicId == 0 && workerId == 0) //missing parameter will result in value 0
-            {
-                return new ValidationResult($"Please provide either mosaic_id or worker_id");
-            }
-            else if (mosaicId != 0 && workerId != 0)
-            {
-                return new ValidationResult($"Please provide only mosaic_id or worker_id, but not both");
-            }
+            RuleFor(x => x)
+                .Must(OnlyOneIsSet)
+                .WithMessage("Please provide only one of mosaic_id, worker_id or worker_email");
 
-            return ValidationResult.Success;
+            When(x => !String.IsNullOrEmpty(x.WorkerEmail), () =>
+            {
+                RuleFor(x => x.WorkerEmail)
+                    .EmailAddress()
+                    .WithMessage("Please provide a valid email address for worker_email");
+            });
+        }
+
+        private bool OnlyOneIsSet(ListAllocationsRequest request)
+        {
+            return new List<int>
+            {
+                request.MosaicId == 0 ? 0 : 1,
+                request.WorkerId == 0 ? 0 : 1,
+                String.IsNullOrEmpty(request.WorkerEmail) ? 0 : 1,
+            }.Sum() <= 1;
+        }
+
+        private bool OneIsSet(ListAllocationsRequest request)
+        {
+            return !(request.MosaicId == 0 && request.WorkerId == 0 && String.IsNullOrEmpty(request.WorkerEmail));
         }
     }
 }
