@@ -1,6 +1,5 @@
 using System.Linq;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
@@ -19,24 +18,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
 
         [Test]
-        public void ValidationFailsWhenMosaicIdAndWorkerIdAreNotProvided()
+        public void ValidationFailsWhenNoAttributesAreProvided()
         {
-            var errors = ValidationHelper.ValidateModel(_request);
+            var validator = new ListAllocationsRequestValidator();
+            var validationResults = validator.Validate(_request);
 
-            Assert.AreEqual(errors.Count, 1);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide either mosaic_id or worker_id")));
+            Assert.IsFalse(validationResults.IsValid);
+            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide either mosaic_id, worker_id or worker_email")));
         }
 
         [Test]
-        public void ValidationFailsWhenBothMosaicIdAndWorkerIdAreProvided()
+        public void ValidationFailsWhenTwoOrMoreAttributesAreProvided()
         {
             _request.MosaicId = 50;
             _request.WorkerId = 30;
+            _request.WorkerEmail = "test@example.com";
 
-            var errors = ValidationHelper.ValidateModel(_request);
+            var validator = new ListAllocationsRequestValidator();
+            var validationResults = validator.Validate(_request);
 
-            Assert.AreEqual(errors.Count, 1);
-            Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please provide only mosaic_id or worker_id, but not both")));
+            Assert.IsFalse(validationResults.IsValid);
+            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide only one of mosaic_id, worker_id or worker_email")));
+        }
+
+        [Test]
+        public void ValidationFailsWhenTheWorkerEmailProvidedIsNotAnEmailAddress()
+        {
+            _request.WorkerEmail = "not-an-email";
+
+            var validator = new ListAllocationsRequestValidator();
+            var validationResults = validator.Validate(_request);
+
+            Assert.IsFalse(validationResults.IsValid);
+            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide a valid email address for worker_email")));
         }
     }
 }

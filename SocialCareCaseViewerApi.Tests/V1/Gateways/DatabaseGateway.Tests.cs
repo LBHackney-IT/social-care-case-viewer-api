@@ -260,6 +260,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void SelectAllocationsByWorkerEmail()
+        {
+            // Create worker and teams
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+
+            var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(createAllocationRequest);
+
+            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email);
+
+            allocations.Count.Should().Be(1);
+            allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
+            allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
+        }
+
+        [Test]
         public void UpdateWorkerUpdatesTheTeamSetOnAnyAllocations()
         {
             // Create worker and teams
@@ -291,7 +317,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             originalWorker?.AllocationCount.Should().Be(1);
 
-            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id);
+            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "");
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
@@ -311,7 +337,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             getUpdatedWorker?.AllocationCount.Should().Be(1);
 
             // Check allocations assigned to the worker have been updated
-            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id);
+            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id, "");
             updatedAllocations.Count.Should().Be(1);
             updatedAllocations.Single().AllocatedWorkerTeam.Should().Be(differentTeam.Name);
         }

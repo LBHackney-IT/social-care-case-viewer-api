@@ -14,13 +14,18 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public IEnumerable<string> Clients { get; set; } = null!;
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
+        public string? ContactCreatedAt { get; set; }
+        public bool? ContactUrgentContactRequired { get; set; }
         public string? InitialDecision { get; set; }
         public bool? InitialUrgentContactRequired { get; set; }
+        public string? InitialReferralCategory { get; set; }
         public string? InitialCreatedAt { get; set; }
         public string? ScreeningDecision { get; set; }
         public bool? ScreeningUrgentContactRequired { get; set; }
         public string? ScreeningCreatedAt { get; set; }
         public string? FinalDecision { get; set; }
-        public string? ReferralCategory { get; set; }
+        public string? FinalReferralCategory { get; set; }
+        public bool? FinalUrgentContactRequired { get; set; }
+        public string? FinalCreatedAt { get; set; }
     }
 }
