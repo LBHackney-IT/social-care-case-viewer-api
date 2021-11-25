@@ -820,7 +820,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExecuteByQueryGetsBothActiveAndDeletedRecordsWhenDeletedFlagIsSetToTrue()
         {
-            const string expectedJsonQuery = "{ \"$or\" : [{ \"Deleted\" : true }, { \"Deleted\" : { \"$ne\" : true } }] }";
+            const string expectedJsonQuery = "{ }";
             var requesttWitkDeletedRecordsEnabled = TestHelpers.CreateQueryCaseSubmissions(includeDeletedRecords: true);
             var response = FormSubmissionsUseCase.GenerateFilter(requesttWitkDeletedRecordsEnabled);
 
@@ -868,7 +868,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var response = _formSubmissionsUseCase.ExecuteGetByQuery(request);
 
-            response.Should().BeEquivalentTo(new Paginated<CaseSubmissionResponse>
+            response.Should().BeEquivalentTo(new PaginatedExtended<CaseSubmissionResponse>
             {
                 Items = submissions.Select(x => x.ToDomain().ToResponse()).ToList(),
                 Count = totalCount,
@@ -892,7 +892,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.In(s => s.SubmissionState, submissionStates);
             filter &= Builders<CaseSubmission>.Filter.Gte(s => s.CreatedAt, createdAfter);
             filter &= Builders<CaseSubmission>.Filter.Lte(s => s.CreatedAt, createdBefore);
-            filter &= (Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true) | Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true));
 
             var expectedJsonFilter = filter.RenderToJson();
             var pagination = new Pagination { Page = request.Page, Size = request.Size };

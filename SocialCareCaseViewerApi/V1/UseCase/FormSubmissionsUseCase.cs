@@ -160,11 +160,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             if (addDeletedRecordsFilter)
             {
-                if (request.IncludeDeletedRecords)
-                {
-                    filter &= (Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true) | Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true));
-                }
-                else
+                if (!request.IncludeDeletedRecords)
                 {
                     filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
                 }
@@ -197,7 +193,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var (foundSubmission, totalCount) = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
-            return new Paginated<CaseSubmissionResponse>
+            return new PaginatedExtended<CaseSubmissionResponse>
             {
                 Count = totalCount,
                 Items = foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory, request.PruneUnfinished, request.IncludeDeletedRecords).ToResponse()).ToList(),

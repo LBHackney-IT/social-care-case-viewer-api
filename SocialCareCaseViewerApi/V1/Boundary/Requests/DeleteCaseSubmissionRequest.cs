@@ -1,18 +1,19 @@
 using FluentValidation;
 using System.Text.Json.Serialization;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class DeleteCaseSubmissionRequest
     {
         [JsonPropertyName("deletedBy")]
-        public string DeletedBy { get; set; }
+        public string DeletedBy { get; set; } = null!;
 
         [JsonPropertyName("deleteReason")]
-        public string DeleteReason { get; set; }
+        public string DeleteReason { get; set; } = null!;
 
         [JsonPropertyName("deleteRequestedBy")]
-        public string DeleteRequestedBy { get; set; }
+        public string DeleteRequestedBy { get; set; } = null!;
     }
 
     public class DeleteCaseSubmissionRequestValidator : AbstractValidator<DeleteCaseSubmissionRequest>

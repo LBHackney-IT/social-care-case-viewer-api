@@ -276,7 +276,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var deletedSubmission = TestHelpers.CreateCaseSubmission();
             var invalidRequest = TestHelpers.DeleteCaseSubmissionRequest(deletedBy: "invalid email");
 
-            var response = _formSubmissionController.DeleteSubmission(deletedSubmission.SubmissionId.ToString(), invalidRequest) as BadRequestObjectResult;
+            var response = _formSubmissionController.DeleteSubmission(deletedSubmission.SubmissionId.ToString(), invalidRequest) as ObjectResult;
 
             response.Should().NotBeNull();
             response?.StatusCode.Should().Be(400);
