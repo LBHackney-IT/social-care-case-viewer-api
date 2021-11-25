@@ -37,6 +37,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool Deleted { get; set; } = false;
         public DeletionDetails? DeletionDetails { get; set; }
+        public bool IsImported { get; set; } = false;
 
         public override int GetHashCode()
         {
