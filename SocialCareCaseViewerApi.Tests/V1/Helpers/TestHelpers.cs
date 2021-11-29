@@ -692,23 +692,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static MashReferral_2 CreateMashReferral2(string? stage = null)
         {
             return new Faker<MashReferral_2>()
-                .RuleFor(x => x.Id, f => f.IndexVariable++)
+                .RuleFor(x => x.Id, f => f.IndexVariable+100)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
+                .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
+                .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20))
                 .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
-                .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.InitialDecisionCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.InitialDecisionReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.InitialDecisionUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.InitialDecisionCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(100))
-                .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.FinalDecisionReferralCategory, f => f.Random.String2(20))
-                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.FinalDecisionUrgentContactRequired, f => f.Random.Bool())
-                .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
-                .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
-                .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20));
+                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent());
         }
     }
 }
