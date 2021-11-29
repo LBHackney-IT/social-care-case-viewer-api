@@ -16,12 +16,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
     [TestFixture]
     public class CreateNewMashReferralTests : IntegrationTestSetup<Startup>
     {
-        [SetUp]
-        public void Setup()
-        {
-
-        }
-
         [Test]
         public async Task SuccessfulPostReturns201()
         {
@@ -36,7 +30,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         }
 
         [Test]
-        [Ignore("Does not work as have not implemented a way to retrieve the newly inserted referral")]
         public async Task SuccessfulPostCreatesANewReferralAtTheContactStage()
         {
             var postUri = new Uri($"/api/v1/mash-referral", UriKind.Relative);
