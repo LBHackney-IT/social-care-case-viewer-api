@@ -125,23 +125,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 throw new WorkerNotFoundException($"Worker with email `{request.EditedBy}` was not found");
             }
+            var caseStatusType = caseStatus.Type.ToLower();
 
             //end date validation
             if (request.EndDate != null)
             {
-                switch (caseStatus.Type.ToLower())
+                switch (caseStatusType)
                 {
                     case "cp":
-                    case "cin":
-                        if (request.EndDate < caseStatus.StartDate)
-                        {
-                            throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " + $"is before the start date of {caseStatus.StartDate:O}");
-                        }
-                        break;
                     case "lac":
+                        var activeAnswerCountToMatch = caseStatusType == "cp" ? 1 : 2;
+
                         var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-                        if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
+                        if (activeAnswers.Count() == activeAnswerCountToMatch && activeAnswers.FirstOrDefault().StartDate > request.EndDate)
                         {
                             throw new InvalidEndDateException("requested end date is before the start date of the currently active answer");
                         }
@@ -149,7 +146,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
                         {
-                            throw new InvalidCaseStatusUpdateRequestException("Invalid LAC episode ending answer");
+                            throw new InvalidCaseStatusUpdateRequestException($"Invalid {caseStatus.Type.ToUpper()} episode ending answer");
+                        }
+                        break;
+                    case "cin":
+                        if (request.EndDate < caseStatus.StartDate)
+                        {
+                            throw new InvalidEndDateException($"requested end date of {request.EndDate?.ToString("O")} " + $"is before the start date of {caseStatus.StartDate:O}");
                         }
                         break;
                 }
@@ -160,21 +163,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 if (request.StartDate > DateTime.Today)
                 {
-                    throw new InvalidStartDateException("Invalid start date. It cannot be in the future for CIN, CP or LAC.");
+                    throw new InvalidStartDateException("Invalid start date. It cannot be in the future.");
                 }
 
-                switch (caseStatus.Type.ToLower())
+                switch (caseStatusType)
                 {
                     case "cp":
-                        if (request.StartDate == null || request.StartDate == DateTime.MinValue)
-                        {
-                            throw new InvalidStartDateException("You must provide a valid date for CP");
-                        }
                         if (request?.Answers?.Count != 1
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Option))
                             || request.Answers.Any(x => string.IsNullOrWhiteSpace(x.Value)))
                         {
-                            throw new InvalidCaseStatusUpdateRequestException("Invalid PC answer");
+                            throw new InvalidCaseStatusUpdateRequestException("Invalid CP answer");
                         }
                         break;
                     case "lac":
