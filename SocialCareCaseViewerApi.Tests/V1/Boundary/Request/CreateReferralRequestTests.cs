@@ -11,33 +11,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class CreateReferralRequestTests
     {
-        private Faker _faker;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _faker = new Faker();
-        }
-
-        [Test]
-        public void CreateReferralRequestValidationReturnsErrorsWhenAnyPropertyIsNull()
-        {
-            var badRequests = new List<CreateReferralRequest>
-            {
-                new CreateReferralRequest { Referrer = null, ReferralUri = "notNull", RequestedSupport = "notNull", Clients = new List<string>{"notNull"} },
-                new CreateReferralRequest { Referrer = "notNull", ReferralUri = null, RequestedSupport = "notNull", Clients = new List<string>{"notNull"} },
-                new CreateReferralRequest { Referrer = "notNull", ReferralUri = "notNull", RequestedSupport = null, Clients = new List<string>{"notNull"} },
-                new CreateReferralRequest { Referrer = "notNull", ReferralUri = "notNull", RequestedSupport = "notNull", Clients = null }
-            };
-
-            var validator = new CreateReferralRequestValidator();
-
-            foreach (var validationResponse in badRequests.Select(request => validator.Validate(request)))
-            {
-                validationResponse.IsValid.Should().Be(false);
-            }
-        }
-
         [Test]
         public void CreateReferralRequestValidationReturnsErrorsWhenAnyPropertyIsEmpty()
         {
@@ -57,6 +30,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 validationResponse.IsValid.Should().Be(false);
                 validationResponse.ToString().Should().Be(expectedErrorMessage);
             }
+        }
+
+        [Test]
+        public void ValidCreateReferralRequestValidationReturnsNoErrorsOnValidation()
+        {
+            var createReferralRequest = TestHelpers.CreateNewMashReferralRequest();
+            var validator = new CreateReferralRequestValidator();
+
+            var validationResponse = validator.Validate(createReferralRequest);
+
+            validationResponse.IsValid.Should().Be(true);
         }
     }
 }
