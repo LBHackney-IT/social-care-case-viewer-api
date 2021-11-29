@@ -1,3 +1,5 @@
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -29,6 +31,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             _mashReferralController.CreateNewContact(request);
 
             _mashReferralUseCase.Verify(x => x.CreateNewMashReferral(request));
+        }
+
+        [Test]
+        public void WhenRequestIsValidReturnsSuccessfulResponse()
+        {
+            var referralRequest = TestHelpers.CreateNewMashReferralRequest();
+
+            _mashReferralUseCase.Setup(x => x.CreateNewMashReferral(referralRequest)).Verifiable();
+
+            var response = _mashReferralController.CreateNewContact(referralRequest) as ObjectResult;
+
+            response?.StatusCode.Should().Be(201);
+            response?.Value.Should().Be("Successfully created new contact referral");
         }
     }
 }
