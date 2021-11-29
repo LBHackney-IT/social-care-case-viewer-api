@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
 
-            var createMashReferralResponse = await Client.PostAsync(postUri, requestContent).ConfigureAwait(true);
+            await Client.PostAsync(postUri, requestContent).ConfigureAwait(true);
 
             //Get request to check that the new referral has been added
             var getUri = new Uri($"/api/v1/mash-referral", UriKind.Relative);
