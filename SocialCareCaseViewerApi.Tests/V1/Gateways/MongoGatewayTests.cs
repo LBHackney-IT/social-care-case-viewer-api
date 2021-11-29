@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -9,6 +6,8 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways;
+using System;
+using System.Collections.Generic;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -189,6 +188,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             retrievedObject?.Property1.Should().Be("new-test-property");
             retrievedObject?.Property2?.Count.Should().Be(2);
             retrievedObject?.Property3.Should().BeNull();
+        }
+
+        [Test]
+        public void GetRecordsCountByFilterWithoutMatchingRecordsReturnsZero()
+        {
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+
+            var filter = Builders<TestObjectForMongo>.Filter.Eq(s => s.Property1, "not-matching-property");
+
+            var matchingRecordsCount = _mongoGateway.GetRecordsCountByFilter("test-collection-name", filter);
+
+            matchingRecordsCount.Should().Be(0);
+        }
+
+        [Test]
+        public void GetRecordsCountByFilterWithMatchingRecordsReturnsCorrectRecordsCount()
+        {
+            _testObjectForMongo.Property1 = "my-property";
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+
+            _testObjectForMongo.Property1 = "my-property";
+            _testObjectForMongo.Id = _faker.Random.String2(24, "0123456789abcdef");
+            _mongoGateway.InsertRecord("test-collection-name", _testObjectForMongo);
+
+            var filter = Builders<TestObjectForMongo>.Filter.Eq(s => s.Property1, "my-property");
+
+            var matchingRecordsCount = _mongoGateway.GetRecordsCountByFilter("test-collection-name", filter);
+
+            matchingRecordsCount.Should().Be(2);
         }
     }
 }

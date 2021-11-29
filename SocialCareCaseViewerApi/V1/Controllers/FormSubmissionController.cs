@@ -147,6 +147,46 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Delete a submission
+        /// </summary>
+        /// <response code="204">Case submission successfully deleted</response>
+        /// <response code="400">Invalid DeleteCaseSubmissionRequest received</response>
+        /// <response code="422">Case submission not found or worker not found</response>
+        /// <response code="410">Case submission already deleted</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete]
+        [Route("{submissionId}")]
+        public IActionResult DeleteSubmission(string submissionId, [FromBody] DeleteCaseSubmissionRequest request)
+        {
+            var validator = new DeleteCaseSubmissionRequestValidator();
+            var validatioResults = validator.Validate(request);
+
+            if (!validatioResults.IsValid)
+            {
+                return BadRequest(validatioResults.ToString());
+            }
+
+            try
+            {
+                _formSubmissionsUseCase.ExecuteDelete(submissionId, request);
+            }
+            catch (WorkerNotFoundException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (DeleteSubmissionException e)
+            {
+                return UnprocessableEntity(e.Message);
+            }
+            catch (SubmissionAlreadyDeletedException e)
+            {
+                return StatusCode(StatusCodes.Status410Gone, e.Message);
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Edit answers for a submission
         /// </summary>
         /// <param name="submissionId">Get the related submission by unique ID</param>

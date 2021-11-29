@@ -450,7 +450,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
                 FormAnswers = domainCaseSubmission.FormAnswers,
-                Title = domainCaseSubmission.Title
+                Title = domainCaseSubmission.Title,
+                Deleted = domainCaseSubmission.Deleted,
+                DeletionDetails = domainCaseSubmission.DeletionDetails
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);

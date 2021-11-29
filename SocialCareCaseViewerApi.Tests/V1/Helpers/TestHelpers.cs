@@ -484,7 +484,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? formId = null,
             DateTime? dateOfEvent = null,
             DateTime? submittedAt = null,
-            string? title = null)
+            string? title = null,
+            bool? deleted = null)
         {
             workers ??= new List<Worker> { CreateWorker() };
             residents ??= new List<InfrastructurePerson> { CreatePerson(residentId) };
@@ -505,7 +506,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>() { { "foo", "bar" } })
                 .RuleFor(s => s.DateOfEvent, dateOfEvent)
                 .RuleFor(s => s.SubmittedAt, submittedAt)
-                .RuleFor(s => s.Title, title);
+                .RuleFor(s => s.Title, title)
+                .RuleFor(s => s.Deleted, deleted)
+                .RuleFor(s => s.DeletionDetails, f => deleted == true ? new DeletionDetails()
+                {
+                    DeletedAt = f.Date.Recent(),
+                    DeletedBy = f.Person.Email,
+                    DeleteReason = f.Random.String2(200),
+                    DeleteRequestedBy = f.Person.FullName
+                } : null
+                );
         }
 
         public static ListCasesRequest CreateListCasesRequest(
@@ -533,6 +543,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.RejectionReason, rejectionReason);
+        }
+
+        public static DeleteCaseSubmissionRequest DeleteCaseSubmissionRequest(
+            string? deletedBy = null,
+            string? deletedReason = null,
+            string? deleteRequestedBy = null
+        )
+        {
+            return new Faker<DeleteCaseSubmissionRequest>()
+                .RuleFor(x => x.DeletedBy, f => deletedBy ?? f.Person.Email)
+                .RuleFor(x => x.DeleteReason, f => deletedReason ?? f.Random.String2(100))
+                .RuleFor(x => x.DeleteRequestedBy, f => deleteRequestedBy ?? f.Person.FullName);
         }
 
         public static CaseStatus CreateCaseStatus(
@@ -569,7 +591,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? ageContext = null,
             string? workerEmail = null,
             long? personID = null,
-            bool? pruneUnfinished = null)
+            bool? pruneUnfinished = null,
+            bool? includeDeletedRecords = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -583,7 +606,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.AgeContext, ageContext)
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID)
-                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
+                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeDeletedRecords, f => includeDeletedRecords ?? f.Random.Bool());
         }
 
         private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
