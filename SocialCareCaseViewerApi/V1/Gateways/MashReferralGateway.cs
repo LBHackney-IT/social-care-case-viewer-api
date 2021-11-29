@@ -61,12 +61,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _mongoGateway.InsertRecord(_collectionName, referral);
         }
 
-        public MashReferral_2? GetReferralUsingId_2(string requestId)
+        public MashReferral_2? GetReferralUsingId_2(long requestId)
         {
             return _databaseContext.MashReferral_2
-                    .Where(x => x.Id.ToString() == requestId)
-                    .FirstOrDefault()?.ToDomain();
-
+                .FirstOrDefault(x => x.Id == requestId)
+                ?.ToDomain();
         }
 
 
