@@ -13,11 +13,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
     public class IntegrationTestSetup<TStartup> where TStartup : class
     {
-        private ISccvDbContext _mongoDbContext;
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
         protected HttpClient Client { get; private set; }
         protected DatabaseContext DatabaseContext { get; private set; }
+        private MongoClient MongoDbClient { get; set; }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -34,22 +34,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         public void BaseSetup()
         {
             // Set up MongoDB connection string depending on whether the tests are run locally or in docker
-            if (Environment.GetEnvironmentVariable("CONTAINER_ENV") != "DockerTest")
-            {
-                Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");
-            }
-
-            Environment.SetEnvironmentVariable("SCCV_MONGO_DB_NAME", "social_care_db_test");
-            Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");
-            Environment.SetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL", "https://mockBase");
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            SetUpEnvironmentVariables();
 
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
 
             DatabaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
             WipeDatabase();
-            _mongoDbContext = new MongoDbTestContext();
+
+            WipeMongoDatabase();
         }
 
         [TearDown]
@@ -58,7 +51,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Client.Dispose();
             _factory.Dispose();
             WipeDatabase();
-            _mongoDbContext.getCollection().DeleteMany(Builders<BsonDocument>.Filter.Empty);
+            WipeMongoDatabase();
         }
 
         [OneTimeTearDown]
@@ -74,6 +67,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var path = Path.Combine(filePath, "database", "schema.sql");
             var sql = File.ReadAllText(path);
             DatabaseContext.Database.ExecuteSqlRaw(sql);
+        }
+
+        private void WipeMongoDatabase()
+        {
+            var mongoConnectionString = Environment.GetEnvironmentVariable("SCCV_MONGO_CONN_STRING");
+            var databaseName = Environment.GetEnvironmentVariable("SCCV_MONGO_DB_NAME");
+
+            MongoDbClient = new MongoClient(new MongoUrl(mongoConnectionString));
+            MongoDbClient.DropDatabase(databaseName);
+        }
+
+        private static void SetUpEnvironmentVariables()
+        {
+            if (Environment.GetEnvironmentVariable("CONTAINER_ENV") != "DockerTest")
+            {
+                Environment.SetEnvironmentVariable("SCCV_MONGO_CONN_STRING", "mongodb://localhost:1433/");
+            }
+
+            Environment.SetEnvironmentVariable("SCCV_MONGO_DB_NAME", "social_care_db_test");
+            Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");
+            Environment.SetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL", "https://mockBase");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
         }
     }
 }

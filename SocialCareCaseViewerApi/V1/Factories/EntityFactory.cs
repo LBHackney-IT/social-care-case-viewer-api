@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
 
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission,
-            bool includeFormAnswers = true, bool includeEditHistory = true, bool pruneUnfinished = false)
+            bool includeFormAnswers = true, bool includeEditHistory = true, bool pruneUnfinished = false, bool includeDeletionDetails = true)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
@@ -148,6 +148,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     LastEdited = caseSubmission.EditHistory.Last().EditTime,
                     CompletedSteps = caseSubmission.FormAnswers.Count,
                     Title = caseSubmission.Title,
+                    Deleted = caseSubmission.Deleted ?? false,
+                    DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
                 };
             }
 
@@ -176,7 +178,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormAnswers = includeFormAnswers ? caseSubmission.FormAnswers : null,
                 Title = caseSubmission.Title,
                 LastEdited = caseSubmission.EditHistory.Last().EditTime,
-                CompletedSteps = caseSubmission.FormAnswers.Count
+                CompletedSteps = caseSubmission.FormAnswers.Count,
+                Deleted = caseSubmission.Deleted ?? false,
+                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
             };
         }
 
