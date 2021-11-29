@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 ReferralDocumentURI = request.ReferralUri,
                 Clients = request.Clients,
                 Stage = "CONTACT",
-                CreatedAt = DateTime.Now
+                CreatedAt = _systemTime.Now
             };
 
             _mashReferralGateway.InsertDocument(newContact);
