@@ -577,6 +577,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CreatedAt = infrastructureReferral.CreatedAt,
                 FinalDecision = infrastructureReferral.FinalDecision,
                 InitialDecision = infrastructureReferral.InitialDecision,
+                InitialCreatedAt = domainReferral.InitialCreatedAt,
+                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
                 ScreeningDecision = domainReferral.ScreeningDecision,
                 ScreeningCreatedAt = domainReferral.ScreeningCreatedAt,
                 ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
@@ -602,18 +604,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Notes = infraStructureCaseStatus.Notes,
                 Person = infraStructureCaseStatus.Person,
                 Type = infraStructureCaseStatus.Type,
-                Answers = infraStructureCaseStatus.Answers.Select(
-                    a => new SocialCareCaseViewerApi.V1.Domain.CaseStatusAnswer
-                    {
-                        Option = a.Option,
-                        Value = a.Value,
-                        StartDate = a.StartDate,
-                        CreatedAt = a.CreatedAt.Value,
-                        GroupId = a.GroupId,
-                        EndDate = a.EndDate,
-                        DiscardedAt = a.DiscardedAt
-                    }
-                    ).ToList()
+                Answers = infraStructureCaseStatus.Answers.Select(a => a.ToDomain()).ToList()
+            });
+        }
+
+        [Test]
+        public void ConvertCaseStatusAnswerInfrastructureToDomain()
+        {
+            var infraStructureCaseStatusAnswer = TestHelpers.CreateCaseStatusAnswers(min: 1, max: 1).FirstOrDefault();
+
+            var domainCaseStatusAnswer = infraStructureCaseStatusAnswer.ToDomain();
+
+            domainCaseStatusAnswer.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.CaseStatusAnswer()
+            {
+
+                Option = infraStructureCaseStatusAnswer.Option,
+                Value = infraStructureCaseStatusAnswer.Value,
+                StartDate = infraStructureCaseStatusAnswer.StartDate,
+                CreatedAt = infraStructureCaseStatusAnswer.CreatedAt.Value,
+                GroupId = infraStructureCaseStatusAnswer.GroupId,
+                EndDate = infraStructureCaseStatusAnswer.EndDate,
+                DiscardedAt = infraStructureCaseStatusAnswer.DiscardedAt
+            });
+        }
+
+        [Test]
+        public void CanConvertCaseStatusAnswerInfrastructureToDomainWhenNullableValuesInInfrastructureObjectAreNull()
+        {
+            var infraStructureCaseStatusAnswer = TestHelpers.CreateCaseStatusAnswers(min: 1, max: 1).FirstOrDefault();
+            infraStructureCaseStatusAnswer.Option = null;
+            infraStructureCaseStatusAnswer.Value = null;
+            infraStructureCaseStatusAnswer.DiscardedAt = null;
+            infraStructureCaseStatusAnswer.EndDate = null;
+            infraStructureCaseStatusAnswer.CreatedAt = null;
+            infraStructureCaseStatusAnswer.LastModifiedAt = null;
+
+            var domainCaseStatusAnswer = infraStructureCaseStatusAnswer.ToDomain();
+
+            domainCaseStatusAnswer.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.CaseStatusAnswer()
+            {
+
+                Option = infraStructureCaseStatusAnswer.Option,
+                Value = infraStructureCaseStatusAnswer.Value,
+                StartDate = infraStructureCaseStatusAnswer.StartDate,
+                CreatedAt = infraStructureCaseStatusAnswer.CreatedAt,
+                GroupId = infraStructureCaseStatusAnswer.GroupId,
+                EndDate = infraStructureCaseStatusAnswer.EndDate,
+                DiscardedAt = infraStructureCaseStatusAnswer.DiscardedAt
             });
         }
     }

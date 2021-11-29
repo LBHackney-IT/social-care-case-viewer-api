@@ -1,6 +1,3 @@
-
-using System.Collections.Generic;
-
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
@@ -9,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public long Id { get; set; }
         public string Referrer { get; set; } = null!;
         public string RequestedSupport { get; set; } = null!;
-        public string? ReferralCreatedAt { get; set; }
+        public string ReferralCreatedAt { get; set; } = null!;
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? ReferralCategory { get; set; }

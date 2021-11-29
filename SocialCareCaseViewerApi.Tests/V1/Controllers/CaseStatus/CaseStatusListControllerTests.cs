@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
 {
@@ -17,6 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
     {
         private CaseStatusController _caseStatusController;
         private Mock<ICaseStatusesUseCase> _mockCaseStatusesUseCase;
+        private ListCaseStatusesRequest _request = new ListCaseStatusesRequest();
 
         [SetUp]
         public void SetUp()
@@ -28,12 +30,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         [Test]
         public void ListCaseStatusesReturns200WhenPersonIsFound()
         {
-            var resident = TestHelpers.CreatePerson();
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteGet(resident.Id))
+                .Setup(x => x.ExecuteGet(_request))
                 .Returns(new List<CaseStatusResponse>());
 
-            var response = _caseStatusController.ListCaseStatuses(resident.Id) as ObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(_request) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
         }
@@ -41,12 +42,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         [Test]
         public void ListCaseStatuses404WithCorrectErrorMessageWhenPersonIsNotFound()
         {
-            var resident = TestHelpers.CreatePerson();
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteGet(resident.Id))
+                .Setup(x => x.ExecuteGet(_request))
                 .Throws(new GetCaseStatusesException("Person not found"));
 
-            var response = _caseStatusController.ListCaseStatuses(resident.Id) as ObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(_request) as ObjectResult;
 
             response?.StatusCode.Should().Be(404);
             response?.Value.Should().Be("Person not found");
@@ -55,14 +55,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.CaseStatus
         [Test]
         public void ListCaseStatuses200AndCaseStatusesWhenSuccessful()
         {
-            var resident = TestHelpers.CreatePerson();
             var caseStatusResponse = TestHelpers.CreateCaseStatus().ToDomain().ToResponse();
             var caseStatusResponseList = new List<CaseStatusResponse> { caseStatusResponse };
             _mockCaseStatusesUseCase
-                .Setup(x => x.ExecuteGet(resident.Id))
+                .Setup(x => x.ExecuteGet(_request))
                 .Returns(caseStatusResponseList);
 
-            var response = _caseStatusController.ListCaseStatuses(resident.Id) as ObjectResult;
+            var response = _caseStatusController.ListCaseStatuses(_request) as ObjectResult;
 
             response?.Value.Should().BeEquivalentTo(caseStatusResponseList);
         }

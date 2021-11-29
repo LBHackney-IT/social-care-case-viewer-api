@@ -358,6 +358,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
                 FinalDecision = mashReferral.FinalDecision,
                 InitialDecision = mashReferral.InitialDecision,
+                InitialCreatedAt = mashReferral.InitialCreatedAt?.ToString("O"),
+                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
@@ -368,25 +370,28 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
 
 
-        public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral_2)
+        public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral)
         {
             return new MashReferral_2
             {
-                Id = mashReferral_2.Id,
-                Referrer = mashReferral_2.Referrer,
-                Stage = mashReferral_2.Stage,
-                ReferralCreatedAt = mashReferral_2.ReferralCreatedAt.ToString("O"),
-                InitialDecision = mashReferral_2.InitialDecision,
-                InitialDecisionReferralCategory = mashReferral_2.InitialDecisionReferralCategory,
-                InitialDecisionUrgentContactRequired = mashReferral_2.InitialDecisionUrgentContactRequired,
-                InitialDecisionCreatedAt = mashReferral_2.InitialDecisionCreatedAt?.ToString("O"),
-                ScreeningDecision = mashReferral_2.ScreeningDecision,
-                ScreeningUrgentContactRequired = mashReferral_2.ScreeningUrgentContactRequired,
-                ScreeningCreatedAt = mashReferral_2.ScreeningCreatedAt?.ToString("O"),
-                FinalDecision = mashReferral_2.FinalDecision,
-                FinalDecisionReferralCategory = mashReferral_2.FinalDecisionReferralCategory,
-                FinalDecisionUrgentContactRequired = mashReferral_2.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = mashReferral_2.FinalDecisionCreatedAt?.ToString("O")
+                Id = mashReferral.Id,
+                Referrer = mashReferral.Referrer,
+                RequestedSupport = mashReferral.RequestedSupport,
+                Stage = mashReferral.Stage,
+                ReferralCreatedAt = mashReferral.ReferralCreatedAt.ToString("O"),
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
+                ReferralCategory = mashReferral.ReferralCategory,
+                InitialDecision = mashReferral.InitialDecision,
+                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
+                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
+                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt?.ToString("O"),
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
+                FinalDecision = mashReferral.FinalDecision,
+                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
+                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
+                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O")
             };
         }
     }

@@ -162,7 +162,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void WhenTypeIsLACandThereAreNoScheduledAnswersAndProvidedEndIsBeforeTheCurrentlyActiveAnswersStartDateItThrowsInvalidEndDateException()
+        public void WhenTypeIsLACAndProvidedEndIsBeforeTheCurrentlyActiveAnswersStartDateItThrowsInvalidEndDateException()
         {
             _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: DateTime.Now.AddDays(1), type: "LAC");
             _caseStatus.Answers = new List<CaseStatusAnswer>();
@@ -302,7 +302,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 
         //LAC
         [Test]
-        public void WhenTypeIsLACandEndDateIsNotProvidedAndStartDateIsInteFutureItThrowsInvalidStartDateException()
+        public void WhenTypeIsLACandEndDateIsNotProvidedAndStartDateIsIntheFutureItThrowsInvalidStartDateException()
         {
             _updateCaseStatusRequest.StartDate = DateTime.Now.AddDays(1);
             _updateCaseStatusRequest.EndDate = null;

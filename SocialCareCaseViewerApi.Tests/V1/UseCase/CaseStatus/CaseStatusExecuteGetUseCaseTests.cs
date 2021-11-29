@@ -1,15 +1,17 @@
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SocialCareCaseViewerApi.V1.Gateways;
-using FluentAssertions;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using System.Collections.Generic;
-using System.Linq;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
+using System.Collections.Generic;
+using DomainCaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
+using InfrastructureCasStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
 {
@@ -18,6 +20,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         private Mock<ICaseStatusGateway> _mockCaseStatusGateway;
         private Mock<IDatabaseGateway> _mockDatabaseGateway;
         private CaseStatusesUseCase _caseStatusesUseCase;
+        private ListCaseStatusesRequest _request;
+        private Person _person;
+        private InfrastructureCasStatus _caseStatus;
 
         [SetUp]
         public void SetUp()
@@ -25,32 +30,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
             _mockCaseStatusGateway = new Mock<ICaseStatusGateway>();
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _caseStatusesUseCase = new CaseStatusesUseCase(_mockCaseStatusGateway.Object, _mockDatabaseGateway.Object);
+
+            _request = new ListCaseStatusesRequest() { PersonId = 123, IncludeClosedCases = false };
+            _person = TestHelpers.CreatePerson();
+            _caseStatus = TestHelpers.CreateCaseStatus(_person.Id);
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(_person);
         }
 
         [Test]
         public void WhenPersonIsNotFoundAndDatabaseGatewayReturnsNullThrowsGetCaseStatusExceptionWithMessage()
         {
             _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(1234));
+            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(It.IsAny<long>())).Returns(default(Person));
 
-            _caseStatusesUseCase.Invoking(x => x.ExecuteGet(1234))
+            _caseStatusesUseCase.Invoking(x => x.ExecuteGet(_request))
                 .Should().Throw<GetCaseStatusesException>()
                 .WithMessage("Person not found");
         }
 
-
         [Test]
         public void WhenPersonIsFoundWithNoCaseStatusesReturnsEmptyList()
         {
-            var person = TestHelpers.CreatePerson();
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(It.IsAny<long>())).Returns(new List<DomainCaseStatus>());
 
-            _mockDatabaseGateway
-                .Setup(x => x.GetPersonByMosaicId(person.Id))
-                .Returns(person);
-            _mockCaseStatusGateway
-                .Setup(x => x.GetActiveCaseStatusesByPersonId(person.Id))
-                .Returns(new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus>());
-
-            var result = _caseStatusesUseCase.ExecuteGet(person.Id);
+            var result = _caseStatusesUseCase.ExecuteGet(_request);
 
             result.Should().BeEquivalentTo(new List<CaseStatusResponse>());
         }
@@ -58,17 +61,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         [Test]
         public void WhenPersonIsFoundWithCaseStatusesReturnsCaseStatusesList()
         {
-            var person = TestHelpers.CreatePerson();
-            var caseStatus = TestHelpers.CreateCaseStatus(person.Id);
+            var response = new List<DomainCaseStatus> { _caseStatus.ToDomain() };
 
-            var response = new List<SocialCareCaseViewerApi.V1.Domain.CaseStatus> { caseStatus.ToDomain() };
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(It.IsAny<long>())).Returns(response);
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonByMosaicId(person.Id)).Returns(person);
-            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(person.Id)).Returns(response);
-
-            var result = _caseStatusesUseCase.ExecuteGet(person.Id);
+            var result = _caseStatusesUseCase.ExecuteGet(_request);
 
             result.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void WhenIncludeClosedCasesFlagIsFalseItCallsTheGetActiveCaseStatusesByPersonIdGatewayMethdodWithCorrectPersonId()
+        {
+            var response = new List<DomainCaseStatus> { _caseStatus.ToDomain() };
+
+            _mockCaseStatusGateway.Setup(x => x.GetActiveCaseStatusesByPersonId(It.IsAny<long>())).Returns(response);
+
+            _caseStatusesUseCase.ExecuteGet(_request);
+
+            _mockCaseStatusGateway.Verify(x => x.GetActiveCaseStatusesByPersonId(_request.PersonId));
+        }
+
+        [Test]
+        public void WhenIncludeClosedCasesFlagIsTrueItCallsGetCaseStatusesByPersonIdGatewayMethodWithCorrectPersonId()
+        {
+            var response = new List<DomainCaseStatus> { _caseStatus.ToDomain() };
+
+            _request.IncludeClosedCases = true;
+
+            _mockCaseStatusGateway.Setup(x => x.GetCaseStatusesByPersonId(It.IsAny<long>())).Returns(response);
+
+            _caseStatusesUseCase.ExecuteGet(_request);
+
+            _mockCaseStatusGateway.Verify(x => x.GetCaseStatusesByPersonId(_request.PersonId));
         }
     }
 }
