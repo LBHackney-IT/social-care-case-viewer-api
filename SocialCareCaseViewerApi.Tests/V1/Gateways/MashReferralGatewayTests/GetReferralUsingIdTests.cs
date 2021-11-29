@@ -71,7 +71,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             };
 
             _databaseGateway
-                .Setup(_databaseContext.MashReferral_2
+                .Setup(_databaseContext.MashReferral_2)
                     .Where(x => x.Id.ToString() == referral.Id)
                     .FirstOrDefault()?.ToDomain())
                 .Returns(referral);
