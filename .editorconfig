@@ -143,3 +143,7 @@ dotnet_diagnostic.CA2227.severity = none
 # Relates to protected declarations in MongoDBTests
 # Possible solution by making private and declaring using properties
 dotnet_diagnostic.CA1051.severity = none
+
+# Suppressed[CA1054] as we expect the URI given within a request to be a string.
+# We could validate if the URI is of the correct format after receiving it.
+dotnet_diagnostic.CA1054.severity = none
