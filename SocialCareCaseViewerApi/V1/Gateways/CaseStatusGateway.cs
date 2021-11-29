@@ -393,8 +393,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CreatedBy = request.CreatedBy,
                     EndDate = request.StartDate,
                     StartDate = activeAnswers.First().StartDate,
-                    Option = LACAnswerOption.EpisodeReason,
-                    Value = LACAnswerValue.X1,
+                    Option = CaseStatusAnswerOption.EpisodeReason,
+                    Value = CaseStatusAnswerValue.X1,
                     GroupId = activeAnswers.First().GroupId
                 });
 
@@ -430,11 +430,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
     }
 
-    public static class LACAnswerOption
+    public static class CaseStatusAnswerOption
     {
         public const string EpisodeReason = "episodeReason";
     }
-    public static class LACAnswerValue
+    public static class CaseStatusAnswerValue
     {
         public const string X1 = "X1";
     }

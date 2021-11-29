@@ -80,14 +80,26 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             var caseStatus = _caseStatusGateway.GetCasesStatusByCaseStatusId(request.CaseStatusId);
 
+            var caseStatusType = caseStatus?.Type.ToLower();
+
             if (caseStatus == null)
             {
                 throw new CaseStatusDoesNotExistException($"Case status with {request.CaseStatusId} not found");
             }
 
-            if (caseStatus.Type.ToLower() != "lac")
+            if (caseStatusType != "lac" && caseStatusType != "cp")
             {
-                throw new InvalidCaseStatusTypeException("Answers can only be added to LAC statuses");
+                throw new InvalidCaseStatusTypeException("Answers can only be added to LAC or CP statuses");
+            }
+
+            if (caseStatusType == "cp" && request.Answers?.Count != 1)
+            {
+                throw new InvalidCaseStatusAnswersRequestException("CP must have only one answer");
+            }
+
+            if (caseStatusType == "lac" && request.Answers?.Count != 2)
+            {
+                throw new InvalidCaseStatusAnswersRequestException("LAC must have only two answers");
             }
 
             var worker = _databaseGateway.GetWorkerByEmail(request.CreatedBy);
@@ -100,9 +112,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             //check for overlapping dates
             var activeAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
-            if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate >= request.StartDate)
+            switch (caseStatusType)
             {
-                throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date");
+                case "lac":
+                    if (activeAnswers.Count() == 2 && activeAnswers.FirstOrDefault().StartDate >= request.StartDate)
+                    {
+                        throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date for {caseStatusType.ToUpper()}");
+                    }
+                    break;
+                case "cp":
+                    if (activeAnswers.Count() == 1 && activeAnswers.FirstOrDefault().StartDate >= request.StartDate)
+                    {
+                        throw new InvalidCaseStatusAnswersStartDateException($"Start date cannot be before the current active date for {caseStatusType.ToUpper()}");
+                    }
+                    break;
             }
 
             return _caseStatusGateway.ReplaceCaseStatusAnswers(request).ToResponse();
