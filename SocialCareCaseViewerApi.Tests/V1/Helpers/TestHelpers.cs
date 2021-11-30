@@ -720,7 +720,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static MashReferral_2 CreateMashReferral2(string? stage = null)
         {
             return new Faker<MashReferral_2>()
-                .RuleFor(x => x.Id, f => f.IndexVariable + 100)
+                .RuleFor(x => x.Id, f => f.UniqueIndex + 100)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
