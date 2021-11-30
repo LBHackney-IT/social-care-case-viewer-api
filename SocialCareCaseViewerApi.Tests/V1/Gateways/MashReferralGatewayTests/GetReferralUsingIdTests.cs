@@ -69,10 +69,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                     options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
                     return options;
                 });
-
-
-
-
         }
 
         [Test]
@@ -83,6 +79,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             _mongoGateway.Setup(x => x.LoadRecordById<MashReferral>(CollectionName, ObjectId.Parse(nonExistentId)));
 
             var response = _mashReferralGateway.GetReferralUsingId(nonExistentId);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetReferralFromPostgresUsingIdReturnsNullIfNoMashReferralFound()
+        {
+            const long nonExistentId = 123L;
+
+            var response = _mashReferralGateway.GetReferralUsingId_2(nonExistentId);
 
             response.Should().BeNull();
         }
