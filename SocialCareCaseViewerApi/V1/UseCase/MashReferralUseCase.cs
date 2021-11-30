@@ -49,6 +49,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 .Select(x => x.ToResponse());
         }
 
+        public void CreateNewMashReferral(CreateReferralRequest request)
+        {
+            var newContact = new MashReferral
+            {
+                Referrer = request.Referrer,
+                RequestedSupport = request.RequestedSupport,
+                ReferralDocumentURI = request.ReferralUri,
+                Clients = request.Clients,
+                Stage = "CONTACT",
+                CreatedAt = _systemTime.Now
+            };
+
+            _mashReferralGateway.InsertDocument(newContact);
+        }
+
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
@@ -64,17 +79,29 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new MashReferralNotFoundException($"MASH referral with id {referralId} not found");
             }
 
+            if (request.UpdateType.Equals("CONTACT-DECISION"))
+            {
+                if (!referral.Stage.Equals("CONTACT"))
+                {
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"contact\"");
+                }
+
+                referral.ContactCreatedAt = _systemTime.Now;
+                referral.ContactUrgentContactRequired = request.RequiresUrgentContact;
+                referral.Stage = "INITIAL";
+            }
+
             if (request.UpdateType.Equals("INITIAL-DECISION"))
             {
                 if (!referral.Stage.Equals("INITIAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial decision\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial\"");
                 }
 
                 referral.InitialCreatedAt = _systemTime.Now;
                 referral.InitialDecision = request.Decision;
                 referral.InitialUrgentContactRequired = request.RequiresUrgentContact;
-                referral.ReferralCategory = request.ReferralCategory;
+                referral.InitialReferralCategory = request.ReferralCategory;
                 referral.Stage = "SCREENING";
             }
 
@@ -89,6 +116,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 referral.ScreeningDecision = request.Decision;
                 referral.ScreeningUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "FINAL";
+            }
+
+            if (request.UpdateType.Equals("FINAL-DECISION"))
+            {
+                if (!referral.Stage.Equals("FINAL"))
+                {
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"final\"");
+                }
+
+                referral.FinalCreatedAt = _systemTime.Now;
+                referral.FinalDecision = request.Decision;
+                referral.FinalUrgentContactRequired = request.RequiresUrgentContact;
+                referral.FinalReferralCategory = request.ReferralCategory;
+                referral.Stage = "POST-FINAL";
             }
 
             _mashReferralGateway.UpsertRecord(referral);
@@ -114,7 +155,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "School",
                 CreatedAt = DateTime.Now.AddHours(-5),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Bert Bertram", "c2", "c3", "c4" },
+                Clients = new List<string> { "Bert Bertram", "Courtney Bushell", "Jake Bucks", "Frank Gallagher" },
                 Stage = "CONTACT",
                 ReferralDocumentURI = "hardcoded-referral-2-URI"
             };
@@ -123,7 +164,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Referrer = "Family",
                 CreatedAt = DateTime.Now.AddHours(-10),
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Bertie Stephens", "c2", "c3", "c4" },
+                Clients = new List<string> { "Bertie Stephens", "Katie Ryans", "Hannah Stephens", "Will Stephens" },
                 Stage = "CONTACT",
                 ReferralDocumentURI = "hardcoded-referral-3-URI"
             };
@@ -158,6 +199,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Sally Stephens" },
                 Stage = "INITIAL",
@@ -167,8 +210,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now,
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Barry Smith", "c1", "c2" },
+                Clients = new List<string> { "Barry Smith", "Bert Smith", "Sally Smith" },
                 Stage = "INITIAL",
                 ReferralDocumentURI = "hardcoded-referral-8-URI"
             };
@@ -176,34 +221,40 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "Sophie Owens" },
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-9-URI",
-                InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse"
+                InitialDecision = "CSC Screening required in MASH",
+                InitialReferralCategory = "Emotional abuse"
             };
             var referral10 = new MashReferral
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Max Smith", "c1", "c2" },
+                Clients = new List<string> { "Max Smith", "Georgie Smith", "Hugh Smith" },
                 Stage = "SCREENING",
                 ReferralDocumentURI = "hardcoded-referral-10-URI",
-                InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse"
+                InitialReferralCategory = "Emotional abuse",
+                InitialDecision = "EH Screening required in MASH",
             };
             var referral11 = new MashReferral
             {
                 Referrer = "Police - red",
                 CreatedAt = DateTime.Now.AddHours(-3),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = true,
                 RequestedSupport = "Safeguarding",
                 Clients = new List<string> { "John Smith" },
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-11-URI",
-                InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse",
+                InitialReferralCategory = "Emotional abuse",
+                InitialDecision = "CSC Screening required in MASH",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-2),
                 ScreeningUrgentContactRequired = true
@@ -212,12 +263,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - green",
                 CreatedAt = DateTime.Now.AddHours(-1),
+                ContactCreatedAt = DateTime.Now.AddHours(-1),
+                ContactUrgentContactRequired = false,
                 RequestedSupport = "Safeguarding",
-                Clients = new List<string> { "Jack Owens", "c1", "c2" },
+                Clients = new List<string> { "Jack Owens", "Stuart Owens", "Katie Owens" },
                 Stage = "FINAL",
                 ReferralDocumentURI = "hardcoded-referral-12-URI",
-                InitialDecision = "DAIS",
-                ReferralCategory = "Emotional abuse",
+                InitialDecision = "CSC Screening required in MASH",
+                InitialReferralCategory = "Emotional abuse",
                 ScreeningDecision = "DAIS",
                 ScreeningCreatedAt = DateTime.Now.AddHours(-1),
                 ScreeningUrgentContactRequired = true

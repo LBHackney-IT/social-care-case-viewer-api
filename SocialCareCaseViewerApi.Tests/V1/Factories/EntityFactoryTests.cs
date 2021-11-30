@@ -269,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null, deleted: true);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -287,10 +287,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission1.FormAnswers,
                 Title = null,
                 LastEdited = databaseCaseSubmission1.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = true,
+                DeletionDetails = databaseCaseSubmission1.DeletionDetails
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title", deleted: false);
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -308,7 +310,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission2.FormAnswers,
                 Title = "test-title",
                 LastEdited = databaseCaseSubmission2.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = false,
+                DeletionDetails = null
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
@@ -575,14 +579,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = infrastructureReferral.Stage,
                 AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
                 CreatedAt = infrastructureReferral.CreatedAt,
-                FinalDecision = infrastructureReferral.FinalDecision,
+                ContactUrgentContactRequired = infrastructureReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = infrastructureReferral.ContactCreatedAt,
                 InitialDecision = infrastructureReferral.InitialDecision,
-                InitialCreatedAt = domainReferral.InitialCreatedAt,
-                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
-                ScreeningDecision = domainReferral.ScreeningDecision,
-                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt,
-                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                ReferralCategory = infrastructureReferral.ReferralCategory,
+                InitialCreatedAt = infrastructureReferral.InitialCreatedAt,
+                InitialReferralCategory = infrastructureReferral.InitialReferralCategory,
+                InitialUrgentContactRequired = infrastructureReferral.InitialUrgentContactRequired,
+                ScreeningDecision = infrastructureReferral.ScreeningDecision,
+                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
+                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
+                FinalDecision = infrastructureReferral.FinalDecision,
+                FinalReferralCategory = infrastructureReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = infrastructureReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = infrastructureReferral.FinalCreatedAt,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
             });

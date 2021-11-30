@@ -67,7 +67,41 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request)
+        public void ExecuteDelete(string submissionId, DeleteCaseSubmissionRequest request)
+        {
+            _ = GetSanitisedWorker(request.DeletedBy);
+
+            var submissionToBeDeleted = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
+
+            if (submissionToBeDeleted == null)
+            {
+                throw new DeleteSubmissionException($"Submission with ID {submissionId} not found");
+            }
+
+            if (submissionToBeDeleted.Deleted == true)
+            {
+                throw new SubmissionAlreadyDeletedException($"Submission with ID { submissionId} has already been deleted");
+            }
+
+            if (submissionToBeDeleted.FormId?.ToLower() != FormIdName.ChildCaseNote && submissionToBeDeleted.FormId?.ToLower() != FormIdName.AdultCaseNote)
+            {
+                throw new UnsupportedSubmissionTypeException($"Submission type { submissionToBeDeleted.FormId} cannot be deleted");
+            }
+
+            submissionToBeDeleted.Deleted = true;
+
+            submissionToBeDeleted.DeletionDetails = new DeletionDetails()
+            {
+                DeletedAt = DateTime.Now,
+                DeletedBy = request.DeletedBy,
+                DeleteReason = request.DeleteReason,
+                DeleteRequestedBy = request.DeleteRequestedBy
+            };
+
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submissionToBeDeleted);
+        }
+
+        public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request, bool addDeletedRecordsFilter = true)
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -124,6 +158,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
+            if (addDeletedRecordsFilter)
+            {
+                if (!request.IncludeDeletedRecords)
+                {
+                    filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
+                }
+            }
+
             return filter;
         }
 
@@ -141,14 +183,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
 
             var filter = GenerateFilter(request);
+
+            var deletedRecordsFilter = GenerateFilter(request, addDeletedRecordsFilter: false);
+            deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
+
+            var deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(_collectionName, deletedRecordsFilter);
+
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
 
             var (foundSubmission, totalCount) = _mongoGateway.LoadRecordsByFilter(_collectionName, filter, pagination);
 
-            return new Paginated<CaseSubmissionResponse>
+            return new PaginatedExtended<CaseSubmissionResponse>
             {
                 Count = totalCount,
-                Items = foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory, request.PruneUnfinished).ToResponse()).ToList()
+                Items = foundSubmission?.Select(s => s.ToDomain(request.IncludeFormAnswers, request.IncludeEditHistory, request.PruneUnfinished, request.IncludeDeletedRecords).ToResponse()).ToList(),
+                DeletedItemsCount = deletedRecordsCount
             };
         }
 
@@ -364,5 +413,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allocation.Team = null;
             }
         }
+    }
+
+    public static class FormIdName
+    {
+        public const string AdultCaseNote = "adult-case-note";
+        public const string ChildCaseNote = "child-case-note";
     }
 }

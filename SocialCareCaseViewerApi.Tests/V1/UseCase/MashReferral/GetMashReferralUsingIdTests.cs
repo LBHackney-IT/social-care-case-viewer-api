@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             response?.ScreeningCreatedAt.Should().BeEquivalentTo(referral.ScreeningCreatedAt?.ToString("O"));
             response?.ScreeningUrgentContactRequired.Should().Be(referral.ScreeningUrgentContactRequired);
             response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
-            response?.ReferralCategory.Should().BeEquivalentTo(referral.ReferralCategory);
+            response?.InitialReferralCategory.Should().BeEquivalentTo(referral.InitialReferralCategory);
         }
 
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Moq;
@@ -68,6 +70,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _allocationsUseCase.ExecutePost(new CreateAllocationRequest());
 
             response.Should().BeEquivalentTo(responseObject);
+        }
+
+        [Test]
+        public void ListAllocationsByWorkerEmail()
+        {
+            var request = new ListAllocationsRequest() { WorkerEmail = "test@example.com" };
+            var gatewayResponse = new List<Allocation> { new Allocation() { AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com"))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeEquivalentTo(gatewayResponse);
         }
     }
 }

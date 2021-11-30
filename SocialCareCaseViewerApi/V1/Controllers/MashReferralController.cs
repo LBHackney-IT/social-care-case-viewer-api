@@ -62,6 +62,28 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Creates new referral at the 'contact' stage
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="201">Successfully created new referral</response>
+        /// <response code="400">Invalid request</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost]
+        public IActionResult CreateNewContact([FromBody] CreateReferralRequest request)
+        {
+            var validator = new CreateReferralRequestValidator();
+            var validation = validator.Validate(request);
+            if (!validation.IsValid)
+            {
+                return BadRequest(validation.ToString());
+            }
+
+            _mashReferralUseCase.CreateNewMashReferral(request);
+
+            return CreatedAtAction(nameof(CreateNewContact), "Successfully created new contact referral");
+        }
+
+        /// <summary>
         /// Update a mash referral
         /// </summary>
         /// <response code="200">Successful request. Referrals returned</response>

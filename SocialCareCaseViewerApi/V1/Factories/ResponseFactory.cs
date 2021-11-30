@@ -247,7 +247,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormAnswers = caseSubmission.FormAnswers,
                 Title = caseSubmission.Title,
                 LastEdited = caseSubmission.LastEdited?.ToString("O"),
-                CompletedSteps = caseSubmission.CompletedSteps
+                CompletedSteps = caseSubmission.CompletedSteps,
+                Deleted = caseSubmission.Deleted,
+                DeletionDetails = caseSubmission.DeletionDetails
             };
         }
 
@@ -356,14 +358,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Stage = mashReferral.Stage,
                 AssignedTo = mashReferral.AssignedTo?.ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
-                FinalDecision = mashReferral.FinalDecision,
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = mashReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = mashReferral.InitialDecision,
+                InitialReferralCategory = mashReferral.InitialReferralCategory,
                 InitialCreatedAt = mashReferral.InitialCreatedAt?.ToString("O"),
                 InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 ScreeningDecision = mashReferral.ScreeningDecision,
                 ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
                 ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                ReferralCategory = mashReferral.ReferralCategory,
+                FinalDecision = mashReferral.FinalDecision,
+                FinalReferralCategory = mashReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = mashReferral.FinalCreatedAt?.ToString("O"),
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
             };

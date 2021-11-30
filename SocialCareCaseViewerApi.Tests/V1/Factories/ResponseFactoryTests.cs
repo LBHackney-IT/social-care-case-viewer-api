@@ -450,7 +450,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
                 FormAnswers = domainCaseSubmission.FormAnswers,
-                Title = domainCaseSubmission.Title
+                Title = domainCaseSubmission.Title,
+                Deleted = domainCaseSubmission.Deleted,
+                DeletionDetails = domainCaseSubmission.DeletionDetails
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
@@ -532,14 +534,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = domainReferral.Stage,
                 AssignedTo = domainReferral.AssignedTo?.ToResponse(),
                 CreatedAt = domainReferral.CreatedAt.ToString("O"),
-                FinalDecision = domainReferral.FinalDecision,
+                ContactUrgentContactRequired = domainReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = domainReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = domainReferral.InitialDecision,
                 InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
                 InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
+                InitialReferralCategory = domainReferral.InitialReferralCategory,
                 ScreeningDecision = domainReferral.ScreeningDecision,
                 ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
                 ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                ReferralCategory = domainReferral.ReferralCategory,
+                FinalDecision = domainReferral.FinalDecision,
+                FinalReferralCategory = domainReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = domainReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = domainReferral.FinalCreatedAt?.ToString("O"),
                 RequestedSupport = domainReferral.RequestedSupport,
                 ReferralDocumentURI = domainReferral.ReferralDocumentURI
             });
