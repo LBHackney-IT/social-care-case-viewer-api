@@ -15,6 +15,7 @@ using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
+using MashReferral_2 = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -246,7 +247,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormAnswers = caseSubmission.FormAnswers,
                 Title = caseSubmission.Title,
                 LastEdited = caseSubmission.LastEdited?.ToString("O"),
-                CompletedSteps = caseSubmission.CompletedSteps
+                CompletedSteps = caseSubmission.CompletedSteps,
+                Deleted = caseSubmission.Deleted,
+                DeletionDetails = caseSubmission.DeletionDetails
             };
         }
 
@@ -370,6 +373,32 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FinalCreatedAt = mashReferral.FinalCreatedAt?.ToString("O"),
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
+            };
+        }
+
+
+        public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral)
+        {
+            return new MashReferral_2
+            {
+                Id = mashReferral.Id,
+                Referrer = mashReferral.Referrer,
+                RequestedSupport = mashReferral.RequestedSupport,
+                Stage = mashReferral.Stage,
+                ReferralCreatedAt = mashReferral.ReferralCreatedAt.ToString("O"),
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
+                ReferralCategory = mashReferral.ReferralCategory,
+                InitialDecision = mashReferral.InitialDecision,
+                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
+                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
+                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt?.ToString("O"),
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
+                FinalDecision = mashReferral.FinalDecision,
+                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
+                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
+                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O")
             };
         }
     }

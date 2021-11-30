@@ -34,6 +34,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 ?.ToResponse();
         }
 
+
+        public Boundary.Response.MashReferral_2? GetMashReferralUsingId_2(long requestId)
+        {
+            return _mashReferralGateway.GetReferralUsingId_2(requestId)?.ToResponse();
+        }
+
         public IEnumerable<Boundary.Response.MashReferral> GetMashReferrals(QueryMashReferrals request)
         {
             var filter = GenerateFilter(request);
@@ -41,6 +47,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return _mashReferralGateway
                 .GetReferralsUsingFilter(filter)
                 .Select(x => x.ToResponse());
+        }
+
+        public void CreateNewMashReferral(CreateReferralRequest request)
+        {
+            var newContact = new MashReferral
+            {
+                Referrer = request.Referrer,
+                RequestedSupport = request.RequestedSupport,
+                ReferralDocumentURI = request.ReferralUri,
+                Clients = request.Clients,
+                Stage = "CONTACT",
+                CreatedAt = _systemTime.Now
+            };
+
+            _mashReferralGateway.InsertDocument(newContact);
         }
 
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)

@@ -256,5 +256,76 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
         }
+
+        [Test]
+        public void DeleteSubmissionReturns204WhenASubmissionIsSuccessfullyDeleted()
+        {
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            var deletedSubmission = TestHelpers.CreateCaseSubmission();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteDelete(deletedSubmission.SubmissionId.ToString(), request)).Verifiable();
+
+            var response = _formSubmissionController.DeleteSubmission(deletedSubmission.SubmissionId.ToString(), request) as NoContentResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void DeleteSubmissionWithInvalidRequestReturns400Status()
+        {
+            var deletedSubmission = TestHelpers.CreateCaseSubmission();
+            var invalidRequest = TestHelpers.DeleteCaseSubmissionRequest(deletedBy: "invalid email");
+
+            var response = _formSubmissionController.DeleteSubmission(deletedSubmission.SubmissionId.ToString(), invalidRequest) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Provide a valid email address for who is deleting the submission");
+        }
+
+        [Test]
+        public void DeleteSubmissionReturns422WhenWorkerNotFoundExceptionThrown()
+        {
+            const string errorMessage = "Failed to find worker";
+            var deletedSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteDelete(deletedSubmission.SubmissionId.ToString(), request)).Throws(new WorkerNotFoundException(errorMessage));
+
+            var response = _formSubmissionController.DeleteSubmission(deletedSubmission.SubmissionId.ToString(), request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void DeleteSubmissionReturns422WhenDeleteSubmissionExceptionThrown()
+        {
+            const string errorMessage = "Submission not found";
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteDelete(createdSubmission.SubmissionId.ToString(), request)).Throws(new DeleteSubmissionException(errorMessage));
+
+            var response = _formSubmissionController.DeleteSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(422);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void DeleteSubmissionReturns410WhenDeleteSubmissionExceptionThrown()
+        {
+            const string errorMessage = "Submission already deleted";
+            var createdSubmission = TestHelpers.CreateCaseSubmission();
+            var request = TestHelpers.DeleteCaseSubmissionRequest();
+            _submissionsUseCaseMock.Setup(x => x.ExecuteDelete(createdSubmission.SubmissionId.ToString(), request)).Throws(new SubmissionAlreadyDeletedException(errorMessage));
+
+            var response = _formSubmissionController.DeleteSubmission(createdSubmission.SubmissionId.ToString(), request) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response?.StatusCode.Should().Be(410);
+            response?.Value.Should().Be(errorMessage);
+        }
     }
 }

@@ -450,7 +450,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
                 FormAnswers = domainCaseSubmission.FormAnswers,
-                Title = domainCaseSubmission.Title
+                Title = domainCaseSubmission.Title,
+                Deleted = domainCaseSubmission.Deleted,
+                DeletionDetails = domainCaseSubmission.DeletionDetails
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
@@ -549,5 +551,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReferralDocumentURI = domainReferral.ReferralDocumentURI
             });
         }
+
+        [Test]
+        public void ConvertMashReferralFromDomainToResponse2()
+        {
+            var domainReferral = TestHelpers.CreateMashReferral2().ToDomain();
+
+            var responseReferral = domainReferral.ToResponse();
+
+            responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2
+            {
+                Id = domainReferral.Id,
+                Referrer = domainReferral.Referrer,
+                Stage = domainReferral.Stage,
+                ReferralCreatedAt = domainReferral.ReferralCreatedAt.ToString("O"),
+                FinalDecision = domainReferral.FinalDecision,
+                InitialDecision = domainReferral.InitialDecision,
+                InitialDecisionReferralCategory = domainReferral.InitialDecisionReferralCategory,
+                InitialDecisionCreatedAt = domainReferral.InitialDecisionCreatedAt?.ToString("O"),
+                InitialDecisionUrgentContactRequired = domainReferral.InitialDecisionUrgentContactRequired,
+                ScreeningDecision = domainReferral.ScreeningDecision,
+                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
+                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
+                FinalDecisionReferralCategory = domainReferral.FinalDecisionReferralCategory,
+                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O"),
+                FinalDecisionUrgentContactRequired = domainReferral.FinalDecisionUrgentContactRequired,
+                ReferralCategory = domainReferral.ReferralCategory,
+                RequestedSupport = domainReferral.RequestedSupport,
+                ReferralDocumentURI = domainReferral.ReferralDocumentURI
+            });
+        }
+
+
     }
 }

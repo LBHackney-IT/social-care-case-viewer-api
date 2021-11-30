@@ -32,6 +32,8 @@ namespace SocialCareCaseViewerApi.V1.Domain
         // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
         // either string, string[] or List<Dictionary<string,string>>
         public Dictionary<string, string>? FormAnswers { get; set; } = null!;
+        public bool Deleted { get; set; } = false;
+        public DeletionDetails? DeletionDetails { get; set; }
     }
 }
 
