@@ -521,13 +521,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long? mosaicId = null,
             string? firstName = null,
             string? lastName = null,
-            string? workerEmail = null)
+            string? workerEmail = null,
+            bool? includeDeletedRecords = null)
         {
             return new Faker<ListCasesRequest>()
                 .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString())
                 .RuleFor(r => r.FirstName, firstName)
                 .RuleFor(r => r.LastName, lastName)
-                .RuleFor(r => r.WorkerEmail, workerEmail);
+                .RuleFor(r => r.WorkerEmail, workerEmail)
+                .RuleFor(r => r.IncludeDeletedRecords, includeDeletedRecords ?? false);
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(

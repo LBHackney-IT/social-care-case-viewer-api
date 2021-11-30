@@ -1,5 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
@@ -34,5 +35,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         [JsonProperty("title")]
         public string? Title { get; set; }
 
+        [JsonProperty("deleted")]
+        public bool Deleted { get; set; } = false;
+
+        [JsonProperty("deletionDetails")]
+        public DeletionDetails? DeletionDetails { get; set; }
     }
 }
