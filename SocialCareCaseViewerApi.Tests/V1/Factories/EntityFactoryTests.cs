@@ -588,6 +588,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             });
         }
 
+
+        [Test]
+        public void ConvertMashReferralFromInfrastructureToDomain2()
+        {
+            var infrastructureReferral = TestHelpers.CreateMashReferral2();
+
+            var domainReferral = infrastructureReferral.ToDomain();
+
+            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral_2
+            {
+                Id = infrastructureReferral.Id,
+                Referrer = infrastructureReferral.Referrer,
+                Stage = infrastructureReferral.Stage,
+                ReferralCreatedAt = infrastructureReferral.ReferralCreatedAt,
+                FinalDecision = infrastructureReferral.FinalDecision,
+                InitialDecision = infrastructureReferral.InitialDecision,
+                InitialDecisionReferralCategory = infrastructureReferral.InitialDecisionReferralCategory,
+                InitialDecisionCreatedAt = infrastructureReferral.InitialDecisionCreatedAt,
+                InitialDecisionUrgentContactRequired = infrastructureReferral.InitialDecisionUrgentContactRequired,
+                ScreeningDecision = infrastructureReferral.ScreeningDecision,
+                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
+                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
+                FinalDecisionReferralCategory = infrastructureReferral.FinalDecisionReferralCategory,
+                FinalDecisionCreatedAt = infrastructureReferral.FinalDecisionCreatedAt,
+                FinalDecisionUrgentContactRequired = infrastructureReferral.FinalDecisionUrgentContactRequired,
+                ReferralCategory = infrastructureReferral.ReferralCategory,
+                RequestedSupport = infrastructureReferral.RequestedSupport,
+                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
+            });
+        }
+
+
         [Test]
         public void ConvertCaseStatusInfrastructureToDomain()
         {
