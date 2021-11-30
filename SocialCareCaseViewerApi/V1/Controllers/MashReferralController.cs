@@ -44,25 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return NotFound();
         }
 
-        /// <summary>
-        /// Get a mash referral from Postgres using id value
-        /// </summary>
-        /// <response code="200">Successful request. Referrals returned</response>
-        /// <response code="404">Mash referral not found</response>
-        /// <response code="500">There was a server side error getting the mash referrals</response>
-        [ProducesResponseType(typeof(MashReferral_2), StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("_2/{referralId:long}")]
-        public IActionResult GetMashReferral_2(long referralId)
-        {
-            var referral = _mashReferralUseCase.GetMashReferralUsingId_2(referralId);
 
-            if (referral != null)
-            {
-                return Ok(referral);
-            }
-            return NotFound();
-        }
 
         /// <summary>
         /// Get a list of mash referrals based on supplied query params

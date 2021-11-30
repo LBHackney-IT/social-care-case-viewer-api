@@ -59,33 +59,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         }
 
 
-        [Test]
-        public void GettingAMashReferralFromPostgresReturnsAMashReferralResponseObject()
-        {
-            var referral = TestHelpers.CreateMashReferral2().ToDomain();
-
-            _mashReferralGateway
-                .Setup(x => x.GetReferralUsingId_2(referral.Id))
-                .Returns(referral);
-
-            var response = _mashReferralUseCase.GetMashReferralUsingId_2(referral.Id);
-
-            response?.Id.Should().Be(referral.Id);
-            response?.Referrer.Should().BeEquivalentTo(referral.Referrer);
-            response?.RequestedSupport.Should().BeEquivalentTo(referral.RequestedSupport);
-            response?.ReferralCreatedAt.Should().BeEquivalentTo(referral.ReferralCreatedAt.ToString("O"));
-            response?.ReferralDocumentURI.Should().BeEquivalentTo(referral.ReferralDocumentURI);
-            response?.Stage.Should().BeEquivalentTo(referral.Stage);
-            response?.InitialDecision.Should().BeEquivalentTo(referral.InitialDecision);
-            response?.ScreeningDecision.Should().BeEquivalentTo(referral.ScreeningDecision);
-            response?.ScreeningCreatedAt.Should().BeEquivalentTo(referral.ScreeningCreatedAt?.ToString("O"));
-            response?.ScreeningUrgentContactRequired.Should().Be(referral.ScreeningUrgentContactRequired);
-            response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
-            response?.ReferralCategory.Should().BeEquivalentTo(referral.ReferralCategory);
-        }
-
-
-
 
         [Test]
         public void NotGettingAMashReferralReturnsNull()
