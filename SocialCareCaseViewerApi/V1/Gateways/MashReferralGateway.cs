@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
@@ -68,6 +69,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 ?.ToDomain();
         }
 
+        public IEnumerable<MashReferral_2> GetReferralsUsingQuery(QueryMashReferrals request)
+        {
+            var results = _databaseContext.MashReferral_2.AsQueryable();
+
+            if (!string.IsNullOrEmpty(request.Id))
+            {
+                results = results.Where(x => x.Id == long.Parse(request.Id));
+            }
+
+            return results.Select(m => m.ToDomain());
+        }
 
     }
 }
