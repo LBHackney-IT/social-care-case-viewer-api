@@ -692,7 +692,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static MashReferral_2 CreateMashReferral2(string? stage = null)
         {
             return new Faker<MashReferral_2>()
-                .RuleFor(x => x.Id, f => f.IndexVariable+100)
+                .RuleFor(x => x.Id, f => f.IndexVariable + 100)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
@@ -709,7 +709,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.FinalDecisionReferralCategory, f => f.Random.String2(20))
                 .RuleFor(x => x.FinalDecisionUrgentContactRequired, f => f.Random.Bool())
-                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent());
+                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.CreatedBy, f => f.Random.String2(20))
+                .RuleFor(x => x.LastModifiedAt, f => f.Date.Recent())
+                .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20));
         }
     }
 }
