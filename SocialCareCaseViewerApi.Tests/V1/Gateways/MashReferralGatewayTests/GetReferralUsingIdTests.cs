@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             _systemTime = new Mock<ISystemTime>();
             _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _databaseGateway.Object, _systemTime.Object, DatabaseContext);
         }
-        
+
         [Test]
         public void GetReferralUsingIdReturnsDomainMashReferral()
         {
