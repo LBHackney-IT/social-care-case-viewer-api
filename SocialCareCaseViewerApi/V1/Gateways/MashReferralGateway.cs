@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -71,8 +72,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public MashReferral_2? GetReferralUsingId_2(long requestId)
         {
             return _databaseContext.MashReferral_2
-                .FirstOrDefault(x => x.Id == requestId)
-                .Include(x => x.MashResident)
+                .Where(x => x.Id == requestId)
+                .Include(x => x.MashResidents)
+                .FirstOrDefault()
                 ?.ToDomain();
         }
 
@@ -85,7 +87,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 results = results.Where(x => x.Id == long.Parse(request.Id));
             }
 
-            return results.Select(m => m.ToDomain());
+            return results
+                .Include(x => x.MashResidents)
+                .Select(m => m.ToDomain());
         }
 
         public MashReferral_2 UpdateReferral(UpdateMashReferral request, long referralId)
