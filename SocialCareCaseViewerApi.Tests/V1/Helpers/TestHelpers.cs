@@ -17,6 +17,7 @@ using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 using MashReferral = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral_2;
+using MashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -717,10 +718,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static MashReferral_2 CreateMashReferral2(string? stage = null)
+        public static MashResident CreateMashResident(long? mashReferralId = null)
         {
-            return new Faker<MashReferral_2>()
+            return new Faker<MashResident>()
                 .RuleFor(x => x.Id, f => f.UniqueIndex)
+                .RuleFor(x => x.FirstName, f => f.Random.String2(50))
+                .RuleFor(x => x.LastName, f => f.Random.String2(50))
+                .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
+                .RuleFor(x => x.Gender, f => f.Random.String2(20))
+                .RuleFor(x => x.Ethnicity, f => f.Random.String2(50))
+                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(50))
+                .RuleFor(x => x.School, f => f.Random.String2(50))
+                .RuleFor(x => x.Postcode, f => f.Random.String2(50))
+                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
+        }
+
+        public static MashReferral_2 CreateMashReferral2(string? stage = null, long? mashReferralId = null)
+        {
+            var mashResidents = new List<MashResident>();
+
+            for (int i = 0; i < new Random().Next(8); i++)
+            {
+                mashResidents.Add(CreateMashResident(mashReferralId));
+            }
+
+            return new Faker<MashReferral_2>()
+                .RuleFor(x => x.Id, f => mashReferralId ?? f.UniqueIndex)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
@@ -741,7 +764,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.CreatedBy, f => f.Random.String2(20))
                 .RuleFor(x => x.LastModifiedAt, f => f.Date.Recent())
-                .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20));
+                .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20))
+                .RuleFor(x => x.MashResidents, mashResidents);
         }
 
 

@@ -624,7 +624,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FinalDecisionUrgentContactRequired = infrastructureReferral.FinalDecisionUrgentContactRequired,
                 ReferralCategory = infrastructureReferral.ReferralCategory,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
-                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
+                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI,
+                MashResidents = infrastructureReferral.MashResidents.Select(x => x.ToDomain())
             });
         }
 
