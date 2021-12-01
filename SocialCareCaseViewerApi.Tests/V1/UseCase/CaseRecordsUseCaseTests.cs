@@ -62,9 +62,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GetResidentCasesCallMongoGatewayAndReturnsDeletedCasesCount()
+        public void GetResidentCasesCallMongoGatewayAndReturnsDeletedCasesCountWhenRequested()
         {
-            var request = TestHelpers.CreateListCasesRequest(1L);
+            var request = TestHelpers.CreateListCasesRequest(1L, includeDeletedRecordsCount: true);
 
             var expectedResponse = new List<CaseSubmission>
             {
@@ -94,9 +94,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GetResidentsCasesCallsMongoGatewayToGetDeletedRecordsCountForTheGivenFilter()
+        public void GetResidentCasesDoesNotCallMongoGatewayToGetDeletedCasesCountIfNotRequested()
         {
-            var request = TestHelpers.CreateListCasesRequest(mosaicId: 1L);
+            var request = TestHelpers.CreateListCasesRequest(1L, includeDeletedRecordsCount: false);
+
+            var expectedResponse = new List<CaseSubmission>
+            {
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), deleted: true)
+            };
+
+            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
+
+            _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(() => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
+
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                    It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((expectedResponse, 2));
+
+            _mockMongoGateway.Setup(x =>
+                x.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                    It.IsAny<FilterDefinition<CaseSubmission>>()))
+                .Returns(1);
+
+            _caseRecordsUseCase.GetResidentCases(request);
+
+            _mockMongoGateway.Verify(x => x.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Never);
+
+        }
+
+        [Test]
+        public void GetResidentsCasesCallsMongoGatewayToGetDeletedRecordsCountForTheGivenFilterWhenRequested()
+        {
+            var request = TestHelpers.CreateListCasesRequest(mosaicId: 1L, includeDeletedRecordsCount: true);
 
             var expectedJsonFilter = "{ \"Residents._id\" : 1, \"SubmissionState\" : 1, \"Deleted\" : true }";
 
