@@ -612,6 +612,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = infrastructureReferral.Stage,
                 ReferralCreatedAt = infrastructureReferral.ReferralCreatedAt,
                 FinalDecision = infrastructureReferral.FinalDecision,
+                ContactDecisionCreatedAt = infrastructureReferral.ContactDecisionCreatedAt,
+                ContactDecisionUrgentContactRequired = infrastructureReferral.ContactDecisionUrgentContactRequired,
                 InitialDecision = infrastructureReferral.InitialDecision,
                 InitialDecisionReferralCategory = infrastructureReferral.InitialDecisionReferralCategory,
                 InitialDecisionCreatedAt = infrastructureReferral.InitialDecisionCreatedAt,
