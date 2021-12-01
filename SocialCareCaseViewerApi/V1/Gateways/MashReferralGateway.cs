@@ -11,7 +11,6 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
 
-
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -86,7 +85,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return results.Select(m => m.ToDomain());
         }
-
         public MashReferral_2 UpdateReferral(UpdateMashReferral request, long referralId)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
