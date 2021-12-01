@@ -726,10 +726,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.LastName, f => f.Random.String2(50))
                 .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
                 .RuleFor(x => x.Gender, f => f.Random.String2(20))
-                .RuleFor(x => x.Ethnicity, f => f.Random.String2(50))
-                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(50))
-                .RuleFor(x => x.School, f => f.Random.String2(50))
-                .RuleFor(x => x.Postcode, f => f.Random.String2(50))
+                .RuleFor(x => x.Ethnicity, f => f.Random.String2(33))
+                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(100))
+                .RuleFor(x => x.School, f => f.Random.String2(100))
+                .RuleFor(x => x.Postcode, f => f.Random.String2(20))
                 .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
         }
 
