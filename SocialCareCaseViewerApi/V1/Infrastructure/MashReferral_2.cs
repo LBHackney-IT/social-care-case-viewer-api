@@ -27,6 +27,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Stage { get; set; } = null!;
         [Column("referral_category")]
         public string? ReferralCategory { get; set; }
+        [Column("contact_decision_created_at")]
+        public DateTime? ContactCreatedAt { get; set; }
+        [Column("contact_decision_urgent_contact")]
+        public bool? ContactUrgentContactRequired { get; set; }
 
         [Column("initial_decision")]
         public string? InitialDecision { get; set; }
