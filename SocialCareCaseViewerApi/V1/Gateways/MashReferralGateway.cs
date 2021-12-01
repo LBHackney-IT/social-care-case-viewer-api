@@ -110,8 +110,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"contact\"");
                 }
 
-                referral.ContactCreatedAt = _systemTime.Now;
-                referral.ContactUrgentContactRequired = request.RequiresUrgentContact;
+                referral.ContactDecisionCreatedAt = _systemTime.Now;
+                referral.ContactDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "INITIAL";
             }
 
