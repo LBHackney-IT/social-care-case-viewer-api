@@ -828,9 +828,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteByQueryCallsGatewayToGetDeletedRecordsCount()
+        public void ExecuteByQueryCallsGatewayWithCorrectFilterToGetDeletedRecordsCountIfRequested()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 123);
+            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 123, includeDeletedRecordsCount: true);
             var bsonQuery = "{'Residents._id':" + request.PersonID + "}";
 
             var builder = Builders<CaseSubmission>.Filter;
@@ -852,9 +852,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ExecuteGetByQueryReturnsTheDeletedRecordsCount()
+        public void ExecuteGetByQueryReturnsDeletedRecordsCountIfRequested()
         {
-            var request = TestHelpers.CreateQueryCaseSubmissions("foo");
+            var request = TestHelpers.CreateQueryCaseSubmissions("foo", includeDeletedRecordsCount: true);
             var submissions = new List<CaseSubmission> { TestHelpers.CreateCaseSubmission() };
             const long totalCount = 20;
             const long deletedRecordsCount = 5;
@@ -874,6 +874,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 Count = totalCount,
                 DeletedItemsCount = deletedRecordsCount
             });
+        }
+
+        [Test]
+        public void ExecuteByQueryDoesNotCallGatewayToGetDeletedRecordsCountIfNotRequested()
+        {
+            var request = TestHelpers.CreateQueryCaseSubmissions(personID: 123, includeDeletedRecordsCount: false);
+
+            var collectionName = MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions];
+
+            _mockMongoGateway.Setup(x => x.GetRecordsCountByFilter(collectionName, It.IsAny<FilterDefinition<CaseSubmission>>()));
+
+            _formSubmissionsUseCase.ExecuteGetByQuery(request);
+
+            _mockMongoGateway.Verify(x => x.GetRecordsCountByFilter(collectionName, It.IsAny<FilterDefinition<CaseSubmission>>()), Times.Never);
         }
 
         [Test]
