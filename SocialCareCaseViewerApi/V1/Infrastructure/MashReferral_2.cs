@@ -69,5 +69,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("sccv_last_modified_by")]
         public string LastModifiedBy { get; set; }
+
+        public ICollection<MashResident> MashResidents { get; set; }
+
+
     }
 }

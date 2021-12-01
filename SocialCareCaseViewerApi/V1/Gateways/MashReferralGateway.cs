@@ -72,6 +72,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             return _databaseContext.MashReferral_2
                 .FirstOrDefault(x => x.Id == requestId)
+                .Include(x => x.MashResident)
                 ?.ToDomain();
         }
 
