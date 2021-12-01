@@ -14,6 +14,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using MashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
@@ -369,7 +370,25 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
                 FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
                 FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt,
-                RequestedSupport = mashReferral.RequestedSupport
+                RequestedSupport = mashReferral.RequestedSupport,
+                MashResidents = mashReferral.MashResidents.Select(x => x.ToDomain())
+            };
+        }
+
+        public static Domain.MashResident ToDomain(this MashResident resident)
+        {
+            return new Domain.MashResident
+            {
+                Id = resident.Id,
+                FirstName = resident.FirstName,
+                LastName = resident.LastName,
+                DateOfBirth = resident.DateOfBirth,
+                Gender = resident.Gender,
+                Ethnicity = resident.Ethnicity,
+                FirstLanguage = resident.FirstLanguage,
+                School = resident.School,
+                Address = resident.Address,
+                Postcode = resident.Postcode
             };
         }
     }

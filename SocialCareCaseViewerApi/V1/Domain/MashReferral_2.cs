@@ -26,5 +26,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string? FinalDecisionReferralCategory { get; set; }
         public bool? FinalDecisionUrgentContactRequired { get; set; }
         public DateTime? FinalDecisionCreatedAt { get; set; }
+        public IEnumerable<MashResident> MashResidents { get; set; } = null!;
     }
 }
