@@ -729,19 +729,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Ethnicity, f => f.Random.String2(33))
                 .RuleFor(x => x.FirstLanguage, f => f.Random.String2(100))
                 .RuleFor(x => x.School, f => f.Random.String2(100))
+                .RuleFor(x => x.Address, f => f.Random.String2(100))
                 .RuleFor(x => x.Postcode, f => f.Random.String2(20))
                 .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
         }
 
         public static MashReferral_2 CreateMashReferral2(string? stage = null, long? mashReferralId = null)
         {
-            var mashResidents = new List<MashResident>();
-
-            for (int i = 0; i < new Random().Next(8); i++)
-            {
-                mashResidents.Add(CreateMashResident(mashReferralId));
-            }
-
             return new Faker<MashReferral_2>()
                 .RuleFor(x => x.Id, f => mashReferralId ?? f.UniqueIndex)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
@@ -765,7 +759,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.CreatedBy, f => f.Random.String2(20))
                 .RuleFor(x => x.LastModifiedAt, f => f.Date.Recent())
                 .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20))
-                .RuleFor(x => x.MashResidents, mashResidents);
+                .RuleFor(x => x.MashResidents, new List<MashResident>());
         }
 
 
