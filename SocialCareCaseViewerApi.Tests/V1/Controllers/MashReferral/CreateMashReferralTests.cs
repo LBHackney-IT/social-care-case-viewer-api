@@ -45,5 +45,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().Be("Successfully created new contact referral");
         }
+
+        [Test]
+        public void WhenRequestIsInvalidReturns400()
+        {
+            const string exceptionMessage = "Referrer must have at least one character";
+            var referralRequest = TestHelpers.CreateNewMashReferralRequest();
+            referralRequest.Referrer = "";
+
+            var response = _mashReferralController.CreateNewContact(referralRequest) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(exceptionMessage);
+        }
     }
 }
