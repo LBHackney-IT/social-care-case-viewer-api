@@ -202,7 +202,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DateOfEvent = caseSubmission.DateOfEvent?.ToString("O") ?? caseSubmission.CreatedAt.ToString("O"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString(),
                 FormType = "flexible-form",
-                Title = caseSubmission.Title
+                Title = caseSubmission.Title,
+                Deleted = (bool) (caseSubmission.Deleted == null ? false : caseSubmission.Deleted),
+                DeletionDetails = listCasesRequest.IncludeDeletedRecords ? caseSubmission.DeletionDetails : null
             };
         }
 

@@ -10,6 +10,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -53,10 +54,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
+            long deletedRecordsCount = 0;
 
             if (request.MosaicId != null || request.WorkerEmail != null || request.FormName != null || request.FirstName != null || request.LastName != null)
             {
                 var filter = GenerateFilterDefinition(request);
+
+                var deletedRecordsFilter = GenerateFilterDefinition(request, addDeletedRecordsFilter: false);
+
+                deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(x => x.Deleted, true);
+
+                deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], deletedRecordsFilter);
 
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
@@ -80,11 +88,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return new CareCaseDataList
             {
                 Cases = careCaseData.ToList(),
-                NextCursor = nextCursor
+                NextCursor = nextCursor,
+                DeletedRecordsCount = deletedRecordsCount
             };
         }
 
-        public static FilterDefinition<CaseSubmission> GenerateFilterDefinition(ListCasesRequest request)
+        public static FilterDefinition<CaseSubmission> GenerateFilterDefinition(ListCasesRequest request, bool addDeletedRecordsFilter = true)
         {
             var builder = Builders<CaseSubmission>.Filter;
             var filter = builder.Empty;
@@ -125,6 +134,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                 x.SubmissionState, SubmissionState.Submitted);
+
+            if (addDeletedRecordsFilter)
+            {
+                if (!request.IncludeDeletedRecords)
+                {
+                    filter &= Builders<CaseSubmission>.Filter.Ne(x => x.Deleted, true);
+                }
+            }
 
             return filter;
         }
