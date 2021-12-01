@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             _systemTime = new Mock<ISystemTime>();
             _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _databaseGateway.Object, _systemTime.Object, DatabaseContext);
         }
-        
+
         [Test]
         public void GetReferralUsingIdReturnsDomainMashReferral()
         {
@@ -63,7 +63,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         [Test]
         public void GetReferralFromPostgresUsingIdReturnsDomainMashReferral()
         {
-            var referral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            const long referralId = 1L;
+            var referral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, mashReferralId: referralId);
+
+            for (var i = 0; i < 8; i++)
+            {
+                MashResidentHelper.SaveMashResidentToDatabase(DatabaseContext, referralId);
+            }
 
             var response = _mashReferralGateway.GetReferralUsingId_2(referral.Id);
 
