@@ -563,22 +563,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 Id = domainReferral.Id,
                 Referrer = domainReferral.Referrer,
+                RequestedSupport = domainReferral.RequestedSupport,
                 Stage = domainReferral.Stage,
                 ReferralCreatedAt = domainReferral.ReferralCreatedAt.ToString("O"),
-                FinalDecision = domainReferral.FinalDecision,
+                ReferralDocumentURI = domainReferral.ReferralDocumentURI,
+                ReferralCategory = domainReferral.ReferralCategory,
+                ContactDecisionCreatedAt = domainReferral.ContactDecisionCreatedAt?.ToString("O"),
+                ContactDecisionUrgentContactRequired = domainReferral.ContactDecisionUrgentContactRequired,
                 InitialDecision = domainReferral.InitialDecision,
                 InitialDecisionReferralCategory = domainReferral.InitialDecisionReferralCategory,
-                InitialDecisionCreatedAt = domainReferral.InitialDecisionCreatedAt?.ToString("O"),
                 InitialDecisionUrgentContactRequired = domainReferral.InitialDecisionUrgentContactRequired,
+                InitialDecisionCreatedAt = domainReferral.InitialDecisionCreatedAt?.ToString("O"),
                 ScreeningDecision = domainReferral.ScreeningDecision,
-                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
                 ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
+                FinalDecision = domainReferral.FinalDecision,
                 FinalDecisionReferralCategory = domainReferral.FinalDecisionReferralCategory,
-                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O"),
                 FinalDecisionUrgentContactRequired = domainReferral.FinalDecisionUrgentContactRequired,
-                ReferralCategory = domainReferral.ReferralCategory,
-                RequestedSupport = domainReferral.RequestedSupport,
-                ReferralDocumentURI = domainReferral.ReferralDocumentURI
+                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O")
             });
         }
 

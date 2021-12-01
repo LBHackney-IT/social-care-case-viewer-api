@@ -12,7 +12,6 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
 
-
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
@@ -31,7 +30,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseGateway = databaseGateway;
             _systemTime = systemTime;
             _databaseContext = databaseContext;
-
         }
 
         public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter)

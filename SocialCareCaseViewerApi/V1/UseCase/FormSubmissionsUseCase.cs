@@ -184,10 +184,15 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var filter = GenerateFilter(request);
 
-            var deletedRecordsFilter = GenerateFilter(request, addDeletedRecordsFilter: false);
-            deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
+            long? deletedRecordsCount = null;
 
-            var deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(_collectionName, deletedRecordsFilter);
+            if (request.IncludeDeletedRecordsCount)
+            {
+                var deletedRecordsFilter = GenerateFilter(request, addDeletedRecordsFilter: false);
+                deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(s => s.Deleted, true);
+
+                deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(_collectionName, deletedRecordsFilter);
+            }
 
             var pagination = new Pagination { Page = request.Page, Size = request.Size };
 

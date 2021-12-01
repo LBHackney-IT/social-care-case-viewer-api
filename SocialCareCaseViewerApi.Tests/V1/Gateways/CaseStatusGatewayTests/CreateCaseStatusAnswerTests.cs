@@ -129,7 +129,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
 
             caseStatusAnswers.Count.Should().Be(5);
 
-            var previousActiveAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId && x.Option != LACAnswerOption.EpisodeReason);
+            var previousActiveAnswers = caseStatusAnswers.Where(x => x.GroupId == groupId && x.Option != CaseStatusAnswerOption.EpisodeReason);
 
             previousActiveAnswers.All(x => x.EndDate != null).Should().BeTrue();
             previousActiveAnswers.All(x => x.EndDate == request.StartDate);
@@ -215,7 +215,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests
             var updatedCaseStatus = DatabaseContext.CaseStatuses.FirstOrDefault();
             updatedCaseStatus.Answers.Where(x => x.GroupId == groupId).Count().Should().Be(3);
 
-            var episodeEndReasonAnswer = updatedCaseStatus.Answers.Where(x => x.GroupId == groupId && x.Option == LACAnswerOption.EpisodeReason && x.Value == LACAnswerValue.X1).FirstOrDefault();
+            var episodeEndReasonAnswer = updatedCaseStatus.Answers.Where(x => x.GroupId == groupId && x.Option == CaseStatusAnswerOption.EpisodeReason && x.Value == CaseStatusAnswerValue.X1).FirstOrDefault();
             episodeEndReasonAnswer.Should().NotBeNull();
             episodeEndReasonAnswer.StartDate.Should().Be(currentActiveAnswersStartDate);
             episodeEndReasonAnswer.EndDate.Should().Be(request.StartDate);
