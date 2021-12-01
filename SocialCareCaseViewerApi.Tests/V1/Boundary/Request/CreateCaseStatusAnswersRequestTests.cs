@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             response.Errors.Should().Contain(e => e.ErrorMessage == "'caseStatusId' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'createdBy' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'answers' must be provided");
-            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide either one or two answers only");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must be provided");
             response.Errors.Should().Contain(e => e.ErrorMessage == "'startDate' must have a valid value");
         }
@@ -55,9 +55,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        [TestCase(1)]
         [TestCase(3)]
-        public void WhenAnswerCountIsNotTwoReturnsErrorWithMessage(int answerCount)
+        [TestCase(4)]
+        public void WhenAnswerCountIsNotOneOrTwoReturnsErrorWithMessage(int answerCount)
         {
             var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: answerCount, max: answerCount);
 
@@ -66,7 +66,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var response = _createCaseStatusAnswerRequestValidator.Validate(request);
 
             response.IsValid.Should().BeFalse();
-            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide two answers only");
+            response.Errors.Should().Contain(e => e.ErrorMessage == "Provide either one or two answers only");
+        }
+
+        [Test]
+        public void WhenAnswerCountIsOneReturnsItIsValid()
+        {
+            var answers = CaseStatusHelper.CreateCaseStatusRequestAnswers(min: 1, max: 1);
+
+            var request = CaseStatusHelper.CreateCaseStatusAnswerRequest(answers: answers);
+
+            var response = _createCaseStatusAnswerRequestValidator.Validate(request);
+
+            response.IsValid.Should().BeTrue();
         }
 
         [Test]

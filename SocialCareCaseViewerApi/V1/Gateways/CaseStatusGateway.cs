@@ -141,41 +141,33 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var caseStatus = _databaseContext.CaseStatuses.Include(cs => cs.Answers).FirstOrDefault(x => x.Id == request.CaseStatusId);
 
             ValidateUpdate(request, caseStatus);
+            var caseStatusType = caseStatus.Type.ToLower();
 
             //end date provided
             if (request.EndDate != null)
             {
                 caseStatus.EndDate = request.EndDate;
 
-                switch (caseStatus.Type.ToLower())
+                switch (caseStatusType)
                 {
                     case "cp":
-                        var activeCPAnswers = caseStatus.Answers.Where(x => x.DiscardedAt == null);
-
-                        foreach (var a in activeCPAnswers)
-                        {
-                            a.EndDate = request.EndDate;
-                        }
-
-                        break;
-
                     case "lac":
-                        var activeLACAnswers = caseStatus
-                                                    .Answers
-                                                    .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
+                        var activeStatusAnswers = caseStatus
+                                                     .Answers
+                                                     .Where(x => x.DiscardedAt == null && (x.EndDate == null || x.EndDate > DateTime.Today));
 
                         //discard future ones
-                        foreach (var a in activeLACAnswers.Where(x => x.StartDate > DateTime.Today))
+                        foreach (var a in activeStatusAnswers.Where(x => x.StartDate > DateTime.Today))
                         {
                             a.DiscardedAt = _systemTime.Now;
                             a.LastModifiedBy = request.EditedBy;
                         }
 
                         //save start date and group id from the current answer and use them in the end reason
-                        var activeAnswer = activeLACAnswers.Where(x => x.StartDate <= DateTime.Today).First();
+                        var activeAnswer = activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today).First();
 
                         //end current ones
-                        foreach (var a in activeLACAnswers.Where(x => x.StartDate <= DateTime.Today))
+                        foreach (var a in activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today))
                         {
                             a.EndDate = request.EndDate;
                             a.LastModifiedBy = request.EditedBy;
@@ -188,7 +180,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //end date not provided
             else
             {
-                switch (caseStatus.Type.ToLower())
+                switch (caseStatusType)
                 {
                     case "cin":
                         caseStatus.Notes = request.Notes;
@@ -199,19 +191,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         break;
 
                     case "cp":
-                        caseStatus.StartDate = (DateTime) request.StartDate;
-
-                        //discard current answers
-                        foreach (var a in caseStatus.Answers)
-                        {
-                            a.DiscardedAt = _systemTime.Now;
-                            a.LastModifiedBy = request.EditedBy;
-                        }
-                        //add new ones
-                        AddNewAnswers(request, caseStatus);
-                        break;
-
                     case "lac":
+                        var previousAnswersToCopyAndDiscardCount = caseStatusType == "cp" ? 1 : 2;
+
                         var existingAnswerGroups = caseStatus
                                                 .Answers
                                                 .Where(x => x.DiscardedAt == null)
@@ -246,7 +228,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                         var previousCaseStatusAnswers = caseStatus.Answers
                                                 .Where(x => x.DiscardedAt == null && x.EndDate != null && x.EndDate <= DateTime.Today)
-                                                .OrderByDescending(x => x.StartDate).Take(2).ToList();
+                                                .OrderByDescending(x => x.StartDate).Take(previousAnswersToCopyAndDiscardCount).ToList();
 
                         CopyAndDiscardPreviousAnswers(request, caseStatus, previousCaseStatusAnswers);
 
@@ -272,7 +254,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new InvalidEndDateException($"Invalid end date.");
             }
         }
-
         private void ReplaceCurrentActiveAnswers(UpdateCaseStatusRequest request, Infrastructure.CaseStatus caseStatus, List<CaseStatusAnswer> caseStatusAnswers)
         {
             Guid identifier = Guid.NewGuid();
@@ -412,8 +393,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     CreatedBy = request.CreatedBy,
                     EndDate = request.StartDate,
                     StartDate = activeAnswers.First().StartDate,
-                    Option = LACAnswerOption.EpisodeReason,
-                    Value = LACAnswerValue.X1,
+                    Option = CaseStatusAnswerOption.EpisodeReason,
+                    Value = CaseStatusAnswerValue.X1,
                     GroupId = activeAnswers.First().GroupId
                 });
 
@@ -449,11 +430,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
     }
 
-    public static class LACAnswerOption
+    public static class CaseStatusAnswerOption
     {
         public const string EpisodeReason = "episodeReason";
     }
-    public static class LACAnswerValue
+    public static class CaseStatusAnswerValue
     {
         public const string X1 = "X1";
     }

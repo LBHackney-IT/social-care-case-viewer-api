@@ -121,7 +121,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.CaseStatus.LAC
 
             updatedCaseStatusWithScheduledStatusResponse.Count.Should().Be(1);
             updatedCaseStatusWithScheduledStatusResponse.Single().Answers.Count.Should().Be(5);
-            updatedCaseStatusWithScheduledStatusResponse.Single().Answers.Where(x => x.Option != LACAnswerOption.EpisodeReason).Last().StartDate.Should().Be(addScheduledAnswersRequest.StartDate);
+            updatedCaseStatusWithScheduledStatusResponse.Single().Answers.Where(x => x.Option != CaseStatusAnswerOption.EpisodeReason).Last().StartDate.Should().Be(addScheduledAnswersRequest.StartDate);
 
             //patch case status to end it
             var endRequest = TestHelpers.CreateUpdateCaseStatusRequest(endDate: new DateTime(2000, 01, 11), email: _worker.Email, caseStatusId: caseStatusId, min: 1, max: 1);
