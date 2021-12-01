@@ -13,6 +13,8 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string ReferralDocumentURI { get; set; } = null!;
         public string Stage { get; set; } = null!;
         public string? ReferralCategory { get; set; }
+        public DateTime? ContactDecisionCreatedAt { get; set; }
+        public bool? ContactDecisionUrgentContactRequired { get; set; }
         public string? InitialDecision { get; set; }
         public string? InitialDecisionReferralCategory { get; set; }
         public bool? InitialDecisionUrgentContactRequired { get; set; }

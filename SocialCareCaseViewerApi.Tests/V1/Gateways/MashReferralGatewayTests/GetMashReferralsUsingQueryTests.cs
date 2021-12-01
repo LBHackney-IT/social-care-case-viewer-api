@@ -9,6 +9,7 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
@@ -17,13 +18,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
     public class GetMashReferralsUsingQueryTests : DatabaseTests
     {
         private Mock<IMongoGateway> _mongoGateway = null!;
+        private Mock<IDatabaseGateway> _databaseGateway = null!;
+        private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
 
         [SetUp]
         public void Setup()
         {
             _mongoGateway = new Mock<IMongoGateway>();
-            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, DatabaseContext);
+            _databaseGateway = new Mock<IDatabaseGateway>();
+            _systemTime = new Mock<ISystemTime>();
+            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _databaseGateway.Object, _systemTime.Object, DatabaseContext);
+
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
