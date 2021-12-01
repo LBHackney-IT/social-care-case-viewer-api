@@ -67,6 +67,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _mongoGateway.InsertRecord(_collectionName, referral);
         }
 
+        public void CreateReferral(CreateReferralRequest request){
+            var referral = new MashReferral_2
+   
+            {
+                Referrer = request.Referrer,
+                RequestedSupport = request.RequestedSupport,
+                ReferralDocumentURI = request.ReferralUri,
+                Stage = "CONTACT",
+                MashResidents = new List<MashResident>()
+            };
+
+
+        }
+
         public MashReferral_2? GetReferralUsingId_2(long requestId)
         {
             return _databaseContext.MashReferral_2

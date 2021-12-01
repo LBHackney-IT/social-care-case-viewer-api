@@ -46,17 +46,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public void CreateNewMashReferral(CreateReferralRequest request)
         {
-            var newContact = new MashReferral
-            {
-                Referrer = request.Referrer,
-                RequestedSupport = request.RequestedSupport,
-                ReferralDocumentURI = request.ReferralUri,
-                Clients = request.Clients,
-                Stage = "CONTACT",
-                CreatedAt = _systemTime.Now
-            };
-
-            _mashReferralGateway.InsertDocument(newContact);
+            _mashReferralGateway.CreateReferral(request);
         }
 
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
