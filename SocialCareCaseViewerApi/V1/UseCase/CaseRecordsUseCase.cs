@@ -54,17 +54,21 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             var (response, totalCount) = _processDataGateway.GetProcessData(request, ncId);
             var allCareCaseData = response.ToList();
-            long deletedRecordsCount = 0;
+            long? deletedRecordsCount = null;
 
             if (request.MosaicId != null || request.WorkerEmail != null || request.FormName != null || request.FirstName != null || request.LastName != null)
             {
                 var filter = GenerateFilterDefinition(request);
 
-                var deletedRecordsFilter = GenerateFilterDefinition(request, addDeletedRecordsFilter: false);
+                if (request.IncludeDeletedRecordsCount)
+                {
+                    var deletedRecordsFilter = GenerateFilterDefinition(request, addDeletedRecordsFilter: false);
 
-                deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(x => x.Deleted, true);
+                    deletedRecordsFilter &= Builders<CaseSubmission>.Filter.Eq(x => x.Deleted, true);
 
-                deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], deletedRecordsFilter);
+                    deletedRecordsCount = _mongoGateway.GetRecordsCountByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], deletedRecordsFilter);
+
+                }
 
                 var caseSubmissions = _mongoGateway
                     .LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions], filter, null)
