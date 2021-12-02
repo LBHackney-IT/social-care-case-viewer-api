@@ -27,10 +27,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway = mashReferralGateway;
         }
 
-        public Boundary.Response.MashReferral? GetMashReferralUsingId(string requestId)
+        public Boundary.Response.MashReferral_2? GetMashReferralUsingId(long requestId)
         {
             return _mashReferralGateway
-                .GetReferralUsingId(requestId)
+                .GetReferralUsingId_2(requestId)
                 ?.ToResponse();
         }
 

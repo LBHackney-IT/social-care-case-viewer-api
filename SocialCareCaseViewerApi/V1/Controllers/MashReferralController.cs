@@ -31,8 +31,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a server side error getting the mash referrals</response>
         [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{referralId}")]
-        public IActionResult GetMashReferral(string referralId)
+        [Route("{referralId:long}")]
+        public IActionResult GetMashReferral(long referralId)
         {
             var referral = _mashReferralUseCase.GetMashReferralUsingId(referralId);
 
@@ -43,8 +43,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return NotFound();
         }
-
-
 
         /// <summary>
         /// Get a list of mash referrals based on supplied query params

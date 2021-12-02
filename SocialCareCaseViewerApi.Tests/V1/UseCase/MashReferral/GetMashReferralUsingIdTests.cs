@@ -35,19 +35,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void GettingAMashReferralReturnsAMashReferralResponseObject()
         {
-            var referral = TestHelpers.CreateMashReferral().ToDomain();
+            var referral = TestHelpers.CreateMashReferral2().ToDomain();
             _mashReferralGateway
-                .Setup(x => x.GetReferralUsingId(referral.Id))
+                .Setup(x => x.GetReferralUsingId_2(referral.Id))
                 .Returns(referral);
 
             var response = _mashReferralUseCase.GetMashReferralUsingId(referral.Id);
 
-            response?.Id.Should().BeEquivalentTo(referral.Id);
+            response?.Id.Should().Be(referral.Id);
             response?.Referrer.Should().BeEquivalentTo(referral.Referrer);
             response?.RequestedSupport.Should().BeEquivalentTo(referral.RequestedSupport);
-            response?.AssignedTo.Should().BeEquivalentTo(referral.AssignedTo?.ToResponse());
-            response?.CreatedAt.Should().BeEquivalentTo(referral.CreatedAt.ToString("O"));
-            response?.Clients.Should().BeEquivalentTo(referral.Clients);
+            response?.ReferralCreatedAt.Should().BeEquivalentTo(referral.ReferralCreatedAt.ToString("O"));
             response?.ReferralDocumentURI.Should().BeEquivalentTo(referral.ReferralDocumentURI);
             response?.Stage.Should().BeEquivalentTo(referral.Stage);
             response?.InitialDecision.Should().BeEquivalentTo(referral.InitialDecision);
@@ -55,17 +53,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             response?.ScreeningCreatedAt.Should().BeEquivalentTo(referral.ScreeningCreatedAt?.ToString("O"));
             response?.ScreeningUrgentContactRequired.Should().Be(referral.ScreeningUrgentContactRequired);
             response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
-            response?.InitialReferralCategory.Should().BeEquivalentTo(referral.InitialReferralCategory);
         }
-
-
 
         [Test]
         public void NotGettingAMashReferralReturnsNull()
         {
-            const string nonExistentId = "123abc";
+            const long nonExistentId = 123L;
             _mashReferralGateway
-                .Setup(x => x.GetReferralUsingId(nonExistentId));
+                .Setup(x => x.GetReferralUsingId_2(nonExistentId));
 
             var response = _mashReferralUseCase.GetMashReferralUsingId(nonExistentId);
 
