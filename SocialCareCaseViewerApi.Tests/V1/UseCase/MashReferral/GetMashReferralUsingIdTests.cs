@@ -29,6 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
 
             _databaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>())).Returns(_worker);
+
         }
 
         [Test]
@@ -56,6 +57,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
             response?.InitialReferralCategory.Should().BeEquivalentTo(referral.InitialReferralCategory);
         }
+
+
 
         [Test]
         public void NotGettingAMashReferralReturnsNull()

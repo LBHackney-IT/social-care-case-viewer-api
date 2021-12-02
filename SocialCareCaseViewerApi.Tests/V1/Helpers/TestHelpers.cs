@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bogus;
 using MongoDB.Bson;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -17,6 +16,7 @@ using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
 using MashReferral = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
+using MashReferral_2 = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral_2;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -484,7 +484,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? formId = null,
             DateTime? dateOfEvent = null,
             DateTime? submittedAt = null,
-            string? title = null)
+            string? title = null,
+            bool? deleted = null)
         {
             workers ??= new List<Worker> { CreateWorker() };
             residents ??= new List<InfrastructurePerson> { CreatePerson(residentId) };
@@ -505,20 +506,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.FormAnswers, new Dictionary<string, string>() { { "foo", "bar" } })
                 .RuleFor(s => s.DateOfEvent, dateOfEvent)
                 .RuleFor(s => s.SubmittedAt, submittedAt)
-                .RuleFor(s => s.Title, title);
+                .RuleFor(s => s.Title, title)
+                .RuleFor(s => s.Deleted, deleted)
+                .RuleFor(s => s.DeletionDetails, f => deleted == true ? new DeletionDetails()
+                {
+                    DeletedAt = f.Date.Recent(),
+                    DeletedBy = f.Person.Email,
+                    DeleteReason = f.Random.String2(200),
+                    DeleteRequestedBy = f.Person.FullName
+                } : null
+                );
         }
 
         public static ListCasesRequest CreateListCasesRequest(
             long? mosaicId = null,
             string? firstName = null,
             string? lastName = null,
-            string? workerEmail = null)
+            string? workerEmail = null,
+            bool? includeDeletedRecords = null,
+            bool? includeDeletedRecordsCount = null)
         {
             return new Faker<ListCasesRequest>()
                 .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString())
                 .RuleFor(r => r.FirstName, firstName)
                 .RuleFor(r => r.LastName, lastName)
-                .RuleFor(r => r.WorkerEmail, workerEmail);
+                .RuleFor(r => r.WorkerEmail, workerEmail)
+                .RuleFor(r => r.IncludeDeletedRecords, includeDeletedRecords ?? false)
+                .RuleFor(r => r.IncludeDeletedRecordsCount, includeDeletedRecordsCount ?? false);
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
@@ -533,6 +547,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.RejectionReason, rejectionReason);
+        }
+
+        public static DeleteCaseSubmissionRequest DeleteCaseSubmissionRequest(
+            string? deletedBy = null,
+            string? deletedReason = null,
+            string? deleteRequestedBy = null
+        )
+        {
+            return new Faker<DeleteCaseSubmissionRequest>()
+                .RuleFor(x => x.DeletedBy, f => deletedBy ?? f.Person.Email)
+                .RuleFor(x => x.DeleteReason, f => deletedReason ?? f.Random.String2(100))
+                .RuleFor(x => x.DeleteRequestedBy, f => deleteRequestedBy ?? f.Person.FullName);
         }
 
         public static CaseStatus CreateCaseStatus(
@@ -569,7 +595,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? ageContext = null,
             string? workerEmail = null,
             long? personID = null,
-            bool? pruneUnfinished = null)
+            bool? pruneUnfinished = null,
+            bool? includeDeletedRecords = null,
+            bool? includeDeletedRecordsCount = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -583,7 +611,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.AgeContext, ageContext)
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID)
-                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool());
+                .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeDeletedRecords, f => includeDeletedRecords ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeDeletedRecordsCount, f => includeDeletedRecordsCount ?? f.Random.Bool());
         }
 
         private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
@@ -652,6 +682,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
                 .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ContactCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ContactUrgentContactRequired, f => f.Random.Bool())
                 .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
                 .RuleFor(x => x.InitialCreatedAt, f => f.Date.Recent())
                 .RuleFor(x => x.InitialUrgentContactRequired, f => f.Random.Bool())
@@ -689,6 +721,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
                 .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100));
 
+        }
+
+        public static MashReferral_2 CreateMashReferral2(string? stage = null)
+        {
+            return new Faker<MashReferral_2>()
+                .RuleFor(x => x.Id, f => f.UniqueIndex)
+                .RuleFor(x => x.Referrer, f => f.Random.String2(20))
+                .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
+                .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20))
+                .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
+                .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
+                .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
+                .RuleFor(x => x.InitialDecisionReferralCategory, f => f.Random.String2(20))
+                .RuleFor(x => x.InitialDecisionUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.InitialDecisionCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(100))
+                .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
+                .RuleFor(x => x.FinalDecisionReferralCategory, f => f.Random.String2(20))
+                .RuleFor(x => x.FinalDecisionUrgentContactRequired, f => f.Random.Bool())
+                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
+                .RuleFor(x => x.CreatedBy, f => f.Random.String2(20))
+                .RuleFor(x => x.LastModifiedAt, f => f.Date.Recent())
+                .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20));
+        }
+
+
+        public static CreateReferralRequest CreateNewMashReferralRequest(
+            string? referrer = null,
+            string? requestedSupport = null,
+            string? referralUri = null,
+            List<string>? clients = null)
+        {
+            return new Faker<CreateReferralRequest>()
+                .RuleFor(x => x.Clients, f => clients ?? new List<string> { f.Random.String2(20) })
+                .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
+                .RuleFor(x => x.RequestedSupport, f => requestedSupport ?? f.Random.String2(20))
+                .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20));
         }
     }
 }

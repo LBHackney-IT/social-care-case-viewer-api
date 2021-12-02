@@ -118,6 +118,21 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public UpdateSubmissionException(string message) : base(message) { }
     }
 
+    public class DeleteSubmissionException : Exception
+    {
+        public DeleteSubmissionException(string message) : base(message) { }
+    }
+
+    public class SubmissionAlreadyDeletedException : Exception
+    {
+        public SubmissionAlreadyDeletedException(string message) : base(message) { }
+    }
+
+    public class UnsupportedSubmissionTypeException : Exception
+    {
+        public UnsupportedSubmissionTypeException(string message) : base(message) { }
+    }
+
     public class PersonalRelationshipTypeNotFoundException : Exception
     {
         public PersonalRelationshipTypeNotFoundException(string message) : base(message) { }
@@ -177,6 +192,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class InvalidCaseStatusUpdateRequestException : Exception
     {
         public InvalidCaseStatusUpdateRequestException(string message) : base(message) { }
+    }
+
+    public class InvalidCaseStatusAnswersRequestException : Exception
+    {
+        public InvalidCaseStatusAnswersRequestException(string message) : base(message) { }
     }
 
     public class MashReferralNotFoundException : Exception

@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
 
         public static Domain.CaseSubmission ToDomain(this CaseSubmission caseSubmission,
-            bool includeFormAnswers = true, bool includeEditHistory = true, bool pruneUnfinished = false)
+            bool includeFormAnswers = true, bool includeEditHistory = true, bool pruneUnfinished = false, bool includeDeletionDetails = true)
         {
             var mapSubmissionStateToString = new Dictionary<SubmissionState, string> {
                 { SubmissionState.InProgress, "In progress" },
@@ -148,6 +148,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     LastEdited = caseSubmission.EditHistory.Last().EditTime,
                     CompletedSteps = caseSubmission.FormAnswers.Count,
                     Title = caseSubmission.Title,
+                    Deleted = caseSubmission.Deleted ?? false,
+                    DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
                 };
             }
 
@@ -176,7 +178,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FormAnswers = includeFormAnswers ? caseSubmission.FormAnswers : null,
                 Title = caseSubmission.Title,
                 LastEdited = caseSubmission.EditHistory.Last().EditTime,
-                CompletedSteps = caseSubmission.FormAnswers.Count
+                CompletedSteps = caseSubmission.FormAnswers.Count,
+                Deleted = caseSubmission.Deleted ?? false,
+                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
             };
         }
 
@@ -198,7 +202,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DateOfEvent = caseSubmission.DateOfEvent?.ToString("O") ?? caseSubmission.CreatedAt.ToString("O"),
                 CaseFormUrl = caseSubmission.SubmissionId.ToString(),
                 FormType = "flexible-form",
-                Title = caseSubmission.Title
+                Title = caseSubmission.Title,
+                Deleted = (bool) (caseSubmission.Deleted == null ? false : caseSubmission.Deleted),
+                DeletionDetails = listCasesRequest.IncludeDeletedRecords ? caseSubmission.DeletionDetails : null
             };
         }
 
@@ -325,6 +331,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Stage = mashReferral.Stage,
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true),
                 CreatedAt = mashReferral.CreatedAt,
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = mashReferral.ContactCreatedAt,
                 InitialDecision = mashReferral.InitialDecision,
                 InitialCreatedAt = mashReferral.InitialCreatedAt,
                 InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
@@ -338,6 +346,32 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI,
                 InitialReferralCategory = mashReferral.InitialReferralCategory
+            };
+        }
+        public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral)
+        {
+            return new Domain.MashReferral_2
+            {
+                Id = mashReferral.Id,
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
+                Referrer = mashReferral.Referrer,
+                Stage = mashReferral.Stage,
+                ReferralCategory = mashReferral.ReferralCategory,
+                ReferralCreatedAt = mashReferral.ReferralCreatedAt,
+                ContactDecisionCreatedAt = mashReferral.ContactDecisionCreatedAt,
+                ContactDecisionUrgentContactRequired = mashReferral.ContactDecisionUrgentContactRequired,
+                InitialDecision = mashReferral.InitialDecision,
+                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
+                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
+                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt,
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
+                FinalDecision = mashReferral.FinalDecision,
+                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
+                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
+                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt,
+                RequestedSupport = mashReferral.RequestedSupport
             };
         }
     }
