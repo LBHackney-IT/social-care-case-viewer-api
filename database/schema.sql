@@ -853,8 +853,6 @@ ALTER TABLE dbo.sccv_person_case_status_answers
   created_at timestamp,
   referral_doc_url varchar(256),
   stage varchar(30),
-  contact_decision_created_at timestamp,
-  contact_decision_urgent_contact bool,
   referral_category varchar(256),
   initial_decision varchar(256),
   initial_decision_referral_category varchar(256),
@@ -897,3 +895,7 @@ ALTER TABLE IF EXISTS dbo.sccv_person_case_status
 
 ALTER TABLE IF EXISTS dbo.sccv_person_case_status
 	ALTER end_date type timestamp;
+
+alter table if exists dbo.ref_mash_referrals
+add column contact_decision_created_at timestamp,
+add column contact_decision_urgent_contact bool;
