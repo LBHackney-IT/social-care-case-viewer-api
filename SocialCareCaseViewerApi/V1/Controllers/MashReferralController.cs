@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Referrals returned</response>
         /// <response code="400">Invalid request</response>
         /// <response code="500">There was a server side error getting the mash referrals</response>
-        [ProducesResponseType(typeof(List<MashReferral>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MashReferral_2>), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetMashReferrals([FromQuery] QueryMashReferrals request)
         {

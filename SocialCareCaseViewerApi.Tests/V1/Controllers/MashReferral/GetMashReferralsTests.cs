@@ -28,10 +28,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void GetMashReferralsReturnsAListOfMashReferralResponseWith200StatusResponse()
         {
             var request = TestHelpers.CreateQueryMashReferral();
-            var referral1 = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
-            var referral2 = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
+            var referral1 = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
+            var referral2 = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
             var referralResponse =
-                new List<SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral> { referral1, referral2 };
+                new List<SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2> { referral1, referral2 };
 
             _mashReferralUseCase
                 .Setup(x => x.GetMashReferrals(request))
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void GetMashReferralsReturnsAnEmptyListOfMashReferralResponseWith200StatusResponseWheNoReferralsExist()
         {
             var request = TestHelpers.CreateQueryMashReferral();
-            var referralResponse = new List<SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral>();
+            var referralResponse = new List<SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2>();
 
             _mashReferralUseCase
                 .Setup(x => x.GetMashReferrals(request))

@@ -788,7 +788,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             var mashResidentsRequests = new List<MashResidentRequest>();
 
-            for (var i = 0; i < new Random().Next(10); i++)
+            for (var i = 0; i < new Random().Next(10) + 1; i++)
             {
                 mashResidentsRequests.Add(CreateNewMashResidentRequest());
             }

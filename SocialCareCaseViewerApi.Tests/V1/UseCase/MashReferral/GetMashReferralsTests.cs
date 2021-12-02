@@ -37,11 +37,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void GetMashReferralsReturnsAListOfMashReferralResponse()
         {
             var query = TestHelpers.CreateQueryMashReferral();
-            var gatewayResponse = TestHelpers.CreateMashReferral().ToDomain();
+            var gatewayResponse = TestHelpers.CreateMashReferral2().ToDomain();
 
             _mashReferralGateway
-                .Setup(x => x.GetReferralsUsingFilter(It.IsAny<FilterDefinition<SocialCareCaseViewerApi.V1.Infrastructure.MashReferral>>()))
-                .Returns(new List<SocialCareCaseViewerApi.V1.Domain.MashReferral> { gatewayResponse });
+                .Setup(x => x.GetReferralsUsingQuery(query))
+                .Returns(new List<SocialCareCaseViewerApi.V1.Domain.MashReferral_2> { gatewayResponse });
 
             var response = _mashReferralUseCase.GetMashReferrals(query);
 

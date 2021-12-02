@@ -35,12 +35,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
 
 
-        public IEnumerable<Boundary.Response.MashReferral> GetMashReferrals(QueryMashReferrals request)
+        public IEnumerable<Boundary.Response.MashReferral_2> GetMashReferrals(QueryMashReferrals request)
         {
-            var filter = GenerateFilter(request);
-
             return _mashReferralGateway
-                .GetReferralsUsingFilter(filter)
+                .GetReferralsUsingQuery(request)
                 .Select(x => x.ToResponse());
         }
 
