@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -271,19 +269,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway.InsertDocument(referral10);
             _mashReferralGateway.InsertDocument(referral11);
             _mashReferralGateway.InsertDocument(referral12);
-        }
-
-        public static FilterDefinition<MashReferral> GenerateFilter(QueryMashReferrals request)
-        {
-            var builder = Builders<MashReferral>.Filter;
-            var filter = builder.Empty;
-
-            if (request.Id != null)
-            {
-                filter &= Builders<MashReferral>.Filter.Eq(x => x.Id, ObjectId.Parse(request.Id));
-            }
-
-            return filter;
         }
     }
 }

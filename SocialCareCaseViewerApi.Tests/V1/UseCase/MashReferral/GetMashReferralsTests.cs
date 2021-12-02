@@ -22,7 +22,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
-        private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void Setup()
@@ -46,27 +45,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             var response = _mashReferralUseCase.GetMashReferrals(query);
 
             response.ToList()[0].Should().BeEquivalentTo(gatewayResponse.ToResponse());
-        }
-
-        [Test]
-        public void FilterWillQueryForEverythingIfNoValuesPassed()
-        {
-            var filter = MashReferralUseCase.GenerateFilter(new QueryMashReferrals());
-            const string expectedJson = "{ }";
-
-            filter.RenderToJson().Should().Be(expectedJson);
-        }
-
-        [Test]
-        public void FilterWillQueryReferralId()
-        {
-            var mashReferralId = _faker.Random.String2(24, "0123456789abcdef");
-            var query = TestHelpers.CreateQueryMashReferral(mashReferralId);
-            var expectedJson = "{ \"_id\" : ObjectId(\"" + mashReferralId + "\") }";
-
-            var filter = MashReferralUseCase.GenerateFilter(query);
-
-            filter.RenderToJson().Should().Be(expectedJson);
         }
     }
 }
