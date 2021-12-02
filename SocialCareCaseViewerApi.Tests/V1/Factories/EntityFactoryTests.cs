@@ -681,7 +681,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReferralCategory = infrastructureReferral.ReferralCategory,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI,
-                MashResidents = infrastructureReferral.MashResidents.Select(x => x.ToDomain())
+                MashResidents = infrastructureReferral.MashResidents.Select(x => x.ToDomain()).ToList()
             });
         }
 

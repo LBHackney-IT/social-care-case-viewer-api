@@ -3,6 +3,7 @@ using System.Configuration;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -18,7 +19,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         private Mock<IDatabaseGateway> _databaseGateway;
         private Mock<ISystemTime> _systemTime;
         private MashReferralUseCase _mashReferralUseCase;
-        private DateTime _dateTime;
 
         [SetUp]
         public void Setup()
@@ -27,9 +27,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
             _databaseGateway = new Mock<IDatabaseGateway>();
             _systemTime = new Mock<ISystemTime>();
             _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
-
-            _dateTime = DateTime.Now;
-            _systemTime.Setup(x => x.Now).Returns(_dateTime);
         }
 
         [Test]
@@ -39,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
 
             _mashReferralUseCase.CreateNewMashReferral(request);
 
-            _mashReferralGateway.Verify(x => x.InsertDocument(It.IsAny<MashReferralEntity>()), Times.Once);
+            _mashReferralGateway.Verify(x => x.CreateReferral(request), Times.Once);
         }
     }
 }
