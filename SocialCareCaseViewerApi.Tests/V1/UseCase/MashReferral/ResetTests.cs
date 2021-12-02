@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -15,7 +14,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
         private Mock<IDatabaseGateway> _databaseGateway = null!;
-        private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralUseCase _mashReferralUseCase = null!;
 
         [SetUp]
@@ -23,8 +21,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
             _databaseGateway = new Mock<IDatabaseGateway>();
-            _systemTime = new Mock<ISystemTime>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _systemTime.Object);
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object);
         }
 
         [Test]

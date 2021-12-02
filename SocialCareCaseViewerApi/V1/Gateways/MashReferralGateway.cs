@@ -18,16 +18,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class MashReferralGateway : IMashReferralGateway
     {
         private readonly IMongoGateway _mongoGateway;
-        private readonly IDatabaseGateway _databaseGateway;
         private readonly ISystemTime _systemTime;
         private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.MashReferrals];
 
         private readonly DatabaseContext _databaseContext;
 
-        public MashReferralGateway(IMongoGateway mongoGateway, IDatabaseGateway databaseGateway, ISystemTime systemTime, DatabaseContext databaseContext)
+        public MashReferralGateway(IMongoGateway mongoGateway, ISystemTime systemTime, DatabaseContext databaseContext)
         {
             _mongoGateway = mongoGateway;
-            _databaseGateway = databaseGateway;
             _systemTime = systemTime;
             _databaseContext = databaseContext;
         }
@@ -124,12 +122,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public MashReferral_2 UpdateReferral(UpdateMashReferral request, long referralId)
         {
-            var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email \"{request.WorkerEmail}\" not found");
-            }
-
             var referral = _databaseContext.MashReferral_2
                 .FirstOrDefault(x => x.Id == referralId);
 

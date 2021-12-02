@@ -89,8 +89,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a server side error getting the mash referrals</response>
         [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpPatch]
-        [Route("{referralId}")]
-        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, string referralId)
+        [Route("{referralId:long}")]
+        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, long referralId)
         {
             var validator = new UpdateMashReferralValidator();
             var validation = validator.Validate(request);

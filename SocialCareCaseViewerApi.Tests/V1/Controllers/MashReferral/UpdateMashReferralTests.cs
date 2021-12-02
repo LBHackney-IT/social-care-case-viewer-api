@@ -18,14 +18,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         private readonly Faker _faker = new Faker();
         private MashReferralController _mashReferralController = null!;
         private Mock<IMashReferralUseCase> _mashReferralUseCase = null!;
-        private string _fakeReferralId = null!;
+        private long _fakeReferralId;
 
         [SetUp]
         public void Setup()
         {
             _mashReferralUseCase = new Mock<IMashReferralUseCase>();
             _mashReferralController = new MashReferralController(_mashReferralUseCase.Object);
-            _fakeReferralId = _faker.Random.String2(20, "0123456789abcdef");
+            _fakeReferralId = _faker.Random.Long();
         }
 
         [Test]
@@ -44,28 +44,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void OnSuccessReturnUpdatedReferralFromMashReferralUseCaseUpdateMashReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
-            var updatedReferral = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
+            var updatedReferral = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
             _mashReferralUseCase.Setup(x => x.UpdateMashReferral(request, _fakeReferralId)).Returns(updatedReferral);
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(updatedReferral);
-        }
-
-        [Test]
-        public void WhenMashReferralUseCaseUpdateMashReferralThrowsMashReferralNotFoundExceptionReturnBadRequest()
-        {
-            var request = TestHelpers.CreateUpdateMashReferral();
-            const string errorMessage = "test-error-message";
-            _mashReferralUseCase
-                .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
-                .Throws(new MashReferralNotFoundException(errorMessage));
-
-            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
-
-            response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be(errorMessage);
         }
 
         [Test]

@@ -5,7 +5,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -14,13 +13,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class MashReferralUseCase : IMashReferralUseCase
     {
-        private readonly ISystemTime _systemTime;
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMashReferralGateway _mashReferralGateway;
 
-        public MashReferralUseCase(IMashReferralGateway mashReferralGateway, IDatabaseGateway databaseGateway, ISystemTime systemTime)
+        public MashReferralUseCase(IMashReferralGateway mashReferralGateway, IDatabaseGateway databaseGateway)
         {
-            _systemTime = systemTime;
             _databaseGateway = databaseGateway;
             _mashReferralGateway = mashReferralGateway;
         }
@@ -45,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway.CreateReferral(request);
         }
 
-        public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, string referralId)
+        public Boundary.Response.MashReferral_2 UpdateMashReferral(UpdateMashReferral request, long referralId)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
             if (worker == null)
@@ -53,69 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new WorkerNotFoundException($"Worker with email \"{request.WorkerEmail}\" not found");
             }
 
-            var referral = _mashReferralGateway.GetInfrastructureUsingId(referralId);
-
-            if (referral == null)
-            {
-                throw new MashReferralNotFoundException($"MASH referral with id {referralId} not found");
-            }
-
-            if (request.UpdateType.Equals("CONTACT-DECISION"))
-            {
-                if (!referral.Stage.Equals("CONTACT"))
-                {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"contact\"");
-                }
-
-                referral.ContactCreatedAt = _systemTime.Now;
-                referral.ContactUrgentContactRequired = request.RequiresUrgentContact;
-                referral.Stage = "INITIAL";
-            }
-
-            if (request.UpdateType.Equals("INITIAL-DECISION"))
-            {
-                if (!referral.Stage.Equals("INITIAL"))
-                {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial\"");
-                }
-
-                referral.InitialCreatedAt = _systemTime.Now;
-                referral.InitialDecision = request.Decision;
-                referral.InitialUrgentContactRequired = request.RequiresUrgentContact;
-                referral.InitialReferralCategory = request.ReferralCategory;
-                referral.Stage = "SCREENING";
-            }
-
-            if (request.UpdateType.Equals("SCREENING-DECISION"))
-            {
-                if (!referral.Stage.Equals("SCREENING"))
-                {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
-                }
-
-                referral.ScreeningCreatedAt = _systemTime.Now;
-                referral.ScreeningDecision = request.Decision;
-                referral.ScreeningUrgentContactRequired = request.RequiresUrgentContact;
-                referral.Stage = "FINAL";
-            }
-
-            if (request.UpdateType.Equals("FINAL-DECISION"))
-            {
-                if (!referral.Stage.Equals("FINAL"))
-                {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"final\"");
-                }
-
-                referral.FinalCreatedAt = _systemTime.Now;
-                referral.FinalDecision = request.Decision;
-                referral.FinalUrgentContactRequired = request.RequiresUrgentContact;
-                referral.FinalReferralCategory = request.ReferralCategory;
-                referral.Stage = "POST-FINAL";
-            }
-
-            _mashReferralGateway.UpsertRecord(referral);
-
-            return referral.ToDomain().ToResponse();
+            return _mashReferralGateway.UpdateReferral(request, referralId).ToResponse();
         }
 
         public void Reset()
