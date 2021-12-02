@@ -68,8 +68,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
 
         public void CreateReferral(CreateReferralRequest request){
-            var referral = new MashReferral_2
-   
+            var referral = new Infrastructure.MashReferral_2
             {
                 Referrer = request.Referrer,
                 RequestedSupport = request.RequestedSupport,
@@ -78,7 +77,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 MashResidents = new List<MashResident>()
             };
 
+            foreach (var mashResident in request.MashResidents)
+            {
+                var resident = new MashResident
+                {
+                    FirstName = mashResident.FirstName,
+                    LastName = mashResident.LastName,
+                    Address = mashResident.Address,
+                    Ethnicity = mashResident.Ethnicity,
+                    Gender = mashResident.Gender,
+                    Postcode = mashResident.Postcode,
+                    School = mashResident.School,
+                    FirstLanguage = mashResident.FirstLanguage,
+                    DateOfBirth = mashResident.DateOfBirth,
+                    MashReferralId = referral.Id
+                };
+                referral.MashResidents.Add(resident);
+            }
 
+            _databaseContext.MashReferral_2.Add(referral);
+            _databaseContext.SaveChanges();
         }
 
         public MashReferral_2? GetReferralUsingId_2(long requestId)
