@@ -767,17 +767,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
 
+        public static MashResidentRequest CreateNewMashResidentRequest()
+        {
+            return new Faker<MashResidentRequest>()
+                .RuleFor(x => x.FirstName, f => f.Random.String2(50))
+                .RuleFor(x => x.LastName, f => f.Random.String2(50))
+                .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
+                .RuleFor(x => x.Gender, f => f.Random.String2(50))
+                .RuleFor(x => x.Ethnicity, f => f.Random.String2(33))
+                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(100))
+                .RuleFor(x => x.School, f => f.Random.String2(100))
+                .RuleFor(x => x.Address, f => f.Random.String2(50))
+                .RuleFor(x => x.Postcode, f => f.Random.String2(20));
+        }
+
         public static CreateReferralRequest CreateNewMashReferralRequest(
             string? referrer = null,
             string? requestedSupport = null,
-            string? referralUri = null,
-            List<string>? clients = null)
+            string? referralUri = null)
         {
+            var mashResidentsRequests = new List<MashResidentRequest>();
+
+            for (var i = 0; i < new Random().Next(10); i++)
+            {
+                mashResidentsRequests.Add(CreateNewMashResidentRequest());
+            }
+
             return new Faker<CreateReferralRequest>()
-                .RuleFor(x => x.Clients, f => clients ?? new List<string> { f.Random.String2(20) })
                 .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => requestedSupport ?? f.Random.String2(20))
-                .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20));
+                .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20))
+                .RuleFor(x => x.MashResidents, mashResidentsRequests);
         }
     }
 }
