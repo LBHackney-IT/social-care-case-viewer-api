@@ -895,3 +895,8 @@ ALTER TABLE IF EXISTS dbo.sccv_person_case_status
 
 ALTER TABLE IF EXISTS dbo.sccv_person_case_status
 	ALTER end_date type timestamp;
+
+alter table if exists dbo.ref_mash_referrals
+add column contact_decision_created_at timestamp,
+add column contact_decision_urgent_contact bool;
+
