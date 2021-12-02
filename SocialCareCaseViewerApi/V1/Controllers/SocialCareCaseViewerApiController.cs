@@ -33,15 +33,23 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
-        /// Find allocations by Mosaic ID or officer email
+        /// Find allocations by Mosaic ID, Worker ID or Worker Email
         /// </summary>
-        /// <response code="200">Success. Returns allocations related to the specified ID or officer email</response>
-        /// <response code="404">No allocations found for the specified mosaic id or worker id</response>
+        /// <response code="200">Success. Returns allocations related to the specified Mosaic ID, Worker ID or Worker Email</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
         [ProducesResponseType(typeof(AllocationList), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("allocations")]
         public IActionResult GetAllocations([FromQuery] ListAllocationsRequest request)
         {
+            var validator = new ListAllocationsRequestValidator();
+            var validationResults = validator.Validate(request);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
             return Ok(_allocationUseCase.Execute(request));
         }
 

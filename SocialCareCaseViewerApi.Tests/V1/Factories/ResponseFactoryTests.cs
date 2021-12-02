@@ -450,7 +450,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 }).ToList(),
                 SubmissionState = domainCaseSubmission.SubmissionState,
                 FormAnswers = domainCaseSubmission.FormAnswers,
-                Title = domainCaseSubmission.Title
+                Title = domainCaseSubmission.Title,
+                Deleted = domainCaseSubmission.Deleted,
+                DeletionDetails = domainCaseSubmission.DeletionDetails
             };
 
             domainCaseSubmission.ToResponse().Should().BeEquivalentTo(responseCaseSubmission);
@@ -532,6 +534,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = domainReferral.Stage,
                 AssignedTo = domainReferral.AssignedTo?.ToResponse(),
                 CreatedAt = domainReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = domainReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = domainReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = domainReferral.InitialDecision,
                 InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
                 InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
@@ -547,5 +551,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReferralDocumentURI = domainReferral.ReferralDocumentURI
             });
         }
+
+        [Test]
+        public void ConvertMashReferralFromDomainToResponse2()
+        {
+            var domainReferral = TestHelpers.CreateMashReferral2().ToDomain();
+
+            var responseReferral = domainReferral.ToResponse();
+
+            responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2
+            {
+                Id = domainReferral.Id,
+                Referrer = domainReferral.Referrer,
+                RequestedSupport = domainReferral.RequestedSupport,
+                Stage = domainReferral.Stage,
+                ReferralCreatedAt = domainReferral.ReferralCreatedAt.ToString("O"),
+                ReferralDocumentURI = domainReferral.ReferralDocumentURI,
+                ReferralCategory = domainReferral.ReferralCategory,
+                ContactDecisionCreatedAt = domainReferral.ContactDecisionCreatedAt?.ToString("O"),
+                ContactDecisionUrgentContactRequired = domainReferral.ContactDecisionUrgentContactRequired,
+                InitialDecision = domainReferral.InitialDecision,
+                InitialDecisionReferralCategory = domainReferral.InitialDecisionReferralCategory,
+                InitialDecisionUrgentContactRequired = domainReferral.InitialDecisionUrgentContactRequired,
+                InitialDecisionCreatedAt = domainReferral.InitialDecisionCreatedAt?.ToString("O"),
+                ScreeningDecision = domainReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
+                FinalDecision = domainReferral.FinalDecision,
+                FinalDecisionReferralCategory = domainReferral.FinalDecisionReferralCategory,
+                FinalDecisionUrgentContactRequired = domainReferral.FinalDecisionUrgentContactRequired,
+                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O")
+            });
+        }
+
+
     }
 }

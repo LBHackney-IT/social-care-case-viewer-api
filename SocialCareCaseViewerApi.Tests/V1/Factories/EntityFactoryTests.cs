@@ -269,7 +269,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapCaseSubmissionFromDatabaseObjectToDomainObject()
         {
-            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null);
+            var databaseCaseSubmission1 = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress, title: null, deleted: true);
             var domainCaseSubmission1 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission1.SubmissionId.ToString(),
@@ -287,10 +287,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission1.FormAnswers,
                 Title = null,
                 LastEdited = databaseCaseSubmission1.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = true,
+                DeletionDetails = databaseCaseSubmission1.DeletionDetails
             };
 
-            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title");
+            var databaseCaseSubmission2 = TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, title: "test-title", deleted: false);
             var domainCaseSubmission2 = new DomainCaseSubmission()
             {
                 SubmissionId = databaseCaseSubmission2.SubmissionId.ToString(),
@@ -308,7 +310,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FormAnswers = databaseCaseSubmission2.FormAnswers,
                 Title = "test-title",
                 LastEdited = databaseCaseSubmission2.EditHistory.Last().EditTime,
-                CompletedSteps = 1
+                CompletedSteps = 1,
+                Deleted = false,
+                DeletionDetails = null
             };
 
             databaseCaseSubmission1.ToDomain().Should().BeEquivalentTo(domainCaseSubmission1);
@@ -561,6 +565,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDeletedSetToFalseByDefault()
+        {
+            var request = TestHelpers.CreateListCasesRequest();
+            var submission = TestHelpers.CreateCaseSubmission();
+
+            var response = submission.ToCareCaseData(request);
+
+            response.Deleted.Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void CaseSubmissionToCareCaseDataReturnsDeletedSetIfNotNull(bool deleted)
+        {
+            var request = TestHelpers.CreateListCasesRequest();
+            var submission = TestHelpers.CreateCaseSubmission(deleted: deleted);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.Deleted.Should().Be(deleted);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataResturnsDeletetionDetailsIfDeletedIsTrueAndIncludeDeletedRecordsInRequestIsTrue()
+        {
+            var request = TestHelpers.CreateListCasesRequest(includeDeletedRecords: true);
+            var submission = TestHelpers.CreateCaseSubmission(deleted: true);
+
+            var response = submission.ToCareCaseData(request);
+
+            var expectedDeletionDetails = new DeletionDetails()
+            {
+                DeletedAt = submission.DeletionDetails.DeletedAt,
+                DeletedBy = submission.DeletionDetails.DeletedBy,
+                DeleteReason = submission.DeletionDetails.DeleteReason,
+                DeleteRequestedBy = submission.DeletionDetails.DeleteRequestedBy
+            };
+
+            response.DeletionDetails.Should().BeEquivalentTo(expectedDeletionDetails);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsNullForDeletionDetailsIfdIncludeDeletedRecordsInRequestIsFalse()
+        {
+            var request = TestHelpers.CreateListCasesRequest(includeDeletedRecords: false);
+            var submission = TestHelpers.CreateCaseSubmission(deleted: true);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DeletionDetails.Should().BeNull();
+        }
+
+        [Test]
         public void ConvertMashReferralFromInfrastructureToDomain()
         {
             var infrastructureReferral = TestHelpers.CreateMashReferral();
@@ -575,6 +633,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = infrastructureReferral.Stage,
                 AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
                 CreatedAt = infrastructureReferral.CreatedAt,
+                ContactUrgentContactRequired = infrastructureReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = infrastructureReferral.ContactCreatedAt,
                 InitialDecision = infrastructureReferral.InitialDecision,
                 InitialCreatedAt = infrastructureReferral.InitialCreatedAt,
                 InitialReferralCategory = infrastructureReferral.InitialReferralCategory,
@@ -590,6 +650,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
             });
         }
+
+
+        [Test]
+        public void ConvertMashReferralFromInfrastructureToDomain2()
+        {
+            var infrastructureReferral = TestHelpers.CreateMashReferral2();
+
+            var domainReferral = infrastructureReferral.ToDomain();
+
+            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral_2
+            {
+                Id = infrastructureReferral.Id,
+                Referrer = infrastructureReferral.Referrer,
+                Stage = infrastructureReferral.Stage,
+                ReferralCreatedAt = infrastructureReferral.ReferralCreatedAt,
+                FinalDecision = infrastructureReferral.FinalDecision,
+                ContactDecisionCreatedAt = infrastructureReferral.ContactDecisionCreatedAt,
+                ContactDecisionUrgentContactRequired = infrastructureReferral.ContactDecisionUrgentContactRequired,
+                InitialDecision = infrastructureReferral.InitialDecision,
+                InitialDecisionReferralCategory = infrastructureReferral.InitialDecisionReferralCategory,
+                InitialDecisionCreatedAt = infrastructureReferral.InitialDecisionCreatedAt,
+                InitialDecisionUrgentContactRequired = infrastructureReferral.InitialDecisionUrgentContactRequired,
+                ScreeningDecision = infrastructureReferral.ScreeningDecision,
+                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
+                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
+                FinalDecisionReferralCategory = infrastructureReferral.FinalDecisionReferralCategory,
+                FinalDecisionCreatedAt = infrastructureReferral.FinalDecisionCreatedAt,
+                FinalDecisionUrgentContactRequired = infrastructureReferral.FinalDecisionUrgentContactRequired,
+                ReferralCategory = infrastructureReferral.ReferralCategory,
+                RequestedSupport = infrastructureReferral.RequestedSupport,
+                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
+            });
+        }
+
 
         [Test]
         public void ConvertCaseStatusInfrastructureToDomain()

@@ -79,6 +79,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         }
 
         [Test]
+        public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForContactDecisionAndReferralIsNotInContactStage()
+        {
+            var mashReferral = TestHelpers.CreateMashReferral(stage: "not-contact");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
+
+            Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
+
+            act.Should().Throw<MashReferralStageMismatchException>()
+                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"contact\"");
+        }
+
+        [Test]
         public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForInitialDecisionAndReferralIsNotInInitialStage()
         {
             var mashReferral = TestHelpers.CreateMashReferral(stage: "not initial");
@@ -123,6 +136,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 Stage = "FINAL",
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = mashReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = mashReferral.InitialDecision,
                 InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 InitialReferralCategory = mashReferral.InitialReferralCategory,
@@ -158,6 +173,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 Stage = "SCREENING",
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = mashReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = mashReferral.InitialDecision,
                 InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 InitialReferralCategory = mashReferral.InitialReferralCategory,
@@ -193,6 +210,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 Stage = "POST-FINAL",
                 AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
                 CreatedAt = mashReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = mashReferral.ContactCreatedAt?.ToString("O"),
                 InitialDecision = mashReferral.InitialDecision,
                 InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
                 InitialReferralCategory = mashReferral.InitialReferralCategory,
@@ -204,6 +223,43 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
                 FinalReferralCategory = mashReferral.FinalReferralCategory,
                 FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
                 FinalCreatedAt = _dateTime.ToString("O"),
+                RequestedSupport = mashReferral.RequestedSupport,
+                ReferralDocumentURI = mashReferral.ReferralDocumentURI
+            });
+        }
+
+        [Test]
+        public void SuccessfulUpdateOfMashReferralFromContactToInitialUpsertsUpdateReferralIntoMashReferralGatewayAndReturnsMashReferralResponse()
+        {
+            var mashReferral = TestHelpers.CreateMashReferral(stage: "CONTACT");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            _mashReferralGateway.Setup(x => x.GetInfrastructureUsingId(mashReferral.Id.ToString())).Returns(mashReferral);
+
+            var response = _mashReferralUseCase.UpdateMashReferral(request, mashReferral.Id.ToString());
+
+            _mashReferralGateway.Verify(x => x.UpsertRecord(mashReferral), Times.Once);
+
+            response.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral()
+            {
+                Id = mashReferral.Id.ToString(),
+                Clients = mashReferral.Clients,
+                Referrer = mashReferral.Referrer,
+                Stage = "INITIAL",
+                AssignedTo = mashReferral.AssignedTo?.ToDomain(true).ToResponse(),
+                CreatedAt = mashReferral.CreatedAt.ToString("O"),
+                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
+                ContactCreatedAt = _dateTime.ToString("O"),
+                InitialDecision = mashReferral.InitialDecision,
+                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
+                InitialReferralCategory = mashReferral.InitialReferralCategory,
+                InitialCreatedAt = mashReferral.InitialCreatedAt?.ToString("O"),
+                ScreeningDecision = mashReferral.ScreeningDecision,
+                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
+                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
+                FinalDecision = mashReferral.FinalDecision,
+                FinalReferralCategory = mashReferral.FinalReferralCategory,
+                FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
+                FinalCreatedAt = mashReferral.FinalCreatedAt?.ToString("O"),
                 RequestedSupport = mashReferral.RequestedSupport,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI
             });

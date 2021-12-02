@@ -43,6 +43,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "pruneUnfinished")]
         public bool PruneUnfinished { get; set; } = false;
+
+        [FromQuery(Name = "includeDeletedRecords")]
+        public bool IncludeDeletedRecords { get; set; } = false;
+
+        [FromQuery(Name = "includeDeletedRecordsCount")]
+        public bool IncludeDeletedRecordsCount { get; set; } = false;
     }
 
     public class QueryCaseSubmissionsValidator : AbstractValidator<QueryCaseSubmissionsRequest>
