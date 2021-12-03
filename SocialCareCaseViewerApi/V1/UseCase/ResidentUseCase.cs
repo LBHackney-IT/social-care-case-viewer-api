@@ -39,6 +39,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public ResidentInformationList GetResidentsByQuery(ResidentQueryParam rqp, int cursor, int limit)
         {
             long? mosaicId = null;
+            int totalCount = 0;
+            List<ResidentInformation> matchingResidents = new List<ResidentInformation>();
 
             if (!string.IsNullOrEmpty(rqp.MosaicId))
             {
@@ -86,7 +88,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 limit = limit < 10 ? 10 : limit;
                 limit = limit > 100 ? 100 : limit;
 
-                residents.AddRange(_databaseGateway.GetResidentsBySearchCriteria(
+                (matchingResidents, totalCount) = _databaseGateway.GetResidentsBySearchCriteria(
                     cursor: cursor,
                     limit: limit,
                     id: mosaicId,
@@ -95,7 +97,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     dateOfBirth: rqp.DateOfBirth,
                     postcode: rqp.Postcode,
                     address: rqp.Address,
-                    contextFlag: rqp.ContextFlag));
+                    contextFlag: rqp.ContextFlag);
+
+
+                residents.AddRange(matchingResidents);
             }
 
             var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
@@ -103,7 +108,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return new ResidentInformationList
             {
                 Residents = residents,
-                NextCursor = nextCursor
+                NextCursor = nextCursor,
+                TotalCount = totalCount
             };
         }
     }

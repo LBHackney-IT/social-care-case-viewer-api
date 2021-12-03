@@ -91,7 +91,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocations;
         }
 
-        public List<ResidentInformationResponse> GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
+        public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
           string lastname = null, string dateOfBirth = null, string postcode = null, string address = null, string contextflag = null)
         {
             var addressSearchPattern = GetSearchPattern(address);
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var queryByAddress = postcode != null || address != null;
 
-            var peopleIds = queryByAddress
+            var (peopleIds, totalCount) = queryByAddress
                 ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstname, lastname, postcode, address, contextflag)
                 : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstname, lastname, dateOfBirth, contextflag);
 
@@ -114,30 +114,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(p => p.PhoneNumbers)
                 .Select(x => x.ToResidentInformationResponse()).ToList();
 
-            return dbRecords;
+            return (dbRecords, totalCount);
         }
 
-        private List<long> GetPersonIdsBasedOnSearchCriteria(int cursor, int limit, long? id, string firstname, string lastname, string dateOfBirth, string contextflag)
+        private (List<long>, int) GetPersonIdsBasedOnSearchCriteria(int cursor, int limit, long? id, string firstname, string lastname, string dateOfBirth, string contextflag)
         {
             var firstNameSearchPattern = GetSearchPattern(firstname);
             var lastNameSearchPattern = GetSearchPattern(lastname);
             var dateOfBirthSearchPattern = GetSearchPattern(dateOfBirth);
             var contextFlagSearchPattern = GetSearchPattern(contextflag);
 
-            return _databaseContext.Persons
-                .Where(person => person.Id > cursor)
+            var query = _databaseContext.Persons
                 .Where(person => id == null || EF.Functions.ILike(person.Id.ToString(), id.ToString()))
                 .Where(person => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName.Replace(" ", ""), firstNameSearchPattern))
                 .Where(person => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern))
                 .Where(person => string.IsNullOrEmpty(dateOfBirth) || EF.Functions.ILike(person.DateOfBirth.ToString(), dateOfBirthSearchPattern))
-                .Where(person => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(person.AgeContext, contextFlagSearchPattern))
+                .Where(person => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(person.AgeContext, contextFlagSearchPattern));
+
+            var totalCount = query.Count();
+
+            return (query
+                .Where(person => person.Id > cursor)
                 .OrderBy(p => p.Id)
                 .Take(limit)
                 .Select(p => p.Id)
-                .ToList();
+                .ToList(), totalCount);
         }
 
-        private List<long> GetPersonIdsBasedOnAddressCriteria(int cursor, int limit, long? id, string firstname, string lastname,
+        private (List<long>, int) GetPersonIdsBasedOnAddressCriteria(int cursor, int limit, long? id, string firstname, string lastname,
            string postcode, string address, string contextflag)
         {
             var firstNameSearchPattern = GetSearchPattern(firstname);
@@ -146,21 +150,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var postcodeSearchPattern = GetSearchPattern(postcode);
             var contextFlagSearchPattern = GetSearchPattern(contextflag);
 
-            return _databaseContext.Addresses
+            var query = _databaseContext.Addresses
                 .Where(add => id == null || EF.Functions.ILike(add.PersonId.ToString(), id.ToString()))
                 .Where(add => string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
                 .Where(add => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern) && add.IsDisplayAddress == "Y")
                 .Where(add => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(add.Person.FirstName.Replace(" ", ""), firstNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(add.Person.LastName, lastNameSearchPattern))
                 .Where(add => string.IsNullOrEmpty(contextflag) || EF.Functions.ILike(add.Person.AgeContext, contextFlagSearchPattern))
-                .Include(add => add.Person)
-                .Where(add => add.PersonId > cursor)
-                .OrderBy(add => add.PersonId)
-                .GroupBy(add => add.PersonId)
-                .Where(p => p.Key != null)
-                .Take(limit)
-                .Select(p => (long) p.Key)
-                .ToList();
+                .Include(add => add.Person);
+
+            var totalCount = query.Count();
+
+            return (query
+               .Where(add => add.PersonId > cursor)
+               .OrderBy(add => add.PersonId)
+               .GroupBy(add => add.PersonId)
+               .Where(p => p.Key != null)
+               .Take(limit)
+               .Select(p => (long) p.Key)
+               .ToList(), totalCount);
         }
 
         private static string GetSearchPattern(string str)
