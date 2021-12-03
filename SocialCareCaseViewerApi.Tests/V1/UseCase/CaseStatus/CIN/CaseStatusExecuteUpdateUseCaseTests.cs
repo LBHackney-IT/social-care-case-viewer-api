@@ -9,10 +9,10 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase;
 using System;
-
+using DomainCaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 
 #nullable enable
-namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
+namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CIN.CaseStatus
 {
     [TestFixture]
     public class CaseStatusExecuteUpdateUseCaseTests
@@ -54,57 +54,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.CaseStatus
         }
 
         [Test]
-        public void TestUseCaseMakesAppropriateCallsToOurGateways()
+        public void WhenTypeIsCINandEndDateIsNotProvidedAndStartDateIsIntheFutureItThrowsInvalidStartDateException()
         {
+            _updateCaseStatusRequest.StartDate = DateTime.Now.AddDays(1);
+            _updateCaseStatusRequest.EndDate = null;
+            _caseStatus.Type = "CIN";
+
+            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id)).Returns(_caseStatus.ToDomain());
+
+            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
+
+            act.Should().Throw<InvalidStartDateException>()
+                .WithMessage("Invalid start date. It cannot be in the future.");
+        }
+
+        [Test]
+        public void WhenTypeIsCINAndRequestedEndDateIsOnCaseStatusStartDateCallsTheGatewayToUpdateTheRecords()
+        {
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: "CIN");
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 3));
+
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
+            _mockCaseStatusGateway.Setup(x => x.UpdateCaseStatus(_updateCaseStatusRequest)).Returns(new DomainCaseStatus());
+
             _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
-            _mockCaseStatusGateway.Verify(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id), Times.Once);
-            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest), Times.Once);
-            _mockDatabaseGateway.Verify(x => x.GetWorkerByEmail(_worker.Email), Times.Once);
+            _mockCaseStatusGateway.Verify(x => x.UpdateCaseStatus(_updateCaseStatusRequest));
         }
-
         [Test]
-        public void TestWhenResidentAgeContextIsNotChildrensInvalidAgeContextExceptionThrown()
+        public void WhenTypeIsCINAndRequestedEndDateIsBeforeCaseStatusStartDateInvalidEndDateExceptionThrown()
         {
-            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest();
-            _caseStatus.Person.AgeContext = "A";
+            _caseStatus = TestHelpers.CreateCaseStatus(resident: _resident, startDate: new DateTime(2021, 11, 3), type: "CIN");
+            _updateCaseStatusRequest = TestHelpers.CreateUpdateCaseStatusRequest(caseStatusId: _caseStatus.Id, email: _worker.Email, endDate: new DateTime(2021, 11, 1));
 
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(It.IsAny<long>())).Returns(_caseStatus.ToDomain);
+            _mockCaseStatusGateway
+                .Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id))
+                .Returns(_caseStatus.ToDomain());
 
             Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
 
-            act.Should().Throw<InvalidAgeContextException>()
-                .WithMessage($"Person with the id {_resident.Id} belongs to the wrong AgeContext for this operation");
-        }
-
-        [Test]
-        public void TestWhenRequestEditedByWorkerEmailNotFoundWorkerNotFoundExceptionThrown()
-        {
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(_updateCaseStatusRequest.EditedBy));
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
-
-            act.Should().Throw<WorkerNotFoundException>()
-                .WithMessage($"Worker with email `{_updateCaseStatusRequest.EditedBy}` was not found");
-        }
-
-        [Test]
-        public void TestWhenUpdatingCaseStatusAndCaseStatusNotFoundCaseStatusDoesNotExistExceptionThrown()
-        {
-            _mockCaseStatusGateway.Setup(x => x.GetCasesStatusByCaseStatusId(_caseStatus.Id));
-
-            Action act = () => _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
-
-            act.Should().Throw<CaseStatusDoesNotExistException>()
-                .WithMessage($"Case status with {_caseStatus.Id} not found");
-        }
-
-        [Test]
-        public void TestUpdatingACaseStatusReturnsUpdatedCaseStatusResponse()
-        {
-            var response = _caseStatusesUseCase.ExecuteUpdate(_updateCaseStatusRequest);
-
-            response.Should().BeEquivalentTo(_updatedCaseStatus.ToDomain().ToResponse());
+            act.Should().Throw<InvalidEndDateException>()
+                .WithMessage($"requested end date of {_updateCaseStatusRequest.EndDate?.ToString("O")} " +
+                             $"is before the start date of {_caseStatus.StartDate:O}");
         }
     }
 }

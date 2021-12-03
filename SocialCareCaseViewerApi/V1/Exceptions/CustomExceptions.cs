@@ -194,6 +194,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public InvalidCaseStatusUpdateRequestException(string message) : base(message) { }
     }
 
+    public class InvalidCaseStatusAnswersRequestException : Exception
+    {
+        public InvalidCaseStatusAnswersRequestException(string message) : base(message) { }
+    }
+
     public class MashReferralNotFoundException : Exception
     {
         public MashReferralNotFoundException(string message) : base(message) { }

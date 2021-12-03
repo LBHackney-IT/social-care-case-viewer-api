@@ -522,13 +522,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long? mosaicId = null,
             string? firstName = null,
             string? lastName = null,
-            string? workerEmail = null)
+            string? workerEmail = null,
+            bool? includeDeletedRecords = null,
+            bool? includeDeletedRecordsCount = null)
         {
             return new Faker<ListCasesRequest>()
                 .RuleFor(r => r.MosaicId, mosaicId == null ? null : mosaicId.ToString())
                 .RuleFor(r => r.FirstName, firstName)
                 .RuleFor(r => r.LastName, lastName)
-                .RuleFor(r => r.WorkerEmail, workerEmail);
+                .RuleFor(r => r.WorkerEmail, workerEmail)
+                .RuleFor(r => r.IncludeDeletedRecords, includeDeletedRecords ?? false)
+                .RuleFor(r => r.IncludeDeletedRecordsCount, includeDeletedRecordsCount ?? false);
         }
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
@@ -592,7 +596,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? workerEmail = null,
             long? personID = null,
             bool? pruneUnfinished = null,
-            bool? includeDeletedRecords = null)
+            bool? includeDeletedRecords = null,
+            bool? includeDeletedRecordsCount = null)
         {
             return new Faker<QueryCaseSubmissionsRequest>()
                 .RuleFor(q => q.FormId, formId)
@@ -607,7 +612,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(q => q.WorkerEmail, workerEmail)
                 .RuleFor(q => q.PersonID, personID)
                 .RuleFor(q => q.PruneUnfinished, f => pruneUnfinished ?? f.Random.Bool())
-                .RuleFor(q => q.IncludeDeletedRecords, f => includeDeletedRecords ?? f.Random.Bool());
+                .RuleFor(q => q.IncludeDeletedRecords, f => includeDeletedRecords ?? f.Random.Bool())
+                .RuleFor(q => q.IncludeDeletedRecordsCount, f => includeDeletedRecordsCount ?? f.Random.Bool());
         }
 
         private static List<CaseStatusValue> CreateCaseStatusValues(int? min, int? max)
@@ -720,7 +726,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static MashReferral_2 CreateMashReferral2(string? stage = null)
         {
             return new Faker<MashReferral_2>()
-                .RuleFor(x => x.Id, f => f.IndexVariable + 100)
+                .RuleFor(x => x.Id, f => f.UniqueIndex)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())

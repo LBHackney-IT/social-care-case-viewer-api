@@ -565,6 +565,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void CaseSubmissionToCareCaseDataReturnsDeletedSetToFalseByDefault()
+        {
+            var request = TestHelpers.CreateListCasesRequest();
+            var submission = TestHelpers.CreateCaseSubmission();
+
+            var response = submission.ToCareCaseData(request);
+
+            response.Deleted.Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void CaseSubmissionToCareCaseDataReturnsDeletedSetIfNotNull(bool deleted)
+        {
+            var request = TestHelpers.CreateListCasesRequest();
+            var submission = TestHelpers.CreateCaseSubmission(deleted: deleted);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.Deleted.Should().Be(deleted);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataResturnsDeletetionDetailsIfDeletedIsTrueAndIncludeDeletedRecordsInRequestIsTrue()
+        {
+            var request = TestHelpers.CreateListCasesRequest(includeDeletedRecords: true);
+            var submission = TestHelpers.CreateCaseSubmission(deleted: true);
+
+            var response = submission.ToCareCaseData(request);
+
+            var expectedDeletionDetails = new DeletionDetails()
+            {
+                DeletedAt = submission.DeletionDetails.DeletedAt,
+                DeletedBy = submission.DeletionDetails.DeletedBy,
+                DeleteReason = submission.DeletionDetails.DeleteReason,
+                DeleteRequestedBy = submission.DeletionDetails.DeleteRequestedBy
+            };
+
+            response.DeletionDetails.Should().BeEquivalentTo(expectedDeletionDetails);
+        }
+
+        [Test]
+        public void CaseSubmissionToCareCaseDataReturnsNullForDeletionDetailsIfdIncludeDeletedRecordsInRequestIsFalse()
+        {
+            var request = TestHelpers.CreateListCasesRequest(includeDeletedRecords: false);
+            var submission = TestHelpers.CreateCaseSubmission(deleted: true);
+
+            var response = submission.ToCareCaseData(request);
+
+            response.DeletionDetails.Should().BeNull();
+        }
+
+        [Test]
         public void ConvertMashReferralFromInfrastructureToDomain()
         {
             var infrastructureReferral = TestHelpers.CreateMashReferral();
@@ -612,6 +666,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Stage = infrastructureReferral.Stage,
                 ReferralCreatedAt = infrastructureReferral.ReferralCreatedAt,
                 FinalDecision = infrastructureReferral.FinalDecision,
+                ContactDecisionCreatedAt = infrastructureReferral.ContactDecisionCreatedAt,
+                ContactDecisionUrgentContactRequired = infrastructureReferral.ContactDecisionUrgentContactRequired,
                 InitialDecision = infrastructureReferral.InitialDecision,
                 InitialDecisionReferralCategory = infrastructureReferral.InitialDecisionReferralCategory,
                 InitialDecisionCreatedAt = infrastructureReferral.InitialDecisionCreatedAt,
