@@ -119,6 +119,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         }
 
         [Test]
+        public void SetsTotalCountWhenMosaicIdIsProvided()
+        {
+            var request = new ResidentQueryParam() { MosaicId = "123" };
+            var totalCount = 3;
+            var listOfIds = new List<long> { 1, 2, 3 };
+
+            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
+              .Returns((new List<ResidentInformation>(), totalCount));
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(listOfIds);
+            _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(listOfIds)).Returns(new List<Person>() { new Person(), new Person(), new Person() });
+
+            var result = _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 10);
+
+            result.TotalCount.Should().Be(totalCount);
+        }
+
+        [Test]
         public void DoesNotCallGetResidentsBySearchCriteriaMethodWhenMosaicIdIsProvided()
         {
             var request = new ResidentQueryParam() { MosaicId = "43" };

@@ -82,6 +82,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                         .Select(x => x.ToResidentInformationResponse())
                         .ToList());
                 }
+
+                totalCount = residents.Count;
             }
             else
             {
