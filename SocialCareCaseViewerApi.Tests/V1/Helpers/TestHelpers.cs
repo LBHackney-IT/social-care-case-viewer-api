@@ -784,7 +784,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static CreateReferralRequest CreateNewMashReferralRequest(
             string? referrer = null,
             string? requestedSupport = null,
-            string? referralUri = null)
+            string? referralUri = null,
+            string? CreatedBy = null)
         {
             var mashResidentsRequests = new List<MashResidentRequest>();
 
@@ -797,6 +798,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => requestedSupport ?? f.Random.String2(20))
                 .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20))
+                .RuleFor(x => x.CreatedBy, f => CreatedBy ?? f.Random.String2(20))
                 .RuleFor(x => x.MashResidents, mashResidentsRequests);
         }
     }
