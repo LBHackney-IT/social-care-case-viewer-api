@@ -400,7 +400,24 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FinalDecision = mashReferral.FinalDecision,
                 FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
                 FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O")
+                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O"),
+                MashResidents = mashReferral.MashResidents.Select(x => x.ToResponse()).ToList()
+            };
+        }
+
+        public static MashResidentResponse ToResponse(this Domain.MashResident mashResident){
+            return new MashResidentResponse {    
+                Id = mashResident.Id,
+                FirstName = mashResident.FirstName,
+                LastName = mashResident.LastName,
+                DateOfBirth = mashResident.DateOfBirth?.ToString("O"),
+                Gender = mashResident.Gender,
+                Ethnicity = mashResident.Ethnicity,
+                FirstLanguage = mashResident.FirstLanguage,
+                School = mashResident.School,
+                Address = mashResident.Address,
+                Postcode = mashResident.Postcode
+
             };
         }
     }

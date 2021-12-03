@@ -1,3 +1,5 @@
+using SocialCareCaseViewerApi.V1.Domain;
+using System.Collections.Generic;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
@@ -23,5 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? FinalDecisionReferralCategory { get; set; }
         public bool? FinalDecisionUrgentContactRequired { get; set; }
         public string? FinalDecisionCreatedAt { get; set; }
+        public List<MashResidentResponse> MashResidents { get; set; }
     }
 }

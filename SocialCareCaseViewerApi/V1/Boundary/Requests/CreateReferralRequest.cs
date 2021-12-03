@@ -12,7 +12,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string RequestedSupport { get; set; } = null!;
         public string ReferralUri { get; set; } = null!;
         public List<MashResidentRequest> MashResidents { get; set; } = null!;
-        public string CreatedBy { get; set; } = null!;
     }
 
     public class CreateReferralRequestValidator : AbstractValidator<CreateReferralRequest>
