@@ -405,8 +405,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static MashResidentResponse ToResponse(this Domain.MashResident mashResident){
-            return new MashResidentResponse {    
+        public static MashResidentResponse ToResponse(this Domain.MashResident mashResident)
+        {
+            return new MashResidentResponse
+            {
                 Id = mashResident.Id,
                 FirstName = mashResident.FirstName,
                 LastName = mashResident.LastName,

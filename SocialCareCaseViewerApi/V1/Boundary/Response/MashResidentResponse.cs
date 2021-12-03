@@ -2,7 +2,8 @@
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
 
-public class MashResidentResponse {
+    public class MashResidentResponse
+    {
         public long Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
@@ -15,6 +16,6 @@ public class MashResidentResponse {
         public string? Postcode { get; set; }
 
 
-}
+    }
 
 }
