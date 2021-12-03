@@ -73,7 +73,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 RequestedSupport = request.RequestedSupport,
                 ReferralDocumentURI = request.ReferralUri,
                 Stage = "CONTACT",
-                MashResidents = new List<MashResident>()
+                MashResidents = new List<MashResident>(),
+                CreatedBy = request.CreatedBy,
+                LastModifiedBy = request.CreatedBy
             };
 
             foreach (var mashResident in request.MashResidents)
