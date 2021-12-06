@@ -580,7 +580,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FinalDecision = domainReferral.FinalDecision,
                 FinalDecisionReferralCategory = domainReferral.FinalDecisionReferralCategory,
                 FinalDecisionUrgentContactRequired = domainReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O")
+                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O"),
+                MashResidents = domainReferral.MashResidents.Select(x => x.ToResponse()).ToList()
             });
         }
 
