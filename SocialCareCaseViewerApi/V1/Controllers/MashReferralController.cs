@@ -121,5 +121,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return Ok();
         }
+        [HttpPost]
+        [Route("reset2")]
+        public IActionResult ResetMashReferrals2()
+        {
+            _mashReferralUseCase.Reset2();
+
+            return Ok();
+        }
+
     }
 }

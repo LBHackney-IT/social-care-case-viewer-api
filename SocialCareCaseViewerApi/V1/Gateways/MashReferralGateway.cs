@@ -60,6 +60,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _mongoGateway.DropCollection(_collectionName);
         }
 
+        public void Reset2()
+        {
+            //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE      
+            _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
+            _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_REFERRALS;");
+
+        }        
+
         public void InsertDocument(Infrastructure.MashReferral referral)
         {
             _mongoGateway.InsertRecord(_collectionName, referral);

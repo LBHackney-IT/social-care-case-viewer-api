@@ -13,5 +13,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         public void CreateNewMashReferral(CreateReferralRequest request);
         public MashReferral_2 UpdateMashReferral(UpdateMashReferral request, long referralId);
         public void Reset();
+
+        public void Reset2();
+
     }
 }
