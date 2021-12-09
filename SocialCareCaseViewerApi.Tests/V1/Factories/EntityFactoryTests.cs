@@ -626,7 +626,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var domainReferral = infrastructureReferral.ToDomain();
 
-            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral_2
+            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral
             {
                 Id = infrastructureReferral.Id,
                 Referrer = infrastructureReferral.Referrer,

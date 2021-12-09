@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             const int numberOfMashReferralsToAdd = 5;
             var id = -1L;
-            MashReferral_2 referral = null!;
+            MashReferral referral = null!;
 
             for (var i = 0; i < numberOfMashReferralsToAdd; i++)
             {

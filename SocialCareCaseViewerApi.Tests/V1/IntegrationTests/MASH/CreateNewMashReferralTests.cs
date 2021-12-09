@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             var getReferralResponse = await Client.GetAsync(getUri).ConfigureAwait(true);
 
             var addedContent = await getReferralResponse.Content.ReadAsStringAsync().ConfigureAwait(true);
-            var addedReferralResponse = JsonConvert.DeserializeObject<List<MashReferral_2>>(addedContent).ToList();
+            var addedReferralResponse = JsonConvert.DeserializeObject<List<MashReferral>>(addedContent).ToList();
 
             addedReferralResponse.Count.Should().Be(1);
             addedReferralResponse.FirstOrDefault()?.Referrer.Should().BeEquivalentTo(request.Referrer);

@@ -15,7 +15,7 @@ using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
-using MashReferral_2 = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral_2;
+using MashReferral = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
 using MashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 
 #nullable enable
@@ -712,9 +712,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
         }
 
-        public static MashReferral_2 CreateMashReferral2(string? stage = null, long? mashReferralId = null)
+        public static MashReferral CreateMashReferral2(string? stage = null, long? mashReferralId = null)
         {
-            return new Faker<MashReferral_2>()
+            return new Faker<MashReferral>()
                 .RuleFor(x => x.Id, f => mashReferralId ?? f.UniqueIndex)
                 .RuleFor(x => x.Referrer, f => f.Random.String2(20))
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))

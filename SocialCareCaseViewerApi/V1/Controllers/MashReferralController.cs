@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Referrals returned</response>
         /// <response code="404">Mash referral not found</response>
         /// <response code="500">There was a server side error getting the mash referrals</response>
-        [ProducesResponseType(typeof(MashReferral_2), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{referralId:long}")]
         public IActionResult GetMashReferral(long referralId)
@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Referrals returned</response>
         /// <response code="400">Invalid request</response>
         /// <response code="500">There was a server side error getting the mash referrals</response>
-        [ProducesResponseType(typeof(List<MashReferral_2>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MashReferral>), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetMashReferrals([FromQuery] QueryMashReferrals request)
         {
@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="200">Successful request. Referrals returned</response>
         /// <response code="400">Invalid request</response>
         /// <response code="500">There was a server side error getting the mash referrals</response>
-        [ProducesResponseType(typeof(MashReferral_2), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpPatch]
         [Route("{referralId:long}")]
         public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, long referralId)

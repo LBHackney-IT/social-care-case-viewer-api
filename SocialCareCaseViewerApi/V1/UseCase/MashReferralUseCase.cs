@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway = mashReferralGateway;
         }
 
-        public Boundary.Response.MashReferral_2? GetMashReferralUsingId(long requestId)
+        public Boundary.Response.MashReferral? GetMashReferralUsingId(long requestId)
         {
             return _mashReferralGateway
                 .GetReferralUsingId_2(requestId)
@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
 
 
-        public IEnumerable<Boundary.Response.MashReferral_2> GetMashReferrals(QueryMashReferrals request)
+        public IEnumerable<Boundary.Response.MashReferral> GetMashReferrals(QueryMashReferrals request)
         {
             return _mashReferralGateway
                 .GetReferralsUsingQuery(request)
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _mashReferralGateway.CreateReferral(request);
         }
 
-        public Boundary.Response.MashReferral_2 UpdateMashReferral(UpdateMashReferral request, long referralId)
+        public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, long referralId)
         {
             var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
             if (worker == null)

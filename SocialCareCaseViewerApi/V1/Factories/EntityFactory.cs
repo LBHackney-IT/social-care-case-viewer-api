@@ -322,9 +322,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral)
+        public static Domain.MashReferral ToDomain(this Infrastructure.MashReferral mashReferral)
         {
-            return new Domain.MashReferral_2
+            return new Domain.MashReferral
             {
                 Id = mashReferral.Id,
                 ReferralDocumentURI = mashReferral.ReferralDocumentURI,

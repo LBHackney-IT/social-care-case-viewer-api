@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
 
             _mashReferralGateway
                 .Setup(x => x.GetReferralsUsingQuery(query))
-                .Returns(new List<SocialCareCaseViewerApi.V1.Domain.MashReferral_2> { gatewayResponse });
+                .Returns(new List<SocialCareCaseViewerApi.V1.Domain.MashReferral> { gatewayResponse });
 
             var response = _mashReferralUseCase.GetMashReferrals(query);
 

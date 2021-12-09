@@ -14,7 +14,7 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
-using MashReferral_2 = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2;
+using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -347,9 +347,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral)
+        public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
         {
-            return new MashReferral_2
+            return new MashReferral
             {
                 Id = mashReferral.Id,
                 Referrer = mashReferral.Referrer,
