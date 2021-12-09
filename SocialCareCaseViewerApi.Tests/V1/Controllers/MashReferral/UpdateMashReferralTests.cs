@@ -84,6 +84,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         }
 
         [Test]
+        public void WhenMashReferralUseCaseUpdateMashReferralThrowsMashReferralNotFoundExceptionReturnBadRequest()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral();
+            const string errorMessage = "test-error-message";
+            _mashReferralUseCase
+                .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
+                .Throws(new WorkerNotFoundException(errorMessage));
+
+            var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
         public void ValidationReturnsBadRequestIfUpdateTypeIsScreeningDecisionAndNullDecisionProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
