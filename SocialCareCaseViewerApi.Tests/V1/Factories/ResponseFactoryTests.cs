@@ -552,6 +552,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             });
         }
 
+        [Test]
+        public void ConvertMashResidentFromDomainToResponse()
+        {
+            var domainResident = TestHelpers.CreateMashResident().ToDomain();
+            var responseResident = domainResident.ToResponse();
 
+            responseResident.Should().BeEquivalentTo(new MashResidentResponse
+            {
+                Id = domainResident.Id,
+                FirstName = domainResident.FirstName,
+                LastName = domainResident.LastName,
+                DateOfBirth = domainResident.DateOfBirth?.ToString("O"),
+                Gender = domainResident.Gender,
+                Ethnicity = domainResident.Ethnicity,
+                FirstLanguage = domainResident.FirstLanguage,
+                School = domainResident.School,
+                Address = domainResident.Address,
+                Postcode = domainResident.Postcode
+            });
+        }
     }
 }

@@ -389,7 +389,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 School = mashResident.School,
                 Address = mashResident.Address,
                 Postcode = mashResident.Postcode
-
             };
         }
     }

@@ -618,7 +618,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             response.DeletionDetails.Should().BeNull();
         }
 
-
         [Test]
         public void ConvertMashReferralFromInfrastructureToDomain()
         {
@@ -652,6 +651,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             });
         }
 
+        [Test]
+        public void ConvertMashResidentFromInfrastructureToDomain()
+        {
+            var infrastructureResident = TestHelpers.CreateMashResident();
+            var domainResident = infrastructureResident.ToDomain();
+
+            domainResident.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashResident
+            {
+                Id = infrastructureResident.Id,
+                FirstName = infrastructureResident.FirstName,
+                LastName = infrastructureResident.LastName,
+                DateOfBirth = infrastructureResident.DateOfBirth,
+                Gender = infrastructureResident.Gender,
+                Ethnicity = infrastructureResident.Ethnicity,
+                FirstLanguage = infrastructureResident.FirstLanguage,
+                School = infrastructureResident.School,
+                Address = infrastructureResident.Address,
+                Postcode = infrastructureResident.Postcode
+            });
+        }
 
         [Test]
         public void ConvertCaseStatusInfrastructureToDomain()

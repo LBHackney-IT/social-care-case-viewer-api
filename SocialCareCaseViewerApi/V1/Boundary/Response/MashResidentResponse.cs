@@ -14,8 +14,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? School { get; set; }
         public string? Address { get; set; }
         public string? Postcode { get; set; }
-
-
     }
 
 }
