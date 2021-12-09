@@ -64,13 +64,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.MashResidents.Add(resident);
             }
 
-            _databaseContext.MashReferral_2.Add(referral);
+            _databaseContext.MashReferrals.Add(referral);
             _databaseContext.SaveChanges();
         }
 
         public MashReferral? GetReferralUsingId(long requestId)
         {
-            return _databaseContext.MashReferral_2
+            return _databaseContext.MashReferrals
                 .Where(x => x.Id == requestId)
                 .Include(x => x.MashResidents)
                 .FirstOrDefault()
@@ -79,7 +79,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IEnumerable<MashReferral> GetReferralsUsingQuery(QueryMashReferrals request)
         {
-            var results = _databaseContext.MashReferral_2.AsQueryable();
+            var results = _databaseContext.MashReferrals.AsQueryable();
 
             if (request.Id != null)
             {
@@ -93,7 +93,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId)
         {
-            var referral = _databaseContext.MashReferral_2
+            var referral = _databaseContext.MashReferrals
                 .Include(x => x.MashResidents)
                 .FirstOrDefault(x => x.Id == referralId);
 
