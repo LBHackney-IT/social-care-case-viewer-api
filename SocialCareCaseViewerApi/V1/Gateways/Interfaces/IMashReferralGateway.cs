@@ -11,7 +11,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
     public interface IMashReferralGateway
     {
         public void Reset();
-        public void Reset2();        
+        public void Reset2();
         public void InsertDocument(Infrastructure.MashReferral referral);
         public MashReferral? GetReferralUsingId(string requestId);
         public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter);

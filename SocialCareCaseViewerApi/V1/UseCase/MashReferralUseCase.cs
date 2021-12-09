@@ -213,70 +213,70 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Referrer = "Police - red",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Sally", LastName="Samuels"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Sally", LastName = "Samuels" } },
                 ReferralUri = "hardcoded-referral-1-URI"
             };
             var referral2 = new CreateReferralRequest
             {
                 Referrer = "School",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Bert", LastName="Bertram"}, new MashResidentRequest() {FirstName="Courtney", LastName="Bushell"}, new MashResidentRequest() {FirstName="Jake", LastName ="Bucks"},new MashResidentRequest() {FirstName="Frank", LastName = "Gallagher"} },
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Bert", LastName = "Bertram" }, new MashResidentRequest() { FirstName = "Courtney", LastName = "Bushell" }, new MashResidentRequest() { FirstName = "Jake", LastName = "Bucks" }, new MashResidentRequest() { FirstName = "Frank", LastName = "Gallagher" } },
                 ReferralUri = "hardcoded-referral-2-URI"
             };
             var referral3 = new CreateReferralRequest
             {
                 Referrer = "Family",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Bertie", LastName="Stephens"}, new MashResidentRequest() {FirstName="Katie", LastName="Ryans"}, new MashResidentRequest() {FirstName="Hannah", LastName ="Stephens"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Bertie", LastName = "Stephens" }, new MashResidentRequest() { FirstName = "Katie", LastName = "Ryans" }, new MashResidentRequest() { FirstName = "Hannah", LastName = "Stephens" } },
                 ReferralUri = "hardcoded-referral-3-URI"
             };
             var referral4 = new CreateReferralRequest
             {
                 Referrer = "Individual",
                 RequestedSupport = "Early help",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Elysia", LastName="Hughs"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Elysia", LastName = "Hughs" } },
                 ReferralUri = "hardcoded-referral-4-URI"
             };
             var referral5 = new CreateReferralRequest
             {
                 Referrer = "School",
                 RequestedSupport = "Early help",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Benji", LastName="Stephens"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Benji", LastName = "Stephens" } },
                 ReferralUri = "hardcoded-referral-5-URI"
             };
             var referral6 = new CreateReferralRequest
             {
                 Referrer = "Police - green",
                 RequestedSupport = "Early help",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Sophie", LastName="Smith"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Sophie", LastName = "Smith" } },
                 ReferralUri = "hardcoded-referral-6-URI"
             };
             var referral7 = new CreateReferralRequest
             {
                 Referrer = "Police - red",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Sally", LastName="Stephens"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Sally", LastName = "Stephens" } },
                 ReferralUri = "hardcoded-referral-7-URI"
             };
             var referral8 = new CreateReferralRequest
             {
                 Referrer = "Police - green",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Barry", LastName="Smith"},new MashResidentRequest() {FirstName="Bert", LastName="Smith"}, new MashResidentRequest() {FirstName="Sally", LastName="Smith"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Barry", LastName = "Smith" }, new MashResidentRequest() { FirstName = "Bert", LastName = "Smith" }, new MashResidentRequest() { FirstName = "Sally", LastName = "Smith" } },
                 ReferralUri = "hardcoded-referral-8-URI"
             };
             var referral9 = new CreateReferralRequest
             {
                 Referrer = "Police - red",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Sophie", LastName="Owens"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Sophie", LastName = "Owens" } },
                 ReferralUri = "Emotional abuse"
             };
             var referral10 = new CreateReferralRequest
             {
                 Referrer = "Police - green",
                 RequestedSupport = "Safeguarding",
-                MashResidents = new List<MashResidentRequest>(){new MashResidentRequest() {FirstName="Max", LastName="Smith"},new MashResidentRequest() {FirstName="Georgie", LastName="Smith"}, new MashResidentRequest() {FirstName="Hugh", LastName="Smith"}},
+                MashResidents = new List<MashResidentRequest>() { new MashResidentRequest() { FirstName = "Max", LastName = "Smith" }, new MashResidentRequest() { FirstName = "Georgie", LastName = "Smith" }, new MashResidentRequest() { FirstName = "Hugh", LastName = "Smith" } },
                 ReferralUri = "hardcoded-referral-10-URI"
             };
 

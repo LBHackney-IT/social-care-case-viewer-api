@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_REFERRALS;");
 
-        }        
+        }
 
         public void InsertDocument(Infrastructure.MashReferral referral)
         {
@@ -81,6 +81,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 RequestedSupport = request.RequestedSupport,
                 ReferralDocumentURI = request.ReferralUri,
                 Stage = "CONTACT",
+                ReferralCreatedAt = _systemTime.Now,
                 MashResidents = new List<MashResident>(),
                 CreatedBy = request.Referrer,
                 LastModifiedBy = request.Referrer
