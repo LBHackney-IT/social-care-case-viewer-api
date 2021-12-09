@@ -620,7 +620,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
 
         [Test]
-        public void ConvertMashReferralFromInfrastructureToDomain2()
+        public void ConvertMashReferralFromInfrastructureToDomain()
         {
             var infrastructureReferral = TestHelpers.CreateMashReferral();
 
