@@ -522,7 +522,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void ConvertMashReferralFromDomainToResponse2()
         {
-            var domainReferral = TestHelpers.CreateMashReferral2().ToDomain();
+            var domainReferral = TestHelpers.CreateMashReferral().ToDomain();
 
             var responseReferral = domainReferral.ToResponse();
 

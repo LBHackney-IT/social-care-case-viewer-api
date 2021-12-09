@@ -28,8 +28,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void GetMashReferralsReturnsAListOfMashReferralResponseWith200StatusResponse()
         {
             var request = TestHelpers.CreateQueryMashReferral();
-            var referral1 = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
-            var referral2 = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
+            var referral1 = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
+            var referral2 = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
             var referralResponse =
                 new List<SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral> { referral1, referral2 };
 

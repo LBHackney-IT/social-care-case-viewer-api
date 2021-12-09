@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void GetMashReferralReturnsMashReferralResponseWith200Response()
         {
-            var referral = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
+            var referral = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
             _mashReferralUseCase.Setup(x => x.GetMashReferralUsingId(referral.Id)).Returns(referral);
 
             var response = _mashReferralController.GetMashReferral(referral.Id) as ObjectResult;

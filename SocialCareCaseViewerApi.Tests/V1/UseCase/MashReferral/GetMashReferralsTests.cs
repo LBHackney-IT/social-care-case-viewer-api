@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         public void GetMashReferralsReturnsAListOfMashReferralResponse()
         {
             var query = TestHelpers.CreateQueryMashReferral();
-            var gatewayResponse = TestHelpers.CreateMashReferral2().ToDomain();
+            var gatewayResponse = TestHelpers.CreateMashReferral().ToDomain();
 
             _mashReferralGateway
                 .Setup(x => x.GetReferralsUsingQuery(query))

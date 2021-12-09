@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void OnSuccessReturnUpdatedReferralFromMashReferralUseCaseUpdateMashReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
-            var updatedReferral = TestHelpers.CreateMashReferral2().ToDomain().ToResponse();
+            var updatedReferral = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
             _mashReferralUseCase.Setup(x => x.UpdateMashReferral(request, _fakeReferralId)).Returns(updatedReferral);
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
