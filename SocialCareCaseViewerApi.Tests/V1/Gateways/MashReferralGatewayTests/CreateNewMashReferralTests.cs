@@ -33,10 +33,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         public void CreateNewMashReferral()
         {
             var dateTime = DateTime.Now;
-            _systemTime.Setup(x => x.Now).Returns(dateTime);    
-            var request = TestHelpers.CreateNewMashReferralRequest(); 
+            _systemTime.Setup(x => x.Now).Returns(dateTime);
+            var request = TestHelpers.CreateNewMashReferralRequest();
 
-            var referral=_mashReferralGateway.CreateReferral(request);
+            var referral = _mashReferralGateway.CreateReferral(request);
 
             referral.Referrer.Should().BeEquivalentTo(request.Referrer);
             referral.RequestedSupport.Should().BeEquivalentTo(request.RequestedSupport);
@@ -45,7 +45,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             referral.ReferralCreatedAt.Should().Be(dateTime);
             referral.MashResidents.Count.Should().Be(request.MashResidents.Count);
 
-            for(var i =0; i <request.MashResidents.Count; i++){
+            for (var i = 0; i < request.MashResidents.Count; i++)
+            {
                 var firstResident = referral.MashResidents[i];
                 var requestFirstResident = request.MashResidents[i];
                 firstResident.FirstName.Should().BeEquivalentTo(requestFirstResident.FirstName);
@@ -57,7 +58,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                 firstResident.School.Should().BeEquivalentTo(requestFirstResident.School);
                 firstResident.FirstLanguage.Should().BeEquivalentTo(requestFirstResident.FirstLanguage);
                 firstResident.DateOfBirth.Should().Be(requestFirstResident.DateOfBirth);
-            }    
+            }
 
 
         }
