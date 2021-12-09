@@ -15,16 +15,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
     [TestFixture]
     public class GetReferralUsingIdTests : DatabaseTests
     {
-        private Mock<IMongoGateway> _mongoGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
 
         [SetUp]
         public void Setup()
         {
-            _mongoGateway = new Mock<IMongoGateway>();
             _systemTime = new Mock<ISystemTime>();
-            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _systemTime.Object, DatabaseContext);
+            _mashReferralGateway = new MashReferralGateway(_systemTime.Object, DatabaseContext);
         }
 
         [Test]
