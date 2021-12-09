@@ -9,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
 
 #nullable enable
@@ -19,7 +18,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         private readonly IMongoGateway _mongoGateway;
         private readonly ISystemTime _systemTime;
-        private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.MashReferrals];
 
         private readonly DatabaseContext _databaseContext;
 
@@ -30,47 +28,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter)
-        {
-            return _mongoGateway
-                .LoadMashReferralsByFilter(_collectionName, filter)
-                .Select(x => x.ToDomain());
-        }
-
-        public MashReferral? GetReferralUsingId(string requestId)
-        {
-            return _mongoGateway
-                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId))
-                ?.ToDomain();
-        }
-
-        public Infrastructure.MashReferral? GetInfrastructureUsingId(string requestId)
-        {
-            return _mongoGateway
-                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId));
-        }
-
-        public void UpsertRecord(Infrastructure.MashReferral referral)
-        {
-            _mongoGateway.UpsertRecord(_collectionName, referral.Id, referral);
-        }
-
-        public void Reset()
-        {
-            _mongoGateway.DropCollection(_collectionName);
-        }
-
         public void Reset2()
         {
-            //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE      
+            //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_REFERRALS;");
 
-        }
-
-        public void InsertDocument(Infrastructure.MashReferral referral)
-        {
-            _mongoGateway.InsertRecord(_collectionName, referral);
         }
 
         public void CreateReferral(CreateReferralRequest request)
@@ -122,9 +85,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var results = _databaseContext.MashReferral_2.AsQueryable();
 
-            if (!string.IsNullOrEmpty(request.Id))
+            if (request.Id != null)
             {
-                results = results.Where(x => x.Id == long.Parse(request.Id));
+                results = results.Where(x => x.Id == request.Id);
             }
 
             return results

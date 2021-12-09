@@ -9,7 +9,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     [Table("ref_mash_residents", Schema = "dbo")]
     public class MashResident
     {
-
         [Column("id")]
         [MaxLength(16)]
         [Key]
@@ -30,15 +29,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("ethnicity")]
         public string? Ethnicity { get; set; }
 
-
         [Column("first_language")]
-
         public string? FirstLanguage { get; set; }
-
 
         [Column("school")]
         public string? School { get; set; }
-
 
         [Column("address")]
         public string? Address { get; set; }

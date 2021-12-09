@@ -520,39 +520,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void ConvertMashReferralFromDomainToResponse()
-        {
-            var domainReferral = TestHelpers.CreateMashReferral().ToDomain();
-
-            var responseReferral = domainReferral.ToResponse();
-
-            responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral
-            {
-                Id = domainReferral.Id,
-                Clients = domainReferral.Clients,
-                Referrer = domainReferral.Referrer,
-                Stage = domainReferral.Stage,
-                AssignedTo = domainReferral.AssignedTo?.ToResponse(),
-                CreatedAt = domainReferral.CreatedAt.ToString("O"),
-                ContactUrgentContactRequired = domainReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = domainReferral.ContactCreatedAt?.ToString("O"),
-                InitialDecision = domainReferral.InitialDecision,
-                InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
-                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
-                InitialReferralCategory = domainReferral.InitialReferralCategory,
-                ScreeningDecision = domainReferral.ScreeningDecision,
-                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
-                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                FinalDecision = domainReferral.FinalDecision,
-                FinalReferralCategory = domainReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = domainReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = domainReferral.FinalCreatedAt?.ToString("O"),
-                RequestedSupport = domainReferral.RequestedSupport,
-                ReferralDocumentURI = domainReferral.ReferralDocumentURI
-            });
-        }
-
-        [Test]
         public void ConvertMashReferralFromDomainToResponse2()
         {
             var domainReferral = TestHelpers.CreateMashReferral2().ToDomain();

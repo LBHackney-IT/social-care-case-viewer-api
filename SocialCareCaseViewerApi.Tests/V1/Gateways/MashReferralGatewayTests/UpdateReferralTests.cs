@@ -9,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
@@ -23,16 +22,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
         private readonly Faker _faker = new Faker();
 
-        private Worker _worker = null!;
-
         [SetUp]
         public void Setup()
         {
             _mongoGateway = new Mock<IMongoGateway>();
             _systemTime = new Mock<ISystemTime>();
             _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _systemTime.Object, DatabaseContext);
-
-            _worker = TestHelpers.CreateWorker();
         }
 
         [Test]

@@ -322,33 +322,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Domain.MashReferral ToDomain(this Infrastructure.MashReferral mashReferral)
-        {
-            return new Domain.MashReferral
-            {
-                Id = mashReferral.Id.ToString(),
-                Clients = mashReferral.Clients,
-                Referrer = mashReferral.Referrer,
-                Stage = mashReferral.Stage,
-                AssignedTo = mashReferral.AssignedTo?.ToDomain(true),
-                CreatedAt = mashReferral.CreatedAt,
-                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = mashReferral.ContactCreatedAt,
-                InitialDecision = mashReferral.InitialDecision,
-                InitialCreatedAt = mashReferral.InitialCreatedAt,
-                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
-                ScreeningDecision = mashReferral.ScreeningDecision,
-                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
-                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
-                FinalDecision = mashReferral.FinalDecision,
-                FinalReferralCategory = mashReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = mashReferral.FinalCreatedAt,
-                RequestedSupport = mashReferral.RequestedSupport,
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
-                InitialReferralCategory = mashReferral.InitialReferralCategory
-            };
-        }
         public static Domain.MashReferral_2 ToDomain(this Infrastructure.MashReferral_2 mashReferral)
         {
             return new Domain.MashReferral_2

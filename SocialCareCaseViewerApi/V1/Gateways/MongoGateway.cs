@@ -103,13 +103,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return collection.Find(filter).CountDocuments();
         }
-
-        public List<MashReferral> LoadMashReferralsByFilter(string collectionName, FilterDefinition<MashReferral> filter)
-        {
-            var collection = _mongoDatabase.GetCollection<MashReferral>(collectionName);
-
-            return collection.Find(filter).ToList();
-        }
     }
 
     public static class MongoConnectionStrings

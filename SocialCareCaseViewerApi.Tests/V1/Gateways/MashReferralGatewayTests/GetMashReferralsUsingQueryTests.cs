@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         }
 
         [Test]
-        public void GetMashReferralsWithNoQueriesReturnsAllMashReferrals()
+        public void GetMashReferralsWithNoQueryReturnsAllMashReferrals()
         {
             var query = TestHelpers.CreateQueryMashReferral();
             query.Id = null;
@@ -65,7 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                 }
             }
 
-            var query = TestHelpers.CreateQueryMashReferral(id.ToString());
+            var query = TestHelpers.CreateQueryMashReferral(id);
 
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 

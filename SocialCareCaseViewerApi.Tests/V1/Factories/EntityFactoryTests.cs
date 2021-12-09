@@ -618,39 +618,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             response.DeletionDetails.Should().BeNull();
         }
 
-        [Test]
-        public void ConvertMashReferralFromInfrastructureToDomain()
-        {
-            var infrastructureReferral = TestHelpers.CreateMashReferral();
-
-            var domainReferral = infrastructureReferral.ToDomain();
-
-            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral
-            {
-                Id = infrastructureReferral.Id.ToString(),
-                Clients = infrastructureReferral.Clients,
-                Referrer = infrastructureReferral.Referrer,
-                Stage = infrastructureReferral.Stage,
-                AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
-                CreatedAt = infrastructureReferral.CreatedAt,
-                ContactUrgentContactRequired = infrastructureReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = infrastructureReferral.ContactCreatedAt,
-                InitialDecision = infrastructureReferral.InitialDecision,
-                InitialCreatedAt = infrastructureReferral.InitialCreatedAt,
-                InitialReferralCategory = infrastructureReferral.InitialReferralCategory,
-                InitialUrgentContactRequired = infrastructureReferral.InitialUrgentContactRequired,
-                ScreeningDecision = infrastructureReferral.ScreeningDecision,
-                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
-                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
-                FinalDecision = infrastructureReferral.FinalDecision,
-                FinalReferralCategory = infrastructureReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = infrastructureReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = infrastructureReferral.FinalCreatedAt,
-                RequestedSupport = infrastructureReferral.RequestedSupport,
-                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
-            });
-        }
-
 
         [Test]
         public void ConvertMashReferralFromInfrastructureToDomain2()

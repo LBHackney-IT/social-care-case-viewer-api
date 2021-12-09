@@ -14,7 +14,6 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
-using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using MashReferral_2 = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
@@ -347,35 +346,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Answers = caseStatus.Answers
             };
         }
-
-        public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
-        {
-            return new MashReferral
-            {
-                Id = mashReferral.Id,
-                Clients = mashReferral.Clients,
-                Referrer = mashReferral.Referrer,
-                Stage = mashReferral.Stage,
-                AssignedTo = mashReferral.AssignedTo?.ToResponse(),
-                CreatedAt = mashReferral.CreatedAt.ToString("O"),
-                ContactUrgentContactRequired = mashReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = mashReferral.ContactCreatedAt?.ToString("O"),
-                InitialDecision = mashReferral.InitialDecision,
-                InitialReferralCategory = mashReferral.InitialReferralCategory,
-                InitialCreatedAt = mashReferral.InitialCreatedAt?.ToString("O"),
-                InitialUrgentContactRequired = mashReferral.InitialUrgentContactRequired,
-                ScreeningDecision = mashReferral.ScreeningDecision,
-                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
-                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                FinalDecision = mashReferral.FinalDecision,
-                FinalReferralCategory = mashReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = mashReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = mashReferral.FinalCreatedAt?.ToString("O"),
-                RequestedSupport = mashReferral.RequestedSupport,
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI
-            };
-        }
-
 
         public static MashReferral_2 ToResponse(this Domain.MashReferral_2 mashReferral)
         {

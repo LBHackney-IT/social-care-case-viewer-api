@@ -6,6 +6,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     public class QueryMashReferrals
     {
         [FromQuery(Name = "id")]
-        public string? Id { get; set; }
+        public long? Id { get; set; }
     }
 }
