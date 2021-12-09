@@ -94,6 +94,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId)
         {
             var referral = _databaseContext.MashReferral_2
+                .Include(x => x.MashResidents)
                 .FirstOrDefault(x => x.Id == referralId);
 
             if (referral == null)
