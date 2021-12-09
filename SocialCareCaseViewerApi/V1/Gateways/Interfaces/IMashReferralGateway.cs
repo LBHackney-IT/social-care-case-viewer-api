@@ -13,6 +13,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
 
         public MashReferral? GetReferralUsingId(long requestId);
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId);
-        public void CreateReferral(CreateReferralRequest request);
+        public MashReferral CreateReferral(CreateReferralRequest request);
     }
 }

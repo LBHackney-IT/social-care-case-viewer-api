@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         }
 
-        public void CreateReferral(CreateReferralRequest request)
+        public MashReferral CreateReferral(CreateReferralRequest request)
         {
             var referral = new Infrastructure.MashReferral
             {
@@ -66,6 +66,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             _databaseContext.MashReferrals.Add(referral);
             _databaseContext.SaveChanges();
+            return referral.ToDomain();
         }
 
         public MashReferral? GetReferralUsingId(long requestId)
