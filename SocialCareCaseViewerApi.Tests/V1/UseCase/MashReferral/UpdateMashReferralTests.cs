@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Exceptions;
+using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
@@ -42,6 +43,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
 
             act.Should().Throw<WorkerNotFoundException>()
                 .WithMessage($"Worker with email \"{request.WorkerEmail}\" not found");
+        }
+
+        [Test]
+        public void UpdatingMashReferralOnSuccessReturnsMashReferralResponse()
+        {
+            var worker = TestHelpers.CreateWorker();
+            var request = TestHelpers.CreateUpdateMashReferral();
+            var referral = TestHelpers.CreateMashReferral().ToDomain();
+
+            _databaseGateway
+                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
+                .Returns(worker);
+
+            _mashReferralGateway
+                .Setup(x => x.UpdateReferral(request, referral.Id))
+                .Returns(referral);
+
+            var response = _mashReferralUseCase.UpdateMashReferral(request, referral.Id);
+
+            response.Should().BeEquivalentTo(referral.ToResponse(), options =>
+            {
+                options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                return options;
+            });
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -39,17 +40,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
 
             var response = _mashReferralUseCase.GetMashReferralUsingId(referral.Id);
 
-            response?.Id.Should().Be(referral.Id);
-            response?.Referrer.Should().BeEquivalentTo(referral.Referrer);
-            response?.RequestedSupport.Should().BeEquivalentTo(referral.RequestedSupport);
-            response?.ReferralCreatedAt.Should().BeEquivalentTo(referral.ReferralCreatedAt.ToString("O"));
-            response?.ReferralDocumentURI.Should().BeEquivalentTo(referral.ReferralDocumentURI);
-            response?.Stage.Should().BeEquivalentTo(referral.Stage);
-            response?.InitialDecision.Should().BeEquivalentTo(referral.InitialDecision);
-            response?.ScreeningDecision.Should().BeEquivalentTo(referral.ScreeningDecision);
-            response?.ScreeningCreatedAt.Should().BeEquivalentTo(referral.ScreeningCreatedAt?.ToString("O"));
-            response?.ScreeningUrgentContactRequired.Should().Be(referral.ScreeningUrgentContactRequired);
-            response?.FinalDecision.Should().BeEquivalentTo(referral.FinalDecision);
+            response.Should().BeEquivalentTo(referral.ToResponse(), options =>
+            {
+                options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                return options;
+            });
         }
 
         [Test]
