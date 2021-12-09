@@ -5,8 +5,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid request</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        public IActionResult CreateNewContact([FromBody] CreateReferralRequest request)
+        public IActionResult CreateReferral([FromBody] CreateReferralRequest request)
         {
             var validator = new CreateReferralRequestValidator();
             var validation = validator.Validate(request);
@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             _mashReferralUseCase.CreateNewMashReferral(request);
 
-            return CreatedAtAction(nameof(CreateNewContact), "Successfully created new contact referral");
+            return CreatedAtAction(nameof(CreateReferral), "Successfully created new contact referral");
         }
 
         /// <summary>

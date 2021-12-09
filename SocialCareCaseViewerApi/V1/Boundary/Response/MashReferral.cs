@@ -25,6 +25,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? FinalDecisionReferralCategory { get; set; }
         public bool? FinalDecisionUrgentContactRequired { get; set; }
         public string? FinalDecisionCreatedAt { get; set; }
-        public List<MashResidentResponse> MashResidents { get; set; }
+        public List<MashResidentResponse> MashResidents { get; set; } = null!;
     }
 }

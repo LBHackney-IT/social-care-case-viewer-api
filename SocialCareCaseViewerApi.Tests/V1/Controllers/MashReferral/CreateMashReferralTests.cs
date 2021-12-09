@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             _mashReferralUseCase.Setup(x => x.CreateNewMashReferral(It.IsAny<CreateReferralRequest>()));
             var request = TestHelpers.CreateNewMashReferralRequest();
 
-            _mashReferralController.CreateNewContact(request);
+            _mashReferralController.CreateReferral(request);
 
             _mashReferralUseCase.Verify(x => x.CreateNewMashReferral(request));
         }
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
 
             _mashReferralUseCase.Setup(x => x.CreateNewMashReferral(referralRequest)).Verifiable();
 
-            var response = _mashReferralController.CreateNewContact(referralRequest) as ObjectResult;
+            var response = _mashReferralController.CreateReferral(referralRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(201);
             response?.Value.Should().Be("Successfully created new contact referral");
@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             var referralRequest = TestHelpers.CreateNewMashReferralRequest();
             referralRequest.Referrer = "";
 
-            var response = _mashReferralController.CreateNewContact(referralRequest) as ObjectResult;
+            var response = _mashReferralController.CreateReferral(referralRequest) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(exceptionMessage);
