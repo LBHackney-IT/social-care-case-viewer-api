@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -16,19 +14,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class MashReferralGateway : IMashReferralGateway
     {
-        private readonly IMongoGateway _mongoGateway;
         private readonly ISystemTime _systemTime;
 
         private readonly DatabaseContext _databaseContext;
 
-        public MashReferralGateway(IMongoGateway mongoGateway, ISystemTime systemTime, DatabaseContext databaseContext)
+        public MashReferralGateway(ISystemTime systemTime, DatabaseContext databaseContext)
         {
-            _mongoGateway = mongoGateway;
             _systemTime = systemTime;
             _databaseContext = databaseContext;
         }
 
-        public void Reset2()
+        public void Reset()
         {
             //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
@@ -72,7 +68,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
-        public MashReferral? GetReferralUsingId_2(long requestId)
+        public MashReferral? GetReferralUsingId(long requestId)
         {
             return _databaseContext.MashReferral_2
                 .Where(x => x.Id == requestId)

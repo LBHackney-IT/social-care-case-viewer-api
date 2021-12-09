@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public Boundary.Response.MashReferral? GetMashReferralUsingId(long requestId)
         {
             return _mashReferralGateway
-                .GetReferralUsingId_2(requestId)
+                .GetReferralUsingId(requestId)
                 ?.ToResponse();
         }
 
@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public void Reset()
         {
-            _mashReferralGateway.Reset2();
+            _mashReferralGateway.Reset();
 
             var referral1 = new CreateReferralRequest
             {

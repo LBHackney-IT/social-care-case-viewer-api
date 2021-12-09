@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                 MashResidentHelper.SaveMashResidentToDatabase(DatabaseContext, referralId);
             }
 
-            var response = _mashReferralGateway.GetReferralUsingId_2(referral.Id);
+            var response = _mashReferralGateway.GetReferralUsingId(referral.Id);
 
             response.Should().BeEquivalentTo(referral.ToDomain(),
             options =>
@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             const long nonExistentId = 123L;
 
-            var response = _mashReferralGateway.GetReferralUsingId_2(nonExistentId);
+            var response = _mashReferralGateway.GetReferralUsingId(nonExistentId);
 
             response.Should().BeNull();
         }

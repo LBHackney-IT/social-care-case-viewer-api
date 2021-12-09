@@ -8,10 +8,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
 {
     public interface IMashReferralGateway
     {
-        public void Reset2();
+        public void Reset();
         public IEnumerable<MashReferral> GetReferralsUsingQuery(QueryMashReferrals request);
 
-        public MashReferral? GetReferralUsingId_2(long requestId);
+        public MashReferral? GetReferralUsingId(long requestId);
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId);
         public void CreateReferral(CreateReferralRequest request);
     }

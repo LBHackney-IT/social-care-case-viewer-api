@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var referral = TestHelpers.CreateMashReferral2().ToDomain();
             _mashReferralGateway
-                .Setup(x => x.GetReferralUsingId_2(referral.Id))
+                .Setup(x => x.GetReferralUsingId(referral.Id))
                 .Returns(referral);
 
             var response = _mashReferralUseCase.GetMashReferralUsingId(referral.Id);
@@ -57,7 +57,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             const long nonExistentId = 123L;
             _mashReferralGateway
-                .Setup(x => x.GetReferralUsingId_2(nonExistentId));
+                .Setup(x => x.GetReferralUsingId(nonExistentId));
 
             var response = _mashReferralUseCase.GetMashReferralUsingId(nonExistentId);
 
