@@ -74,6 +74,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.MashReferrals
                 .Where(x => x.Id == requestId)
                 .Include(x => x.MashResidents)
+                .Include(x => x.Worker)
                 .FirstOrDefault()
                 ?.ToDomain();
         }
@@ -89,6 +90,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return results
                 .Include(x => x.MashResidents)
+                .Include(x => x.Worker)
                 .Select(m => m.ToDomain());
         }
 
@@ -96,6 +98,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var referral = _databaseContext.MashReferrals
                 .Include(x => x.MashResidents)
+                .Include(x => x.Worker)
                 .FirstOrDefault(x => x.Id == referralId);
 
             if (referral == null)
@@ -113,6 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.ContactDecisionCreatedAt = _systemTime.Now;
                 referral.ContactDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "INITIAL";
+                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("INITIAL-DECISION"))
@@ -127,6 +131,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.InitialDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.InitialDecisionReferralCategory = request.ReferralCategory;
                 referral.Stage = "SCREENING";
+                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("SCREENING-DECISION"))
@@ -140,6 +145,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.ScreeningDecision = request.Decision;
                 referral.ScreeningUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "FINAL";
+                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("FINAL-DECISION"))
@@ -154,6 +160,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.FinalDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.FinalDecisionReferralCategory = request.ReferralCategory;
                 referral.Stage = "POST-FINAL";
+                referral.WorkerId = null;
+            }
+
+            if (request.UpdateType.Equals("ASSIGN-WORKER"))
+            {
+                referral.WorkerId = request.WorkerId;
             }
 
             _databaseContext.SaveChanges();
