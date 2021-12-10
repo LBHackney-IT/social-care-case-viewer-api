@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using MongoDB.Bson;
+using SocialCareCaseViewerApi.Tests.V1.Gateways.WorkerGatewayTests;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -683,7 +684,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? updateType = null,
             string? decision = null,
             bool? requiresUrgentContact = null,
-            string? referralCategory = null)
+            string? referralCategory = null,
+            int? workerId = null)
         {
             var updateTypes = new List<string> { "SCREENING-DECISION", "INITIAL-DECISION" };
 
@@ -692,7 +694,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
                 .RuleFor(x => x.Decision, f => decision ?? f.Random.String2(100))
                 .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
-                .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100));
+                .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100))
+                .RuleFor(x => x.WorkerId, f => workerId ?? f.UniqueIndex);
 
         }
 

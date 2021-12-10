@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
 
         [Column("worker_id")]
-        public long? WorkerId { get; set; }
+        public int? WorkerId { get; set; }
 
         [ForeignKey("WorkerId")]
         public Worker Worker { get; set; }

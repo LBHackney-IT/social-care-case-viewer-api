@@ -35,11 +35,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         }
 
         [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenGetWorkerByWorkerEmailReturnsNull()
+        {
+            var mashReferralId = _faker.Random.Long();
+            var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
+            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
+
+            Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferralId);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email \"{request.WorkerEmail}\" not found");
+        }
+
+        [Test]
         public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenGetWorkerByWorkerIdReturnsNull()
         {
             var mashReferralId = _faker.Random.Long();
             var request = TestHelpers.CreateUpdateMashReferral();
-            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
+            _workerGateway.Setup(x => x.GetWorkerByWorkerId(request.WorkerId!.Value));
 
             Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferralId);
 
