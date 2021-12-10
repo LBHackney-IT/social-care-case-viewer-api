@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-
     [Table("ref_mash_referrals", Schema = "dbo")]
     public class MashReferral : IAuditEntity
     {
@@ -14,7 +13,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(16)]
         [Key]
         public long Id { get; set; }
-
 
         [Column("worker_id")]
         public int? WorkerId { get; set; }
@@ -24,12 +22,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("referrer")]
         public string Referrer { get; set; } = null!;
+
         [Column("requested_support")]
         public string RequestedSupport { get; set; } = null!;
 
         [Column("created_at")]
         public DateTime ReferralCreatedAt { get; set; }
-
 
         [Column("referral_doc_url")]
         public string ReferralDocumentURI { get; set; } = null!;
@@ -48,10 +46,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("initial_decision")]
         public string? InitialDecision { get; set; }
-
         [Column("initial_decision_referral_category")]
         public string? InitialDecisionReferralCategory { get; set; }
-
         [Column("initial_decision_urgent_contact")]
         public bool? InitialDecisionUrgentContactRequired { get; set; }
 
@@ -69,13 +65,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("final_decision")]
         public string? FinalDecision { get; set; }
+
         [Column("final_decision_referral_category")]
         public string? FinalDecisionReferralCategory { get; set; }
+
         [Column("final_decision_urgent_contact")]
         public bool? FinalDecisionUrgentContactRequired { get; set; }
+
         [Column("final_decision_created_at")]
         public DateTime? FinalDecisionCreatedAt { get; set; }
-
 
         //audit fields
         [Column("sccv_created_at")]

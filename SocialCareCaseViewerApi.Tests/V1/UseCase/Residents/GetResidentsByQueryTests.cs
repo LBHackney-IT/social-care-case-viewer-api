@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _residentUseCase = new ResidentUseCase(_mockDatabaseGateway.Object);
 
             _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), It.IsAny<int>(), null, null, null, null, null, null, null))
-               .Returns(new List<ResidentInformation>());
+               .Returns((new List<ResidentInformation>(), 0));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _mockDatabaseGateway.Setup(x =>
                     x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
-                .Returns(residents.ToList());
+                .Returns((residents.ToList(), 0));
 
             _residentUseCase.GetResidentsByQuery(new ResidentQueryParam(), cursor: 0, limit: 10).NextCursor.Should().Be(expectedNextCursor);
         }
@@ -100,7 +100,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _mockDatabaseGateway.Setup(x =>
                     x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
-                .Returns(residents.ToList());
+                .Returns((residents.ToList(), 0));
 
             _residentUseCase.GetResidentsByQuery(new ResidentQueryParam(), cursor: 0, limit: 10).NextCursor.Should().Be("");
         }
@@ -111,11 +111,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             var request = new ResidentQueryParam();
 
             _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
-              .Returns(new List<ResidentInformation>()).Verifiable();
+              .Returns((new List<ResidentInformation>(), 0)).Verifiable();
 
             _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 4);
 
             _mockDatabaseGateway.Verify();
+        }
+
+        [Test]
+        public void SetsTotalCountWhenMosaicIdIsProvided()
+        {
+            var request = new ResidentQueryParam() { MosaicId = "123" };
+            var totalCount = 3;
+            var listOfIds = new List<long> { 1, 2, 3 };
+
+            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
+              .Returns((new List<ResidentInformation>(), totalCount));
+
+            _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(listOfIds);
+            _mockDatabaseGateway.Setup(x => x.GetPersonsByListOfIds(listOfIds)).Returns(new List<Person>() { new Person(), new Person(), new Person() });
+
+            var result = _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 10);
+
+            result.TotalCount.Should().Be(totalCount);
         }
 
         [Test]
@@ -124,7 +142,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             var request = new ResidentQueryParam() { MosaicId = "43" };
 
             _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, null, null, null, null, null, null))
-              .Returns(new List<ResidentInformation>());
+              .Returns((new List<ResidentInformation>(), 0));
 
             _mockDatabaseGateway.Setup(x => x.GetPersonIdsByEmergencyId(It.IsAny<string>())).Returns(new List<long>());
 
@@ -236,6 +254,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _residentUseCase.GetResidentsByQuery(request, cursor: 0, limit: 4);
 
             _mockDatabaseGateway.Verify(x => x.GetPersonsByListOfIds(listOfMatchingIds));
+        }
+
+        [Test]
+        public void ReturnsTotalCountOfResultsInReturnObject()
+        {
+            var request = new ResidentQueryParam() { FirstName = "foo" };
+            var totalCount = 3;
+
+            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(0, 10, null, request.FirstName, null, null, null, null, null)).Returns((new List<ResidentInformation>(), totalCount));
+
+            var response = _residentUseCase.GetResidentsByQuery(request, 0, 1);
+
+            response.TotalCount.Should().Be(totalCount);
         }
     }
 }

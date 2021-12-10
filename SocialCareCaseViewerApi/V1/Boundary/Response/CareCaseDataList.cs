@@ -6,6 +6,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     {
         public List<CareCaseData> Cases { get; set; }
         public int? NextCursor { get; set; }
-        public long DeletedRecordsCount { get; set; }
+        public long? DeletedRecordsCount { get; set; }
     }
 }

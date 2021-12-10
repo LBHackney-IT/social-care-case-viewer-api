@@ -7,5 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public List<ResidentInformation> Residents { get; set; }
 
         public string NextCursor { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
         private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<IWorkerGateway> _workerGateway = null!;
+
         private IMashReferralUseCase _mashReferralUseCase = null!;
         private readonly SocialCareCaseViewerApi.V1.Infrastructure.Worker _worker = TestHelpers.CreateWorker();
         private readonly Faker _faker = new Faker();
@@ -66,6 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.CreateUpdateMashReferral();
+
             var referral = TestHelpers.CreateMashReferral().ToDomain();
 
             _databaseGateway

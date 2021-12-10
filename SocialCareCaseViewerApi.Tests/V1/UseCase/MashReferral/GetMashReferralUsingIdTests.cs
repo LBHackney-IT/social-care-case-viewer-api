@@ -17,6 +17,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
         private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<IWorkerGateway> _workerGateway = null!;
+
         private IMashReferralUseCase _mashReferralUseCase = null!;
         private readonly SocialCareCaseViewerApi.V1.Infrastructure.Worker _worker = TestHelpers.CreateWorker();
 

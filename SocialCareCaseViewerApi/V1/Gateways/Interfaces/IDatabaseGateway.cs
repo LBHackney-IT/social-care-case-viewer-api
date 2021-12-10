@@ -9,7 +9,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
 {
     public interface IDatabaseGateway
     {
-        List<ResidentInformation> GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstName = null,
+        (List<ResidentInformation>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstName = null,
          string lastName = null, string dateOfBirth = null, string postcode = null, string address = null, string contextFlag = null);
 
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
