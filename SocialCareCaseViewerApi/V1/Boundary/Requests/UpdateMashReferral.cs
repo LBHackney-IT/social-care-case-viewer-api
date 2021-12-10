@@ -49,6 +49,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 RuleFor(x => x.WorkerId).GreaterThan(0);
                 RuleFor(x => x.WorkerEmail).Null().WithMessage("Do not provided both worker id and worker email address");
             });
+            RuleFor(x => x.WorkerId)
+                .NotNull()
+                .When(x => x.WorkerEmail is null);
+            RuleFor(x => x.WorkerEmail)
+                .NotNull()
+                .When(x => x.WorkerId is null);
         }
     }
 }
