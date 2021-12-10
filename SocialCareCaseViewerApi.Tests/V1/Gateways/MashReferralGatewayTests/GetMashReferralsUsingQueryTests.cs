@@ -17,24 +17,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 {
     public class GetMashReferralsUsingQueryTests : DatabaseTests
     {
-        private Mock<IMongoGateway> _mongoGateway = null!;
-        private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
 
         [SetUp]
         public void Setup()
         {
-            _mongoGateway = new Mock<IMongoGateway>();
-            _databaseGateway = new Mock<IDatabaseGateway>();
             _systemTime = new Mock<ISystemTime>();
-            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _databaseGateway.Object, _systemTime.Object, DatabaseContext);
+            _mashReferralGateway = new MashReferralGateway(_systemTime.Object, DatabaseContext);
 
             DatabaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         [Test]
-        public void GetMashReferralsWithNoQueriesReturnsAllMashReferrals()
+        public void GetMashReferralsWithNoQueryReturnsAllMashReferrals()
         {
             var query = TestHelpers.CreateQueryMashReferral();
             query.Id = null;
@@ -55,7 +51,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             const int numberOfMashReferralsToAdd = 5;
             var id = -1L;
-            MashReferral_2 referral = null!;
+            MashReferral referral = null!;
 
             for (var i = 0; i < numberOfMashReferralsToAdd; i++)
             {
@@ -67,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                 }
             }
 
-            var query = TestHelpers.CreateQueryMashReferral(id.ToString());
+            var query = TestHelpers.CreateQueryMashReferral(id);
 
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 

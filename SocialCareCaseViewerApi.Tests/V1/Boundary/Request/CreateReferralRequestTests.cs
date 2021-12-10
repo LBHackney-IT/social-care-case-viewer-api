@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -19,7 +17,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateNewMashReferralRequest(""), "Referrer must have at least one character"),
                 (TestHelpers.CreateNewMashReferralRequest(requestedSupport: ""), "Requested support must have at least one character"),
                 (TestHelpers.CreateNewMashReferralRequest(referralUri: ""), "Referral document url must have at least one character"),
-                (TestHelpers.CreateNewMashReferralRequest(clients: new List<string> {string.Empty}), "List of referred clients can not contain empty strings")
             };
 
             var validator = new CreateReferralRequestValidator();

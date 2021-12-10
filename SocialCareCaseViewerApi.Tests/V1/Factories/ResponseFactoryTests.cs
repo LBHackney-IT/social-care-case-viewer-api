@@ -529,39 +529,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral
             {
                 Id = domainReferral.Id,
-                Clients = domainReferral.Clients,
-                Referrer = domainReferral.Referrer,
-                Stage = domainReferral.Stage,
-                AssignedTo = domainReferral.AssignedTo?.ToResponse(),
-                CreatedAt = domainReferral.CreatedAt.ToString("O"),
-                ContactUrgentContactRequired = domainReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = domainReferral.ContactCreatedAt?.ToString("O"),
-                InitialDecision = domainReferral.InitialDecision,
-                InitialCreatedAt = domainReferral.InitialCreatedAt?.ToString("O"),
-                InitialUrgentContactRequired = domainReferral.InitialUrgentContactRequired,
-                InitialReferralCategory = domainReferral.InitialReferralCategory,
-                ScreeningDecision = domainReferral.ScreeningDecision,
-                ScreeningCreatedAt = domainReferral.ScreeningCreatedAt?.ToString("O"),
-                ScreeningUrgentContactRequired = domainReferral.ScreeningUrgentContactRequired,
-                FinalDecision = domainReferral.FinalDecision,
-                FinalReferralCategory = domainReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = domainReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = domainReferral.FinalCreatedAt?.ToString("O"),
-                RequestedSupport = domainReferral.RequestedSupport,
-                ReferralDocumentURI = domainReferral.ReferralDocumentURI
-            });
-        }
-
-        [Test]
-        public void ConvertMashReferralFromDomainToResponse2()
-        {
-            var domainReferral = TestHelpers.CreateMashReferral2().ToDomain();
-
-            var responseReferral = domainReferral.ToResponse();
-
-            responseReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral_2
-            {
-                Id = domainReferral.Id,
                 Referrer = domainReferral.Referrer,
                 RequestedSupport = domainReferral.RequestedSupport,
                 Stage = domainReferral.Stage,
@@ -580,10 +547,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FinalDecision = domainReferral.FinalDecision,
                 FinalDecisionReferralCategory = domainReferral.FinalDecisionReferralCategory,
                 FinalDecisionUrgentContactRequired = domainReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O")
+                FinalDecisionCreatedAt = domainReferral.FinalDecisionCreatedAt?.ToString("O"),
+                MashResidents = domainReferral.MashResidents.Select(x => x.ToResponse()).ToList()
             });
         }
 
+        [Test]
+        public void ConvertMashResidentFromDomainToResponse()
+        {
+            var domainResident = TestHelpers.CreateMashResident().ToDomain();
+            var responseResident = domainResident.ToResponse();
 
+            responseResident.Should().BeEquivalentTo(new MashResidentResponse
+            {
+                Id = domainResident.Id,
+                FirstName = domainResident.FirstName,
+                LastName = domainResident.LastName,
+                DateOfBirth = domainResident.DateOfBirth?.ToString("O"),
+                Gender = domainResident.Gender,
+                Ethnicity = domainResident.Ethnicity,
+                FirstLanguage = domainResident.FirstLanguage,
+                School = domainResident.School,
+                Address = domainResident.Address,
+                Postcode = domainResident.Postcode
+            });
+        }
     }
 }
