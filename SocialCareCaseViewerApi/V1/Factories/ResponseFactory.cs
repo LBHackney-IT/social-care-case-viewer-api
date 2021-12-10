@@ -371,7 +371,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
                 FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
                 FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O"),
-                MashResidents = mashReferral.MashResidents.Select(x => x.ToResponse()).ToList()
+                MashResidents = mashReferral.MashResidents.Select(x => x.ToResponse()).ToList(),
+                Worker = mashReferral.Worker?.ToResponse()
             };
         }
 
