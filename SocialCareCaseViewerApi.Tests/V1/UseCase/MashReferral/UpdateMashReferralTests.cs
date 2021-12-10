@@ -67,6 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
 
             var referral = TestHelpers.CreateMashReferral().ToDomain();
 

@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, long referralId)
         {
-            var worker = request.WorkerId != null ? _workerGateway.GetWorkerByWorkerId(request.WorkerId.Value) : _databaseGateway.GetWorkerByEmail(request.WorkerEmail).ToDomain(false);
+            var worker = request.WorkerId != null ? _workerGateway.GetWorkerByWorkerId(request.WorkerId.Value) : _databaseGateway.GetWorkerByEmail(request.WorkerEmail)?.ToDomain(false);
             if (worker == null)
             {
                 throw new WorkerNotFoundException($"Worker with email \"{request.WorkerEmail}\" not found");

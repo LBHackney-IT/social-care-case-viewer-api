@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public int? WorkerId { get; set; }
 
         [ForeignKey("WorkerId")]
-        public Worker Worker { get; set; }
+        public Worker? Worker { get; set; }
 
         [Column("referrer")]
         public string Referrer { get; set; } = null!;
