@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
             request.RequiresUrgentContact = null;
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
-
+            //set email or id to null
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be("Must provide if urgent contact is required");
         }

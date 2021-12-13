@@ -183,5 +183,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             validationResult.ToString().Should().Be("Must provide a referral category");
         }
+
+        //one test for both null
+        //one test for both not null
+        //one test with id but not email
+        //one test with email but not id
     }
 }
