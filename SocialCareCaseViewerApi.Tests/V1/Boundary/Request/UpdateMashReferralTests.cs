@@ -210,6 +210,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             validationResult.ToString().Should().Be("Must provide a worker id or email");
         }
 
+        [Test]
         public void WhenWorkerIdIsNullValidationResult()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
