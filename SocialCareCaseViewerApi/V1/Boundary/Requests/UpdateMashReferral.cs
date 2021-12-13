@@ -51,10 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             });
             RuleFor(x => x.WorkerId)
                 .NotNull()
-                .When(x => x.WorkerEmail is null);
-            RuleFor(x => x.WorkerEmail)
-                .NotNull()
-                .When(x => x.WorkerId is null);
+                .When(x => x.WorkerEmail is null && x.WorkerId is null).WithMessage("Must provide a worker id or email");
         }
     }
 }
