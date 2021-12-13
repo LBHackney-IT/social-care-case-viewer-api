@@ -198,7 +198,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
 
-        //one test for both null
+        [Test]
+        public void WhenWorkerEmailIsNullValidationResult()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
+            request.WorkerEmail = null;
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a worker id or email");
+        }
         //one test for both not null
         //one test with id but not email
         //one test with email but not id
