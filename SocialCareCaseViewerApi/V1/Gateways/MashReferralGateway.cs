@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -9,91 +8,94 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
-using MashReferral_2 = SocialCareCaseViewerApi.V1.Domain.MashReferral_2;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class MashReferralGateway : IMashReferralGateway
     {
-        private readonly IMongoGateway _mongoGateway;
-        private readonly IDatabaseGateway _databaseGateway;
         private readonly ISystemTime _systemTime;
-        private static readonly string _collectionName = MongoConnectionStrings.Map[Collection.MashReferrals];
 
         private readonly DatabaseContext _databaseContext;
 
-        public MashReferralGateway(IMongoGateway mongoGateway, IDatabaseGateway databaseGateway, ISystemTime systemTime, DatabaseContext databaseContext)
+        public MashReferralGateway(ISystemTime systemTime, DatabaseContext databaseContext)
         {
-            _mongoGateway = mongoGateway;
-            _databaseGateway = databaseGateway;
             _systemTime = systemTime;
             _databaseContext = databaseContext;
-
-        }
-
-        public IEnumerable<MashReferral> GetReferralsUsingFilter(FilterDefinition<Infrastructure.MashReferral> filter)
-        {
-            return _mongoGateway
-                .LoadMashReferralsByFilter(_collectionName, filter)
-                .Select(x => x.ToDomain());
-        }
-
-        public MashReferral? GetReferralUsingId(string requestId)
-        {
-            return _mongoGateway
-                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId))
-                ?.ToDomain();
-        }
-
-        public Infrastructure.MashReferral? GetInfrastructureUsingId(string requestId)
-        {
-            return _mongoGateway
-                .LoadRecordById<Infrastructure.MashReferral?>(_collectionName, ObjectId.Parse(requestId));
-        }
-
-        public void UpsertRecord(Infrastructure.MashReferral referral)
-        {
-            _mongoGateway.UpsertRecord(_collectionName, referral.Id, referral);
         }
 
         public void Reset()
         {
-            _mongoGateway.DropCollection(_collectionName);
+            //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE
+            _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
+            _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_REFERRALS;");
+
         }
 
-        public void InsertDocument(Infrastructure.MashReferral referral)
+        public MashReferral CreateReferral(CreateReferralRequest request)
         {
-            _mongoGateway.InsertRecord(_collectionName, referral);
+            var referral = new Infrastructure.MashReferral
+            {
+                Referrer = request.Referrer,
+                RequestedSupport = request.RequestedSupport,
+                ReferralDocumentURI = request.ReferralUri,
+                Stage = "CONTACT",
+                ReferralCreatedAt = _systemTime.Now,
+                MashResidents = new List<MashResident>(),
+                CreatedBy = request.Referrer,
+                LastModifiedBy = request.Referrer
+            };
+
+            foreach (var mashResident in request.MashResidents)
+            {
+                var resident = new MashResident
+                {
+                    FirstName = mashResident.FirstName,
+                    LastName = mashResident.LastName,
+                    Address = mashResident.Address,
+                    Ethnicity = mashResident.Ethnicity,
+                    Gender = mashResident.Gender,
+                    Postcode = mashResident.Postcode,
+                    School = mashResident.School,
+                    FirstLanguage = mashResident.FirstLanguage,
+                    DateOfBirth = mashResident.DateOfBirth,
+                    MashReferralId = referral.Id
+                };
+                referral.MashResidents.Add(resident);
+            }
+
+            _databaseContext.MashReferrals.Add(referral);
+            _databaseContext.SaveChanges();
+            return referral.ToDomain();
         }
 
-        public MashReferral_2? GetReferralUsingId_2(long requestId)
+        public MashReferral? GetReferralUsingId(long requestId)
         {
-            return _databaseContext.MashReferral_2
-                .FirstOrDefault(x => x.Id == requestId)
+            return _databaseContext.MashReferrals
+                .Where(x => x.Id == requestId)
+                .Include(x => x.MashResidents)
+                .FirstOrDefault()
                 ?.ToDomain();
         }
 
-        public IEnumerable<MashReferral_2> GetReferralsUsingQuery(QueryMashReferrals request)
+        public IEnumerable<MashReferral> GetReferralsUsingQuery(QueryMashReferrals request)
         {
-            var results = _databaseContext.MashReferral_2.AsQueryable();
+            var results = _databaseContext.MashReferrals.AsQueryable();
 
-            if (!string.IsNullOrEmpty(request.Id))
+            if (request.Id != null)
             {
-                results = results.Where(x => x.Id == long.Parse(request.Id));
+                results = results.Where(x => x.Id == request.Id);
             }
 
-            return results.Select(m => m.ToDomain());
+            return results
+                .Include(x => x.MashResidents)
+                .Select(m => m.ToDomain());
         }
-        public MashReferral_2 UpdateReferral(UpdateMashReferral request, long referralId)
-        {
-            var worker = _databaseGateway.GetWorkerByEmail(request.WorkerEmail);
-            if (worker == null)
-            {
-                throw new WorkerNotFoundException($"Worker with email \"{request.WorkerEmail}\" not found");
-            }
 
-            var referral = _databaseContext.MashReferral_2
+        public MashReferral UpdateReferral(UpdateMashReferral request, long referralId)
+        {
+            var referral = _databaseContext.MashReferrals
+                .Include(x => x.MashResidents)
                 .FirstOrDefault(x => x.Id == referralId);
 
             if (referral == null)

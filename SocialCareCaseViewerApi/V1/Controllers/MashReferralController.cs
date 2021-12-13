@@ -5,8 +5,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -31,8 +31,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a server side error getting the mash referrals</response>
         [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{referralId}")]
-        public IActionResult GetMashReferral(string referralId)
+        [Route("{referralId:long}")]
+        public IActionResult GetMashReferral(long referralId)
         {
             var referral = _mashReferralUseCase.GetMashReferralUsingId(referralId);
 
@@ -43,8 +43,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return NotFound();
         }
-
-
 
         /// <summary>
         /// Get a list of mash referrals based on supplied query params
@@ -69,7 +67,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">Invalid request</response>
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        public IActionResult CreateNewContact([FromBody] CreateReferralRequest request)
+        public IActionResult CreateReferral([FromBody] CreateReferralRequest request)
         {
             var validator = new CreateReferralRequestValidator();
             var validation = validator.Validate(request);
@@ -80,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             _mashReferralUseCase.CreateNewMashReferral(request);
 
-            return CreatedAtAction(nameof(CreateNewContact), "Successfully created new contact referral");
+            return CreatedAtAction(nameof(CreateReferral), "Successfully created new contact referral");
         }
 
         /// <summary>
@@ -91,8 +89,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a server side error getting the mash referrals</response>
         [ProducesResponseType(typeof(MashReferral), StatusCodes.Status200OK)]
         [HttpPatch]
-        [Route("{referralId}")]
-        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, string referralId)
+        [Route("{referralId:long}")]
+        public IActionResult UpdateMashReferral([FromBody] UpdateMashReferral request, long referralId)
         {
             var validator = new UpdateMashReferralValidator();
             var validation = validator.Validate(request);
@@ -123,5 +121,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             return Ok();
         }
+
     }
 }

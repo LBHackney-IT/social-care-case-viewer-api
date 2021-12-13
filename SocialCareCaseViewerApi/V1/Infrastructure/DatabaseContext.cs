@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 
@@ -33,8 +34,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PersonImport> PersonImport { get; set; }
         public DbSet<CaseStatus> CaseStatuses { get; set; }
         public DbSet<CaseStatusAnswer> CaseStatusAnswers { get; set; }
-        public DbSet<MashReferral_2> MashReferral_2 { get; set; }
+        public DbSet<MashReferral> MashReferrals { get; set; }
+        public DbSet<MashResident> MashResidents { get; set; }
         public DbSet<UPRNupdate> UPRNupdates { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

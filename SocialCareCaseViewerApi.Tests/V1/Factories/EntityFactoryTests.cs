@@ -627,40 +627,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral
             {
-                Id = infrastructureReferral.Id.ToString(),
-                Clients = infrastructureReferral.Clients,
-                Referrer = infrastructureReferral.Referrer,
-                Stage = infrastructureReferral.Stage,
-                AssignedTo = infrastructureReferral.AssignedTo?.ToDomain(true),
-                CreatedAt = infrastructureReferral.CreatedAt,
-                ContactUrgentContactRequired = infrastructureReferral.ContactUrgentContactRequired,
-                ContactCreatedAt = infrastructureReferral.ContactCreatedAt,
-                InitialDecision = infrastructureReferral.InitialDecision,
-                InitialCreatedAt = infrastructureReferral.InitialCreatedAt,
-                InitialReferralCategory = infrastructureReferral.InitialReferralCategory,
-                InitialUrgentContactRequired = infrastructureReferral.InitialUrgentContactRequired,
-                ScreeningDecision = infrastructureReferral.ScreeningDecision,
-                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
-                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
-                FinalDecision = infrastructureReferral.FinalDecision,
-                FinalReferralCategory = infrastructureReferral.FinalReferralCategory,
-                FinalUrgentContactRequired = infrastructureReferral.FinalUrgentContactRequired,
-                FinalCreatedAt = infrastructureReferral.FinalCreatedAt,
-                RequestedSupport = infrastructureReferral.RequestedSupport,
-                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
-            });
-        }
-
-
-        [Test]
-        public void ConvertMashReferralFromInfrastructureToDomain2()
-        {
-            var infrastructureReferral = TestHelpers.CreateMashReferral2();
-
-            var domainReferral = infrastructureReferral.ToDomain();
-
-            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral_2
-            {
                 Id = infrastructureReferral.Id,
                 Referrer = infrastructureReferral.Referrer,
                 Stage = infrastructureReferral.Stage,
@@ -680,10 +646,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FinalDecisionUrgentContactRequired = infrastructureReferral.FinalDecisionUrgentContactRequired,
                 ReferralCategory = infrastructureReferral.ReferralCategory,
                 RequestedSupport = infrastructureReferral.RequestedSupport,
-                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI
+                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI,
+                MashResidents = infrastructureReferral.MashResidents.Select(x => x.ToDomain()).ToList()
             });
         }
 
+        [Test]
+        public void ConvertMashResidentFromInfrastructureToDomain()
+        {
+            var infrastructureResident = TestHelpers.CreateMashResident();
+            var domainResident = infrastructureResident.ToDomain();
+
+            domainResident.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashResident
+            {
+                Id = infrastructureResident.Id,
+                FirstName = infrastructureResident.FirstName,
+                LastName = infrastructureResident.LastName,
+                DateOfBirth = infrastructureResident.DateOfBirth,
+                Gender = infrastructureResident.Gender,
+                Ethnicity = infrastructureResident.Ethnicity,
+                FirstLanguage = infrastructureResident.FirstLanguage,
+                School = infrastructureResident.School,
+                Address = infrastructureResident.Address,
+                Postcode = infrastructureResident.Postcode
+            });
+        }
 
         [Test]
         public void ConvertCaseStatusInfrastructureToDomain()
