@@ -39,26 +39,24 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .When(x => x.UpdateType == "CONTACT-DECISION" || x.UpdateType == "INITIAL-DECISION" ||
                            x.UpdateType == "SCREENING-DECISION" || x.UpdateType == "FINAL-DECISION")
                 .WithMessage("Must provide if urgent contact is required");
-            When(x => x.WorkerEmail == null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER", () =>
-            {
-                RuleFor(x => x.WorkerId).GreaterThan(0);
-                RuleFor(x => x.WorkerId).NotNull().WithMessage("Must provide a worker id or email");
-            });
-            When(x => x.WorkerId == null && x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER", () =>
-            {
-                RuleFor(x => x.WorkerEmail).EmailAddress();
-                RuleFor(x => x.WorkerEmail).NotNull().WithMessage("Must provide a worker id or email");
-            });
+            RuleFor(x => x.WorkerId)
+                .NotNull()
+                .GreaterThan(0)
+                .When( x => x.WorkerEmail == null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER")
+                .WithMessage("Must provide a valid worker id or email");
+            RuleFor(x => x.WorkerEmail)
+                .NotNull()
+                .EmailAddress()
+                .When( x => x.WorkerId == null && x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER")
+                .WithMessage("Must provide a valid worker id or email");
             When(x => x.WorkerEmail == null && x.WorkerId == null && x.UpdateType == "ASSIGN-WORKER", () =>
             {
-                RuleFor(x => x.WorkerId).NotNull().WithMessage("Must provide a worker id or email");
+                RuleFor(x => x.WorkerId).NotNull().WithMessage("Must provide a valid worker id or email");
             });
             When(x => x.WorkerEmail != null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER", () =>
             {
                 RuleFor(x => x.WorkerId).Null().WithMessage("Do not provide both worker id and worker email address");
             });
-
-
         }
     }
 }

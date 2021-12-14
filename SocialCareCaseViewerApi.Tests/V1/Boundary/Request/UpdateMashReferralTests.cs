@@ -229,7 +229,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             var validationResult = _validator.Validate(request);
 
-            validationResult.ToString().Should().Be("Must provide a worker id or email");
+            validationResult.ToString().Should().Be("Must provide a valid worker id or email");
         }
     }
 }
