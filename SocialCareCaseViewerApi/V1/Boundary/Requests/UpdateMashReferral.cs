@@ -41,16 +41,20 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .WithMessage("Must provide if urgent contact is required");
             When(x => x.WorkerEmail == null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER", () =>
             {
+                RuleFor(x => x.WorkerId).GreaterThan(0);
                 RuleFor(x => x.WorkerId).NotNull().WithMessage("Must provide a worker id or email");
             });
-            When(x => x.WorkerId == null && x.WorkerEmail == null && x.UpdateType == "ASSIGN-WORKER", () =>
-            {
-                RuleFor(x => x.WorkerEmail).NotNull().WithMessage("Must provide a worker id or email");
-            });
-            When(x => x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER", () =>
+            When(x => x.WorkerId == null && x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER", () =>
             {
                 RuleFor(x => x.WorkerEmail).EmailAddress();
-                RuleFor(x => x.WorkerId).GreaterThan(0);
+                RuleFor(x => x.WorkerEmail).NotNull().WithMessage("Must provide a worker id or email");
+            });
+            When(x => x.WorkerEmail == null && x.WorkerId == null && x.UpdateType == "ASSIGN-WORKER", () =>
+            {
+                RuleFor(x => x.WorkerId).NotNull().WithMessage("Must provide a worker id or email");
+            });
+            When(x => x.WorkerEmail != null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER", () =>
+            {
                 RuleFor(x => x.WorkerId).Null().WithMessage("Do not provide both worker id and worker email address");
             });
 
