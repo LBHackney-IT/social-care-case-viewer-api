@@ -220,7 +220,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenWorkerIdIsNullAndEmailIsNullValidationResult()
+        public void WhenBothWorkerIdAndEmailIsNullValidationResult()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerId = null;
