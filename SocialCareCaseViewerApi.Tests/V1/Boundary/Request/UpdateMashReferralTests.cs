@@ -185,36 +185,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenBothWorkerEmailAndWorkerIdAreNullValidationResult()
+        public void WhenBothWorkerEmailArePresentValidationResult()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
-            request.WorkerId = null;
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Do not provide both worker id and worker email address");
+        }
+
+        [Test]
+        public void WhenWorkerEmailIsNullAndIdIsSetValidationResult()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerEmail = null;
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
 
-            validationResult.ToString().Should().Be("Must provide a worker id or email");
+            validationResult.ToString().Should().Be("");
         }
 
-
         [Test]
-        public void WhenWorkerEmailIsNullValidationResult()
+        public void WhenWorkerIdIsNullAndEmailIsSetValidationResult()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
-            request.WorkerEmail = null;
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.WorkerId = null;
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
 
-            validationResult.ToString().Should().Be("Must provide a worker id or email");
+            validationResult.ToString().Should().Be("");
         }
 
         [Test]
-        public void WhenWorkerIdIsNullValidationResult()
+        public void WhenWorkerIdIsNullAndEmailIsNullValidationResult()
         {
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerId = null;
+            request.WorkerEmail = null;
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
