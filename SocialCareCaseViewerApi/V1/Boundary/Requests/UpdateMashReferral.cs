@@ -42,12 +42,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.WorkerId)
                 .NotNull()
                 .GreaterThan(0)
-                .When( x => x.WorkerEmail == null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER")
+                .When(x => x.WorkerEmail == null && x.WorkerId != null && x.UpdateType == "ASSIGN-WORKER")
                 .WithMessage("Must provide a valid worker id or email");
             RuleFor(x => x.WorkerEmail)
                 .NotNull()
                 .EmailAddress()
-                .When( x => x.WorkerId == null && x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER")
+                .When(x => x.WorkerId == null && x.WorkerEmail != null && x.UpdateType == "ASSIGN-WORKER")
                 .WithMessage("Must provide a valid worker id or email");
             When(x => x.WorkerEmail == null && x.WorkerId == null && x.UpdateType == "ASSIGN-WORKER", () =>
             {

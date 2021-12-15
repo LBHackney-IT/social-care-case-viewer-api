@@ -689,7 +689,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? referralCategory = null,
             int? workerId = null)
         {
-            var updateTypes = new List<string> { "SCREENING-DECISION", "INITIAL-DECISION", "ASSIGN-WORKER"};
+            var updateTypes = new List<string> { "SCREENING-DECISION", "INITIAL-DECISION", "ASSIGN-WORKER" };
 
             return new Faker<UpdateMashReferral>()
                 .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email)
