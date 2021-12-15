@@ -60,11 +60,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             addedReferralResponse.FirstOrDefault()?.ReferralDocumentURI.Should().BeEquivalentTo(request.ReferralUri);
             addedReferralResponse.FirstOrDefault()?.Stage.Should().BeEquivalentTo("CONTACT");
         }
-
-        [Test]
-        public async Task SuccessfulPatchAssignsWorkerToReferral()
-        {
-
-        }
     }
 }
