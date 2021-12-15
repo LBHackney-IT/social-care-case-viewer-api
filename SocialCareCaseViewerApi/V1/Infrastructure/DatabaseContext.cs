@@ -36,6 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<CaseStatusAnswer> CaseStatusAnswers { get; set; }
         public DbSet<MashReferral> MashReferrals { get; set; }
         public DbSet<MashResident> MashResidents { get; set; }
+        public DbSet<UPRNupdate> UPRNupdates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

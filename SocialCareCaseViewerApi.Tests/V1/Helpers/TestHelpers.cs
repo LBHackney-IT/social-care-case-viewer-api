@@ -193,7 +193,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Restricted, f => f.Random.String2(1));
         }
 
-        public static Address CreateAddress(long? personId = null, string? postCode = null, string? address = null)
+        public static Address CreateAddress(long? personId = null, string? postCode = null, string? address = null, int? uprn = null)
         {
             var person = CreatePerson();
 
@@ -205,7 +205,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.EndDate, f => f.Date.Recent().Date)
                 .RuleFor(a => a.AddressLines, f => address ?? f.Address.FullAddress())
                 .RuleFor(a => a.PostCode, f => postCode ?? f.Address.ZipCode())
-                .RuleFor(a => a.Uprn, f => f.Random.Number(int.MaxValue))
+                .RuleFor(a => a.Uprn, f => uprn ?? f.Random.Number(int.MaxValue))
                 .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1, "YN"))
                 .RuleFor(a => a.IsDisplayAddress, f => f.Random.String2(1, "YN"));
         }
