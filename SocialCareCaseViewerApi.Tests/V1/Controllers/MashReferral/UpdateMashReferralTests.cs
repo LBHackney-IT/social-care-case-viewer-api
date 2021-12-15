@@ -33,6 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
             request.RequiresUrgentContact = null;
+            request.WorkerId = null;
 
             var response = _mashReferralController.UpdateMashReferral(request, _fakeReferralId) as ObjectResult;
             //set email or id to null
@@ -44,6 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void OnSuccessReturnUpdatedReferralFromMashReferralUseCaseUpdateMashReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
             var updatedReferral = TestHelpers.CreateMashReferral().ToDomain().ToResponse();
             _mashReferralUseCase.Setup(x => x.UpdateMashReferral(request, _fakeReferralId)).Returns(updatedReferral);
 
@@ -57,6 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void WhenMashReferralUseCaseUpdateMashReferralThrowsWorkerNotFoundExceptionReturnBadRequest()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerEmail = null;
             const string errorMessage = "test-error-message";
             _mashReferralUseCase
                 .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
@@ -72,6 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void WhenMashReferralUseCaseUpdateMashReferralThrowsMashReferralStageMismatchExceptionReturnBadRequest()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
             const string errorMessage = "test-error-message";
             _mashReferralUseCase
                 .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
@@ -87,6 +91,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         public void WhenMashReferralUseCaseUpdateMashReferralThrowsMashReferralNotFoundExceptionReturnBadRequest()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
             const string errorMessage = "test-error-message";
             _mashReferralUseCase
                 .Setup(x => x.UpdateMashReferral(request, _fakeReferralId))
