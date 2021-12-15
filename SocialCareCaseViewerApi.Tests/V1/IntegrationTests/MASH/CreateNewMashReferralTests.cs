@@ -61,10 +61,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             addedReferralResponse.FirstOrDefault()?.Stage.Should().BeEquivalentTo("CONTACT");
         }
 
-        //test confirming this worker assigned to this referral
-        //make it, it won't have the worker
-        //create one
-        //call update with this worked
-        //show it's now assigned to it
+        [Test]
+        public async Task SuccessfulPatchAssignsWorkerToReferral()
+        {
+
+        }
     }
 }
