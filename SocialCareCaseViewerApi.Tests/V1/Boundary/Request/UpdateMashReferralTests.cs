@@ -185,7 +185,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenBothWorkerEmailArePresentValidationResult()
+        public void WhenBothWorkerEmailAndIdArePresentValidationResult()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.ReferralCategory = "";
