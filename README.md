@@ -225,11 +225,11 @@ For managing the database and other resources in Production, we use Terraform th
 ## Active contributors
 
 - **Tuomo Karki**, Lead Developer at Hackney (tuomo.karki@hackney.gov.uk)
-- **Ben Reynolds-Carr**, Junior Developer at Hackney (ben.reynolds-carr@hackney.gov.uk)
 - **Jerome Wanliss**, Intern Software Engineer at Hackney (jerome.wanliss@hackney.gov.uk)
 - **Renny Fadoju**, Software Engineer at Made Tech (renny.fadoju@hackney.gov.uk)
 - **Wen Ting Wang**, Software Engineer at Made Tech (wenting.wang@hackney.gov.uk)
 - **Marta Pederiva**, Junior Developer at Hackney (marta.pederiva@hackney.gov.uk)
+- **Miles Alford**, Junior Developer at Hackney (miles.alford@hackney.gov.uk)
 - **Juris Gribuska**, Senior Software Engineer at Made Tech (juris.gribuska@hackney.gov.uk)
 
 ## License
