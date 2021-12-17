@@ -120,6 +120,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// Edit a Case Status
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="caseStatusId"></param>
         /// <response code="201">Successfully updated a case status</response>
         /// <response code="400">Invalid request received</response>
         [ProducesResponseType(typeof(CaseStatus), 200)]
