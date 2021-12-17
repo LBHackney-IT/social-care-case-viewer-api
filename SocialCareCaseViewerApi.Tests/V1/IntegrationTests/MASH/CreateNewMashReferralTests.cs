@@ -50,7 +50,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             addedReferralResponse.Count.Should().Be(1);
             addedReferralResponse.FirstOrDefault()?.Referrer.Should().BeEquivalentTo(request.Referrer);
             addedReferralResponse.FirstOrDefault()?.RequestedSupport.Should().BeEquivalentTo(request.RequestedSupport);
-            addedReferralResponse.FirstOrDefault()?.Clients.Should().BeEquivalentTo(request.Clients);
             addedReferralResponse.FirstOrDefault()?.ReferralDocumentURI.Should().BeEquivalentTo(request.ReferralUri);
             addedReferralResponse.FirstOrDefault()?.Stage.Should().BeEquivalentTo("CONTACT");
         }

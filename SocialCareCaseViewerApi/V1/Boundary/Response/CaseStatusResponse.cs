@@ -1,5 +1,4 @@
 using SocialCareCaseViewerApi.V1.Domain;
-using System;
 using System.Collections.Generic;
 
 #nullable enable

@@ -9,7 +9,6 @@ using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
@@ -17,37 +16,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
     [TestFixture]
     public class UpdateReferralTests : DatabaseTests
     {
-        private Mock<IMongoGateway> _mongoGateway = null!;
-        private Mock<IDatabaseGateway> _databaseGateway = null!;
         private Mock<ISystemTime> _systemTime = null!;
         private IMashReferralGateway _mashReferralGateway = null!;
 
         private readonly Faker _faker = new Faker();
 
-        private Worker _worker = null!;
-
         [SetUp]
         public void Setup()
         {
-            _mongoGateway = new Mock<IMongoGateway>();
-            _databaseGateway = new Mock<IDatabaseGateway>();
             _systemTime = new Mock<ISystemTime>();
-            _mashReferralGateway = new MashReferralGateway(_mongoGateway.Object, _databaseGateway.Object, _systemTime.Object, DatabaseContext);
-
-            _worker = TestHelpers.CreateWorker();
-        }
-
-        [Test]
-        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenGetWorkerByWorkerIdReturnsNull()
-        {
-            var mashReferralId = _faker.Random.Long(100);
-            var request = TestHelpers.CreateUpdateMashReferral();
-            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
-
-            Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferralId);
-
-            act.Should().Throw<WorkerNotFoundException>()
-                .WithMessage($"Worker with email \"{request.WorkerEmail}\" not found");
+            _mashReferralGateway = new MashReferralGateway(_systemTime.Object, DatabaseContext);
         }
 
         [Test]
@@ -55,10 +33,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferralId = _faker.Random.Long(100);
             var request = TestHelpers.CreateUpdateMashReferral();
-
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferralId);
 
@@ -71,9 +45,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -86,9 +57,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -101,9 +69,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -116,9 +81,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -131,9 +93,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -145,9 +104,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "INITIAL");
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -159,9 +115,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "SCREENING");
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
@@ -173,9 +126,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "FINAL");
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
-            _databaseGateway
-                .Setup(x => x.GetWorkerByEmail(request.WorkerEmail))
-                .Returns(_worker);
 
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 

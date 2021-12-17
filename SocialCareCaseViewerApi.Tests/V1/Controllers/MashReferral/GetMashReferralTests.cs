@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashReferral
         [Test]
         public void GetMashReferralReturns404ResponseWhenNoReferralFound()
         {
-            const string nonExistentId = "123abc";
+            const long nonExistentId = 123L;
             _mashReferralUseCase.Setup(x => x.GetMashReferralUsingId(nonExistentId));
 
             var response = _mashReferralController.GetMashReferral(nonExistentId) as ObjectResult;
