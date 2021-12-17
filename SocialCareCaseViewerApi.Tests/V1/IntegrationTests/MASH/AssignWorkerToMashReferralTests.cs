@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
     public class AssignWorkerToMashReferralTests : IntegrationTestSetup<Startup>
     {
         private SocialCareCaseViewerApi.V1.Infrastructure.Worker _existingDbWorker;
-        private SocialCareCaseViewerApi.V1.Infrastructure.MashReferral _existingDbRefferal;
+        private SocialCareCaseViewerApi.V1.Infrastructure.MashReferral _existingDbReferral;
 
         [SetUp]
         public void Setup()
@@ -23,11 +23,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
             DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
 
-            // Create existing refferal and unrelated worker
+            // Create existing referral and unrelated worker
             var (existingDbWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-            var existingDbRefferal = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext);
+            var existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext);
             _existingDbWorker = existingDbWorker;
-            _existingDbRefferal = existingDbRefferal;
+            _existingDbReferral = existingDbReferral;
         }
 
         [Test]
@@ -37,14 +37,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             request.WorkerId = _existingDbWorker.Id;
             request.WorkerEmail = null;
             request.UpdateType = "ASSIGN-WORKER";
-            var postUri = new Uri($"/api/v1/mash-referral/{_existingDbRefferal.Id}", UriKind.Relative);
+            var postUri = new Uri($"/api/v1/mash-referral/{_existingDbReferral.Id}", UriKind.Relative);
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
 
             var updatedMashReferralResponse = await Client.PatchAsync(postUri, requestContent).ConfigureAwait(true);
 
             updatedMashReferralResponse.StatusCode.Should().Be(200);
-            _existingDbRefferal.WorkerId.Should().Equals(_existingDbWorker.Id);
+            _existingDbReferral.WorkerId.Should().Equals(_existingDbWorker.Id);
         }
     }
 }

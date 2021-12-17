@@ -26,13 +26,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long CaseStatusId { get; set; }
 
         [ForeignKey("CaseStatusId")]
-        public CaseStatus? CaseStatus { get; set; }
+        public CaseStatus CaseStatus { get; set; }
 
         [Column("discarded_at")]
         public DateTime? DiscardedAt { get; set; }
 
         [Column("group_id")]
-        public String? GroupId { get; set; }
+        public String GroupId { get; set; }
 
         [Column("end_date")]
         public DateTime? EndDate { get; set; }
@@ -42,12 +42,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? CreatedAt { get; set; }
 
         [Column("sccv_created_by")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [Column("sccv_last_modified_at")]
         public DateTime? LastModifiedAt { get; set; }
 
         [Column("sccv_last_modified_by")]
-        public string? LastModifiedBy { get; set; }
+        public string LastModifiedBy { get; set; }
     }
 }
