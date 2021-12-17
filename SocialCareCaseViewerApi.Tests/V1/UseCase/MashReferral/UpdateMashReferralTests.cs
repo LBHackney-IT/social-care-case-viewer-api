@@ -18,6 +18,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
     {
         private Mock<IMashReferralGateway> _mashReferralGateway = null!;
         private Mock<IDatabaseGateway> _databaseGateway = null!;
+        private Mock<IWorkerGateway> _workerGateway = null!;
+
         private IMashReferralUseCase _mashReferralUseCase = null!;
         private readonly SocialCareCaseViewerApi.V1.Infrastructure.Worker _worker = TestHelpers.CreateWorker();
         private readonly Faker _faker = new Faker();
@@ -27,9 +29,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             _mashReferralGateway = new Mock<IMashReferralGateway>();
             _databaseGateway = new Mock<IDatabaseGateway>();
-            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object);
+            _workerGateway = new Mock<IWorkerGateway>();
+            _mashReferralUseCase = new MashReferralUseCase(_mashReferralGateway.Object, _databaseGateway.Object, _workerGateway.Object);
 
             _databaseGateway.Setup(x => x.GetWorkerByEmail(It.IsAny<string>())).Returns(_worker);
+        }
+
+        [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenGetWorkerByWorkerEmailReturnsNull()
+        {
+            var mashReferralId = _faker.Random.Long();
+            var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
+            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
+
+            Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferralId);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email \"{request.WorkerEmail}\" not found");
         }
 
         [Test]
@@ -37,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var mashReferralId = _faker.Random.Long();
             var request = TestHelpers.CreateUpdateMashReferral();
-            _databaseGateway.Setup(x => x.GetWorkerByEmail(request.WorkerEmail));
+            _workerGateway.Setup(x => x.GetWorkerByWorkerId(request.WorkerId!.Value));
 
             Action act = () => _mashReferralUseCase.UpdateMashReferral(request, mashReferralId);
 
@@ -50,6 +67,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         {
             var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.CreateUpdateMashReferral();
+            request.WorkerId = null;
+
             var referral = TestHelpers.CreateMashReferral().ToDomain();
 
             _databaseGateway
