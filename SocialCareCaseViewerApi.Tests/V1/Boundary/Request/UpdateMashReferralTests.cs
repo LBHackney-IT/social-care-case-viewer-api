@@ -185,7 +185,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenBothWorkerEmailAndIdArePresentValidationResult()
+        public void WhenUpdateTypeIsAssignWorkerBothEmailAndIdMustNotBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.ReferralCategory = "";
@@ -196,7 +196,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenWorkerEmailIsNullAndIdIsSetValidationResult()
+        public void WhenUpdateTypeIsAssignWorkerAndWorkerEmailIsNullIdMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerEmail = null;
@@ -208,7 +208,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenWorkerIdIsNullAndEmailIsSetValidationResult()
+        public void WhenUpdateTypeIsAssignWorkerAndWorkerIdIsNullEmailMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerId = null;
@@ -220,7 +220,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void WhenBothWorkerIdAndEmailIsNullValidationResult()
+        public void WhenUpdateTypeIsAssignWorkerEitherEmailOrIdMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
             request.WorkerId = null;
