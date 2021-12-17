@@ -23,7 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
             DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
 
-            // Create existing workers with teams
+            // Create existing refferal and unrelated worker
             var (existingDbWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
             var existingDbRefferal = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext);
             _existingDbWorker = existingDbWorker;
