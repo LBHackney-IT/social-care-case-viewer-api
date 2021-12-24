@@ -109,12 +109,6 @@ namespace SocialCareCaseViewerApi
             RegisterGateways(services);
             RegisterUseCases(services);
 
-
-            services.AddHttpClient<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>(client =>
-            {
-                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL") ?? throw new InvalidOperationException("Must provide SOCIAL_CARE_PLATFORM_API_URL environment variable"));
-            });
-
             services.AddScoped<ISystemTime, SystemTime>();
         }
 
@@ -132,12 +126,12 @@ namespace SocialCareCaseViewerApi
         {
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
             services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
-            services.AddScoped<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>();
             services.AddScoped<IMongoGateway, MongoGateway>();
             services.AddScoped<ITeamGateway, TeamGateway>();
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
             services.AddScoped<IWorkerGateway, WorkerGateway>();
             services.AddScoped<IMashReferralGateway, MashReferralGateway>();
+            services.AddScoped<IHistoricalSocialCareGateway, HistoricalSocialCareGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

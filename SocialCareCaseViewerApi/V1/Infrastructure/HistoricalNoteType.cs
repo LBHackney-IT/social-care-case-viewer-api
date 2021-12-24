@@ -1,0 +1,19 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+#nullable enable
+namespace SocialCareCaseViewerApi.V1.Infrastructure
+{
+    [Table("historical_dm_case_note_type", Schema = "dbo")]
+    public class HistoricalNoteType
+    {
+        [Column("note_type")]
+        [MaxLength(16)]
+        [Key]
+        public string? Type { get; set; }
+
+        [Column("note_type_description")]
+        [MaxLength(80)]
+        public string? Description { get; set; }
+    }
+}

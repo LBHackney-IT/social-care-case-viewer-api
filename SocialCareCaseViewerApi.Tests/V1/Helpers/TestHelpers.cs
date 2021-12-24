@@ -24,11 +24,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class TestHelpers
     {
-        public static Visit CreateVisit()
+        public static Visit CreateVisit(long? personId = null)
         {
             return new Faker<Visit>()
                 .RuleFor(v => v.VisitId, f => f.UniqueIndex)
-                .RuleFor(v => v.PersonId, f => f.UniqueIndex)
+                .RuleFor(v => v.PersonId, f => personId ?? f.UniqueIndex)
                 .RuleFor(v => v.VisitType, f => f.Random.String2(1, 20))
                 .RuleFor(v => v.PlannedDateTime, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(v => v.ActualDateTime, f => f.Date.Past().ToUniversalTime())
@@ -38,6 +38,18 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.CompletedFlag, f => f.Random.Bool())
                 .RuleFor(v => v.CreatedByEmail, f => f.Person.Email)
                 .RuleFor(v => v.CreatedByName, f => f.Person.FullName);
+        }
+
+        public static List<Visit> CreateVisits(long? personId = null)
+        {
+            var visits = new List<Visit>();
+
+            for (var i = 0; i < new Random().Next(1, 5); i++)
+            {
+                visits.Add(CreateVisit(personId));
+            }
+
+            return visits;
         }
 
         public static CaseNote CreateCaseNote(string? noteType = null, DateTime? createdOn = null)

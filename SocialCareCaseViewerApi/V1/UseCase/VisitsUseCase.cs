@@ -1,24 +1,23 @@
+using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using SocialCareCaseViewerApi.V1.Boundary.Response;
-using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Gateways;
-using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class VisitsUseCase : IVisitsUseCase
     {
-        private readonly ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
+        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
 
-        public VisitsUseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
+        public VisitsUseCase(IHistoricalSocialCareGateway historicalSocialCareGateway)
         {
-            _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
+            _historicalSocialCareGateway = historicalSocialCareGateway;
         }
 
-        public List<Visit> ExecuteGetByPersonId(string id)
+        public List<Visit> ExecuteGetByPersonId(long id)
         {
-            return _socialCarePlatformAPIGateway.GetVisitsByPersonId(id).ToList();
+            return _historicalSocialCareGateway.GetVisitInformationByPersonId(id).ToList();
         }
     }
 }

@@ -12,6 +12,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 
 #nullable enable
@@ -20,14 +21,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private readonly ISccvDbContext _sccvDbContext;
-        private readonly ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
+        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext, ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, IHistoricalSocialCareGateway historicalSocialCareGateway)
         {
             _sccvDbContext = sccvDbContext;
-            _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
+            _historicalSocialCareGateway = historicalSocialCareGateway;
         }
-
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string? ncId)
         {
             var result = new List<BsonDocument>();
@@ -136,51 +136,43 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 casesAndVisits.AddRange(ncIdQuery.ToList());
             }
 
-            var historicVisits = new List<BsonDocument>();
+            long mosaicId;
+
             try
             {
-                var visits = _socialCarePlatformAPIGateway
-                    .GetVisitsByPersonId(personId)
+                mosaicId = Convert.ToInt64(personId);
+            }
+            catch (Exception e) when (
+                e is FormatException ||
+                e is OverflowException
+            )
+            {
+                throw new ProcessDataGatewayException($"PersonId conversion failure for id {personId}");
+            }
+
+            var historicVisits = new List<BsonDocument>();
+
+            var visits = _historicalSocialCareGateway
+                .GetVisitInformationByPersonId(mosaicId)
+                .ToList();
+
+            if (visits.Count > 0)
+            {
+                historicVisits = visits
+                    .Select(ResponseFactory.HistoricalVisitsToDomain)
                     .ToList();
-
-                if (visits.Count > 0)
-                {
-                    historicVisits = visits
-                        .Select(ResponseFactory.HistoricalVisitsToDomain)
-                        .ToList();
-                }
-
-            }
-            catch (NullReferenceException)
-            {
-                historicVisits = new List<BsonDocument>();
-            }
-            catch (SocialCarePlatformApiException)
-            {
-                historicVisits = new List<BsonDocument>();
             }
 
             var historicCases = new List<BsonDocument>();
-            try
-            {
-                var caseNotes = _socialCarePlatformAPIGateway
-                    .GetCaseNotesByPersonId(personId)
-                    .CaseNotes;
 
-                if (caseNotes?.Count > 0)
-                {
-                    historicCases = caseNotes
-                        .Select(ResponseFactory.HistoricalCaseNotesToDomain)
-                        .ToList();
-                }
-            }
-            catch (NullReferenceException)
+            var caseNotes = _historicalSocialCareGateway
+                .GetAllCaseNotes(mosaicId);
+
+            if (caseNotes?.Count > 0)
             {
-                historicCases = new List<BsonDocument>();
-            }
-            catch (SocialCarePlatformApiException)
-            {
-                historicCases = new List<BsonDocument>();
+                historicCases = caseNotes
+                    .Select(ResponseFactory.HistoricalCaseNotesToDomain)
+                    .ToList();
             }
 
             if (historicVisits.Count > 0)

@@ -738,6 +738,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DiscardedAt = infraStructureCaseStatusAnswer.DiscardedAt
             });
         }
+
+        [Test]
+        public void CanConvertHistoricalCaseNoteToCaseNote()
+        {
+            var historicalCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote();
+
+            var caseNote = historicalCaseNote.ToDomain();
+
+            caseNote.Should().BeEquivalentTo(new CaseNote()
+            {
+                CaseNoteContent = historicalCaseNote.Note,
+                CaseNoteId = historicalCaseNote.Id.ToString(),
+                CaseNoteTitle = historicalCaseNote.Title,
+                CreatedByEmail = historicalCaseNote.CreatedByWorker.EmailAddress,
+                CreatedByName = historicalCaseNote.CreatedBy,
+                CreatedOn = historicalCaseNote.CreatedOn,
+                MosaicId = historicalCaseNote.PersonId.ToString(),
+                NoteType = historicalCaseNote.NoteType
+            });
+        }
+
+        [Test]
+        public void CanConvertHistoricalVisitToVisit()
+        {
+            var historicalVisit = HistoricalTestHelper.CreateDatabaseVisit();
+
+            var visit = historicalVisit.ToDomain();
+
+            visit.Should().BeEquivalentTo(new Visit()
+            {
+                ActualDateTime = visit.ActualDateTime,
+                SeenAloneFlag = visit.SeenAloneFlag,
+                CompletedFlag = visit.CompletedFlag,
+                CreatedByEmail = visit.CreatedByEmail,
+                CreatedByName = visit.CreatedByName,
+                PersonId = visit.PersonId,
+                PlannedDateTime = visit.PlannedDateTime,
+                ReasonNotPlanned = visit.ReasonNotPlanned,
+                ReasonVisitNotMade = visit.ReasonVisitNotMade,
+                VisitId = visit.VisitId,
+                VisitType = visit.VisitType
+            });
+        }
     }
 }
 
