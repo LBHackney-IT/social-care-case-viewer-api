@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.ContactDecisionCreatedAt = _systemTime.Now;
                 referral.ContactDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "INITIAL";
-                referral.WorkerId = null;
+                referral.WorkerId = request.WorkerId;
             }
 
             if (request.UpdateType.Equals("INITIAL-DECISION"))
