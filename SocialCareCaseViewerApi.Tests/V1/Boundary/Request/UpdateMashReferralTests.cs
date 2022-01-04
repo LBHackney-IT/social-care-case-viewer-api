@@ -41,6 +41,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void WhenUpdateTypeIsContactDecisionOnlyEmailOrIdMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Do not provide both worker id and worker email address");
+        }
+
+        [Test]
         public void WhenUpdateTypeIsInitialDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
