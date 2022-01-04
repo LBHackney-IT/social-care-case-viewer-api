@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
 {
     public static class HistoricalEntityFactory
     {
-        public static CaseNote ToDomain(this HistoricalCaseNote caseNote)
+        public static CaseNote ToDomain(this HistoricalCaseNote caseNote, bool includeNoteContent = true)
         {
             return new CaseNote
             {
@@ -14,10 +14,10 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseNoteId = caseNote.Id.ToString(),
                 CaseNoteTitle = caseNote.Title,
                 CreatedOn = caseNote.CreatedOn,
-                NoteType = caseNote.NoteType,
-                CreatedByName = caseNote.CreatedBy,
+                CaseNoteContent = includeNoteContent == true ? caseNote.Note : null,
                 CreatedByEmail = caseNote.CreatedByWorker.EmailAddress,
-                CaseNoteContent = caseNote.Note
+                CreatedByName = $"{caseNote.CreatedByWorker.FirstNames} {caseNote.CreatedByWorker.LastNames}",
+                NoteType = caseNote.NoteType
             };
         }
 

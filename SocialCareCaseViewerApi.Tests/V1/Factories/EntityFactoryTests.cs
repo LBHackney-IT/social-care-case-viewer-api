@@ -752,11 +752,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CaseNoteId = historicalCaseNote.Id.ToString(),
                 CaseNoteTitle = historicalCaseNote.Title,
                 CreatedByEmail = historicalCaseNote.CreatedByWorker.EmailAddress,
-                CreatedByName = historicalCaseNote.CreatedBy,
+                CreatedByName = $"{historicalCaseNote.CreatedByWorker.FirstNames} {historicalCaseNote.CreatedByWorker.LastNames}",
                 CreatedOn = historicalCaseNote.CreatedOn,
                 MosaicId = historicalCaseNote.PersonId.ToString(),
                 NoteType = historicalCaseNote.NoteType
             });
+        }
+
+        [Test]
+        public void WhenConvertingHistoricalCaseNoteToCaseNoteSetsTheNoteContentToNullIfRequested()
+        {
+            var historicalCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote();
+
+            var caseNote = historicalCaseNote.ToDomain(includeNoteContent: false);
+
+            caseNote.CaseNoteContent.Should().BeNull();
         }
 
         [Test]

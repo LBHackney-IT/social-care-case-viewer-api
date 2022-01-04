@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.CreatedByWorker)
                 .ToList();
 
-            return caseNotes.Select(AddRelatedInformationToCaseNote).ToList();
+            return caseNotes.Select(AddRelatedInformationToCaseNote).ToList(); //TODO: TK look at refactoring this so object are always converted the same way
         }
 
         public CaseNote? GetCaseNoteInformationById(long caseNoteId)
@@ -75,8 +75,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private CaseNote AddRelatedInformationToCaseNote(HistoricalCaseNote caseNote)
         {
-            var caseNoteInformation = caseNote.ToDomain();
-            caseNoteInformation.CaseNoteContent = null;
+            var caseNoteInformation = caseNote.ToDomain(includeNoteContent: false);
             caseNoteInformation.NoteType = LookUpNoteTypeDescription(caseNote.NoteType);
 
             var worker = caseNote.CreatedByWorker;
