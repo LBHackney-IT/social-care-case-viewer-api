@@ -171,7 +171,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
                 else if (request.WorkerEmail != null)
                 {
-                    referral.WorkerId = _databaseContext.Workers.Where(w => w.Email == request.WorkerEmail).FirstOrDefault().Id;;
+                    referral.WorkerId = _databaseContext.Workers.Where(w => w.Email == request.WorkerEmail).FirstOrDefault().Id;
                 }
             }
 
