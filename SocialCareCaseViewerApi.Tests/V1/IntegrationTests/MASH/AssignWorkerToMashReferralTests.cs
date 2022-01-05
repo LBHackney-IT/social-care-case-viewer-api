@@ -34,8 +34,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         public async Task SuccessfulPatchAssignsWorkerToReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
-            request.WorkerId = _existingDbWorker.Id;
-            request.WorkerEmail = null;
+            request.WorkerId = null;
+            request.WorkerEmail = _existingDbWorker.Email;
             request.UpdateType = "ASSIGN-WORKER";
             var postUri = new Uri($"/api/v1/mash-referral/{_existingDbReferral.Id}", UriKind.Relative);
             var serializedRequest = JsonSerializer.Serialize(request);
