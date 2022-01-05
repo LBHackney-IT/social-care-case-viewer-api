@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'SCREENING'");
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"contact\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'CONTACT'");
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"initial\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'INITIAL'");
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"final\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'FINAL'");
         }
 
         [Test]
