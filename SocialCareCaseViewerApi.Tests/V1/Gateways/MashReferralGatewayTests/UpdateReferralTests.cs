@@ -131,5 +131,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
+
+
+        // [Test]
+        // public void SuccessfulUpdateOfMashReferralAssignsWorkerAndReturnsMashReferralDomain()
+        // {
+        //     var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+        //     var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+        //
+        //     var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+        //
+        //     response.Should().BeEquivalentTo(mashReferral.ToDomain());
+        // }
     }
 }
