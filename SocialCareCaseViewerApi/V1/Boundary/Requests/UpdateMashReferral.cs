@@ -8,6 +8,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string? WorkerEmail { get; set; }
         public int? WorkerId { get; set; }
         public string UpdateType { get; set; } = null!;
+        public string? Stage { get; set; }
         public string? Decision { get; set; }
         public string? ReferralCategory { get; set; }
         public bool? RequiresUrgentContact { get; set; }
