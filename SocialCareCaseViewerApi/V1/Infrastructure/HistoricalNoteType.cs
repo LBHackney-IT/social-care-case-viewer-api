@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("historical_dm_case_note_type", Schema = "dbo")]
+    [Table("dm_case_note_types", Schema = "dbo")]
     public class HistoricalNoteType
     {
         [Column("note_type")]

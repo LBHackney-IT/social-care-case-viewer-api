@@ -10,14 +10,16 @@ using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
-    public class HistoricalGetCaseNotesTests : DatabaseTests
+    public class HistoricalGetCaseNotesTests : HistoricalDataDatabaseTests
     {
         private HistoricalSocialCareGateway _classUnderTest;
+        private long _personId;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(DatabaseContext);
+            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
+            _personId = 1L;
         }
 
         [Test]
@@ -31,10 +33,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenThereIsOneMatchReturnsAListContainingTheMatchingCaseNote()
         {
-            var person = AddPersonToDatabase();
-            var (caseNote, _, _) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(person.Id);
+            var (caseNote, _, _) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
-            var response = _classUnderTest.GetAllCaseNotes(person.Id);
+            var response = _classUnderTest.GetAllCaseNotes(_personId);
 
             response.Count.Should().Be(1);
             response.FirstOrDefault()?.CaseNoteId.Should().Be(caseNote.Id.ToString());
@@ -43,11 +44,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenThereAreMultipleMatchesReturnsAListContainingAllMatchingCaseNotes()
         {
-            var person = AddPersonToDatabase();
-            AddCaseNoteWithNoteTypeAndWorkerToDatabase(person.Id);
-            AddCaseNoteWithNoteTypeAndWorkerToDatabase(person.Id, 456);
+            AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
+            AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId, 456);
 
-            var response = _classUnderTest.GetAllCaseNotes(person.Id);
+            var response = _classUnderTest.GetAllCaseNotes(_personId);
 
             response.Count.Should().Be(2);
         }
@@ -55,8 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenThereAreMatchingRecordsReturnsSpecificInformationAboutTheCaseNote()
         {
-            var person = AddPersonToDatabase();
-            var (caseNote, noteType, caseWorker) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(person.Id);
+            var (caseNote, noteType, caseWorker) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
             var expectedCaseNoteInformation = new CaseNote
             {
@@ -69,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
                 CreatedByEmail = caseWorker.EmailAddress
             };
 
-            var response = _classUnderTest.GetAllCaseNotes(person.Id);
+            var response = _classUnderTest.GetAllCaseNotes(_personId);
 
             response.FirstOrDefault().Should().BeEquivalentTo(expectedCaseNoteInformation);
         }
@@ -77,20 +76,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenListingMatchingRecordsWillNotReturnTheDetailedContentsOfACaseNote()
         {
-            var person = AddPersonToDatabase();
-            AddCaseNoteWithNoteTypeAndWorkerToDatabase(person.Id);
+            AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
-            var response = _classUnderTest.GetAllCaseNotes(person.Id);
+            var response = _classUnderTest.GetAllCaseNotes(_personId);
 
             response.FirstOrDefault()?.CaseNoteContent.Should().BeNullOrEmpty();
-        }
-
-        private Person AddPersonToDatabase()
-        {
-            var databaseEntity = TestHelpers.CreatePerson();
-            DatabaseContext.Persons.Add(databaseEntity);
-            DatabaseContext.SaveChanges();
-            return databaseEntity;
         }
 
         private (HistoricalCaseNote, HistoricalNoteType, HistoricalWorker) AddCaseNoteWithNoteTypeAndWorkerToDatabase(long personId, long caseNoteId = 123)
@@ -100,15 +90,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             var caseNoteType = faker.Create<HistoricalNoteType>().Type;
             var caseNoteTypeDescription = faker.Create<HistoricalNoteType>().Description;
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType(caseNoteType, caseNoteTypeDescription);
-            DatabaseContext.HistoricalNoteTypes.Add(noteType);
+            HistoricalSocialCareContext.HistoricalNoteTypes.Add(noteType);
 
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
-            DatabaseContext.HistoricalWorkers.Add(worker);
+            HistoricalSocialCareContext.HistoricalWorkers.Add(worker);
 
             var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(caseNoteId, personId, noteType.Type, worker);
-            DatabaseContext.HistoricalCaseNotes.Add(caseNote);
+            HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
 
-            DatabaseContext.SaveChanges();
+            HistoricalSocialCareContext.SaveChanges();
 
             return (caseNote, noteType, worker);
         }

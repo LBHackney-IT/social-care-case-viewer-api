@@ -7,7 +7,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class HistoricalTestHelper
     {
-
         public static HistoricalCaseNote CreateDatabaseCaseNote(long id = 123, long personId = 123, string noteType = "CASSUMASC",
             HistoricalWorker? createdWorker = null)
         {
@@ -77,21 +76,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(v => v.Worker, worker);
 
             return visit;
-        }
-
-        public static HistoricalOrganisation CreateDatabaseOrganisation(
-            long id = 1L,
-            string name = "testOrganisationName",
-            string responsibleAuthority = "Y"
-            )
-        {
-            var faker = new Fixture();
-
-            return faker.Build<HistoricalOrganisation>()
-                .With(organisation => organisation.Id, id)
-                .With(organisation => organisation.Name, name)
-                .With(organisation => organisation.ResponsibleAuthority, responsibleAuthority)
-                .Create();
         }
     }
 }

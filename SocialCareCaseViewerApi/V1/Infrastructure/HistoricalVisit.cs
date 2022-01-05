@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("historical_dm_visit", Schema = "dbo")]
+    [Table("dm_visits", Schema = "dbo")]
     public class HistoricalVisit
     {
         [Column("visit_id")]

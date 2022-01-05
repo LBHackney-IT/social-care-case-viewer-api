@@ -12,10 +12,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         : WebApplicationFactory<TStartup> where TStartup : class
     {
         private readonly DbConnection _connection;
+        private readonly DbConnection _historicalDataDbConnection;
 
-        public MockWebApplicationFactory(DbConnection connection)
+        public MockWebApplicationFactory(DbConnection connection, DbConnection historicalDataDbConnection)
         {
             _connection = connection;
+            _historicalDataDbConnection = historicalDataDbConnection;
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -28,10 +30,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 var context = new DatabaseContext(dbBuilder.Options);
                 services.AddSingleton(context);
 
+                var historicalDataDbBuilder = new DbContextOptionsBuilder();
+                historicalDataDbBuilder.UseNpgsql(_historicalDataDbConnection);
+                var historicalDataContext = new HistoricalSocialCareContext(historicalDataDbBuilder.Options);
+                services.AddSingleton(historicalDataContext);
+
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<DatabaseContext>();
+                var historicalDbContext = serviceProvider.GetRequiredService<HistoricalSocialCareContext>();
 
                 dbContext.Database.EnsureCreated();
+                historicalDataContext.Database.EnsureCreated();
             });
         }
     }

@@ -120,6 +120,14 @@ namespace SocialCareCaseViewerApi
                 opt => opt.UseNpgsql(connectionString ?? throw new InvalidOperationException("Must provide CONNECTION_STRING environment variable")));
 
             services.AddSingleton<ISccvDbContext, SccvDbContext>();
+
+            //TODO: migrate historical data to service database 
+            var historicalDataConnectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING") ?? "Host=;Database=;";
+
+            services.AddDbContext<HistoricalSocialCareContext>(options => options
+                .UseNpgsql(historicalDataConnectionString ?? throw new InvalidOperationException("Must provide HISTORICAL_DATA_CONNECTION_STRING environment variable"))
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking) //read only db for now, no need for tracking
+            );
         }
 
         private static void RegisterGateways(IServiceCollection services)

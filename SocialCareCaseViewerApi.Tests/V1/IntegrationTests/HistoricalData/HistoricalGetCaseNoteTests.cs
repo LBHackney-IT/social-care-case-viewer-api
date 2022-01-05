@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
         [Test]
         public async Task WhenThereIsAMatchingCaseNoteIdReturns200AndCaseNoteInformation()
         {
-            var historicalCaseNote = HistoricalE2ETestHelpers.AddCaseNoteWithNoteTypeAndWorkerToDatabase(DatabaseContext);
+            var historicalCaseNote = HistoricalE2ETestHelpers.AddCaseNoteWithNoteTypeAndWorkerToDatabase(HistoricalSocialCareContext);
             var uri = new Uri($"api/v1/casenotes/{historicalCaseNote.Id}", UriKind.Relative);
 
             var response = await Client.GetAsync(uri).ConfigureAwait(true);

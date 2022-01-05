@@ -11,9 +11,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class HistoricalSocialCareGateway : IHistoricalSocialCareGateway
     {
-        private readonly DatabaseContext _databaseContext;
+        private readonly HistoricalSocialCareContext _databaseContext;
 
-        public HistoricalSocialCareGateway(DatabaseContext databaseContext)
+        public HistoricalSocialCareGateway(HistoricalSocialCareContext databaseContext)
         {
             _databaseContext = databaseContext;
         }

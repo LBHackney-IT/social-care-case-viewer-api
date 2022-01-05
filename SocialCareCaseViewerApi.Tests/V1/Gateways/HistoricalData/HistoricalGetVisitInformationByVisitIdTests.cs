@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
     [NonParallelizable]
     [TestFixture]
-    public class HistoricalGetVisitInformationByVisitIdTests : DatabaseTests
+    public class HistoricalGetVisitInformationByVisitIdTests : HistoricalDataDatabaseTests
 
     {
         private HistoricalSocialCareGateway _classUnderTest = null!;
@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(DatabaseContext);
+            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
         }
 
         [Test]
@@ -78,9 +78,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var visit = HistoricalTestHelper.CreateDatabaseVisit(visitId, workerId: workerId);
 
-            DatabaseContext.HistoricalVisits.Add(visit);
-            DatabaseContext.HistoricalWorkers.Add(visit.Worker);
-            DatabaseContext.SaveChanges();
+            HistoricalSocialCareContext.HistoricalVisits.Add(visit);
+            HistoricalSocialCareContext.HistoricalWorkers.Add(visit.Worker);
+            HistoricalSocialCareContext.SaveChanges();
 
             return visit;
         }

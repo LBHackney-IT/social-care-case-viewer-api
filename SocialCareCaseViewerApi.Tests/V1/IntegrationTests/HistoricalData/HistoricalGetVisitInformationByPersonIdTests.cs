@@ -16,8 +16,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
         [Test]
         public async Task WhenThereIsAVisitWithMatchingPersonIdReturns200AndVisitInformation()
         {
-            var worker = HistoricalE2ETestHelpers.AddWorkerToDatabase(DatabaseContext);
-            var visitInformation = HistoricalE2ETestHelpers.AddVisitToDatabase(DatabaseContext, worker).ToDomain();
+            var worker = HistoricalE2ETestHelpers.AddWorkerToDatabase(HistoricalSocialCareContext);
+            var visitInformation = HistoricalE2ETestHelpers.AddVisitToDatabase(HistoricalSocialCareContext, worker).ToDomain();
 
             visitInformation.CreatedByEmail = worker.EmailAddress;
             visitInformation.CreatedByName = $"{worker.FirstNames} {worker.LastNames}";

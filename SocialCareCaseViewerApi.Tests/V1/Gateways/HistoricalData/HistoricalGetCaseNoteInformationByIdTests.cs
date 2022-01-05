@@ -10,14 +10,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
     [NonParallelizable]
     [TestFixture]
-    public class HistoricalGetCaseNoteInformationByIdTests : DatabaseTests
+    public class HistoricalGetCaseNoteInformationByIdTests : HistoricalDataDatabaseTests
     {
         private IHistoricalSocialCareGateway _classUnderTest;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(DatabaseContext);
+            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
         }
 
         [Test]
@@ -90,10 +90,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             var existentNoteType = HistoricalTestHelper.CreateDatabaseNoteType("EXISTENT", "Existent Case Note Type");
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
             var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(noteType: nonexistentNoteType);
-            DatabaseContext.HistoricalNoteTypes.Add(existentNoteType);
-            DatabaseContext.HistoricalWorkers.Add(worker);
-            DatabaseContext.HistoricalCaseNotes.Add(caseNote);
-            DatabaseContext.SaveChanges();
+            HistoricalSocialCareContext.HistoricalNoteTypes.Add(existentNoteType);
+            HistoricalSocialCareContext.HistoricalWorkers.Add(worker);
+            HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
+            HistoricalSocialCareContext.SaveChanges();
 
             var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
 
@@ -108,10 +108,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             var worker = HistoricalTestHelper.CreateDatabaseWorker(workerFirstName, workerLastName, workerEmailAddress);
             var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(id, personId, noteType.Type, worker);
 
-            DatabaseContext.HistoricalNoteTypes.Add(noteType);
-            DatabaseContext.HistoricalWorkers.Add(worker);
-            DatabaseContext.HistoricalCaseNotes.Add(caseNote);
-            DatabaseContext.SaveChanges();
+            HistoricalSocialCareContext.HistoricalNoteTypes.Add(noteType);
+            HistoricalSocialCareContext.HistoricalWorkers.Add(worker);
+            HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
+            HistoricalSocialCareContext.SaveChanges();
 
             return caseNote;
         }

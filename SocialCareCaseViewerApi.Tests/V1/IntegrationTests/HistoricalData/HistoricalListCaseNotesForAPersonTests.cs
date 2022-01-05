@@ -14,13 +14,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
         [Test]
         public async Task ReturnsAllCaseNotesForASpecificPerson()
         {
-            var person = HistoricalE2ETestHelpers.AddPersonToDatabase(DatabaseContext);
+            var personId = 1L;
 
-            var caseNoteOne = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(DatabaseContext, person.Id);
-            var caseNoteTwo = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(DatabaseContext, person.Id);
-            var caseNoteThree = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(DatabaseContext, person.Id);
+            var caseNoteOne = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext, personId);
+            var caseNoteTwo = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext, personId);
+            var caseNoteThree = HistoricalE2ETestHelpers.AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext, personId);
 
-            var uri = new Uri($"api/v1/casenotes/person/{person.Id}", UriKind.Relative);
+            var uri = new Uri($"api/v1/casenotes/person/{personId}", UriKind.Relative);
             var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;

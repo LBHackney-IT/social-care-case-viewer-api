@@ -2,23 +2,13 @@ using AutoFixture;
 using Bogus;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
 {
     public static class HistoricalE2ETestHelpers
     {
-        public static Person AddPersonToDatabase(DatabaseContext context)
-        {
-            var person = TestHelpers.CreatePerson();
-            context.Persons.Add(person);
-            context.SaveChanges();
-
-            return person;
-        }
-
-        public static HistoricalCaseNote AddCaseNoteForASpecificPersonToDb(DatabaseContext context, long personId, bool includeNoteContent = true)
+        public static HistoricalCaseNote AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext context, long personId, bool includeNoteContent = true)
         {
             var fixture = new Fixture();
             var faker = new Faker();
@@ -50,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             };
         }
 
-        public static HistoricalCaseNote AddCaseNoteWithNoteTypeAndWorkerToDatabase(DatabaseContext socialCareContext)
+        public static HistoricalCaseNote AddCaseNoteWithNoteTypeAndWorkerToDatabase(HistoricalSocialCareContext socialCareContext)
         {
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType();
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
@@ -75,7 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             };
         }
 
-        public static HistoricalVisit AddVisitToDatabase(DatabaseContext socialCareContext, HistoricalWorker? worker = null)
+        public static HistoricalVisit AddVisitToDatabase(HistoricalSocialCareContext socialCareContext, HistoricalWorker? worker = null)
         {
             var visitInformation = HistoricalTestHelper.CreateDatabaseVisit(worker: worker);
             socialCareContext.HistoricalVisits.Add(visitInformation);
@@ -84,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             return visitInformation;
         }
 
-        public static HistoricalWorker AddWorkerToDatabase(DatabaseContext socialCareContext)
+        public static HistoricalWorker AddWorkerToDatabase(HistoricalSocialCareContext socialCareContext)
         {
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
             socialCareContext.HistoricalWorkers.Add(worker);
