@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("CONTACT"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"contact\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'CONTACT'");
                 }
 
                 referral.ContactDecisionCreatedAt = _systemTime.Now;
@@ -123,7 +123,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("INITIAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"initial\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'INITIAL'");
                 }
 
                 referral.InitialDecisionCreatedAt = _systemTime.Now;
@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("SCREENING"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'SCREENING'");
                 }
 
                 referral.ScreeningCreatedAt = _systemTime.Now;
@@ -152,7 +152,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("FINAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage \"{referral.Stage}\", this request requires the referral to be in stage \"final\"");
+                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'FINAL'");
                 }
 
                 referral.FinalDecisionCreatedAt = _systemTime.Now;
@@ -165,7 +165,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.UpdateType.Equals("ASSIGN-WORKER"))
             {
-                referral.WorkerId = request.WorkerId;
+                if (request.WorkerId != null)
+                {
+                    referral.WorkerId = request.WorkerId;
+                }
+                else if (request.WorkerEmail != null)
+                {
+                    referral.WorkerId = _databaseContext.Workers.Where(w => w.Email == request.WorkerEmail).FirstOrDefault().Id;;
+                }
             }
 
             _databaseContext.SaveChanges();
