@@ -101,6 +101,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
                 .WithMessage($"Worker with id {workerId} not found");
         }
 
+
+        [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenWorkerIsNotFoundUsingEmail()
+        {
+            var workerEmail = _faker.Person.Email;
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerEmail: workerEmail);
+            request.WorkerId = null;
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+
+            Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email {workerEmail} not found");
+        }
+
         [Test]
         public void SuccessfulUpdateOfMashReferralFromContactToInitialUpdatesAndReturnsMashReferralDomain()
         {
