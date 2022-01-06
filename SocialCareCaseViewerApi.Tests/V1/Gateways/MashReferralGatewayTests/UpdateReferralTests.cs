@@ -89,6 +89,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         }
 
         [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenWorkerIsNotFoundUsingId()
+        {
+            var workerId = _faker.Random.Long(100);
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+
+            Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            act.Should().Throw<MashReferralNotFoundException>()
+                .WithMessage($"Worker with id {workerId} not found");
+        }
+
+        [Test]
         public void SuccessfulUpdateOfMashReferralFromContactToInitialUpdatesAndReturnsMashReferralDomain()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
