@@ -163,8 +163,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         [Test]
         public void SuccessfulUpdateOfMashReferralAssignsWorkerAndReturnsMashReferralDomain()
         {
+            var worker = MashReferralHelper.SaveWorkerToDatabase(DatabaseContext);
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerId: worker.Id);
 
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
