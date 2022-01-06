@@ -8,6 +8,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using MashReferral = SocialCareCaseViewerApi.V1.Domain.MashReferral;
+using ReferralDbEntity = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -88,10 +89,26 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 results = results.Where(x => x.Id == request.Id);
             }
 
-            return results
+            const string? policeRed = "Police - red";
+            const string? policeAmber = "Police - amber";
+
+            var policePriority = results.Where(x => x.Referrer.Equals(policeRed) || x.Referrer.Equals(policeAmber)).OrderByDescending(x => x.Referrer);
+
+            var priorityList = policePriority
                 .Include(x => x.MashResidents)
                 .Include(x => x.Worker)
-                .Select(m => m.ToDomain());
+                .Select(m => m.ToDomain()).ToList();
+
+            var notPolicePriority = results.Where(x => !x.Referrer.Equals(policeRed) && !x.Referrer.Equals(policeAmber));
+
+            var otherReferrals = notPolicePriority
+                .Include(x => x.MashResidents)
+                .Include(x => x.Worker)
+                .Select(m => m.ToDomain()).ToList();
+
+            priorityList.AddRange(otherReferrals);
+
+            return priorityList;
         }
 
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId)

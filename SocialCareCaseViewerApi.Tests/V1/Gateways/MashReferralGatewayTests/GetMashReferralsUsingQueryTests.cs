@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
@@ -69,6 +70,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             response.Count.Should().Be(1);
             response[0].Id.Should().Equals(referral.Id);
+        }
+
+        [Test]
+        public void GetMashReferralsReturnsListWithPolicePriorityAtTheTop()
+        {
+            const string? policeRed = "Police - red";
+            const string? policeAmber = "Police - amber";
+
+            var query = new QueryMashReferrals { Id = null };
+            const int numberOfMashReferralsToAdd = 5;
+
+            for (var i = 0; i < numberOfMashReferralsToAdd; i++)
+            {
+                MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            }
+            MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeRed);
+            MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeAmber);
+            var response = _mashReferralGateway.GetReferralsUsingQuery(query);
+
+            var mashReferrals = response.ToList();
+
+            mashReferrals.ToList().Count.Should().Be(7);
+            mashReferrals.FirstOrDefault()?.Referrer.Should().Be(policeRed);
+            mashReferrals.ElementAtOrDefault(1)?.Referrer.Should().Be(policeAmber);
         }
     }
 }

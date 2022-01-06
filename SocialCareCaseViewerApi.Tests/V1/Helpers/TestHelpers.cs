@@ -717,11 +717,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
         }
 
-        public static MashReferral CreateMashReferral(string? stage = null, long? mashReferralId = null)
+        public static MashReferral CreateMashReferral(string? stage = null, long? mashReferralId = null, string? referrer = null)
         {
             return new Faker<MashReferral>()
                 .RuleFor(x => x.Id, f => mashReferralId ?? f.UniqueIndex)
-                .RuleFor(x => x.Referrer, f => f.Random.String2(20))
+                .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
                 .RuleFor(x => x.Worker, CreateWorker())
                 .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
