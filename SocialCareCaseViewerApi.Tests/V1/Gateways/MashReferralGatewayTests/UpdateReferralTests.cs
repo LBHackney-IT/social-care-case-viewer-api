@@ -91,13 +91,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         [Test]
         public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenWorkerIsNotFoundUsingId()
         {
-            var workerId = _faker.Random.Long(100);
-            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
-            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+            var workerId = _faker.Random.Int();
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerId: workerId);
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
 
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
-            act.Should().Throw<MashReferralNotFoundException>()
+            act.Should().Throw<WorkerNotFoundException>()
                 .WithMessage($"Worker with id {workerId} not found");
         }
 
@@ -145,16 +145,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
 
+        [Test]
+        public void SuccessfulUpdateOfMashReferralAssignsWorkerAndReturnsMashReferralDomain()
+        {
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
 
-        // [Test]
-        // public void SuccessfulUpdateOfMashReferralAssignsWorkerAndReturnsMashReferralDomain()
-        // {
-        //     var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
-        //     var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
-        //
-        //     var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
-        //
-        //     response.Should().BeEquivalentTo(mashReferral.ToDomain());
-        // }
+            var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            response.Should().BeEquivalentTo(mashReferral.ToDomain());
+        }
+
+
     }
 }

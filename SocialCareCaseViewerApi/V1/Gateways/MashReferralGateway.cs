@@ -165,6 +165,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.UpdateType.Equals("ASSIGN-WORKER"))
             {
+
+
+                if (_databaseContext.Workers.Find(request.WorkerId) == null)
+                {
+                    throw new WorkerNotFoundException($"Worker with id {request.WorkerId} not found");
+                }
                 if (request.WorkerId != null)
                 {
                     referral.WorkerId = request.WorkerId;
