@@ -48,6 +48,11 @@ services:
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
       - DB_PORT=5432
+      - DB_HOST_HISTORICAL_DATA=sccv-historical-data-test-postgresql
+      - DB_USERNAME_HISTORICAL_DATA=postgres
+      - DB_PASSWORD_HISTORICAL_DATA=mypassword
+      - DB_DATABASE_HISTORICAL_DATA=testdb
+      - DB_PORT_HISTORICAL_DATA=5432
     links:
       - sccv-api-test-mongo-db
       - sccv-api-test-postgresql

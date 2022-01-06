@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.Tests
                    $"Port={Environment.GetEnvironmentVariable("DB_PORT_HISTORICAL_DATA") ?? "5434"};" +
                    $"Username={Environment.GetEnvironmentVariable("DB_USERNAME_HISTORICAL_DATA") ?? "postgres"};" +
                    $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD_HISTORICAL_DATA") ?? "mypassword"};" +
-                   $"Database={Environment.GetEnvironmentVariable("DB_DATABASE_HISTORICAL_DATA") ?? "historical-data-testdb"}";
+                   $"Database={Environment.GetEnvironmentVariable("DB_DATABASE_HISTORICAL_DATA") ?? "testdb"}";
         }
     }
 }
