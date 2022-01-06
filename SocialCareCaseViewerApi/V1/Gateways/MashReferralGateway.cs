@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson.Serialization.IdGenerators;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
@@ -29,7 +31,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //THIS IS FOR TESTING/STAGING PURPOSES, REMEMBER TO OMIT FROM PROD RELEASE
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_RESIDENTS;");
             _databaseContext.Database.ExecuteSqlRaw("DELETE FROM DBO.REF_MASH_REFERRALS;");
-
         }
 
         public MashReferral CreateReferral(CreateReferralRequest request)
@@ -110,7 +111,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("CONTACT"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'CONTACT'");
+                    throw new MashReferralStageMismatchException(
+                        $"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'CONTACT'");
                 }
 
                 referral.ContactDecisionCreatedAt = _systemTime.Now;
@@ -123,7 +125,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("INITIAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'INITIAL'");
+                    throw new MashReferralStageMismatchException(
+                        $"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'INITIAL'");
                 }
 
                 referral.InitialDecisionCreatedAt = _systemTime.Now;
@@ -138,7 +141,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("SCREENING"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'SCREENING'");
+                    throw new MashReferralStageMismatchException(
+                        $"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'SCREENING'");
                 }
 
                 referral.ScreeningCreatedAt = _systemTime.Now;
@@ -152,7 +156,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!referral.Stage.Equals("FINAL"))
                 {
-                    throw new MashReferralStageMismatchException($"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'FINAL'");
+                    throw new MashReferralStageMismatchException(
+                        $"Referral {referral.Id} is in stage '{referral.Stage}', this request requires the referral to be in stage 'FINAL'");
                 }
 
                 referral.FinalDecisionCreatedAt = _systemTime.Now;
@@ -165,19 +170,24 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.UpdateType.Equals("ASSIGN-WORKER"))
             {
-
-
-                if (_databaseContext.Workers.Find(request.WorkerId) == null)
-                {
-                    throw new WorkerNotFoundException($"Worker with id {request.WorkerId} not found");
-                }
                 if (request.WorkerId != null)
                 {
+                    if (_databaseContext.Workers.Find(request.WorkerId) == null)
+                    {
+                        throw new WorkerNotFoundException($"Worker with id {request.WorkerId} not found");
+                    }
+
                     referral.WorkerId = request.WorkerId;
                 }
-                else if (request.WorkerEmail != null)
+                else
                 {
-                    referral.WorkerId = _databaseContext.Workers.Where(w => w.Email == request.WorkerEmail).FirstOrDefault().Id;
+                    Worker worker = _databaseContext.Workers.FirstOrDefault(w => w.Email == request.WorkerEmail);
+                    if (worker == null)
+                    {
+                        throw new WorkerNotFoundException($"Worker with email {request.WorkerEmail} not found");
+                    }
+
+                    referral.WorkerId = worker.Id;
                 }
             }
 
@@ -185,6 +195,5 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return referral.ToDomain();
         }
-
     }
 }
