@@ -20,6 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("note_type")]
         [MaxLength(16)]
         public string? NoteType { get; set; }
+        public HistoricalNoteType HistoricalNoteType { get; set; } = null!;
 
         [Column("title")]
         [MaxLength(100)]

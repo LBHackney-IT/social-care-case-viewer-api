@@ -88,15 +88,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 
             response.VisitId.Should().Be(visit.VisitId);
             response.VisitType.Should().Be(visit.VisitType);
-            response.PlannedDateTime.Should().Be(visit.PlannedDateTime);
-            response.ActualDateTime.Should().Be(visit.ActualDateTime);
+            response.PlannedDateTime.Should().BeCloseTo(visit.PlannedDateTime.Value);
+            response.ActualDateTime.Should().BeCloseTo(visit.ActualDateTime.Value);
             response.ReasonVisitNotMade.Should().Be(visit.ReasonVisitNotMade);
             response.SeenAloneFlag.Should().Be(!string.IsNullOrEmpty(visit.SeenAloneFlag) && visit.SeenAloneFlag.Equals("Y"));
             response.CompletedFlag.Should().Be(!string.IsNullOrEmpty(visit.CompletedFlag) && visit.CompletedFlag.Equals("Y"));
             response.CreatedByEmail.Should().Be(visit.Worker.EmailAddress);
             response.CreatedByName.Should().Be($"{visit.Worker.FirstNames} {visit.Worker.LastNames}");
         }
-
         private HistoricalVisit AddVisitToDatabase(long? visitId = null, long? workerId = null, long? personId = null)
         {
             var visit = HistoricalTestHelper.CreateDatabaseVisit(visitId, personId, workerId: workerId);

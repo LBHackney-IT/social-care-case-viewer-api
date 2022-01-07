@@ -4,7 +4,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     public class HistoricalSocialCareContext : DbContext
     {
-        public HistoricalSocialCareContext(DbContextOptions options) : base(options)
+        public HistoricalSocialCareContext(DbContextOptions<HistoricalSocialCareContext> options) : base(options)
         {
         }
 
@@ -25,6 +25,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
               .WithMany(worker => worker.CaseNotes)
               .HasForeignKey(caseNote => caseNote.CreatedBy)
               .HasPrincipalKey(worker => worker.SystemUserId);
+
+            modelBuilder.Entity<HistoricalCaseNote>()
+                .HasOne(caseNote => caseNote.HistoricalNoteType)
+                .WithMany(noteType => noteType.CaseNotes)
+                .HasForeignKey(caseNote => caseNote.NoteType)
+                .HasPrincipalKey(noteType => noteType.Type);
         }
     }
 }

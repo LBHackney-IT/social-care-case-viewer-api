@@ -10,18 +10,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
     {
         public static HistoricalCaseNote AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext context, long personId, bool includeNoteContent = true)
         {
-            var fixture = new Fixture();
             var faker = new Faker();
 
-            var noteTypeCode = fixture.Create<HistoricalNoteType>().Type;
-            var noteTypeDescription = fixture.Create<HistoricalNoteType>().Description;
-            var noteType = HistoricalTestHelper.CreateDatabaseNoteType(noteTypeCode!, noteTypeDescription!);
+            var noteTypeCode = faker.Random.String2(5);
+            var noteTypeDescription = faker.Random.String2(15);
+            var noteType = HistoricalTestHelper.CreateDatabaseNoteType(noteTypeCode, noteTypeDescription);
             context.HistoricalNoteTypes.Add(noteType);
             var savedWorker = HistoricalTestHelper.CreateDatabaseWorker();
             context.HistoricalWorkers.Add(savedWorker);
 
             var caseNoteId = faker.Random.Long(min: 1);
-            var savedCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote(caseNoteId, personId, noteType.Type!, savedWorker);
+            var savedCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote(caseNoteId, personId, savedWorker, noteType);
 
             context.HistoricalCaseNotes.Add(savedCaseNote);
             context.SaveChanges();
@@ -36,7 +35,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
                 PersonId = savedCaseNote.PersonId,
                 Title = savedCaseNote.Title,
                 CreatedOn = savedCaseNote.CreatedOn,
-                NoteType = noteType.Description
+                NoteType = noteType.Description,
+                HistoricalNoteType = noteType
             };
         }
 
@@ -44,9 +44,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
         {
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType();
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
-            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(noteType: noteType.Type!, createdWorker: worker);
+            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(createdWorker: worker, noteType: noteType);
 
-            socialCareContext.HistoricalNoteTypes.Add(noteType);
             socialCareContext.HistoricalWorkers.Add(worker);
             socialCareContext.HistoricalCaseNotes.Add(caseNote);
             socialCareContext.SaveChanges();
@@ -61,7 +60,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
                 PersonId = caseNote.PersonId,
                 Title = caseNote.Title,
                 CreatedOn = caseNote.CreatedOn,
-                NoteType = noteType.Description
+                NoteType = noteType.Type,
+                HistoricalNoteType = noteType
             };
         }
 

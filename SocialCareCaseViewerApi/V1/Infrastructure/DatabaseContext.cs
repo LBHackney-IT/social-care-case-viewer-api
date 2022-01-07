@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     //TODO: add tests
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
         public DbSet<Person> Persons { get; set; }

@@ -755,7 +755,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CreatedByName = $"{historicalCaseNote.CreatedByWorker.FirstNames} {historicalCaseNote.CreatedByWorker.LastNames}",
                 CreatedOn = historicalCaseNote.CreatedOn,
                 MosaicId = historicalCaseNote.PersonId.ToString(),
-                NoteType = historicalCaseNote.NoteType
+                NoteType = historicalCaseNote.HistoricalNoteType.Description
+            });
+        }
+
+        [Test]
+        public void CanConvertHistoricalCaseNoteToCaseNoteWhenAssociatedWorkerIsNull()
+        {
+            var historicalCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote();
+            historicalCaseNote.CreatedByWorker = null;
+
+            var caseNote = historicalCaseNote.ToDomain();
+
+            caseNote.Should().BeEquivalentTo(new CaseNote()
+            {
+                CaseNoteContent = historicalCaseNote.Note,
+                CaseNoteId = historicalCaseNote.Id.ToString(),
+                CaseNoteTitle = historicalCaseNote.Title,
+                CreatedByEmail = null,
+                CreatedByName = null,
+                CreatedOn = historicalCaseNote.CreatedOn,
+                MosaicId = historicalCaseNote.PersonId.ToString(),
+                NoteType = historicalCaseNote.HistoricalNoteType.Description
+            });
+        }
+
+        [Test]
+        public void CanConvertHistoricalCaseNoteToCaseNoteWhenAssociatedNoteTYpeIsNull()
+        {
+            var historicalCaseNote = HistoricalTestHelper.CreateDatabaseCaseNote();
+            historicalCaseNote.HistoricalNoteType = null;
+
+            var caseNote = historicalCaseNote.ToDomain();
+
+            caseNote.Should().BeEquivalentTo(new CaseNote()
+            {
+                CaseNoteContent = historicalCaseNote.Note,
+                CaseNoteId = historicalCaseNote.Id.ToString(),
+                CaseNoteTitle = historicalCaseNote.Title,
+                CreatedByEmail = historicalCaseNote.CreatedByWorker.EmailAddress,
+                CreatedByName = $"{historicalCaseNote.CreatedByWorker.FirstNames} {historicalCaseNote.CreatedByWorker.LastNames}",
+                CreatedOn = historicalCaseNote.CreatedOn,
+                MosaicId = historicalCaseNote.PersonId.ToString(),
+                NoteType = null
             });
         }
 

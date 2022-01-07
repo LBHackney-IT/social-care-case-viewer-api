@@ -4,7 +4,6 @@ using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Infrastructure;
-using System;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
@@ -53,7 +52,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             response?.MosaicId.Should().Be(caseNote.PersonId.ToString());
             response?.CaseNoteId.Should().Be(caseNote.Id.ToString());
             response?.CaseNoteTitle.Should().Be(caseNote.Title);
-            response?.CreatedOn.Should().Be((DateTime) caseNote.CreatedOn);
+            response?.CreatedOn.Should().BeCloseTo(caseNote.CreatedOn);
             response?.CaseNoteContent.Should().Be(caseNote.Note);
         }
 
@@ -86,11 +85,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenNoteTypeCannotBeFoundReturnsNullForNoteType()
         {
-            const string nonexistentNoteType = "NONEXISTENT";
-            var existentNoteType = HistoricalTestHelper.CreateDatabaseNoteType("EXISTENT", "Existent Case Note Type");
+            var nonexistentNoteType = HistoricalTestHelper.CreateDatabaseNoteType("NONEXISTENT", "Non existent Case Note Type");
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
-            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(noteType: nonexistentNoteType);
-            HistoricalSocialCareContext.HistoricalNoteTypes.Add(existentNoteType);
+            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(includeNoteType: false);
+
+            HistoricalSocialCareContext.HistoricalNoteTypes.Add(nonexistentNoteType);
             HistoricalSocialCareContext.HistoricalWorkers.Add(worker);
             HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
             HistoricalSocialCareContext.SaveChanges();
@@ -106,7 +105,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType(caseNoteType, caseNoteTypeDescription);
             var worker = HistoricalTestHelper.CreateDatabaseWorker(workerFirstName, workerLastName, workerEmailAddress);
-            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(id, personId, noteType.Type, worker);
+            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(id, personId, worker, noteType);
 
             HistoricalSocialCareContext.HistoricalNoteTypes.Add(noteType);
             HistoricalSocialCareContext.HistoricalWorkers.Add(worker);

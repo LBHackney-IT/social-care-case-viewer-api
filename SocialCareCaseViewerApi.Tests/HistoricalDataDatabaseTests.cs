@@ -14,9 +14,12 @@ namespace SocialCareCaseViewerApi.Tests
         [SetUp]
         public void RunBeforeAnyTests()
         {
-            var builder = new DbContextOptionsBuilder();
+            var builder = new DbContextOptionsBuilder<HistoricalSocialCareContext>();
             builder.UseNpgsql(ConnectionString.HistoricalDataTestDatabase());
             HistoricalSocialCareContext = new HistoricalSocialCareContext(builder.Options);
+
+            //context is configured to be read only on production
+            HistoricalSocialCareContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             HistoricalSocialCareContext.Database.EnsureCreated();
             _transaction = HistoricalSocialCareContext.Database.BeginTransaction();

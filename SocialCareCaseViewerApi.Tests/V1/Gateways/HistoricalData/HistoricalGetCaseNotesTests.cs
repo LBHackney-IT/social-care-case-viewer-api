@@ -1,4 +1,4 @@
-using AutoFixture;
+using Bogus;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
@@ -14,12 +14,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
     {
         private HistoricalSocialCareGateway _classUnderTest;
         private long _personId;
+        private Faker _faker;
 
         [SetUp]
         public void Setup()
         {
             _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
             _personId = 1L;
+            _faker = new Faker();
         }
 
         [Test]
@@ -63,14 +65,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
                 CaseNoteId = caseNote.Id.ToString(),
                 NoteType = noteType.Description,
                 CaseNoteTitle = caseNote.Title,
-                CreatedOn = (DateTime) caseNote.CreatedOn,
+                CreatedOn = caseNote.CreatedOn,
                 CreatedByName = $"{caseWorker.FirstNames} {caseWorker.LastNames}",
                 CreatedByEmail = caseWorker.EmailAddress
             };
 
             var response = _classUnderTest.GetAllCaseNotes(_personId);
 
-            response.FirstOrDefault().Should().BeEquivalentTo(expectedCaseNoteInformation);
+            response.FirstOrDefault().Should().BeEquivalentTo(expectedCaseNoteInformation,
+                options =>
+                {
+                    options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                    return options;
+                });
         }
 
         [Test]
@@ -83,19 +90,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             response.FirstOrDefault()?.CaseNoteContent.Should().BeNullOrEmpty();
         }
 
+        [Test]
+        public void WhenThereAreMatchingRecordsItPopulatesTheNoteTypeWithCorrectDescriptionValueFromHistoricalNoteTypes()
+        {
+            var (_, noteType, _) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
+
+            var response = _classUnderTest.GetAllCaseNotes(_personId);
+
+            response.FirstOrDefault()?.NoteType.Should().Be(noteType.Description);
+        }
+
         private (HistoricalCaseNote, HistoricalNoteType, HistoricalWorker) AddCaseNoteWithNoteTypeAndWorkerToDatabase(long personId, long caseNoteId = 123)
         {
-            var faker = new Fixture();
+            var caseNoteType = _faker.Random.String2(5);
+            var caseNoteTypeDescription = _faker.Random.String2(15);
 
-            var caseNoteType = faker.Create<HistoricalNoteType>().Type;
-            var caseNoteTypeDescription = faker.Create<HistoricalNoteType>().Description;
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType(caseNoteType, caseNoteTypeDescription);
             HistoricalSocialCareContext.HistoricalNoteTypes.Add(noteType);
 
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
             HistoricalSocialCareContext.HistoricalWorkers.Add(worker);
 
-            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(caseNoteId, personId, noteType.Type, worker);
+            var caseNote = HistoricalTestHelper.CreateDatabaseCaseNote(caseNoteId, personId, worker, noteType);
             HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
 
             HistoricalSocialCareContext.SaveChanges();

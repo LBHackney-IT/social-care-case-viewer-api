@@ -7,30 +7,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 {
     public static class HistoricalTestHelper
     {
-        public static HistoricalCaseNote CreateDatabaseCaseNote(long id = 123, long personId = 123, string noteType = "CASSUMASC",
-            HistoricalWorker? createdWorker = null)
+        public static HistoricalCaseNote CreateDatabaseCaseNote(long id = 123, long personId = 123, HistoricalWorker? createdWorker = null, HistoricalNoteType? noteType = null, bool includeNoteType = true)
         {
             createdWorker ??= CreateDatabaseWorker();
+            noteType ??= CreateDatabaseNoteType();
 
-            return new Faker<HistoricalCaseNote>()
+            HistoricalCaseNote caseNote = new Faker<HistoricalCaseNote>()
                 .RuleFor(caseNote => caseNote.Id, id)
                 .RuleFor(caseNote => caseNote.PersonId, personId)
-                .RuleFor(caseNote => caseNote.NoteType, noteType)
+                .RuleFor(caseNote => caseNote.NoteType, noteType.Type)
                 .RuleFor(caseNote => caseNote.CreatedBy, createdWorker.SystemUserId)
                 .RuleFor(caseNote => caseNote.CreatedByWorker, createdWorker)
                 .RuleFor(caseNote => caseNote.CreatedOn, f => f.Date.Past())
                 .RuleFor(caseNote => caseNote.Note, f => f.Random.String2(100))
                 .RuleFor(caseNote => caseNote.Title, f => f.Random.String2(20));
+
+            if (includeNoteType)
+            {
+                caseNote.HistoricalNoteType = noteType;
+            }
+
+            return caseNote;
         }
 
         public static HistoricalNoteType CreateDatabaseNoteType(string noteType = "CASSUMASC", string description = "Case Summary (ASC)")
         {
-            var faker = new Fixture();
-
-            return faker.Build<HistoricalNoteType>()
-                .With(noteTypeI => noteTypeI.Type, noteType)
-                .With(noteTypeI => noteTypeI.Description, description)
-                .Create();
+            return new Faker<HistoricalNoteType>()
+                .RuleFor(noteType => noteType.Type, noteType)
+                .RuleFor(noteType => noteType.Description, description);
         }
 
         public static HistoricalWorker CreateDatabaseWorker(

@@ -15,9 +15,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CaseNoteTitle = caseNote.Title,
                 CreatedOn = caseNote.CreatedOn,
                 CaseNoteContent = includeNoteContent == true ? caseNote.Note : null,
-                CreatedByEmail = caseNote.CreatedByWorker.EmailAddress,
-                CreatedByName = $"{caseNote.CreatedByWorker.FirstNames} {caseNote.CreatedByWorker.LastNames}",
-                NoteType = caseNote.NoteType
+                CreatedByEmail = caseNote.CreatedByWorker?.EmailAddress,
+                CreatedByName = caseNote.CreatedByWorker != null ? $"{caseNote.CreatedByWorker.FirstNames} {caseNote.CreatedByWorker.LastNames}" : null,
+                NoteType = caseNote.HistoricalNoteType?.Description
             };
         }
 

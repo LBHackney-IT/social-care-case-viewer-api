@@ -64,8 +64,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             response.VisitId.Should().Be(visit.VisitId);
             response.PersonId.Should().Be(visit.PersonId);
             response.VisitType.Should().Be(visit.VisitType);
-            response.PlannedDateTime.Should().Be(visit.PlannedDateTime);
-            response.ActualDateTime.Should().Be(visit.ActualDateTime);
+            response.PlannedDateTime.Should().BeCloseTo(visit.PlannedDateTime!.Value);
+            response.ActualDateTime.Should().BeCloseTo(visit.ActualDateTime!.Value);
             response.ReasonNotPlanned.Should().Be(visit.ReasonNotPlanned);
             response.ReasonVisitNotMade.Should().Be(visit.ReasonVisitNotMade);
             response.SeenAloneFlag.Should().Be(!string.IsNullOrEmpty(visit.SeenAloneFlag) && visit.SeenAloneFlag.Equals("Y"));
