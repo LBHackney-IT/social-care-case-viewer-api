@@ -69,22 +69,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 
             response.Count.Should().Be(1);
-            response[0].Id.Should().Equals(referral.Id);
+            response[0].Id.Should().Be(referral.Id);
         }
 
         [Test]
-        public void GetMashReferralsReturnsListWithPolicePriorityAtTheTop()
+        public void ReturnsReferralsOrderedByPoliceRedAndThenPoliceAmberBeforeAnyOtherReferrals()
         {
             const string? policeRed = "Police - red";
             const string? policeAmber = "Police - amber";
 
             var query = new QueryMashReferrals { Id = null };
+
             const int numberOfMashReferralsToAdd = 5;
 
             for (var i = 0; i < numberOfMashReferralsToAdd; i++)
             {
                 MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             }
+
             MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeRed);
             MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeAmber);
             var response = _mashReferralGateway.GetReferralsUsingQuery(query);
@@ -92,31 +94,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             var mashReferrals = response.ToList();
 
             mashReferrals.ToList().Count.Should().Be(7);
-            mashReferrals.FirstOrDefault()?.Referrer.Should().Be(policeRed);
-            mashReferrals.ElementAtOrDefault(1)?.Referrer.Should().Be(policeAmber);
+
+            var firstReferral = mashReferrals.FirstOrDefault();
+            var secondReferral = mashReferrals.ElementAtOrDefault(1);
+
+            firstReferral?.Referrer.Should().Be(policeRed);
+            secondReferral?.Referrer.Should().Be(policeAmber);
         }
 
         [Test]
-        public void GetMashReferralsReturnsListWithNonPolicePriorityOrderedByOldestAndAfterPolicePriority()
+        public void ReturnsRemainingReferralsOrderedByOldestFirstImmediatelyAfterPoliceRedOrAmberReferrals()
         {
+            var currentLocalTime = DateTime.Now;
+            var todayWithoutMilliseconds = new DateTime(
+                currentLocalTime.Year,
+                currentLocalTime.Month,
+                currentLocalTime.Day,
+                currentLocalTime.Hour,
+                currentLocalTime.Minute,
+                currentLocalTime.Second,
+                DateTimeKind.Local);
+
+            var oldest = todayWithoutMilliseconds.AddHours(-12);
+            var recent = todayWithoutMilliseconds.AddHours(-3);
+
+            const int oldReferralsToAdd = 2;
+            const int newerReferralsToAdd = 2;
+
             const string? policeRed = "Police - red";
             const string? policeAmber = "Police - amber";
 
-            //Set up specific created at times
-            var currentTime = DateTime.Now;
-            var oldest = currentTime.AddHours(-10);
-            var recent = currentTime.AddHours(-5);
-
             var query = new QueryMashReferrals { Id = null };
-            const int numberOfOldReferralsToAdd = 2;
-            const int numberOfNewerReferralsToAdd = 2;
 
-            for (var i = 0; i < numberOfNewerReferralsToAdd; i++)
+            for (var i = 0; i < newerReferralsToAdd; i++)
             {
                 MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referralCreatedAt: recent);
             }
 
-            for (var i = 0; i < numberOfOldReferralsToAdd; i++)
+            for (var i = 0; i < oldReferralsToAdd; i++)
             {
                 MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referralCreatedAt: oldest);
             }
@@ -129,14 +144,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             var mashReferrals = response.ToList();
 
             mashReferrals.ToList().Count.Should().Be(6);
-            mashReferrals.FirstOrDefault()?.Referrer.Should().Be(policeRed);
-            mashReferrals.ElementAtOrDefault(1)?.Referrer.Should().Be(policeAmber);
 
-            mashReferrals.ElementAtOrDefault(2)?.ReferralCreatedAt.Should().Be(oldest);
-            mashReferrals.ElementAtOrDefault(3)?.ReferralCreatedAt.Should().Be(oldest);
+            var firstReferral = mashReferrals.FirstOrDefault();
+            var secondReferral = mashReferrals.ElementAtOrDefault(1);
+            var thirdReferral = mashReferrals.ElementAtOrDefault(2);
+            var fourthReferral = mashReferrals.ElementAtOrDefault(3);
+            var fifthReferral = mashReferrals.ElementAtOrDefault(4);
+            var sixthReferral = mashReferrals.ElementAtOrDefault(5);
 
-            mashReferrals.ElementAtOrDefault(4)?.ReferralCreatedAt.Should().Be(recent);
-            mashReferrals.ElementAtOrDefault(5)?.ReferralCreatedAt.Should().Be(recent);
+            firstReferral?.Referrer.Should().Be(policeRed);
+            secondReferral?.Referrer.Should().Be(policeAmber);
+
+            thirdReferral?.ReferralCreatedAt.Should().Be(oldest);
+            fourthReferral?.ReferralCreatedAt.Should().Be(oldest);
+
+            fifthReferral?.ReferralCreatedAt.Should().Be(recent);
+            sixthReferral?.ReferralCreatedAt.Should().Be(recent);
         }
     }
 }
