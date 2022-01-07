@@ -12,7 +12,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
     [TestFixture]
     public class UnAssignWorkerFromMashReferralTests : IntegrationTestSetup<Startup>
     {
-        private SocialCareCaseViewerApi.V1.Infrastructure.Worker _existingDbWorker;
         private SocialCareCaseViewerApi.V1.Infrastructure.MashReferral _existingDbReferral;
 
         [SetUp]
@@ -24,9 +23,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
 
             // Create existing referral and unrelated worker
-            var (existingDbWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-            var existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext);
-            _existingDbWorker = existingDbWorker;
+            var existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
             _existingDbReferral = existingDbReferral;
         }
 
@@ -34,8 +31,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         public async Task SuccessfulPatchUnAssignsWorkerToReferral()
         {
             var request = TestHelpers.CreateUpdateMashReferral();
-            request.WorkerId = _existingDbWorker.Id;
-            request.WorkerEmail = null;
             request.UpdateType = "UNASSIGN-WORKER";
             var postUri = new Uri($"/api/v1/mash-referral/{_existingDbReferral.Id}", UriKind.Relative);
             var serializedRequest = JsonSerializer.Serialize(request);
