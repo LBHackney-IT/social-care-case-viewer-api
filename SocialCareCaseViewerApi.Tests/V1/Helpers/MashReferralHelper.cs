@@ -12,5 +12,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             databaseContext.SaveChanges();
             return referral;
         }
+
+        public static Worker SaveWorkerToDatabase(DatabaseContext databaseContext)
+        {
+            var worker = TestHelpers.CreateWorker();
+            databaseContext.Workers.Add(worker);
+            databaseContext.SaveChanges();
+            return worker;
+        }
     }
 }

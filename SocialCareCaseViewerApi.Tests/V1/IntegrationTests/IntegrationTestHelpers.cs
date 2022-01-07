@@ -150,20 +150,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             return (caseStatuses, person);
         }
 
-        public static MashReferral SaveMashReferralToDatabase(DatabaseContext databaseContext)
+        public static MashReferral SaveMashReferralToDatabase(DatabaseContext databaseContext, string stage = null)
         {
-            var mashrefferal = new Faker<MashReferral>()
+            var mashreferral = new Faker<MashReferral>()
                 .RuleFor(w => w.Id, f => f.UniqueIndex)
                 .RuleFor(w => w.Referrer, f => f.Person.FullName)
                 .RuleFor(w => w.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(w => w.ReferralDocumentURI, f => f.Random.String2(20))
-                .RuleFor(w => w.Stage, f => f.Random.String2(20))
+                .RuleFor(w => w.Stage, f => stage ?? f.Random.String2(20))
                 .Generate(); ;
 
-            databaseContext.MashReferrals.Add(mashrefferal);
+            databaseContext.MashReferrals.Add(mashreferral);
             databaseContext.SaveChanges();
 
-            return mashrefferal;
+            return mashreferral;
         }
     }
 }
