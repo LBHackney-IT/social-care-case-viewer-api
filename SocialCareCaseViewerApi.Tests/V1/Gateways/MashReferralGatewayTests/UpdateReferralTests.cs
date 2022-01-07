@@ -41,7 +41,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         }
 
         [Test]
-        public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForScreeningDecisionAndReferralIsNotInScreeningStage()
+        public void
+            UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForScreeningDecisionAndReferralIsNotInScreeningStage()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
@@ -49,11 +50,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'SCREENING'");
+                .WithMessage(
+                    $"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'SCREENING'");
         }
 
         [Test]
-        public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForContactDecisionAndReferralIsNotInContactStage()
+        public void
+            UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForContactDecisionAndReferralIsNotInContactStage()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
@@ -61,11 +64,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'CONTACT'");
+                .WithMessage(
+                    $"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'CONTACT'");
         }
 
         [Test]
-        public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForInitialDecisionAndReferralIsNotInInitialStage()
+        public void
+            UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForInitialDecisionAndReferralIsNotInInitialStage()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
@@ -73,11 +78,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'INITIAL'");
+                .WithMessage(
+                    $"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'INITIAL'");
         }
 
         [Test]
-        public void UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForFinalDecisionAndReferralIsNotInFinalStage()
+        public void
+            UpdatingMashReferralThrowsMashReferralStageMismatchExceptionWhenRequestUpdateIsForFinalDecisionAndReferralIsNotInFinalStage()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
@@ -85,7 +92,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'FINAL'");
+                .WithMessage(
+                    $"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'FINAL'");
         }
 
         [Test]
@@ -185,5 +193,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
 
+        [Test]
+        public void SuccessfulUpdateOfMashReferralUnAssignsWorkerAndReturnsMashReferralDomain()
+        {
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "UNASSIGN-WORKER");
+            var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+            mashReferral.WorkerId = null;
+
+            response.Should().BeEquivalentTo(mashReferral.ToDomain());
+        }
     }
 }
