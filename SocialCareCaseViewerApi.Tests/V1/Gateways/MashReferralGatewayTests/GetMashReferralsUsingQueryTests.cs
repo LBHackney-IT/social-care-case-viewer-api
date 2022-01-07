@@ -95,5 +95,48 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             mashReferrals.FirstOrDefault()?.Referrer.Should().Be(policeRed);
             mashReferrals.ElementAtOrDefault(1)?.Referrer.Should().Be(policeAmber);
         }
+
+        [Test]
+        public void GetMashReferralsReturnsListWithNonPolicePriorityOrderedByOldestAndAfterPolicePriority()
+        {
+            const string? policeRed = "Police - red";
+            const string? policeAmber = "Police - amber";
+
+            //Set up specific created at times
+            var currentTime = DateTime.Now;
+            var oldest = currentTime.AddHours(-10);
+            var recent = currentTime.AddHours(-5);
+
+            var query = new QueryMashReferrals { Id = null };
+            const int numberOfOldReferralsToAdd = 2;
+            const int numberOfNewerReferralsToAdd = 2;
+
+            for (var i = 0; i < numberOfNewerReferralsToAdd; i++)
+            {
+                MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referralCreatedAt: recent);
+            }
+
+            for (var i = 0; i < numberOfOldReferralsToAdd; i++)
+            {
+                MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referralCreatedAt: oldest);
+            }
+
+            MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeRed);
+            MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, referrer: policeAmber);
+
+            var response = _mashReferralGateway.GetReferralsUsingQuery(query);
+
+            var mashReferrals = response.ToList();
+
+            mashReferrals.ToList().Count.Should().Be(6);
+            mashReferrals.FirstOrDefault()?.Referrer.Should().Be(policeRed);
+            mashReferrals.ElementAtOrDefault(1)?.Referrer.Should().Be(policeAmber);
+
+            mashReferrals.ElementAtOrDefault(2)?.ReferralCreatedAt.Should().Be(oldest);
+            mashReferrals.ElementAtOrDefault(3)?.ReferralCreatedAt.Should().Be(oldest);
+
+            mashReferrals.ElementAtOrDefault(4)?.ReferralCreatedAt.Should().Be(recent);
+            mashReferrals.ElementAtOrDefault(5)?.ReferralCreatedAt.Should().Be(recent);
+        }
     }
 }

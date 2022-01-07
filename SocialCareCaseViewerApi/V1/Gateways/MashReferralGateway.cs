@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var notPolicePriority = results.Where(x => !x.Referrer.Equals(policeRed) && !x.Referrer.Equals(policeAmber));
 
-            var otherReferrals = notPolicePriority
+            var otherReferrals = notPolicePriority.OrderBy(x => x.ReferralCreatedAt)
                 .Include(x => x.MashResidents)
                 .Include(x => x.Worker)
                 .Select(m => m.ToDomain()).ToList();
