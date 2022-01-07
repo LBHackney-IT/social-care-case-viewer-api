@@ -152,14 +152,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         public static MashReferral SaveMashReferralToDatabase(DatabaseContext databaseContext, string stage = null, int? workerId = null)
         {
-            var worker = TestHelpers.CreateWorker();
+            var (existingDbWorker, _) = SetupExistingWorker(databaseContext);
             var mashreferral = new Faker<MashReferral>()
                 .RuleFor(w => w.Id, f => f.UniqueIndex)
                 .RuleFor(w => w.Referrer, f => f.Person.FullName)
                 .RuleFor(w => w.RequestedSupport, f => f.Random.String2(20))
                 .RuleFor(w => w.ReferralDocumentURI, f => f.Random.String2(20))
                 .RuleFor(w => w.Stage, f => stage ?? f.Random.String2(20))
-                .RuleFor(w => w.WorkerId, f => workerId ?? worker.Id)
+                .RuleFor(w => w.WorkerId, workerId ?? existingDbWorker.Id)
                 .Generate();
 
             databaseContext.MashReferrals.Add(mashreferral);
