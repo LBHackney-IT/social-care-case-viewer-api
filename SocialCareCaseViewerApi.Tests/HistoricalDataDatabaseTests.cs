@@ -9,14 +9,14 @@ namespace SocialCareCaseViewerApi.Tests
     public class HistoricalDataDatabaseTests
     {
         private IDbContextTransaction _transaction;
-        protected HistoricalSocialCareContext HistoricalSocialCareContext { get; private set; }
+        protected HistoricalDataContext HistoricalSocialCareContext { get; private set; }
 
         [SetUp]
         public void RunBeforeAnyTests()
         {
-            var builder = new DbContextOptionsBuilder<HistoricalSocialCareContext>();
+            var builder = new DbContextOptionsBuilder<HistoricalDataContext>();
             builder.UseNpgsql(ConnectionString.HistoricalDataTestDatabase());
-            HistoricalSocialCareContext = new HistoricalSocialCareContext(builder.Options);
+            HistoricalSocialCareContext = new HistoricalDataContext(builder.Options);
 
             //context is configured to be read only on production
             HistoricalSocialCareContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;

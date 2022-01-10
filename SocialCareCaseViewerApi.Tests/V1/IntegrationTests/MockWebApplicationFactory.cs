@@ -30,14 +30,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 var context = new DatabaseContext(dbBuilder.Options);
                 services.AddSingleton(context);
 
-                var historicalDataDbBuilder = new DbContextOptionsBuilder<HistoricalSocialCareContext>();
+                var historicalDataDbBuilder = new DbContextOptionsBuilder<HistoricalDataContext>();
                 historicalDataDbBuilder.UseNpgsql(_historicalDataDbConnection);
-                var historicalDataContext = new HistoricalSocialCareContext(historicalDataDbBuilder.Options);
+                var historicalDataContext = new HistoricalDataContext(historicalDataDbBuilder.Options);
                 services.AddSingleton(historicalDataContext);
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<DatabaseContext>();
-                var historicalDbContext = serviceProvider.GetRequiredService<HistoricalSocialCareContext>();
+                var historicalDbContext = serviceProvider.GetRequiredService<HistoricalDataContext>();
 
                 dbContext.Database.EnsureCreated();
                 historicalDataContext.Database.EnsureCreated();

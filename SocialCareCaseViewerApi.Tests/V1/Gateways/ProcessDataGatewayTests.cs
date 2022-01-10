@@ -19,7 +19,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
     [TestFixture]
     public class ProcessDataGatewayTests : DatabaseTests
     {
-        private Mock<IHistoricalSocialCareGateway> _mockHistoricalSocialCareGateway = null!;
+        private Mock<IHistoricalDataGateway> _mockHistoricalSocialCareGateway = null!;
         private ProcessDataGateway _processDataGateway = null!;
         private ListCasesRequest _listCasesRequest = null!;
         private Fixture _fixture = null!;
@@ -28,12 +28,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [SetUp]
         public void SetUp()
         {
-            _mockHistoricalSocialCareGateway = new Mock<IHistoricalSocialCareGateway>();
+            _mockHistoricalSocialCareGateway = new Mock<IHistoricalDataGateway>();
             _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockHistoricalSocialCareGateway.Object);
 
             _listCasesRequest = TestHelpers.CreateListCasesRequest(mosaicId: _mosaicId);
-            _mockHistoricalSocialCareGateway.Setup(x => x.GetVisitInformationByPersonId(It.IsAny<long>())).Returns(new List<Visit>());
-            _mockHistoricalSocialCareGateway.Setup(x => x.GetAllCaseNotes(It.IsAny<long>())).Returns(new List<CaseNote>());
+            _mockHistoricalSocialCareGateway.Setup(x => x.GetVisitByPersonId(It.IsAny<long>())).Returns(new List<Visit>());
+            _mockHistoricalSocialCareGateway.Setup(x => x.GetCaseNotesByPersonId(It.IsAny<long>())).Returns(new List<CaseNote>());
 
             _fixture = new Fixture();
         }
@@ -42,22 +42,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void GetProcessDataCallsHistoricalSocialCareGatewayWhenMosaicIDIsProvided()
         {
             _processDataGateway.GetProcessData(_listCasesRequest, null);
-            _mockHistoricalSocialCareGateway.Verify(x => x.GetVisitInformationByPersonId(It.IsAny<long>()), Times.Once);
-            _mockHistoricalSocialCareGateway.Verify(x => x.GetAllCaseNotes(It.IsAny<long>()), Times.Once);
+            _mockHistoricalSocialCareGateway.Verify(x => x.GetVisitByPersonId(It.IsAny<long>()), Times.Once);
+            _mockHistoricalSocialCareGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<long>()), Times.Once);
         }
 
         [Test]
         public void GetProcessDataCallsHistoricalSocialCareGatewaysGetVisitsByPersonIdMethodWithCorrectParameterWhenMosaicIDIsProvided()
         {
             _processDataGateway.GetProcessData(_listCasesRequest, null);
-            _mockHistoricalSocialCareGateway.Verify(x => x.GetVisitInformationByPersonId(_mosaicId), Times.Once);
+            _mockHistoricalSocialCareGateway.Verify(x => x.GetVisitByPersonId(_mosaicId), Times.Once);
         }
 
         [Test]
         public void GetProcessDataCallsHistoricalSocialCareGatewaysGetCaseNotesByPersonIdMethodWithCorrectParameterWhenMosaicIDIsProvided()
         {
             _processDataGateway.GetProcessData(_listCasesRequest, null);
-            _mockHistoricalSocialCareGateway.Verify(x => x.GetAllCaseNotes(_mosaicId), Times.Once);
+            _mockHistoricalSocialCareGateway.Verify(x => x.GetCaseNotesByPersonId(_mosaicId), Times.Once);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 historicalVisitsForMatchingPerson
             };
 
-            _mockHistoricalSocialCareGateway.Setup(x => x.GetVisitInformationByPersonId(_mosaicId)).Returns(visits);
+            _mockHistoricalSocialCareGateway.Setup(x => x.GetVisitByPersonId(_mosaicId)).Returns(visits);
 
             var response = _processDataGateway.GetProcessData(_listCasesRequest, null);
 
@@ -87,7 +87,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 caseNote
             };
 
-            _mockHistoricalSocialCareGateway.Setup(x => x.GetAllCaseNotes(_mosaicId)).Returns(caseNotes);
+            _mockHistoricalSocialCareGateway.Setup(x => x.GetCaseNotesByPersonId(_mosaicId)).Returns(caseNotes);
 
             var response = _processDataGateway.GetProcessData(_listCasesRequest, null);
 

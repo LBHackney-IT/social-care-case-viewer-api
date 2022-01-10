@@ -7,16 +7,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class GetVisitByVisitIdUseCase : IGetVisitByVisitIdUseCase
     {
-        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
+        private readonly IHistoricalDataGateway _historicalDataGateway;
 
-        public GetVisitByVisitIdUseCase(IHistoricalSocialCareGateway historicalSocialCareGateway)
+        public GetVisitByVisitIdUseCase(IHistoricalDataGateway historicalSocialCareGateway)
         {
-            _historicalSocialCareGateway = historicalSocialCareGateway;
+            _historicalDataGateway = historicalSocialCareGateway;
         }
 
         public Visit? Execute(long id)
         {
-            return _historicalSocialCareGateway.GetVisitInformationByVisitId(id);
+            return _historicalDataGateway.GetVisitById(id);
         }
     }
 }

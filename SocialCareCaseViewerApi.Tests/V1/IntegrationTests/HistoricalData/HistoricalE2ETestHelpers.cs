@@ -8,7 +8,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
 {
     public static class HistoricalE2ETestHelpers
     {
-        public static HistoricalCaseNote AddCaseNoteForASpecificPersonToDb(HistoricalSocialCareContext context, long personId, bool includeNoteContent = true)
+        public static HistoricalCaseNote AddCaseNoteForASpecificPersonToDb(HistoricalDataContext context, long personId, bool includeNoteContent = true)
         {
             var faker = new Faker();
 
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             };
         }
 
-        public static HistoricalCaseNote AddCaseNoteWithNoteTypeAndWorkerToDatabase(HistoricalSocialCareContext socialCareContext)
+        public static HistoricalCaseNote AddCaseNoteWithNoteTypeAndWorkerToDatabase(HistoricalDataContext socialCareContext)
         {
             var noteType = HistoricalTestHelper.CreateDatabaseNoteType();
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
@@ -65,7 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             };
         }
 
-        public static HistoricalVisit AddVisitToDatabase(HistoricalSocialCareContext socialCareContext, HistoricalWorker? worker = null)
+        public static HistoricalVisit AddVisitToDatabase(HistoricalDataContext socialCareContext, HistoricalWorker? worker = null)
         {
             var visitInformation = HistoricalTestHelper.CreateDatabaseVisit(worker: worker);
             socialCareContext.HistoricalVisits.Add(visitInformation);
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             return visitInformation;
         }
 
-        public static HistoricalWorker AddWorkerToDatabase(HistoricalSocialCareContext socialCareContext)
+        public static HistoricalWorker AddWorkerToDatabase(HistoricalDataContext socialCareContext)
         {
             var worker = HistoricalTestHelper.CreateDatabaseWorker();
             socialCareContext.HistoricalWorkers.Add(worker);

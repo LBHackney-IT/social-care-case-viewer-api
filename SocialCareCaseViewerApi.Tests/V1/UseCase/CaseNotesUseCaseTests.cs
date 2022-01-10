@@ -16,14 +16,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
     [TestFixture]
     public class CaseNotesUseCaseTests
     {
-        private Mock<IHistoricalSocialCareGateway> _historicalSocialCareGateway = null!;
+        private Mock<IHistoricalDataGateway> _historicalDataGateway = null!;
         private CaseNotesUseCase _caseNotesUseCase = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _historicalSocialCareGateway = new Mock<IHistoricalSocialCareGateway>();
-            _caseNotesUseCase = new CaseNotesUseCase(_historicalSocialCareGateway.Object);
+            _historicalDataGateway = new Mock<IHistoricalDataGateway>();
+            _caseNotesUseCase = new CaseNotesUseCase(_historicalDataGateway.Object);
         }
 
         [Test]
@@ -31,11 +31,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListCaseNotesRequest() { Id = 1L };
 
-            _historicalSocialCareGateway.Setup(x => x.GetAllCaseNotes(It.IsAny<long>())).Returns(new List<CaseNote>());
+            _historicalDataGateway.Setup(x => x.GetCaseNotesByPersonId(It.IsAny<long>())).Returns(new List<CaseNote>());
 
             _caseNotesUseCase.ExecuteGetByPersonId(request.Id);
 
-            _historicalSocialCareGateway.Verify(x => x.GetAllCaseNotes(It.IsAny<long>()));
+            _historicalDataGateway.Verify(x => x.GetCaseNotesByPersonId(It.IsAny<long>()));
         }
 
         [Test]
@@ -45,11 +45,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var personId = Convert.ToInt64(request.Id);
 
-            _historicalSocialCareGateway.Setup(x => x.GetAllCaseNotes(personId)).Returns(new List<CaseNote>());
+            _historicalDataGateway.Setup(x => x.GetCaseNotesByPersonId(personId)).Returns(new List<CaseNote>());
 
             _caseNotesUseCase.ExecuteGetByPersonId(request.Id);
 
-            _historicalSocialCareGateway.Verify(x => x.GetAllCaseNotes(personId));
+            _historicalDataGateway.Verify(x => x.GetCaseNotesByPersonId(personId));
         }
 
         [Test]
@@ -57,13 +57,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListCaseNotesRequest() { Id = 1 };
 
-            _historicalSocialCareGateway.Setup(x => x.GetCaseNoteInformationById(It.IsAny<long>())).Returns(new CaseNote());
+            _historicalDataGateway.Setup(x => x.GetCaseNoteById(It.IsAny<long>())).Returns(new CaseNote());
 
             var response = _caseNotesUseCase.ExecuteGetById(request.Id.ToString());
 
             Assert.IsInstanceOf<CaseNoteResponse>(response);
 
-            _historicalSocialCareGateway.Verify(x => x.GetCaseNoteInformationById(It.IsAny<long>()));
+            _historicalDataGateway.Verify(x => x.GetCaseNoteById(It.IsAny<long>()));
         }
 
         [Test]
@@ -73,13 +73,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             var caseNoteId = Convert.ToInt64(request.Id);
 
-            _historicalSocialCareGateway.Setup(x => x.GetCaseNoteInformationById(caseNoteId)).Returns(new CaseNote());
+            _historicalDataGateway.Setup(x => x.GetCaseNoteById(caseNoteId)).Returns(new CaseNote());
 
             var response = _caseNotesUseCase.ExecuteGetById(request.Id.ToString());
 
             Assert.IsInstanceOf<CaseNoteResponse>(response);
 
-            _historicalSocialCareGateway.Verify(x => x.GetCaseNoteInformationById(caseNoteId));
+            _historicalDataGateway.Verify(x => x.GetCaseNoteById(caseNoteId));
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ExcecureGetByIdThrowsCaseNoteNotFoundExceptionWhenNoteNotFound()
         {
-            _historicalSocialCareGateway.Setup(x => x.GetCaseNoteInformationById(It.IsAny<long>())).Returns(default(CaseNote?));
+            _historicalDataGateway.Setup(x => x.GetCaseNoteById(It.IsAny<long>())).Returns(default(CaseNote?));
 
             Action act = () => _caseNotesUseCase.ExecuteGetById("1");
 

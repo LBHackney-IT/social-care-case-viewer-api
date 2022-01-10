@@ -10,16 +10,16 @@ using System.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
-    public class HistoricalGetCaseNotesTests : HistoricalDataDatabaseTests
+    public class GetHistoricalCaseNotesTests : HistoricalDataDatabaseTests
     {
-        private HistoricalSocialCareGateway _classUnderTest;
+        private HistoricalDataGateway _historicalDataGateway;
         private long _personId;
         private Faker _faker;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
+            _historicalDataGateway = new HistoricalDataGateway(HistoricalSocialCareContext);
             _personId = 1L;
             _faker = new Faker();
         }
@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         [Test]
         public void WhenThereAreNoMatchingRecordsReturnsEmptyList()
         {
-            var response = _classUnderTest.GetAllCaseNotes(123);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(123);
 
             response.Should().BeEmpty();
         }
@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var (caseNote, _, _) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
-            var response = _classUnderTest.GetAllCaseNotes(_personId);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(_personId);
 
             response.Count.Should().Be(1);
             response.FirstOrDefault()?.CaseNoteId.Should().Be(caseNote.Id.ToString());
@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
             AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId, 456);
 
-            var response = _classUnderTest.GetAllCaseNotes(_personId);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(_personId);
 
             response.Count.Should().Be(2);
         }
@@ -70,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
                 CreatedByEmail = caseWorker.EmailAddress
             };
 
-            var response = _classUnderTest.GetAllCaseNotes(_personId);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(_personId);
 
             response.FirstOrDefault().Should().BeEquivalentTo(expectedCaseNoteInformation,
                 options =>
@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
-            var response = _classUnderTest.GetAllCaseNotes(_personId);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(_personId);
 
             response.FirstOrDefault()?.CaseNoteContent.Should().BeNullOrEmpty();
         }
@@ -95,7 +95,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var (_, noteType, _) = AddCaseNoteWithNoteTypeAndWorkerToDatabase(_personId);
 
-            var response = _classUnderTest.GetAllCaseNotes(_personId);
+            var response = _historicalDataGateway.GetCaseNotesByPersonId(_personId);
 
             response.FirstOrDefault()?.NoteType.Should().Be(noteType.Description);
         }

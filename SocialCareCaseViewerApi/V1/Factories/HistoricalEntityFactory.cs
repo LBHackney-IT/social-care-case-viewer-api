@@ -35,8 +35,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ReasonVisitNotMade = visit.ReasonVisitNotMade,
                 SeenAloneFlag = !string.IsNullOrEmpty(visit.SeenAloneFlag) && visit.SeenAloneFlag.Equals("Y"),
                 CompletedFlag = !string.IsNullOrEmpty(visit.CompletedFlag) && visit.CompletedFlag.Equals("Y"),
-                CreatedByEmail = visit.Worker.EmailAddress,
-                CreatedByName = $"{visit.Worker.FirstNames} {visit.Worker.LastNames}"
+                CreatedByEmail = visit.Worker?.EmailAddress,
+                CreatedByName = visit.Worker != null ? $"{visit.Worker.FirstNames} {visit.Worker.LastNames}" : null
             };
         }
     }

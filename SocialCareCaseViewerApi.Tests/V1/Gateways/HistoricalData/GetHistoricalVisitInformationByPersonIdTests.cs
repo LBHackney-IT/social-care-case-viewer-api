@@ -10,14 +10,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
     [NonParallelizable]
     [TestFixture]
-    public class HistoricalGetVisitInformationByPersonIdTests : HistoricalDataDatabaseTests
+    public class GetHistoricalVisitInformationByPersonIdTests : HistoricalDataDatabaseTests
     {
-        private HistoricalSocialCareGateway _classUnderTest;
+        private HistoricalDataGateway _historicalDataGateway;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
+            _historicalDataGateway = new HistoricalDataGateway(HistoricalSocialCareContext);
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             const long fakePersonId = 456L;
             AddVisitToDatabase(personId: realPersonId);
 
-            var response = _classUnderTest.GetVisitInformationByPersonId(fakePersonId);
+            var response = _historicalDataGateway.GetVisitByPersonId(fakePersonId);
 
             response.Should().BeEmpty();
         }
@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var visit = AddVisitToDatabase();
 
-            var response = _classUnderTest.GetVisitInformationByPersonId(visit.PersonId);
+            var response = _historicalDataGateway.GetVisitByPersonId(visit.PersonId);
 
             response.ToList().Count.Should().Be(1);
             response.FirstOrDefault().VisitId.Should().Be(visit.VisitId);
@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             AddVisitToDatabase(visitIdOne, personId: realPersonId);
             AddVisitToDatabase(visitIdTwo, personId: realPersonId);
 
-            var response = _classUnderTest.GetVisitInformationByPersonId(realPersonId);
+            var response = _historicalDataGateway.GetVisitByPersonId(realPersonId);
 
             response.ToList().Count.Should().Be(2);
         }
@@ -69,7 +69,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             AddVisitToDatabase(visitIdOne, personId: realPersonId);
             AddVisitToDatabase(visitIdTwo, personId: otherPersonId);
 
-            var response = _classUnderTest.GetVisitInformationByPersonId(realPersonId);
+            var response = _historicalDataGateway.GetVisitByPersonId(realPersonId);
 
             response.ToList().Count.Should().Be(1);
         }
@@ -79,7 +79,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var visit = AddVisitToDatabase();
 
-            var response = _classUnderTest.GetVisitInformationByPersonId(visit.PersonId).First();
+            var response = _historicalDataGateway.GetVisitByPersonId(visit.PersonId).First();
 
             if (response == null)
             {

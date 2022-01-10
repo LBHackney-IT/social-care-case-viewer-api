@@ -8,16 +8,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class VisitsUseCase : IVisitsUseCase
     {
-        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
+        private readonly IHistoricalDataGateway _historicalDataGateway;
 
-        public VisitsUseCase(IHistoricalSocialCareGateway historicalSocialCareGateway)
+        public VisitsUseCase(IHistoricalDataGateway historicalSocialCareGateway)
         {
-            _historicalSocialCareGateway = historicalSocialCareGateway;
+            _historicalDataGateway = historicalSocialCareGateway;
         }
 
         public List<Visit> ExecuteGetByPersonId(long id)
         {
-            return _historicalSocialCareGateway.GetVisitInformationByPersonId(id).ToList();
+            return _historicalDataGateway.GetVisitByPersonId(id).ToList();
         }
     }
 }

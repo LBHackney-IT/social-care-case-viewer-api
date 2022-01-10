@@ -10,15 +10,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
     [NonParallelizable]
     [TestFixture]
-    public class HistoricalGetVisitInformationByVisitIdTests : HistoricalDataDatabaseTests
+    public class GetHistoricalVisitInformationByVisitIdTests : HistoricalDataDatabaseTests
 
     {
-        private HistoricalSocialCareGateway _classUnderTest = null!;
+        private HistoricalDataGateway _historicalDataGateway = null!;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
+            _historicalDataGateway = new HistoricalDataGateway(HistoricalSocialCareContext);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             const long fakeVisitId = 456L;
             AddVisitToDatabase(realVisitId);
 
-            var response = _classUnderTest.GetVisitInformationByVisitId(fakeVisitId);
+            var response = _historicalDataGateway.GetVisitById(fakeVisitId);
 
             response.Should().BeNull();
         }
@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             var visit = AddVisitToDatabase();
             AddVisitToDatabase();
 
-            var response = _classUnderTest.GetVisitInformationByVisitId(visit.VisitId);
+            var response = _historicalDataGateway.GetVisitById(visit.VisitId);
 
             if (response == null)
             {
@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var visit = AddVisitToDatabase();
 
-            var response = _classUnderTest.GetVisitInformationByVisitId(visit.VisitId);
+            var response = _historicalDataGateway.GetVisitById(visit.VisitId);
 
             if (response == null)
             {

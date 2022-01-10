@@ -9,16 +9,16 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class CaseNotesUseCase : ICaseNotesUseCase
     {
-        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
+        private readonly IHistoricalDataGateway _historicalDataGateway;
 
-        public CaseNotesUseCase(IHistoricalSocialCareGateway historicalSocialCareGateway)
+        public CaseNotesUseCase(IHistoricalDataGateway historicalSocialCareGateway)
         {
-            _historicalSocialCareGateway = historicalSocialCareGateway;
+            _historicalDataGateway = historicalSocialCareGateway;
         }
 
         public ListCaseNotesResponse ExecuteGetByPersonId(long id)
         {
-            var caseNotes = _historicalSocialCareGateway.GetAllCaseNotes(id);
+            var caseNotes = _historicalDataGateway.GetCaseNotesByPersonId(id);
 
             return new ListCaseNotesResponse()
             {
@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new CaseNoteIdConversionException($"Note id conversion failed for {id}");
             }
 
-            var caseNote = _historicalSocialCareGateway.GetCaseNoteInformationById(noteId);
+            var caseNote = _historicalDataGateway.GetCaseNoteById(noteId);
 
             if (caseNote == null)
             {

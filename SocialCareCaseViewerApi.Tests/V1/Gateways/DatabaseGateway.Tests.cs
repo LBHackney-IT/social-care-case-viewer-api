@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private Faker _faker;
         private Fixture _fixture;
         private ProcessDataGateway _processDataGateway;
-        private Mock<IHistoricalSocialCareGateway> _mockHistoricalSocialCareGateway;
+        private Mock<IHistoricalDataGateway> _mockHistoricalSocialCareGateway;
         private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 _mockSystemTime.Object);
             _faker = new Faker();
             _fixture = new Fixture();
-            _mockHistoricalSocialCareGateway = new Mock<IHistoricalSocialCareGateway>();
+            _mockHistoricalSocialCareGateway = new Mock<IHistoricalDataGateway>();
             _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockHistoricalSocialCareGateway.Object);
             _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway,
                 _mockSystemTime.Object);

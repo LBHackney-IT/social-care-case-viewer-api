@@ -21,12 +21,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     public class ProcessDataGateway : IProcessDataGateway
     {
         private readonly ISccvDbContext _sccvDbContext;
-        private readonly IHistoricalSocialCareGateway _historicalSocialCareGateway;
+        private readonly IHistoricalDataGateway _historicalDataGateway;
 
-        public ProcessDataGateway(ISccvDbContext sccvDbContext, IHistoricalSocialCareGateway historicalSocialCareGateway)
+        public ProcessDataGateway(ISccvDbContext sccvDbContext, IHistoricalDataGateway historicalSocialCareGateway)
         {
             _sccvDbContext = sccvDbContext;
-            _historicalSocialCareGateway = historicalSocialCareGateway;
+            _historicalDataGateway = historicalSocialCareGateway;
         }
         public Tuple<IEnumerable<CareCaseData>, int> GetProcessData(ListCasesRequest request, string? ncId)
         {
@@ -152,8 +152,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var historicVisits = new List<BsonDocument>();
 
-            var visits = _historicalSocialCareGateway
-                .GetVisitInformationByPersonId(mosaicId)
+            var visits = _historicalDataGateway
+                .GetVisitByPersonId(mosaicId)
                 .ToList();
 
             if (visits.Count > 0)
@@ -165,8 +165,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var historicCases = new List<BsonDocument>();
 
-            var caseNotes = _historicalSocialCareGateway
-                .GetAllCaseNotes(mosaicId);
+            var caseNotes = _historicalDataGateway
+                .GetCaseNotesByPersonId(mosaicId);
 
             if (caseNotes?.Count > 0)
             {

@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    public class HistoricalSocialCareContext : DbContext
+    public class HistoricalDataContext : DbContext
     {
-        public HistoricalSocialCareContext(DbContextOptions<HistoricalSocialCareContext> options) : base(options)
+        public HistoricalDataContext(DbContextOptions<HistoricalDataContext> options) : base(options)
         {
         }
 

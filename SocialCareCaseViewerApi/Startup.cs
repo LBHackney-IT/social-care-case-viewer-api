@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi
             //TODO: migrate historical data to service database 
             var historicalDataConnectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING") ?? "Host=;Database=;";
 
-            services.AddDbContext<HistoricalSocialCareContext>(options => options
+            services.AddDbContext<HistoricalDataContext>(options => options
                 .UseNpgsql(historicalDataConnectionString ?? throw new InvalidOperationException("Must provide HISTORICAL_DATA_CONNECTION_STRING environment variable"))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking) //read only db for now, no need for tracking
             );
@@ -139,7 +139,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
             services.AddScoped<IWorkerGateway, WorkerGateway>();
             services.AddScoped<IMashReferralGateway, MashReferralGateway>();
-            services.AddScoped<IHistoricalSocialCareGateway, HistoricalSocialCareGateway>();
+            services.AddScoped<IHistoricalDataGateway, HistoricalDataGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

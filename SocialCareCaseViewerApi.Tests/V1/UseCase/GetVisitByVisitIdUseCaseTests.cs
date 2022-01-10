@@ -10,14 +10,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     public class GetVisitByVisitIdUseCaseTests
     {
-        private Mock<IHistoricalSocialCareGateway> _historicalSocialCareGateway = null!;
+        private Mock<IHistoricalDataGateway> _historicalDataGateway = null!;
         private GetVisitByVisitIdUseCase _classUnderTest = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _historicalSocialCareGateway = new Mock<IHistoricalSocialCareGateway>();
-            _classUnderTest = new GetVisitByVisitIdUseCase(_historicalSocialCareGateway.Object);
+            _historicalDataGateway = new Mock<IHistoricalDataGateway>();
+            _classUnderTest = new GetVisitByVisitIdUseCase(_historicalDataGateway.Object);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ExecuteReturnsVisitWhenVisitWithIdExists()
         {
             var visit = TestHelpers.CreateVisit();
-            _historicalSocialCareGateway.Setup(x => x.GetVisitInformationByVisitId(visit.VisitId)).Returns(visit);
+            _historicalDataGateway.Setup(x => x.GetVisitById(visit.VisitId)).Returns(visit);
 
             var response = _classUnderTest.Execute(visit.VisitId);
 

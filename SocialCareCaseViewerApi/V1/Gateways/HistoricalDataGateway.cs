@@ -9,16 +9,16 @@ using System.Linq;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
-    public class HistoricalSocialCareGateway : IHistoricalSocialCareGateway
+    public class HistoricalDataGateway : IHistoricalDataGateway
     {
-        private readonly HistoricalSocialCareContext _databaseContext;
+        private readonly HistoricalDataContext _databaseContext;
 
-        public HistoricalSocialCareGateway(HistoricalSocialCareContext databaseContext)
+        public HistoricalDataGateway(HistoricalDataContext databaseContext)
         {
             _databaseContext = databaseContext;
         }
 
-        public List<CaseNote> GetAllCaseNotes(long personId)
+        public List<CaseNote> GetCaseNotesByPersonId(long personId)
         {
             var caseNotes = _databaseContext.HistoricalCaseNotes
                 .Where(note => note.PersonId == personId)
@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseNotes.Select(x => x.ToDomain(includeNoteContent: false)).ToList();
         }
 
-        public CaseNote? GetCaseNoteInformationById(long caseNoteId)
+        public CaseNote? GetCaseNoteById(long caseNoteId)
         {
             var caseNote = _databaseContext.HistoricalCaseNotes
                 .Include(caseNote => caseNote.CreatedByWorker)
@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseNote.ToDomain();
         }
 
-        public IEnumerable<Visit> GetVisitInformationByPersonId(long personId)
+        public IEnumerable<Visit> GetVisitByPersonId(long personId)
         {
             var visits = _databaseContext.HistoricalVisits
                 .Where(visit => visit.PersonId == personId)
@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return visits.Select(x => x.ToDomain());
         }
 
-        public Visit? GetVisitInformationByVisitId(long visitId)
+        public Visit? GetVisitById(long visitId)
         {
             var visitInformation = _databaseContext.HistoricalVisits
                 .Include(visit => visit.Worker)

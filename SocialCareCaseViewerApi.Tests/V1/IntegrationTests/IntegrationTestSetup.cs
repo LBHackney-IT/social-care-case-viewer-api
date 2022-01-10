@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         protected HttpClient Client { get; private set; }
         protected DatabaseContext DatabaseContext { get; private set; }
-        protected HistoricalSocialCareContext HistoricalSocialCareContext { get; private set; }
+        protected HistoricalDataContext HistoricalSocialCareContext { get; private set; }
         private MongoClient MongoDbClient { get; set; }
 
         [OneTimeSetUp]
@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Client = _factory.CreateClient();
 
             DatabaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
-            HistoricalSocialCareContext = _factory.Server.Host.Services.GetRequiredService<HistoricalSocialCareContext>();
+            HistoricalSocialCareContext = _factory.Server.Host.Services.GetRequiredService<HistoricalDataContext>();
 
             WipeDatabase();
             WipeMongoDatabase();

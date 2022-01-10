@@ -9,14 +9,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
 {
     [NonParallelizable]
     [TestFixture]
-    public class HistoricalGetCaseNoteInformationByIdTests : HistoricalDataDatabaseTests
+    public class GetHistoricalCaseNoteInformationByIdTests : HistoricalDataDatabaseTests
     {
-        private IHistoricalSocialCareGateway _classUnderTest;
+        private IHistoricalDataGateway _historicalDataGateway;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new HistoricalSocialCareGateway(HistoricalSocialCareContext);
+            _historicalDataGateway = new HistoricalDataGateway(HistoricalSocialCareContext);
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             const int nonexistentCaseNoteId = 456;
             AddCaseNoteWithNoteTypeAndWorkerToDatabase(id: existentCaseNoteId);
 
-            var response = _classUnderTest.GetCaseNoteInformationById(nonexistentCaseNoteId);
+            var response = _historicalDataGateway.GetCaseNoteById(nonexistentCaseNoteId);
 
             response.Should().BeNull();
         }
@@ -37,7 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             var caseNote = AddCaseNoteWithNoteTypeAndWorkerToDatabase(id: 123);
             AddCaseNoteWithNoteTypeAndWorkerToDatabase(id: 456, caseNoteType: "DIFF", caseNoteTypeDescription: "Different");
 
-            var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
+            var response = _historicalDataGateway.GetCaseNoteById(caseNote.Id);
 
             response?.CaseNoteId.Should().Be(caseNote.Id.ToString());
         }
@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
         {
             var caseNote = AddCaseNoteWithNoteTypeAndWorkerToDatabase();
 
-            var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
+            var response = _historicalDataGateway.GetCaseNoteById(caseNote.Id);
 
             response?.MosaicId.Should().Be(caseNote.PersonId.ToString());
             response?.CaseNoteId.Should().Be(caseNote.Id.ToString());
@@ -63,7 +63,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             const string noteTypeDescription = "Note Type Description";
             var caseNote = AddCaseNoteWithNoteTypeAndWorkerToDatabase(caseNoteType: noteType, caseNoteTypeDescription: noteTypeDescription);
 
-            var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
+            var response = _historicalDataGateway.GetCaseNoteById(caseNote.Id);
 
             response?.NoteType.Should().Be(noteTypeDescription);
         }
@@ -76,7 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             const string workerLastname = "Bar";
             var caseNote = AddCaseNoteWithNoteTypeAndWorkerToDatabase(workerFirstName, workerLastname, workerEmailAddress);
 
-            var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
+            var response = _historicalDataGateway.GetCaseNoteById(caseNote.Id);
 
             response?.CreatedByName.Should().Be($"{workerFirstName} {workerLastname}");
             response?.CreatedByEmail.Should().Be(workerEmailAddress);
@@ -94,7 +94,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.HistoricalData
             HistoricalSocialCareContext.HistoricalCaseNotes.Add(caseNote);
             HistoricalSocialCareContext.SaveChanges();
 
-            var response = _classUnderTest.GetCaseNoteInformationById(caseNote.Id);
+            var response = _historicalDataGateway.GetCaseNoteById(caseNote.Id);
 
             response?.NoteType.Should().BeNull();
         }
