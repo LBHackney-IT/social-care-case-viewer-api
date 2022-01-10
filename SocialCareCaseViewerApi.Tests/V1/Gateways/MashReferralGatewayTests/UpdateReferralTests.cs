@@ -197,9 +197,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         public void SuccessfulUpdateOfMashReferralUnAssignsWorkerAndReturnsMashReferralDomain()
         {
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            mashReferral.WorkerId = 1;
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "UNASSIGN-WORKER");
             var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
+            mashReferral.WorkerId.Equals(null);
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
     }
