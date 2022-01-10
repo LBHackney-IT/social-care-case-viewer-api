@@ -17,19 +17,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         [SetUp]
         public void Setup()
         {
-            // Clear test database of any rows in the database
-            DatabaseContext.Teams.RemoveRange(DatabaseContext.Teams);
-            DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
-            DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
-
             // Create existing referral and unrelated worker
-            var existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
-            _existingDbReferral = existingDbReferral;
+            _existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
         }
 
         [Test]
-        public async Task SuccessfulPatchUnAssignsWorkerToReferral()
+        public async Task SuccessfulPatchUnAssignsWorkerFromReferral()
         {
+            _existingDbReferral.WorkerId.Should().NotBeNull();
+
             var request = TestHelpers.CreateUpdateMashReferral();
             request.UpdateType = "UNASSIGN-WORKER";
             var postUri = new Uri($"/api/v1/mash-referral/{_existingDbReferral.Id}", UriKind.Relative);

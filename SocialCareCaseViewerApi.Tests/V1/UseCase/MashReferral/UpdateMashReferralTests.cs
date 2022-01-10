@@ -65,7 +65,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         [Test]
         public void UpdatingMashReferralUnAssignOnSuccessReturnsMashReferralResponse()
         {
-            var worker = TestHelpers.CreateWorker();
             var request = TestHelpers.CreateUpdateMashReferral();
             request.UpdateType = "UNASSIGN-WORKER";
 

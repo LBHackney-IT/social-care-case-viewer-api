@@ -19,9 +19,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         public void Setup()
         {
             // Clear test database of any rows in the database
-            DatabaseContext.Teams.RemoveRange(DatabaseContext.Teams);
-            DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
-            DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
+            // DatabaseContext.Teams.RemoveRange(DatabaseContext.Teams);
+            // DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
+            // DatabaseContext.MashReferrals.RemoveRange(DatabaseContext.MashReferrals);
 
             // Create existing referral and unrelated worker
             var (existingDbWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
