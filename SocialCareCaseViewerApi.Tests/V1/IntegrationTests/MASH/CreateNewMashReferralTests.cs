@@ -48,6 +48,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
             var addedReferralResponse = JsonConvert.DeserializeObject<List<MashReferral>>(addedContent).ToList();
 
             addedReferralResponse.Count.Should().Be(1);
+
+            var firstAddedReferral = addedReferralResponse.FirstOrDefault();
+            firstAddedReferral?.Referrer.Should().BeEquivalentTo(request.Referrer);
+            firstAddedReferral?.RequestedSupport.Should().BeEquivalentTo(request.RequestedSupport);
+            firstAddedReferral?.ReferralDocumentURI.Should().BeEquivalentTo(request.ReferralUri);
+            firstAddedReferral?.Stage.Should().BeEquivalentTo("CONTACT");
+
             addedReferralResponse.FirstOrDefault()?.Referrer.Should().BeEquivalentTo(request.Referrer);
             addedReferralResponse.FirstOrDefault()?.RequestedSupport.Should().BeEquivalentTo(request.RequestedSupport);
             addedReferralResponse.FirstOrDefault()?.ReferralDocumentURI.Should().BeEquivalentTo(request.ReferralUri);

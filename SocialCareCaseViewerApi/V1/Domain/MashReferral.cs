@@ -27,5 +27,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public bool? FinalDecisionUrgentContactRequired { get; set; }
         public DateTime? FinalDecisionCreatedAt { get; set; }
         public List<MashResident> MashResidents { get; set; } = null!;
+        public Worker? Worker { get; set; }
     }
 }

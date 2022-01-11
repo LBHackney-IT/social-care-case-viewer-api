@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"screening\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'SCREENING'");
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"contact\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'CONTACT'");
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"initial\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'INITIAL'");
         }
 
         [Test]
@@ -85,7 +85,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
 
             act.Should().Throw<MashReferralStageMismatchException>()
-                .WithMessage($"Referral {mashReferral.Id} is in stage \"{mashReferral.Stage}\", this request requires the referral to be in stage \"final\"");
+                .WithMessage($"Referral {mashReferral.Id} is in stage '{mashReferral.Stage}', this request requires the referral to be in stage 'FINAL'");
+        }
+
+        [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenWorkerIsNotFoundUsingId()
+        {
+            var workerId = _faker.Random.Int();
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerId: workerId);
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+
+            Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with id {workerId} not found");
+        }
+
+
+        [Test]
+        public void UpdatingMashReferralThrowsWorkerNotFoundExceptionWhenWorkerIsNotFoundUsingEmail()
+        {
+            var workerEmail = _faker.Person.Email;
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerEmail: workerEmail);
+            request.WorkerId = null;
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+
+            Action act = () => _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            act.Should().Throw<WorkerNotFoundException>()
+                .WithMessage($"Worker with email {workerEmail} not found");
         }
 
         [Test]
@@ -131,5 +159,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
+
+        [Test]
+        public void SuccessfulUpdateOfMashReferralAssignsWorkerAndReturnsMashReferralDomain()
+        {
+            var worker = MashReferralHelper.SaveWorkerToDatabase(DatabaseContext);
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerId: worker.Id);
+
+            var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            response.Should().BeEquivalentTo(mashReferral.ToDomain());
+        }
+
+        [Test]
+        public void SuccessfulUpdateOfMashReferralAssignsWorkerUsingEmailAndReturnsMashReferralDomain()
+        {
+            var worker = MashReferralHelper.SaveWorkerToDatabase(DatabaseContext);
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER", workerEmail: worker.Email);
+            request.WorkerId = null;
+
+            var response = _mashReferralGateway.UpdateReferral(request, mashReferral.Id);
+
+            response.Should().BeEquivalentTo(mashReferral.ToDomain());
+        }
+
     }
 }

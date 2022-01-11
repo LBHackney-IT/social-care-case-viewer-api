@@ -68,11 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 
             response.Count.Should().Be(1);
-            response[0].Should().BeEquivalentTo(referral, options =>
-            {
-                options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
-                return options;
-            });
+            response[0].Id.Should().Equals(referral.Id);
         }
     }
 }

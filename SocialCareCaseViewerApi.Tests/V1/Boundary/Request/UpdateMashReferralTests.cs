@@ -20,6 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsContactDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            request.WorkerId = null;
             request.RequiresUrgentContact = null;
 
             var validationResult = _validator.Validate(request);
@@ -28,9 +29,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
+        public void WhenUpdateTypeIsContactDecisionEitherEmailOrIdMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+            request.WorkerId = null;
+            request.WorkerEmail = null;
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a valid worker id or email");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsContactDecisionOnlyEmailOrIdMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "CONTACT-DECISION");
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Do not provide both worker id and worker email address");
+        }
+
+        [Test]
         public void WhenUpdateTypeIsInitialDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.WorkerId = null;
             request.RequiresUrgentContact = null;
 
             var validationResult = _validator.Validate(request);
@@ -42,6 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.WorkerId = null;
             request.ReferralCategory = null;
 
             var validationResult = _validator.Validate(request);
@@ -53,6 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionReferralCategoryMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.WorkerId = null;
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
@@ -64,6 +90,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionADecisionMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.WorkerId = null;
             request.Decision = null;
 
             var validationResult = _validator.Validate(request);
@@ -75,6 +102,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsInitialDecisionDecisionMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "INITIAL-DECISION");
+            request.WorkerId = null;
             request.Decision = "";
 
             var validationResult = _validator.Validate(request);
@@ -86,6 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsScreeningDecisionADecisionMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
+            request.WorkerId = null;
             request.Decision = null;
 
             var validationResult = _validator.Validate(request);
@@ -97,6 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsScreeningDecisionDecisionMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
+            request.WorkerId = null;
             request.Decision = "";
 
             var validationResult = _validator.Validate(request);
@@ -108,6 +138,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsScreeningDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "SCREENING-DECISION");
+            request.WorkerId = null;
             request.RequiresUrgentContact = null;
 
             var validationResult = _validator.Validate(request);
@@ -119,6 +150,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsFinalDecisionADecisionMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.WorkerId = null;
             request.Decision = null;
 
             var validationResult = _validator.Validate(request);
@@ -130,6 +162,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsFinalDecisionDecisionMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.WorkerId = null;
             request.Decision = "";
 
             var validationResult = _validator.Validate(request);
@@ -141,6 +174,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsFinalDecisionRequiresUrgentContactMustBeProvided()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.WorkerId = null;
             request.RequiresUrgentContact = null;
 
             var validationResult = _validator.Validate(request);
@@ -152,6 +186,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsFinalDecisionReferralCategoryMustNotBeNull()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.WorkerId = null;
             request.ReferralCategory = null;
 
             var validationResult = _validator.Validate(request);
@@ -163,11 +198,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void WhenUpdateTypeIsFinalDecisionReferralCategoryMustHaveALength()
         {
             var request = TestHelpers.CreateUpdateMashReferral(updateType: "FINAL-DECISION");
+            request.WorkerId = null;
             request.ReferralCategory = "";
 
             var validationResult = _validator.Validate(request);
 
             validationResult.ToString().Should().Be("Must provide a referral category");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsAssignWorkerBothEmailAndIdMustNotBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Do not provide both worker id and worker email address");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsAssignWorkerAndWorkerEmailIsNullIdMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.WorkerEmail = null;
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsAssignWorkerAndWorkerIdIsNullEmailMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.WorkerId = null;
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("");
+        }
+
+        [Test]
+        public void WhenUpdateTypeIsAssignWorkerEitherEmailOrIdMustBeProvided()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral(updateType: "ASSIGN-WORKER");
+            request.WorkerId = null;
+            request.WorkerEmail = null;
+            request.ReferralCategory = "";
+
+            var validationResult = _validator.Validate(request);
+
+            validationResult.ToString().Should().Be("Must provide a valid worker id or email");
         }
     }
 }
