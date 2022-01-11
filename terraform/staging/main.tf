@@ -98,7 +98,7 @@ module "historical_postgres_db_staging" {
   maintenance_window   = "sun:10:00-sun:10:30"
   db_username          = data.aws_ssm_parameter.social_care_historical_postgres_username.value
   db_password          = aws_secretsmanager_secret_version.historical_postgres_db_password.secret_string
-  storage_encrypted    = false
+  storage_encrypted    = true
   multi_az             = false
   publicly_accessible  = false
   project_name         = "social care viewer"
