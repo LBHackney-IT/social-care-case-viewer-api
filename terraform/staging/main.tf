@@ -92,7 +92,7 @@ module "historical_postgres_db_staging" {
   db_port              = 5432
   subnet_ids           = data.aws_subnet_ids.staging.ids
   db_engine            = "postgres"
-  db_engine_version    = "11." //use 11. to ignore minor version upgrades
+  db_engine_version    = "11.12"
   db_instance_class    = "db.t2.small"
   db_allocated_storage = 20
   maintenance_window   = "sun:10:00-sun:10:30"
