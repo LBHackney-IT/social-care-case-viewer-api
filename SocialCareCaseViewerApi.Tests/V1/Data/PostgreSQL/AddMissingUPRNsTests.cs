@@ -136,12 +136,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             var updatedAddressWithoutUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address1WithoutUPRN.PersonAddressId);
             var updatedAddressWithoutUPRN2 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address2WithoutUPRN.PersonAddressId);
             var updatedAddressWithUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address1WithUPRN.PersonAddressId);
-            var updatedAddressWithPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address2WithUPRN.PersonAddressId);
+            var updatedAddressWithUPRN2 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address2WithUPRN.PersonAddressId);
 
             updatedAddressWithoutUPRN1.Uprn.Should().Be(uprnUpdate1.UPRN);
             updatedAddressWithoutUPRN2.Uprn.Should().Be(uprnUpdate2.UPRN);
             updatedAddressWithUPRN1.Uprn.Should().Be(address1WithUPRN.Uprn);
-            updatedAddressWithPRN1.Uprn.Should().Be(address2WithUPRN.Uprn);
+            updatedAddressWithUPRN2.Uprn.Should().Be(address2WithUPRN.Uprn);
         }
     }
 }
