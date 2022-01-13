@@ -364,7 +364,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstLanguage = resident.FirstLanguage,
                 School = resident.School,
                 Address = resident.Address,
-                Postcode = resident.Postcode
+                Postcode = resident.Postcode,
+                SocialCareId = resident.SocialCareId
             };
         }
     }
