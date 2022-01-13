@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -34,7 +35,14 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             try
             {
-                var connection = new NpgsqlConnection(Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING"));
+                var connectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING");
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new DatabaseConfigurationException("HISTORICAL_DATA_CONNECTION_STRING env var not set");
+                }
+
+                var connection = new NpgsqlConnection(connectionString);
 
                 connection.Open();
 
@@ -45,6 +53,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 connection.Dispose();
 
                 return Ok();
+            }
+            catch (DatabaseConfigurationException)
+            {
+                throw;
             }
             catch
             {
