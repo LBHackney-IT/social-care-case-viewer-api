@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             catch
             {
                 throw new Exception("Unable to connect to historical data database");
-            }         
+            }
         }
     }
 }
