@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
@@ -45,6 +46,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashResident
             });
 
             response.SocialCareId.Should().Be(mashResident.SocialCareId);
+        }
+
+        [Test]
+        public void WhenGatewaysReturnsPersonNotFoundExceptionThrowsTheException()
+        {
+            var mashResident = TestHelpers.CreateMashResident().ToDomain();
+            var request = TestHelpers.CreateMashResidentUpdateRequest();
+
+            _mashReferralGateway.Setup(x => x.UpdateMashResident(request, mashResident.Id))
+                .Throws(new PersonNotFoundException($"Person with id {request.SocialCareId} not found"));
+
+            Action act = () => _mashResidentUseCase.UpdateMashResident(request, mashResident.Id);
+
+            act.Should().Throw<PersonNotFoundException>()
+                .WithMessage($"Person with id {request.SocialCareId} not found");
+        }
+
+        [Test]
+        public void WhenGatewaysReturnsMashResidentNotFoundExceptionThrowsTheException()
+        {
+            var mashResidentId = TestHelpers.CreateMashResident().Id;
+            var request = TestHelpers.CreateMashResidentUpdateRequest();
+
+            _mashReferralGateway.Setup(x => x.UpdateMashResident(request, mashResidentId))
+                .Throws(new MashResidentNotFoundException($"MASH resident with id {mashResidentId} not found"));
+
+            Action act = () => _mashResidentUseCase.UpdateMashResident(request, mashResidentId);
+
+            act.Should().Throw<MashResidentNotFoundException>()
+                .WithMessage($"MASH resident with id {mashResidentId} not found");
         }
     }
 }
