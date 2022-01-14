@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashResident
         }
 
         [Test]
-        public void WhenSuccessfullyUpdateActionReturns204AndUpdatedMashResident()
+        public void WhenSuccessfullyUpdateActionReturns200AndUpdatedMashResident()
         {
             var matchingPersonId = _faker.Random.Long(3, 4);
             var request = TestHelpers.CreateMashResidentUpdateRequest(matchingPersonId);
