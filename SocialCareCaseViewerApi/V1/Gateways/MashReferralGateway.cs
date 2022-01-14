@@ -104,6 +104,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new MashResidentNotFoundException($"MASH resident with id {mashResidentId} not found");
             }
 
+            if (request.UpdateType == "UNLINK-PERSON")
+            {
+                mashResident.SocialCareId = null;
+                _databaseContext.SaveChanges();
+
+                return mashResident.ToDomain();
+            }
+
             var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.SocialCareId);
 
             if (person == null)
