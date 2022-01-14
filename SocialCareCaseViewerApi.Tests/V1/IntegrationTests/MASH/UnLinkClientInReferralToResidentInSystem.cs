@@ -34,8 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
         public async Task SuccessfulUnLinkingRemovesLinkFromMashResidentToSavedPersonInDb()
         {
             _linkedResident.SocialCareId.Should().NotBeNull();
-
-            var request = new UpdateMashResidentRequest {UpdateType = "UNLINK-PERSON"};
+            var request = new UpdateMashResidentRequest { UpdateType = "UNLINK-PERSON" };
             var patchUri = new Uri($"/api/v1/mash-resident/{_linkedResident.Id}", UriKind.Relative);
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
