@@ -15,5 +15,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
         public string? School { get; set; }
         public string? Address { get; set; }
         public string? Postcode { get; set; }
+        public long? SocialCareId { get; set; }
     }
 }
