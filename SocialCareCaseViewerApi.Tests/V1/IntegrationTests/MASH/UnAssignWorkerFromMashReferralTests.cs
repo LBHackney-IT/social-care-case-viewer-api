@@ -10,34 +10,32 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.MASH
 {
     [TestFixture]
-    public class AssignWorkerToMashReferralTests : IntegrationTestSetup<Startup>
+    public class UnAssignWorkerFromMashReferralTests : IntegrationTestSetup<Startup>
     {
-        private SocialCareCaseViewerApi.V1.Infrastructure.Worker _existingDbWorker;
         private SocialCareCaseViewerApi.V1.Infrastructure.MashReferral _existingDbReferral;
 
         [SetUp]
         public void Setup()
         {
             // Create existing referral and unrelated worker
-            (_existingDbWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-            _existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext);
+            _existingDbReferral = IntegrationTestHelpers.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
         }
 
         [Test]
-        public async Task SuccessfulPatchAssignsWorkerToReferral()
+        public async Task SuccessfulPatchUnAssignsWorkerFromReferral()
         {
+            _existingDbReferral.WorkerId.Should().NotBeNull();
+
             var request = TestHelpers.CreateUpdateMashReferral();
-            request.WorkerId = _existingDbWorker.Id;
-            request.WorkerEmail = null;
-            request.UpdateType = "ASSIGN-WORKER";
+            request.UpdateType = "UNASSIGN-WORKER";
             var postUri = new Uri($"/api/v1/mash-referral/{_existingDbReferral.Id}", UriKind.Relative);
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
 
             var updatedMashReferralResponse = await Client.PatchAsync(postUri, requestContent).ConfigureAwait(true);
 
+            _existingDbReferral.WorkerId.Should().Be(null);
             updatedMashReferralResponse.StatusCode.Should().Be(200);
-            _existingDbReferral.WorkerId.Should().Equals(_existingDbWorker.Id);
         }
     }
 }

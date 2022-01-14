@@ -189,6 +189,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            if (request.UpdateType.Equals("UNASSIGN-WORKER"))
+            {
+                referral.WorkerId = null;
+            }
+
             _databaseContext.SaveChanges();
 
             return referral.ToDomain();
