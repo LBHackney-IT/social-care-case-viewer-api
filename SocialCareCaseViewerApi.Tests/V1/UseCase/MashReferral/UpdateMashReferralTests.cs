@@ -63,6 +63,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.MashReferral
         }
 
         [Test]
+        public void UpdatingMashReferralUnAssignOnSuccessReturnsMashReferralResponse()
+        {
+            var request = TestHelpers.CreateUpdateMashReferral();
+            request.UpdateType = "UNASSIGN-WORKER";
+
+            var referral = TestHelpers.CreateMashReferral().ToDomain();
+
+            _mashReferralGateway
+                .Setup(x => x.UpdateReferral(request, referral.Id))
+                .Returns(referral);
+
+            var response = _mashReferralUseCase.UpdateMashReferral(request, referral.Id);
+
+            response.Should().BeEquivalentTo(referral.ToResponse(), options =>
+            {
+                options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                return options;
+            });
+        }
+
+        [Test]
         public void UpdatingMashReferralOnSuccessReturnsMashReferralResponse()
         {
             var worker = TestHelpers.CreateWorker();

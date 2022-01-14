@@ -44,6 +44,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public Boundary.Response.MashReferral UpdateMashReferral(UpdateMashReferral request, long referralId)
         {
+            if (request.UpdateType == "UNASSIGN-WORKER")
+            {
+                return _mashReferralGateway.UpdateReferral(request, referralId).ToResponse();
+            }
+
             var worker = request.WorkerId != null ? _workerGateway.GetWorkerByWorkerId(request.WorkerId.Value) : _databaseGateway.GetWorkerByEmail(request.WorkerEmail)?.ToDomain(false);
             if (worker == null)
             {
