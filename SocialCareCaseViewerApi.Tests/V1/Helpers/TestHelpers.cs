@@ -703,7 +703,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static MashResident CreateMashResident(long? mashReferralId = null)
+        public static MashResident CreateMashResident(long? mashReferralId = null, long? socialCareId = null)
         {
             return new Faker<MashResident>()
                 .RuleFor(x => x.Id, f => f.UniqueIndex)
@@ -716,13 +716,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(x => x.School, f => f.Address.City())
                 .RuleFor(x => x.Address, f => f.Address.FullAddress())
                 .RuleFor(x => x.Postcode, f => f.Address.ZipCode())
-                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
+                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex)
+                .RuleFor(x => x.SocialCareId, f => socialCareId ?? f.UniqueIndex);
         }
 
-        public static UpdateMashResidentRequest CreateMashResidentUpdateRequest(long? matchId = null)
+        public static UpdateMashResidentRequest CreateMashResidentUpdateRequest(long? matchId = null, string? updateType = null)
         {
             return new Faker<UpdateMashResidentRequest>()
-                .RuleFor(x => x.SocialCareId, f => matchId ?? f.Random.Long(1, 10));
+                .RuleFor(x => x.SocialCareId, f => matchId ?? f.Random.Long(1, 10))
+                .RuleFor(x => x.UpdateType, f => updateType ?? f.Random.String());
         }
 
         public static MashReferral CreateMashReferral(string? stage = null, long? mashReferralId = null)
