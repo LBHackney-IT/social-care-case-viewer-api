@@ -167,7 +167,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             return mashreferral;
         }
 
-        public static MashResident CreateUnLinkedMashResident(DatabaseContext databaseContext, MashReferral referral, DbPerson personMatch = null)
+        public static MashResident CreateMashResident(DatabaseContext databaseContext, MashReferral referral, DbPerson personMatch = null)
         {
             var mashResident = new Faker<MashResident>()
                 .RuleFor(r => r.Id, f => f.UniqueIndex)
@@ -180,11 +180,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(r => r.School, f => f.Random.String2(1, 5))
                 .RuleFor(r => r.Address, f => f.Address.State())
                 .RuleFor(r => r.Postcode, f => f.Address.ZipCode())
+                .RuleFor(r => r.SocialCareId, f => personMatch?.Id ?? f.UniqueIndex)
                 .Generate();
 
             mashResident.MashReferralId = referral.Id;
             mashResident.MashReferral = referral;
-            mashResident.SocialCareId = null;
+
 
             databaseContext.MashResidents.Add(mashResident);
             databaseContext.SaveChanges();
