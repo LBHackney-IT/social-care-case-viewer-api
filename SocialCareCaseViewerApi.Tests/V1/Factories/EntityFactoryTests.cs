@@ -669,7 +669,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FirstLanguage = infrastructureResident.FirstLanguage,
                 School = infrastructureResident.School,
                 Address = infrastructureResident.Address,
-                Postcode = infrastructureResident.Postcode
+                Postcode = infrastructureResident.Postcode,
+                SocialCareId = infrastructureResident.SocialCareId
             });
         }
 

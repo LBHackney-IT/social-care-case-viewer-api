@@ -389,7 +389,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstLanguage = mashResident.FirstLanguage,
                 School = mashResident.School,
                 Address = mashResident.Address,
-                Postcode = mashResident.Postcode
+                Postcode = mashResident.Postcode,
+                SocialCareId = mashResident.SocialCareId
             };
         }
     }
