@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             DatabaseContext.SaveChanges();
 
             var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
-            var mashResident = MashResidentHelper.SaveMashResidentToDatabase(DatabaseContext, mashReferral.Id);
+            var mashResident = MashResidentHelper.SaveMashResidentToDatabase(DatabaseContext, mashReferral.Id, null);
 
             mashResident.SocialCareId.Should().BeNull();
 
@@ -44,6 +44,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             var response = _mashReferralGateway.UpdateMashResident(request, mashResident.Id);
             response.Should().BeEquivalentTo(mashResident.ToDomain());
             response.SocialCareId.Should().Be(personMatch.Id);
+        }
+
+        [Test]
+        public void WhenMashResidentWithLinkedPersonExistAndUpdateTypeIsUnLinkPersonUpdatesSocialCareIdValueOnMashResident()
+        {
+            var personMatch = TestHelpers.CreatePerson();
+            DatabaseContext.Persons.Add(personMatch);
+            DatabaseContext.SaveChanges();
+
+            var mashReferral = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext, "CONTACT");
+            var mashResident = MashResidentHelper.SaveMashResidentToDatabase(DatabaseContext, mashReferral.Id, personMatch.Id);
+
+            mashResident.SocialCareId.Should().NotBeNull();
+
+            var request = TestHelpers.CreateMashResidentUpdateRequest(personMatch.Id, updateType: "UNLINK-PERSON");
+
+            var response = _mashReferralGateway.UpdateMashResident(request, mashResident.Id);
+            response.Should().BeEquivalentTo(mashResident.ToDomain());
+            response.SocialCareId.Should().BeNull();
         }
 
         [Test]
