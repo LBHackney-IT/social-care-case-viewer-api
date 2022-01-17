@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
@@ -26,5 +29,39 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             ThrowOpsErrorUsecase.Execute();
         }
 
+        [HttpGet]
+        [Route("historical-data-database")]
+        public IActionResult HistoricalDataConnection()
+        {
+            try
+            {
+                var connectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING");
+
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new DatabaseConfigurationException("HISTORICAL_DATA_CONNECTION_STRING env var not set");
+                }
+
+                var connection = new NpgsqlConnection(connectionString);
+
+                connection.Open();
+
+                var npgsqlCommand = connection.CreateCommand();
+                npgsqlCommand.CommandText = "select version();";
+                npgsqlCommand.ExecuteNonQuery();
+
+                connection.Dispose();
+
+                return Ok();
+            }
+            catch (DatabaseConfigurationException)
+            {
+                throw;
+            }
+            catch
+            {
+                throw new Exception("Unable to connect to historical data database");
+            }
+        }
     }
 }
