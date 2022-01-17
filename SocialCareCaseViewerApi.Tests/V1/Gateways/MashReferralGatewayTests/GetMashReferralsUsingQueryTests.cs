@@ -81,7 +81,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             for (var i = 0; i < numberOfMashReferralsToAdd; i++)
             {
-               MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+                MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
             }
 
             var query = TestHelpers.CreateQueryMashReferral(null, workerEmail);

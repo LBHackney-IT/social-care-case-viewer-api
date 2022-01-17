@@ -82,7 +82,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var results = _databaseContext.MashReferrals.AsQueryable();
 
-            if(request.WorkerEmail != null && request.Id == null)
+            if (request.WorkerEmail != null && request.Id == null)
             {
                 results = results.Where(x => x.Worker.Email == request.WorkerEmail);
             }
