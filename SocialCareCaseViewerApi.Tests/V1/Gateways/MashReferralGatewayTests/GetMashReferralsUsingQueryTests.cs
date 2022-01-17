@@ -70,5 +70,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             response.Count.Should().Be(1);
             response[0].Id.Should().Equals(referral.Id);
         }
+
+        [Test]
+        public void GetMashReferralsWithEmailQueryReturnsReferralsMatchingEmail()
+        {
+            const int numberOfMashReferralsToAdd = 5;
+            var email = "";
+            MashReferral referral = null!;
+
+            for (var i = 0; i < numberOfMashReferralsToAdd; i++)
+            {
+                var tempRef = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+                if (i == 0)
+                {
+                    referral = tempRef.ToDomain();
+                    email = referral.Worker.Email;
+                }
+            }
+
+            var query = TestHelpers.CreateQueryMashReferral(null, email);
+
+            var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
+
+            response.Count.Should().Be(1);
+            response[0].Worker.Email.Should().Equals(referral.Worker.Email);
+        }
     }
 }
