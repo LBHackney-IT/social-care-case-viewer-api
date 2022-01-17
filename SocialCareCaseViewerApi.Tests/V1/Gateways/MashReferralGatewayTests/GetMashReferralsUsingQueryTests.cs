@@ -65,6 +65,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             }
 
             var query = TestHelpers.CreateQueryMashReferral(id);
+            query.WorkerEmail = null;
 
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 
