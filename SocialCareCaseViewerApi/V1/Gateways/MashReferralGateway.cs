@@ -87,6 +87,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 results = results.Where(x => x.Id == request.Id);
             }
 
+            if (request.WorkerEmail != null)
+            {
+                results = results.Where(x => x.WorkerId == request.WorkerEmail);
+            }
+
             return results
                 .Include(x => x.MashResidents)
                 .Include(x => x.Worker)
