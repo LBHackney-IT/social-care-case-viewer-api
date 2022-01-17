@@ -9,6 +9,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long? Id { get; set; }
 
         [FromQuery(Name = "WorkerEmail")]
-        public long? WorkerEmail { get; set; }
+        public string? WorkerEmail { get; set; }
     }
 }
