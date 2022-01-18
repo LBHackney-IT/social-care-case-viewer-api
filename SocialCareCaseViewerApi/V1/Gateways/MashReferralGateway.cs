@@ -148,7 +148,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.ContactDecisionCreatedAt = _systemTime.Now;
                 referral.ContactDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "INITIAL";
-                referral.WorkerId = request.WorkerId;
+                if (request.WorkerEmail != null)
+                {
+                    referral.WorkerId = _databaseContext.Workers.FirstOrDefault(w => w.Email == request.WorkerEmail).Id;
+                }
+                else if(request.WorkerId != null)
+                {
+                    referral.WorkerId = request.WorkerId;
+                }
             }
 
             if (request.UpdateType.Equals("INITIAL-DECISION"))
@@ -164,7 +171,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.InitialDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.InitialDecisionReferralCategory = request.ReferralCategory;
                 referral.Stage = "SCREENING";
-                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("SCREENING-DECISION"))
@@ -179,7 +185,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.ScreeningDecision = request.Decision;
                 referral.ScreeningUrgentContactRequired = request.RequiresUrgentContact;
                 referral.Stage = "FINAL";
-                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("FINAL-DECISION"))
@@ -195,7 +200,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 referral.FinalDecisionUrgentContactRequired = request.RequiresUrgentContact;
                 referral.FinalDecisionReferralCategory = request.ReferralCategory;
                 referral.Stage = "POST-FINAL";
-                referral.WorkerId = null;
             }
 
             if (request.UpdateType.Equals("ASSIGN-WORKER"))
