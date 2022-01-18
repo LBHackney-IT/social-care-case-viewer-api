@@ -134,7 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
 
             response.Should().BeEquivalentTo(mashReferral.ToDomain());
         }
-        
+
         [Test]
         public void SuccessfulUpdateOfMashReferralFromContactToInitialUsingWorkerEmailUpdatesAndReturnsMashReferralDomain()
         {
