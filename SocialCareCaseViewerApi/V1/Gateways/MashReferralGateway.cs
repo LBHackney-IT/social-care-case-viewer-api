@@ -152,7 +152,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     referral.WorkerId = _databaseContext.Workers.FirstOrDefault(w => w.Email == request.WorkerEmail).Id;
                 }
-                else if(request.WorkerId != null)
+                else if (request.WorkerId != null)
                 {
                     referral.WorkerId = request.WorkerId;
                 }
