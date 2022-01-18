@@ -48,9 +48,15 @@ services:
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
       - DB_PORT=5432
+      - DB_HOST_HISTORICAL_DATA=sccv-historical-data-test-postgresql
+      - DB_USERNAME_HISTORICAL_DATA=postgres
+      - DB_PASSWORD_HISTORICAL_DATA=mypassword
+      - DB_DATABASE_HISTORICAL_DATA=testdb
+      - DB_PORT_HISTORICAL_DATA=5432
     links:
       - sccv-api-test-mongo-db
       - sccv-api-test-postgresql
+      - sccv-historical-data-test-postgresql
 
   sccv-api-test-mongo-db:
     image: mongo:3.6
@@ -66,3 +72,13 @@ services:
       - 5432:5432
     env_file:
       - database.env
+      
+  sccv-historical-data-test-postgresql:
+    image: sccv-historical-data-test-postgresql
+    build:
+      context: .
+      dockerfile: database/historical-database-Dockerfile
+    ports:
+      - 5434:5432
+    env_file:
+      - historical-database.env

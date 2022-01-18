@@ -36,6 +36,7 @@ functions:
       SOCIAL_CARE_PLATFORM_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-url}
       SOCIAL_CARE_PLATFORM_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-token~true}
       SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_notes_response~true}
+      HISTORICAL_DATA_CONNECTION_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/historical-data-postgres-conn-string~true}
     events:
       - http:
           path: /{proxy+}
@@ -153,6 +154,7 @@ custom:
     staging:
       securityGroupIds:
         - sg-010e5f85b109fd4be
+        - sg-0d0aa66ddc2e0fa06
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
@@ -160,6 +162,7 @@ custom:
       securityGroupIds:
         - sg-0d8739383f0960389
         - sg-0d92164e9f5d53800
+        - sg-048f37056608033d3
       subnetIds:
         - subnet-0c39cd286eeaff2b2
         - subnet-04c42d0aafb3738ad

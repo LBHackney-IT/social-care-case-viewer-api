@@ -24,7 +24,7 @@ test:
 
 .PHONY: start-test-dbs
 start-test-dbs:
-	docker-compose up -d sccv-api-test-postgresql && docker-compose up -d sccv-api-test-mongo-db
+	docker-compose up -d sccv-api-test-postgresql && docker-compose up -d sccv-api-test-mongo-db && docker-compose up -d sccv-historical-data-test-postgresql
 
 .PHONY: restart-test-pg-db
 restart-test-pg-db:

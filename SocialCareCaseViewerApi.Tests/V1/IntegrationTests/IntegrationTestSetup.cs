@@ -89,6 +89,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");
             Environment.SetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL", "https://mockBase");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            Environment.SetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING", ConnectionString.HistoricalDataTestDatabase());
         }
     }
 }
