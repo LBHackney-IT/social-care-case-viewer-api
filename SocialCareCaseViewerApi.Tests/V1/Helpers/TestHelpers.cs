@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using MongoDB.Bson;
-using SocialCareCaseViewerApi.Tests.V1.Gateways.WorkerGatewayTests;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
@@ -716,20 +715,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
-        public static MashResident CreateMashResident(long? mashReferralId = null)
+        public static MashResident CreateMashResident(long? mashReferralId = null, long? socialCareId = null)
         {
             return new Faker<MashResident>()
                 .RuleFor(x => x.Id, f => f.UniqueIndex)
-                .RuleFor(x => x.FirstName, f => f.Random.String2(50))
-                .RuleFor(x => x.LastName, f => f.Random.String2(50))
+                .RuleFor(x => x.FirstName, f => f.Person.FirstName)
+                .RuleFor(x => x.LastName, f => f.Person.LastName)
                 .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
-                .RuleFor(x => x.Gender, f => f.Random.String2(20))
-                .RuleFor(x => x.Ethnicity, f => f.Random.String2(33))
-                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(100))
-                .RuleFor(x => x.School, f => f.Random.String2(100))
-                .RuleFor(x => x.Address, f => f.Random.String2(100))
-                .RuleFor(x => x.Postcode, f => f.Random.String2(20))
-                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex);
+                .RuleFor(x => x.Gender, f => f.Person.Gender.ToString())
+                .RuleFor(x => x.Ethnicity, f => f.Random.String2(5))
+                .RuleFor(x => x.FirstLanguage, f => f.Address.Country())
+                .RuleFor(x => x.School, f => f.Address.City())
+                .RuleFor(x => x.Address, f => f.Address.FullAddress())
+                .RuleFor(x => x.Postcode, f => f.Address.ZipCode())
+                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex)
+                .RuleFor(x => x.SocialCareId, f => socialCareId ?? f.UniqueIndex);
+        }
+
+        public static UpdateMashResidentRequest CreateMashResidentUpdateRequest(long? matchId = null, string? updateType = null)
+        {
+            return new Faker<UpdateMashResidentRequest>()
+                .RuleFor(x => x.SocialCareId, f => matchId ?? f.Random.Long(1, 10))
+                .RuleFor(x => x.UpdateType, f => updateType ?? f.Random.String());
         }
 
         public static MashReferral CreateMashReferral(string? stage = null, long? mashReferralId = null)

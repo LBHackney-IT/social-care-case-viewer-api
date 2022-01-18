@@ -45,6 +45,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public long MashReferralId { get; set; }
 
         [ForeignKey("MashReferralId")]
-        public MashReferral MashReferral { get; set; }
+        public MashReferral? MashReferral { get; set; }
+
+        [Column("sccv_residents_id")]
+        public long? SocialCareId { get; set; }
     }
 }

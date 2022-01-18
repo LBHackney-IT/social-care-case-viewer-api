@@ -72,7 +72,7 @@ services:
       - 5432:5432
     env_file:
       - database.env
-  
+      
   sccv-historical-data-test-postgresql:
     image: sccv-historical-data-test-postgresql
     build:

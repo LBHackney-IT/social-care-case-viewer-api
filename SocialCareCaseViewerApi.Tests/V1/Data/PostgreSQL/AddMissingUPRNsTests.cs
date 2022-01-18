@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                     sccv_last_modified_by = 'uprn_update_script',
                     sccv_last_modified_at = NOW()
                 FROM dbo.sccv_uprn_update u
-                WHERE u.address_id = a.ref_address_id AND a.unique_id IS NULL;
+                WHERE u.address_id = a.ref_addresses_people_id AND a.unique_id IS NULL;
             ";
 
         [SetUp]
@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.UPRNupdates.Add(new UPRNupdate()
             {
-                AddressId = address.AddressId,
+                AddressId = address.PersonAddressId,
                 UPRN = uprn
             });
 
@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.UPRNupdates.Add(new UPRNupdate()
             {
-                AddressId = address.AddressId,
+                AddressId = address.PersonAddressId,
                 UPRN = uprn
             });
 
@@ -90,7 +90,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.UPRNupdates.Add(new UPRNupdate()
             {
-                AddressId = address.AddressId,
+                AddressId = address.PersonAddressId,
                 UPRN = uprn
             });
 
@@ -121,10 +121,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.Addresses.AddRange(addressesToUpdate);
 
-            var uprnUpdate1 = new UPRNupdate() { AddressId = address1WithoutUPRN.AddressId, UPRN = 555 };
-            var uprnUpdate2 = new UPRNupdate() { AddressId = address2WithoutUPRN.AddressId, UPRN = 666 };
-            var uprnUpdate3 = new UPRNupdate() { AddressId = address1WithUPRN.AddressId, UPRN = 777 };
-            var uprnUpdate4 = new UPRNupdate() { AddressId = address2WithUPRN.AddressId, UPRN = 888 };
+            var uprnUpdate1 = new UPRNupdate() { AddressId = address1WithoutUPRN.PersonAddressId, UPRN = 555 };
+            var uprnUpdate2 = new UPRNupdate() { AddressId = address2WithoutUPRN.PersonAddressId, UPRN = 666 };
+            var uprnUpdate3 = new UPRNupdate() { AddressId = address1WithUPRN.PersonAddressId, UPRN = 777 };
+            var uprnUpdate4 = new UPRNupdate() { AddressId = address2WithUPRN.PersonAddressId, UPRN = 888 };
 
             var uprnUpdates = new List<UPRNupdate>() { uprnUpdate1, uprnUpdate2, uprnUpdate3, uprnUpdate4 };
 
@@ -133,15 +133,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);
 
-            var updatedAddressWithoutUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.AddressId == address1WithoutUPRN.AddressId);
-            var updatedAddressWithoutUPRN2 = DatabaseContext.Addresses.FirstOrDefault(x => x.AddressId == address2WithoutUPRN.AddressId);
-            var updatedAddressWithUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.AddressId == address1WithUPRN.AddressId);
-            var updatedAddressWithPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.AddressId == address2WithUPRN.AddressId);
+            var updatedAddressWithoutUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address1WithoutUPRN.PersonAddressId);
+            var updatedAddressWithoutUPRN2 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address2WithoutUPRN.PersonAddressId);
+            var updatedAddressWithUPRN1 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address1WithUPRN.PersonAddressId);
+            var updatedAddressWithUPRN2 = DatabaseContext.Addresses.FirstOrDefault(x => x.PersonAddressId == address2WithUPRN.PersonAddressId);
 
             updatedAddressWithoutUPRN1.Uprn.Should().Be(uprnUpdate1.UPRN);
             updatedAddressWithoutUPRN2.Uprn.Should().Be(uprnUpdate2.UPRN);
             updatedAddressWithUPRN1.Uprn.Should().Be(address1WithUPRN.Uprn);
-            updatedAddressWithPRN1.Uprn.Should().Be(address2WithUPRN.Uprn);
+            updatedAddressWithUPRN2.Uprn.Should().Be(address2WithUPRN.Uprn);
         }
     }
 }

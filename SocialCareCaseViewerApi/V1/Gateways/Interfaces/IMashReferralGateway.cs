@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 
@@ -10,9 +9,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
     {
         public void Reset();
         public IEnumerable<MashReferral> GetReferralsUsingQuery(QueryMashReferrals request);
-
         public MashReferral? GetReferralUsingId(long requestId);
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId);
         public MashReferral CreateReferral(CreateReferralRequest request);
+        public MashResident UpdateMashResident(UpdateMashResidentRequest request, long mashResidentId);
     }
 }

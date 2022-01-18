@@ -204,6 +204,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public MashReferralNotFoundException(string message) : base(message) { }
     }
 
+    public class MashResidentNotFoundException : Exception
+    {
+        public MashResidentNotFoundException(string message) : base(message) { }
+    }
+
     public class MashReferralStageMismatchException : Exception
     {
         public MashReferralStageMismatchException(string message) : base(message) { }
@@ -222,6 +227,11 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
     public class CaseNoteNotFoundException : Exception
     {
         public CaseNoteNotFoundException() : base() { }
+    }
+
+    public class DatabaseConfigurationException : Exception
+    {
+        public DatabaseConfigurationException(string message) : base(message) { }
     }
 
     public class CustomException : Exception

@@ -25,27 +25,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            // Clear test database of any rows in the database
-            DatabaseContext.Teams.RemoveRange(DatabaseContext.Teams);
-            DatabaseContext.Workers.RemoveRange(DatabaseContext.Workers);
-            DatabaseContext.WorkerTeams.RemoveRange(DatabaseContext.WorkerTeams);
-            DatabaseContext.Persons.RemoveRange(DatabaseContext.Persons);
-            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
 
             // Create existing workers with teams
-            var (existingDbWorker, existingDbTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
-            var (allocationWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+            (_existingDbWorker, _existingDbTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
+            (_allocationWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
 
-            var differentDbTeam = IntegrationTestHelpers.CreateTeam(DatabaseContext, existingDbWorker.ContextFlag);
+            _differentDbTeam = IntegrationTestHelpers.CreateTeam(DatabaseContext, _existingDbWorker.ContextFlag);
 
             // Create an existing resident that shares the same age context as existingDbWorker
-            var resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: existingDbWorker.ContextFlag);
+            _resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: _existingDbWorker.ContextFlag);
 
-            _existingDbWorker = existingDbWorker;
-            _existingDbTeam = existingDbTeam;
-            _allocationWorker = allocationWorker;
-            _differentDbTeam = differentDbTeam;
-            _resident = resident;
         }
 
 

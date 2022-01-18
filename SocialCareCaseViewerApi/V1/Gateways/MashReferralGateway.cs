@@ -93,6 +93,38 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Select(m => m.ToDomain());
         }
 
+        public Domain.MashResident UpdateMashResident(UpdateMashResidentRequest request, long mashResidentId)
+        {
+            var mashResident = _databaseContext.MashResidents
+                .Include(x => x.MashReferral)
+                .FirstOrDefault(x => x.Id == mashResidentId);
+
+            if (mashResident == null)
+            {
+                throw new MashResidentNotFoundException($"MASH resident with id {mashResidentId} not found");
+            }
+
+            if (request.UpdateType == "UNLINK-PERSON")
+            {
+                mashResident.SocialCareId = null;
+                _databaseContext.SaveChanges();
+
+                return mashResident.ToDomain();
+            }
+
+            var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == request.SocialCareId);
+
+            if (person == null)
+            {
+                throw new PersonNotFoundException($"Person with id {request.SocialCareId} not found");
+            }
+
+            mashResident.SocialCareId = person.Id;
+            _databaseContext.SaveChanges();
+
+            return mashResident.ToDomain();
+        }
+
         public MashReferral UpdateReferral(UpdateMashReferral request, long referralId)
         {
             var referral = _databaseContext.MashReferrals
@@ -187,6 +219,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                     referral.WorkerId = worker.Id;
                 }
+            }
+
+            if (request.UpdateType.Equals("UNASSIGN-WORKER"))
+            {
+                referral.WorkerId = null;
             }
 
             _databaseContext.SaveChanges();

@@ -105,6 +105,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             Environment.SetEnvironmentVariable("SCCV_MONGO_DB_NAME", "social_care_db_test");
             Environment.SetEnvironmentVariable("SCCV_MONGO_COLLECTION_NAME", "form_data_test");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            Environment.SetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING", ConnectionString.HistoricalDataTestDatabase());
         }
     }
 }
