@@ -674,10 +674,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(u => u.StartDate, f => startDate ?? null);
         }
 
-        public static QueryMashReferrals CreateQueryMashReferral(long? id = null)
+        public static QueryMashReferrals CreateQueryMashReferral(long? id = null, string? workerEmail = null)
         {
             return new Faker<QueryMashReferrals>()
-                .RuleFor(x => x.Id, f => id ?? f.Random.Long(0, 100));
+                .RuleFor(x => x.Id, f => id ?? f.Random.Long(0, 100))
+                .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email);
         }
 
         public static UpdateMashReferral CreateUpdateMashReferral(

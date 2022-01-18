@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
         {
             var query = TestHelpers.CreateQueryMashReferral();
             query.Id = null;
+            query.WorkerEmail = null;
             const int numberOfMashReferralsToAdd = 5;
 
             for (var i = 0; i < numberOfMashReferralsToAdd; i++)
@@ -64,11 +65,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.MashReferralGatewayTests
             }
 
             var query = TestHelpers.CreateQueryMashReferral(id);
+            query.WorkerEmail = null;
 
             var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
 
             response.Count.Should().Be(1);
             response[0].Id.Should().Equals(referral.Id);
+        }
+
+        [Test]
+        public void GetMashReferralsWithEmailQueryReturnsReferralsMatchingEmail()
+        {
+            const int numberOfMashReferralsToAdd = 4;
+            var exisitingDbReferall = MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            string workerEmail = exisitingDbReferall.Worker!.Email;
+
+            for (var i = 0; i < numberOfMashReferralsToAdd; i++)
+            {
+                MashReferralHelper.SaveMashReferralToDatabase(DatabaseContext);
+            }
+
+            var query = TestHelpers.CreateQueryMashReferral(null, workerEmail);
+            query.Id = null;
+
+            var response = _mashReferralGateway.GetReferralsUsingQuery(query).ToList();
+
+            response.Count.Should().Be(1);
+            response[0].Worker!.Email.Should().Equals(workerEmail);
         }
     }
 }

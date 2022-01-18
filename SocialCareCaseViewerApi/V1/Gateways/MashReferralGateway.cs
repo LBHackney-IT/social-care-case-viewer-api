@@ -81,8 +81,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public IEnumerable<MashReferral> GetReferralsUsingQuery(QueryMashReferrals request)
         {
             var results = _databaseContext.MashReferrals.AsQueryable();
-
-            if (request.Id != null)
+            if (request.WorkerEmail != null)
+            {
+                results = results.Where(x => x.Worker.Email == request.WorkerEmail);
+            }
+            else if (request.Id != null)
             {
                 results = results.Where(x => x.Id == request.Id);
             }
