@@ -214,6 +214,21 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public MashReferralStageMismatchException(string message) : base(message) { }
     }
 
+    public class ProcessDataGatewayException : Exception
+    {
+        public ProcessDataGatewayException(string message) : base(message) { }
+    }
+
+    public class CaseNoteIdConversionException : Exception
+    {
+        public CaseNoteIdConversionException(string message) : base(message) { }
+    }
+
+    public class CaseNoteNotFoundException : Exception
+    {
+        public CaseNoteNotFoundException() : base() { }
+    }
+
     public class DatabaseConfigurationException : Exception
     {
         public DatabaseConfigurationException(string message) : base(message) { }

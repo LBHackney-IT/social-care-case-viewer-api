@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.Tests
         [SetUp]
         public void RunBeforeAnyTests()
         {
-            var builder = new DbContextOptionsBuilder();
+            var builder = new DbContextOptionsBuilder<DatabaseContext>();
             builder.UseNpgsql(ConnectionString.TestDatabase());
             DatabaseContext = new DatabaseContext(builder.Options);
 

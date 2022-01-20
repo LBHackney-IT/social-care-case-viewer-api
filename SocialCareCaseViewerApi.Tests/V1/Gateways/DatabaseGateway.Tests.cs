@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Moq;
@@ -19,6 +14,10 @@ using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
@@ -42,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         private Faker _faker;
         private Fixture _fixture;
         private ProcessDataGateway _processDataGateway;
-        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformAPIGateway;
+        private Mock<IHistoricalDataGateway> _mockHistoricalSocialCareGateway;
         private Mock<ISystemTime> _mockSystemTime;
 
         [SetUp]
@@ -54,8 +53,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 _mockSystemTime.Object);
             _faker = new Faker();
             _fixture = new Fixture();
-            _mockSocialCarePlatformAPIGateway = new Mock<ISocialCarePlatformAPIGateway>();
-            _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockSocialCarePlatformAPIGateway.Object);
+            _mockHistoricalSocialCareGateway = new Mock<IHistoricalDataGateway>();
+            _processDataGateway = new ProcessDataGateway(MongoDbTestContext, _mockHistoricalSocialCareGateway.Object);
             _classUnderTestWithProcessDataGateway = new DatabaseGateway(DatabaseContext, _processDataGateway,
                 _mockSystemTime.Object);
             _workerGateway = new WorkerGateway(DatabaseContext);

@@ -1,21 +1,22 @@
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.UseCase
 {
     public class GetVisitByVisitIdUseCase : IGetVisitByVisitIdUseCase
     {
-        private readonly ISocialCarePlatformAPIGateway _socialCarePlatformAPIGateway;
+        private readonly IHistoricalDataGateway _historicalDataGateway;
 
-        public GetVisitByVisitIdUseCase(ISocialCarePlatformAPIGateway socialCarePlatformAPIGateway)
+        public GetVisitByVisitIdUseCase(IHistoricalDataGateway historicalSocialCareGateway)
         {
-            _socialCarePlatformAPIGateway = socialCarePlatformAPIGateway;
+            _historicalDataGateway = historicalSocialCareGateway;
         }
 
-        public Visit Execute(long id)
+        public Visit? Execute(long id)
         {
-            return _socialCarePlatformAPIGateway.GetVisitByVisitId(id);
+            return _historicalDataGateway.GetVisitById(id);
         }
     }
 }

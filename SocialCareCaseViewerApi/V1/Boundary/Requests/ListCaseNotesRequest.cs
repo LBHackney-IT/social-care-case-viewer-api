@@ -7,6 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     {
         [FromRoute]
         [Required]
-        public string Id { get; set; }
+        [Range(1, long.MaxValue)]
+        public long Id { get; set; }
     }
 }
