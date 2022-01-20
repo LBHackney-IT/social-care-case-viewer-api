@@ -109,12 +109,6 @@ namespace SocialCareCaseViewerApi
             RegisterGateways(services);
             RegisterUseCases(services);
 
-
-            services.AddHttpClient<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>(client =>
-            {
-                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SOCIAL_CARE_PLATFORM_API_URL") ?? throw new InvalidOperationException("Must provide SOCIAL_CARE_PLATFORM_API_URL environment variable"));
-            });
-
             services.AddScoped<ISystemTime, SystemTime>();
         }
 
@@ -126,18 +120,26 @@ namespace SocialCareCaseViewerApi
                 opt => opt.UseNpgsql(connectionString ?? throw new InvalidOperationException("Must provide CONNECTION_STRING environment variable")));
 
             services.AddSingleton<ISccvDbContext, SccvDbContext>();
+
+            //TODO: migrate historical data to service database 
+            var historicalDataConnectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING") ?? "Host=;Database=;";
+
+            services.AddDbContext<HistoricalDataContext>(options => options
+                .UseNpgsql(historicalDataConnectionString ?? throw new InvalidOperationException("Must provide HISTORICAL_DATA_CONNECTION_STRING environment variable"))
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking) //read only db for now, no need for tracking
+            );
         }
 
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IDatabaseGateway, DatabaseGateway>();
             services.AddScoped<IProcessDataGateway, ProcessDataGateway>();
-            services.AddScoped<ISocialCarePlatformAPIGateway, SocialCarePlatformAPIGateway>();
             services.AddScoped<IMongoGateway, MongoGateway>();
             services.AddScoped<ITeamGateway, TeamGateway>();
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
             services.AddScoped<IWorkerGateway, WorkerGateway>();
             services.AddScoped<IMashReferralGateway, MashReferralGateway>();
+            services.AddScoped<IHistoricalDataGateway, HistoricalDataGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

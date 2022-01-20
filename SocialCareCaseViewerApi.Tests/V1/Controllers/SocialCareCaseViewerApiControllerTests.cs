@@ -199,9 +199,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListCaseNotesByPersonIdReturns200WhenSuccessful()
         {
-            var request = new ListCaseNotesRequest { Id = "1" };
+            var request = new ListCaseNotesRequest { Id = 1L };
             var notesList = _fixture.Create<ListCaseNotesResponse>();
-            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(notesList);
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<long>())).Returns(notesList);
 
             var response = _classUnderTest.ListCaseNotes(request) as ObjectResult;
 
@@ -223,33 +223,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
+        public void GetCaseNoteByIdReturns400WhenUSeCaseThrowsCaseNoteIdConversionException()
+        {
+            var request = new GetCaseNotesRequest { Id = "1" };
+
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(request.Id)).Throws(new CaseNoteIdConversionException($"Note id conversion failed for {request.Id}"));
+
+            var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
+
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be($"Note id conversion failed for {request.Id}");
+        }
+
+        [Test]
         public void GetCaseNotesByNoteIdReturns404WhenNoMatchingCaseNoteId()
         {
             var request = new GetCaseNotesRequest { Id = "1" };
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
-                .Throws(new SocialCarePlatformApiException("404"));
+                .Throws(new CaseNoteNotFoundException());
 
             var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
 
-            response?.StatusCode.Should().Be(404);
+            response.StatusCode.Should().Be(404);
         }
 
+
         [Test]
-        public void GetCaseNotesByNoteIdReturns500WhenSocialCarePlatformApiExceptionIs500()
+        public void GetCaseNoteByIdThrowsExceptionWithMessageWhenIdConversionFails()
         {
-            var request = new GetCaseNotesRequest { Id = "1" };
-            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>()))
-                .Throws(new SocialCarePlatformApiException("500"));
+            var request = new GetCaseNotesRequest { Id = "not a number" };
 
-            var response = _classUnderTest.GetCaseNoteById(request) as StatusCodeResult;
+            _mockCaseNotesUseCase.Setup(x => x.ExecuteGetById(It.IsAny<string>())).Throws(new CaseNoteIdConversionException("$Note id conversion failed for { noteId}"));
 
-            response?.StatusCode.Should().Be(500);
+            var response = _classUnderTest.GetCaseNoteById(request) as ObjectResult;
+
+            response.StatusCode.Should().Be(400);
         }
 
         [Test]
         public void GivenAValidPersonIdWhenListCaseNotesIsCalledTheControllerReturnsCorrectJsonResponse()
         {
-            const string personId = "123";
+            const long personId = 1L;
             var request = new ListCaseNotesRequest { Id = personId };
             var response = new ListCaseNotesResponse { CaseNotes = new List<CaseNote>() };
             _mockCaseNotesUseCase.Setup(x => x.ExecuteGetByPersonId(personId)).Returns(response);
@@ -269,9 +283,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void ListVisitsByPersonIdReturns200WhenSuccessful()
         {
-            var request = new ListVisitsRequest { Id = "1" };
+            var request = new ListVisitsRequest { Id = 1L };
             var visitList = new List<Visit>();
-            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<string>())).Returns(visitList);
+            _mockVisitsUseCase.Setup(x => x.ExecuteGetByPersonId(It.IsAny<long>())).Returns(visitList);
 
             var response = _classUnderTest.ListVisits(request) as ObjectResult;
 

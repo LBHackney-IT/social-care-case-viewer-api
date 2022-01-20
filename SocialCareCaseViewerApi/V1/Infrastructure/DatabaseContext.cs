@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
     //TODO: add tests
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
         }
         public DbSet<Person> Persons { get; set; }
@@ -37,12 +37,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<MashReferral> MashReferrals { get; set; }
         public DbSet<MashResident> MashResidents { get; set; }
         public DbSet<UPRNupdate> UPRNupdates { get; set; }
-
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<WorkerTeam>().HasKey(wt => new { wt.WorkerId, wt.TeamId });
-        }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {

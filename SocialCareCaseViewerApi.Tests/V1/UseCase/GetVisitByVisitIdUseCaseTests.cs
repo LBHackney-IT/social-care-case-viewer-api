@@ -2,25 +2,26 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
-using SocialCareCaseViewerApi.V1.Gateways;
+using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using SocialCareCaseViewerApi.V1.UseCase;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 {
     public class GetVisitByVisitIdUseCaseTests
     {
-        private Mock<ISocialCarePlatformAPIGateway> _mockSocialCarePlatformApiGateway;
-        private GetVisitByVisitIdUseCase _classUnderTest;
+        private Mock<IHistoricalDataGateway> _historicalDataGateway = null!;
+        private GetVisitByVisitIdUseCase _classUnderTest = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _mockSocialCarePlatformApiGateway = new Mock<ISocialCarePlatformAPIGateway>();
-            _classUnderTest = new GetVisitByVisitIdUseCase(_mockSocialCarePlatformApiGateway.Object);
+            _historicalDataGateway = new Mock<IHistoricalDataGateway>();
+            _classUnderTest = new GetVisitByVisitIdUseCase(_historicalDataGateway.Object);
         }
 
         [Test]
-        public void GetVisitByVisitIdReturnsNullWhenNoVisitWithIdExists()
+        public void ExecuteReturnsNullWhenNoVisitWithIdExists()
         {
             var response = _classUnderTest.Execute(0L);
 
@@ -28,10 +29,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GetVisitByVisitIdReturnsVisitWhenVisitWithIdExists()
+        public void ExecuteReturnsVisitWhenVisitWithIdExists()
         {
             var visit = TestHelpers.CreateVisit();
-            _mockSocialCarePlatformApiGateway.Setup(x => x.GetVisitByVisitId(visit.VisitId)).Returns(visit);
+            _historicalDataGateway.Setup(x => x.GetVisitById(visit.VisitId)).Returns(visit);
 
             var response = _classUnderTest.Execute(visit.VisitId);
 

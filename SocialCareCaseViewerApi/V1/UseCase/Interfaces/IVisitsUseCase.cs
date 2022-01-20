@@ -5,6 +5,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
 {
     public interface IVisitsUseCase
     {
-        List<Visit> ExecuteGetByPersonId(string personId);
+        List<Visit> ExecuteGetByPersonId(long personId);
     }
 }

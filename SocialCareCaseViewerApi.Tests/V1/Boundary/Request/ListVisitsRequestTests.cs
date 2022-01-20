@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidationSucceeedsWhenValidPersonIdIsProvided()
         {
-            _request.Id = _faker.Random.String();
+            _request.Id = _faker.Random.Long(1, long.MaxValue);
 
             var errors = ValidationHelper.ValidateModel(_request);
 

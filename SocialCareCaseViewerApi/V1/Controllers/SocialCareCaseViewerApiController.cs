@@ -5,6 +5,7 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
+using System;
 
 namespace SocialCareCaseViewerApi.V1.Controllers
 {
@@ -140,6 +141,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         /// <response code="400">Id parameter is invalid or missing</response>
+        /// <reponse code="404">Case note not found</reponse>
         /// <response code="500">Server error</response>
         [ProducesResponseType(typeof(CaseNoteResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
@@ -151,9 +153,13 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             {
                 return Ok(_caseNotesUseCase.ExecuteGetById(request.Id));
             }
-            catch (SocialCarePlatformApiException ex)
+            catch (CaseNoteIdConversionException ex)
             {
-                return StatusCode(ex.Message == "404" ? 404 : 500);
+                return BadRequest(ex.Message);
+            }
+            catch (CaseNoteNotFoundException)
+            {
+                return NotFound();
             }
         }
 

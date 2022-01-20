@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Controllers;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -28,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashResident
         }
 
         [Test]
-        public void WhenSuccessfullyUpdateActionReturns204AndUpdatedMashResident()
+        public void WhenSuccessfullyUpdateActionReturns200AndUpdatedMashResident()
         {
             var matchingPersonId = _faker.Random.Long(3, 4);
             var request = TestHelpers.CreateMashResidentUpdateRequest(matchingPersonId);
@@ -43,6 +44,38 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.MashResident
 
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(updatedMashResident);
+        }
+
+        [Test]
+        public void WhenMashResidentUseCaseUpdateMashResidentThrowsPersonNotFoundExceptionReturnsBadRequest()
+        {
+            var matchingPersonId = _faker.Random.Long(3, 4);
+            var request = TestHelpers.CreateMashResidentUpdateRequest(matchingPersonId);
+            const string errorMessage = "test-error-message";
+            _mashResidentUseCase
+                .Setup(x => x.UpdateMashResident(request, _fakeMashResidentId))
+                .Throws(new PersonNotFoundException(errorMessage));
+
+            var response = _mashResidentController.UpdateMashResident(request, _fakeMashResidentId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void WhenMashResidentUseCaseUpdateMashResidentThrowsMashResidentNotFoundExceptionReturnsBadRequest()
+        {
+            var matchingPersonId = _faker.Random.Long(3, 4);
+            var request = TestHelpers.CreateMashResidentUpdateRequest(matchingPersonId);
+            const string errorMessage = "test-error-message";
+            _mashResidentUseCase
+                .Setup(x => x.UpdateMashResident(request, _fakeMashResidentId))
+                .Throws(new MashResidentNotFoundException(errorMessage));
+
+            var response = _mashResidentController.UpdateMashResident(request, _fakeMashResidentId) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
         }
     }
 }
