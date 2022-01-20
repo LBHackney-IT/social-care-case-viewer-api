@@ -80,15 +80,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime? CreatedAt { get; set; }
 
         [Column("sccv_created_by")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [Column("sccv_last_modified_at")]
         public DateTime? LastModifiedAt { get; set; }
 
         [Column("sccv_last_modified_by")]
-        public string? LastModifiedBy { get; set; }
+        public string LastModifiedBy { get; set; }
 
-        public ICollection<MashResident>? MashResidents { get; set; }
+        public ICollection<MashResident> MashResidents { get; set; }
 
 
     }
