@@ -15,8 +15,6 @@ using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
-using MashReferral = SocialCareCaseViewerApi.V1.Infrastructure.MashReferral;
-using MashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -684,123 +682,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(u => u.Notes, f => notes ?? f.Random.String2(512))
                 .RuleFor(u => u.Answers, CreateCaseStatusValues(min ?? null, max ?? null))
                 .RuleFor(u => u.StartDate, f => startDate ?? null);
-        }
-
-        public static QueryMashReferrals CreateQueryMashReferral(long? id = null, string? workerEmail = null)
-        {
-            return new Faker<QueryMashReferrals>()
-                .RuleFor(x => x.Id, f => id ?? f.Random.Long(0, 100))
-                .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email);
-        }
-
-        public static UpdateMashReferral CreateUpdateMashReferral(
-            string? workerEmail = null,
-            string? updateType = null,
-            string? decision = null,
-            bool? requiresUrgentContact = null,
-            string? referralCategory = null,
-            string? stage = null,
-            int? workerId = null)
-        {
-            var updateTypes = new List<string> { "SCREENING-DECISION", "INITIAL-DECISION", "ASSIGN-WORKER", "CONTACT-DECISION" };
-            var stageTypes = new List<string> { "SCREENING", "INITIAL", "FINAL", "CONTACT" };
-
-            return new Faker<UpdateMashReferral>()
-                .RuleFor(x => x.WorkerEmail, f => workerEmail ?? f.Person.Email)
-                .RuleFor(x => x.UpdateType, f => updateType ?? f.PickRandom(updateTypes))
-                .RuleFor(x => x.Stage, f => stage ?? f.PickRandom(stageTypes))
-                .RuleFor(x => x.Decision, f => decision ?? f.Random.String2(100))
-                .RuleFor(x => x.RequiresUrgentContact, f => requiresUrgentContact ?? f.Random.Bool())
-                .RuleFor(x => x.ReferralCategory, f => referralCategory ?? f.Random.String2(100))
-                .RuleFor(x => x.WorkerId, f => workerId ?? f.UniqueIndex);
-
-        }
-
-        public static MashResident CreateMashResident(long? mashReferralId = null, long? socialCareId = null)
-        {
-            return new Faker<MashResident>()
-                .RuleFor(x => x.Id, f => f.UniqueIndex)
-                .RuleFor(x => x.FirstName, f => f.Person.FirstName)
-                .RuleFor(x => x.LastName, f => f.Person.LastName)
-                .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
-                .RuleFor(x => x.Gender, f => f.Person.Gender.ToString())
-                .RuleFor(x => x.Ethnicity, f => f.Random.String2(5))
-                .RuleFor(x => x.FirstLanguage, f => f.Address.Country())
-                .RuleFor(x => x.School, f => f.Address.City())
-                .RuleFor(x => x.Address, f => f.Address.FullAddress())
-                .RuleFor(x => x.Postcode, f => f.Address.ZipCode())
-                .RuleFor(x => x.MashReferralId, f => mashReferralId ?? f.UniqueIndex)
-                .RuleFor(x => x.SocialCareId, f => socialCareId ?? f.UniqueIndex);
-        }
-
-        public static UpdateMashResidentRequest CreateMashResidentUpdateRequest(long? matchId = null, string? updateType = null)
-        {
-            return new Faker<UpdateMashResidentRequest>()
-                .RuleFor(x => x.SocialCareId, f => matchId ?? f.Random.Long(1, 10))
-                .RuleFor(x => x.UpdateType, f => updateType ?? f.Random.String());
-        }
-
-        public static MashReferral CreateMashReferral(string? stage = null, long? mashReferralId = null)
-        {
-            return new Faker<MashReferral>()
-                .RuleFor(x => x.Id, f => mashReferralId ?? f.UniqueIndex)
-                .RuleFor(x => x.Referrer, f => f.Random.String2(20))
-                .RuleFor(x => x.Worker, CreateWorker())
-                .RuleFor(x => x.RequestedSupport, f => f.Random.String2(20))
-                .RuleFor(x => x.ReferralCreatedAt, f => f.Date.Recent())
-                .RuleFor(x => x.ReferralDocumentURI, f => f.Random.String2(20))
-                .RuleFor(x => x.Stage, f => stage ?? f.Random.String2(20))
-                .RuleFor(x => x.ReferralCategory, f => f.Random.String2(20))
-                .RuleFor(x => x.InitialDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.InitialDecisionReferralCategory, f => f.Random.String2(20))
-                .RuleFor(x => x.InitialDecisionUrgentContactRequired, f => f.Random.Bool())
-                .RuleFor(x => x.InitialDecisionCreatedAt, f => f.Date.Recent())
-                .RuleFor(x => x.ScreeningDecision, f => f.Random.String2(100))
-                .RuleFor(x => x.ScreeningUrgentContactRequired, f => f.Random.Bool())
-                .RuleFor(x => x.ScreeningCreatedAt, f => f.Date.Recent())
-                .RuleFor(x => x.FinalDecision, f => f.Random.String2(20))
-                .RuleFor(x => x.FinalDecisionReferralCategory, f => f.Random.String2(20))
-                .RuleFor(x => x.FinalDecisionUrgentContactRequired, f => f.Random.Bool())
-                .RuleFor(x => x.FinalDecisionCreatedAt, f => f.Date.Recent())
-                .RuleFor(x => x.CreatedAt, f => f.Date.Recent())
-                .RuleFor(x => x.CreatedBy, f => f.Random.String2(20))
-                .RuleFor(x => x.LastModifiedAt, f => f.Date.Recent())
-                .RuleFor(x => x.LastModifiedBy, f => f.Random.String2(20))
-                .RuleFor(x => x.MashResidents, new List<MashResident>());
-        }
-
-
-        public static MashResidentRequest CreateNewMashResidentRequest()
-        {
-            return new Faker<MashResidentRequest>()
-                .RuleFor(x => x.FirstName, f => f.Random.String2(50))
-                .RuleFor(x => x.LastName, f => f.Random.String2(50))
-                .RuleFor(x => x.DateOfBirth, f => f.Date.Past())
-                .RuleFor(x => x.Gender, f => f.Random.String2(50))
-                .RuleFor(x => x.Ethnicity, f => f.Random.String2(33))
-                .RuleFor(x => x.FirstLanguage, f => f.Random.String2(100))
-                .RuleFor(x => x.School, f => f.Random.String2(100))
-                .RuleFor(x => x.Address, f => f.Random.String2(50))
-                .RuleFor(x => x.Postcode, f => f.Random.String2(20));
-        }
-
-        public static CreateReferralRequest CreateNewMashReferralRequest(
-            string? referrer = null,
-            string? requestedSupport = null,
-            string? referralUri = null)
-        {
-            var mashResidentsRequests = new List<MashResidentRequest>();
-
-            for (var i = 0; i < new Random().Next(10) + 1; i++)
-            {
-                mashResidentsRequests.Add(CreateNewMashResidentRequest());
-            }
-
-            return new Faker<CreateReferralRequest>()
-                .RuleFor(x => x.Referrer, f => referrer ?? f.Random.String2(20))
-                .RuleFor(x => x.RequestedSupport, f => requestedSupport ?? f.Random.String2(20))
-                .RuleFor(x => x.ReferralUri, f => referralUri ?? f.Random.String2(20))
-                .RuleFor(x => x.MashResidents, mashResidentsRequests);
         }
     }
 }
