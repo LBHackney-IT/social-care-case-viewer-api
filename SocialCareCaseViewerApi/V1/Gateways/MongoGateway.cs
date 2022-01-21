@@ -109,14 +109,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
     {
         public static readonly Dictionary<Collection, string> Map = new Dictionary<Collection, string>
         {
-            {Collection.ResidentCaseSubmissions, "resident-case-submissions"},
-            {Collection.MashReferrals, "mash-referrals" }
+            {Collection.ResidentCaseSubmissions, "resident-case-submissions"}
         };
     }
 
     public enum Collection
     {
-        ResidentCaseSubmissions,
-        MashReferrals
+        ResidentCaseSubmissions
     }
 }
