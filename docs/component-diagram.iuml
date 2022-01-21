@@ -12,7 +12,6 @@ title Component diagram for Social Care Case Viewer Service API
 
 Container_Ext(qlik, "Qlik Analytics", "Automated form data and allocations export")
 Container(social_care_front_end, "Social Care Front End", "Lambda, Next.js (React)", "Allows practitioners to edit case information.")
-Container_Ext(resident_social_care_platform_api, "Residents Social Care Platform API",  "Lambda, C#", "Provides historic case note and visit data")
 
 Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(api_gateway, "API Gateway", "API Gateway", "Routing and auth via API keys")
@@ -23,14 +22,16 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Component(persons, "Persons", "GET, POST", "Returns, creates and updates persons")
     Component(workers, "Workers", "GET", "Returns worker details")
     Component(allocations, "Allocations", "GET, POST", "Returns and creates cases")
-    Component(cases, "Cases", "GET, POST", "Returns and creates allocations of workers")
+    Component(cases, "Cases", "GET, POST", "Returns and creates case notes")
     Component(relationships, "Relationships", "GET", "Returns relationships of a person")
     Component(historic_case_notes, "Historic Case Notes", "GET", "Returns historic case notes")
     Component(historic_visits, "Historic Visits", "GET", "Returns historic visits")
+    Component(submissions, "Case Submissions", "GET, POST, PATCH, DELETE", "Manages case submissions")
 
     ContainerDb(postgres, "PostgreSQL", "RDS PostgreSQL", "Stores persons, workers and allocations")
     ContainerDb(mongodb, "MongoDB", "AWS DocumentDB", "Stores form data")
-
+    ContainerDb(historical_data_postgres, "PostgreSQL", "RDS PostgreSQL", "Provides historic case note and visit data")
+    
     Rel(api_gateway, api_lambda, "Uses", "HTTPS")
     Rel(qlik, s3_bucket, "Uses", "HTTPS")
 
@@ -48,18 +49,21 @@ Container_Boundary(api, "Social Care Case Viewer Service API") {
     Rel(api_lambda, allocations, "Uses", "JSON/HTTPS")
     Rel(allocations, postgres, "Uses", "Entity Framework/SSL")
 
+    Rel(api_lambda, submissions, "Uses", "JSON/HTTPS")
+    Rel(submissions, mongodb, "Uses", "Entity Framework/SSL")
+
     Rel(api_lambda, cases, "Uses", "JSON/HTTPS")
     Rel(cases, mongodb, "Uses", "Entity Framework/SSL")
-    Rel(cases, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
+    Rel(cases, historical_data_postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, relationships, "Uses", "JSON/HTTPS")
     Rel(relationships, postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, historic_case_notes, "Uses", "JSON/HTTPS")
-    Rel(historic_case_notes, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
+    Rel(historic_case_notes, historical_data_postgres, "Uses", "Entity Framework/SSL")
 
     Rel(api_lambda, historic_visits, "Uses", "JSON/HTTPS")
-    Rel(historic_visits, resident_social_care_platform_api, "Uses", "JSON/HTTPS")
+    Rel(historic_visits, historical_data_postgres, "Uses", "Entity Framework/SSL")
 }
 
 SHOW_DYNAMIC_LEGEND()
