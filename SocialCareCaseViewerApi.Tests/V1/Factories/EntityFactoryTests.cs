@@ -619,62 +619,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
-        public void ConvertMashReferralFromInfrastructureToDomain()
-        {
-            var infrastructureReferral = TestHelpers.CreateMashReferral();
-
-            var domainReferral = infrastructureReferral.ToDomain();
-
-            domainReferral.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashReferral
-            {
-                Id = infrastructureReferral.Id,
-                Referrer = infrastructureReferral.Referrer,
-                Stage = infrastructureReferral.Stage,
-                ReferralCreatedAt = infrastructureReferral.ReferralCreatedAt,
-                FinalDecision = infrastructureReferral.FinalDecision,
-                ContactDecisionCreatedAt = infrastructureReferral.ContactDecisionCreatedAt,
-                ContactDecisionUrgentContactRequired = infrastructureReferral.ContactDecisionUrgentContactRequired,
-                InitialDecision = infrastructureReferral.InitialDecision,
-                InitialDecisionReferralCategory = infrastructureReferral.InitialDecisionReferralCategory,
-                InitialDecisionCreatedAt = infrastructureReferral.InitialDecisionCreatedAt,
-                InitialDecisionUrgentContactRequired = infrastructureReferral.InitialDecisionUrgentContactRequired,
-                ScreeningDecision = infrastructureReferral.ScreeningDecision,
-                ScreeningCreatedAt = infrastructureReferral.ScreeningCreatedAt,
-                ScreeningUrgentContactRequired = infrastructureReferral.ScreeningUrgentContactRequired,
-                FinalDecisionReferralCategory = infrastructureReferral.FinalDecisionReferralCategory,
-                FinalDecisionCreatedAt = infrastructureReferral.FinalDecisionCreatedAt,
-                FinalDecisionUrgentContactRequired = infrastructureReferral.FinalDecisionUrgentContactRequired,
-                ReferralCategory = infrastructureReferral.ReferralCategory,
-                RequestedSupport = infrastructureReferral.RequestedSupport,
-                ReferralDocumentURI = infrastructureReferral.ReferralDocumentURI,
-                MashResidents = infrastructureReferral.MashResidents.Select(x => x.ToDomain()).ToList(),
-                Worker = infrastructureReferral.Worker.ToDomain(true)
-            });
-        }
-
-        [Test]
-        public void ConvertMashResidentFromInfrastructureToDomain()
-        {
-            var infrastructureResident = TestHelpers.CreateMashResident();
-            var domainResident = infrastructureResident.ToDomain();
-
-            domainResident.Should().BeEquivalentTo(new SocialCareCaseViewerApi.V1.Domain.MashResident
-            {
-                Id = infrastructureResident.Id,
-                FirstName = infrastructureResident.FirstName,
-                LastName = infrastructureResident.LastName,
-                DateOfBirth = infrastructureResident.DateOfBirth,
-                Gender = infrastructureResident.Gender,
-                Ethnicity = infrastructureResident.Ethnicity,
-                FirstLanguage = infrastructureResident.FirstLanguage,
-                School = infrastructureResident.School,
-                Address = infrastructureResident.Address,
-                Postcode = infrastructureResident.Postcode,
-                SocialCareId = infrastructureResident.SocialCareId
-            });
-        }
-
-        [Test]
         public void ConvertCaseStatusInfrastructureToDomain()
         {
             var infraStructureCaseStatus = TestHelpers.CreateCaseStatus();
