@@ -14,7 +14,6 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
-using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -344,53 +343,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate?.ToString("O"),
                 Notes = caseStatus.Notes,
                 Answers = caseStatus.Answers
-            };
-        }
-
-        public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
-        {
-            return new MashReferral
-            {
-                Id = mashReferral.Id,
-                Referrer = mashReferral.Referrer,
-                RequestedSupport = mashReferral.RequestedSupport,
-                Stage = mashReferral.Stage,
-                ReferralCreatedAt = mashReferral.ReferralCreatedAt.ToString("O"),
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
-                ReferralCategory = mashReferral.ReferralCategory,
-                ContactDecisionCreatedAt = mashReferral.ContactDecisionCreatedAt?.ToString("O"),
-                ContactDecisionUrgentContactRequired = mashReferral.ContactDecisionUrgentContactRequired,
-                InitialDecision = mashReferral.InitialDecision,
-                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
-                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
-                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt?.ToString("O"),
-                ScreeningDecision = mashReferral.ScreeningDecision,
-                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
-                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                FinalDecision = mashReferral.FinalDecision,
-                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
-                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O"),
-                MashResidents = mashReferral.MashResidents.Select(x => x.ToResponse()).ToList(),
-                Worker = mashReferral.Worker?.ToResponse()
-            };
-        }
-
-        public static MashResidentResponse ToResponse(this Domain.MashResident mashResident)
-        {
-            return new MashResidentResponse
-            {
-                Id = mashResident.Id,
-                FirstName = mashResident.FirstName,
-                LastName = mashResident.LastName,
-                DateOfBirth = mashResident.DateOfBirth?.ToString("O"),
-                Gender = mashResident.Gender,
-                Ethnicity = mashResident.Ethnicity,
-                FirstLanguage = mashResident.FirstLanguage,
-                School = mashResident.School,
-                Address = mashResident.Address,
-                Postcode = mashResident.Postcode,
-                SocialCareId = mashResident.SocialCareId
             };
         }
     }
