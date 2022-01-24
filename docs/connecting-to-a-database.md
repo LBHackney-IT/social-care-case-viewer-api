@@ -57,37 +57,46 @@ To view structure of a table:
 
 1. Within relevant AWS account, go to **Systems Manager** → **Parameter Store**
 2. Search for **/social-care-case-viewer-api/\<environment-key\>/docdb-conn-string**
-3. Change directory into `tmp` by running:
+3. In a new tab, go to **Session Manager** under **Node Management** in **Systems Manager**
+4. Click on **Start session**
+5. Select the appropriate EC2 jumpbox and click on **Start session**
+6. Change directory into `tmp` by running:
 
 ```
 $ cd /tmp
 ```
 
-4. Check that `rds-ca-2019.pem` file exists in the directory by running:
+7. Check that `rds-ca-2019.pem` file exists in the directory by running:
 
 ```
 $ ls
 ```
 
-5. If the file doesn’t exist, then you’ll to download it by running:
+8. If the file doesn’t exist, then you’ll to download it by running:
 
 ```
 $ wget https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem
 ```
 
-6. Using the parameter from Parameter Store in your other tab, run the following command by extracting parts from the connection string - `mongodb://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>`
+9. Using the parameter from Parameter Store in your other tab, extract the specific parts from the connection string and create a new string.
+
+This is the format of the connection string and where to find the parameters within it:
 
 ```
 mongo --ssl --host <HOSTNAME>:<PORT> --sslCAFile rds-ca-2019-root.pem --username <USERNAME> --password
 ```
 
-This will prompt you to enter the password.
+This is the string you need to complete with the aforementioned parameters to create a meaningful command:
 
-7. Paste the password and hit enter
+`mongodb://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>`
+
+After running this command you will be prompted to enter the password.
+
+10. Paste the password and hit enter
 
 This will connect you to the MongoDB of the service API.
 
-8. Connect to the `social_care_db` database by running:
+11. Connect to the `social_care_db` database by running:
 
 ```
 use social_care_db;
