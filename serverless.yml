@@ -31,10 +31,6 @@ functions:
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
       RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key~true}
       HOME: /tmp
-      MOSAIC_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-token~true}
-      MOSAIC_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/mosaic-api-url}
-      SOCIAL_CARE_PLATFORM_API_URL: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-url}
-      SOCIAL_CARE_PLATFORM_API_TOKEN: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/social-care-platform-api-token~true}
       SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_notes_response~true}
       HISTORICAL_DATA_CONNECTION_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/historical-data-postgres-conn-string~true}
     events:
