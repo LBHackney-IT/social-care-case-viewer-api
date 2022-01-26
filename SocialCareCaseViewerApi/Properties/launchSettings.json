@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "transactions_api": {
+    "social_care_case_viewer_api": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/v1/healthcheck/ping",
@@ -21,11 +21,7 @@
         "SCCV_MONGO_CONN_STRING": "mongodb://localhost:1433",
         "SCCV_MONGO_DB_NAME": "social_care_db",
         "SCCV_MONGO_COLLECTION_NAME": "form_data",
-        "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test",
-        "MOSAIC_API_URL": "http://localhost:5001/api/v1/",
-        "MOSAIC_API_TOKEN": "dummy",
-        "SOCIAL_CARE_PLATFORM_API_URL": "http://sample",
-        "SOCIAL_CARE_PLATFORM_API_TOKEN": "token"
+        "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test"
       }
     }
   }
