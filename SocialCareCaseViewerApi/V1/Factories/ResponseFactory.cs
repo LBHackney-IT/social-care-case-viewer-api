@@ -159,6 +159,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstLanguage = person.FirstLanguage,
                 PreferredLanguage = person.PreferredLanguage,
                 FluentInEnglish = person.FluentInEnglish,
+                InterpreterNeeded = person.InterpreterNeeded,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,

@@ -32,6 +32,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool FluentInEnglish { get; set; }
 
+        public bool InterpreterNeeded { get; set; }
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }
