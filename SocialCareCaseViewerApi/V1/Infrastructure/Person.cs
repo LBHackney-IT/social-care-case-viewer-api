@@ -55,6 +55,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(100)]
         public string FirstLanguage { get; set; }
 
+        [Column("fluent_in_english")]
+        public bool FluentInEnglish { get; set; }
+
         [Column("preferred_language")]
         [MaxLength(100)]
         public string PreferredLanguage { get; set; }

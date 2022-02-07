@@ -339,6 +339,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 PreferredLanguage = person.PreferredLanguage,
+                FluentInEnglish = person.FluentInEnglish,
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

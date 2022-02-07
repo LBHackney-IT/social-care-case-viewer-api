@@ -910,4 +910,5 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_uprn_update
 alter table if exists dbo.dm_persons
   add column pronoun varchar(20),
   add column gender_assigned_at_birth bool
-  add column preferred_language varchar(100);
+  add column preferred_language varchar(100)
+  add column fluent_in_english bool;
