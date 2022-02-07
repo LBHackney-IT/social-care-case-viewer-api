@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string Pronoun { get; set; }
 
-        public bool GenderAssignedAtBirth { get; set; }
+        public bool? GenderAssignedAtBirth { get; set; }
 
         public string FirstName { get; set; }
 
@@ -28,11 +28,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string FirstLanguage { get; set; }
 
-        public string PreferredLanguage { get; set; }
+        public string? PreferredLanguage { get; set; }
 
-        public bool FluentInEnglish { get; set; }
+        public bool? FluentInEnglish { get; set; }
 
-        public bool InterpreterNeeded { get; set; }
+        public bool? InterpreterNeeded { get; set; }
 
         public string Religion { get; set; }
 

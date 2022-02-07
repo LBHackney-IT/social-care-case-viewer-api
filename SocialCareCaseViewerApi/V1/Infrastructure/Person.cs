@@ -54,17 +54,17 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("first_language")]
         [MaxLength(100)]
-        public string FirstLanguage { get; set; }
+        public string? FirstLanguage { get; set; }
 
         [Column("fluent_in_english")]
-        public bool FluentInEnglish { get; set; }
+        public bool? FluentInEnglish { get; set; }
 
         [Column("interpreter_needed")]
-        public bool InterpreterNeeded { get; set; }
+        public bool? InterpreterNeeded { get; set; }
 
         [Column("preferred_language")]
         [MaxLength(100)]
-        public string PreferredLanguage { get; set; }
+        public string? PreferredLanguage { get; set; }
 
         [Column("religion")]
         [MaxLength(80)]
@@ -124,9 +124,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("pronoun")]
         [MaxLength(8)]
-        public string Pronoun { get; set; }
+        public string? Pronoun { get; set; }
 
         [Column("gender_assigned_at_birth")]
-        public bool GenderAssignedAtBirth { get; set; }
+        public bool? GenderAssignedAtBirth { get; set; }
     }
 }
