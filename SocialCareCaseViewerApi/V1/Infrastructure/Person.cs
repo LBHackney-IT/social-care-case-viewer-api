@@ -116,7 +116,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(8)]
         public string Pronoun { get; set; }
     
-        [Column("genderAssignedAtBirth")]
+        [Column("gender_assigned_at_birth")]
         public bool GenderAssignedAtBirth { get; set; }
     }
 }

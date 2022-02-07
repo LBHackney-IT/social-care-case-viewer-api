@@ -907,5 +907,6 @@ CREATE TABLE IF NOT EXISTS dbo.sccv_uprn_update
 	uprn bigint NOT NULL
 );
 
-DROP TABLE IF EXISTS dbo.REF_MASH_RESIDENTS;
-DROP TABLE IF EXISTS dbo.REF_MASH_REFERRALS;
+alter table if exists dbo.dm_persons
+add column pronoun varchar(20),
+add column gender_assigned_at_birth bool;
