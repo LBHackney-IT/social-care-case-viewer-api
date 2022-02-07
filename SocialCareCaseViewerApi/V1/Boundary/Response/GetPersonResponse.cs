@@ -28,6 +28,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string FirstLanguage { get; set; }
 
+        public string PreferredLanguage { get; set; }
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }

@@ -149,6 +149,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 SexualOrientation = person.SexualOrientation,
                 Pronoun = person.Pronoun,
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 DateOfBirth = person.DateOfBirth,
                 DateOfDeath = person.DateOfDeath,
                 ContextFlag = person.AgeContext,
@@ -156,6 +157,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EmailAddress = person.EmailAddress,
                 Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
+                PreferredLanguage = person.PreferredLanguage,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,
