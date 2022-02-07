@@ -45,6 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return new Faker<dbPerson>()
                 .RuleFor(p => p.Id, f => personId == null ? f.UniqueIndex : personId)
                 .RuleFor(p => p.Pronoun, f => f.Random.Word())
+                .RuleFor(p => p.GenderAssignedAtBirth, f => f.Random.Bool())
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))

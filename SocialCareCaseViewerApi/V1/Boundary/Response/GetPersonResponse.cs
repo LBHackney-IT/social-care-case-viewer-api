@@ -14,8 +14,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool genderAssignedAtBirth { get; set; }
 
-
-
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
