@@ -11,10 +11,12 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -101,6 +103,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Number = phoneNumber.Number,
                 Type = phoneNumber.Type
+            };
+        }
+
+        public static KeyContact ToDomain(this dbKeyContact keyContact)
+        {
+            return new KeyContact()
+            {
+                Name = keyContact.Name,
+                Email = keyContact.Email
             };
         }
 
@@ -238,6 +249,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
+            };
+        }
+
+        public static dbKeyContact ToEntity(this KeyContact contact, long personId)
+        {
+            return new dbKeyContact
+            {
+                Name = contact.Name,
+                Email = contact.Email,
+                PersonId = personId,
             };
         }
 
