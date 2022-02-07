@@ -13,6 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<PhoneNumber> PhoneNumbers { get; set; }
         public List<AllocationSet> Allocations { get; set; }
         public List<WarningNote> WarningNotes { get; set; }
+        public List<KeyContact> KeyContacts { get; set; }
 
         [InverseProperty("Person")]
         public List<PersonalRelationship> PersonalRelationships { get; set; }

@@ -53,6 +53,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
+        public List<KeyContact> KeyContacts { get; set; }
+
         public List<OtherName> OtherNames { get; set; }
     }
 }

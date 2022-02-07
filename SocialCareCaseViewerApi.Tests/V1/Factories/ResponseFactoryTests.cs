@@ -361,6 +361,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Restricted = person.Restricted,
                 Title = person.Title,
                 OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
+                KeyContacts = new List<KeyContact>() { personOtherName1, personOtherName2 },
                 PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 }
             };
 
