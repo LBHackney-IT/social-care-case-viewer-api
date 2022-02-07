@@ -337,6 +337,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new GetPersonResponse()
             {
+                MosaicId = person.Id.ToString(),
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
                 DateOfDeath = person.DateOfDeath.Value,
