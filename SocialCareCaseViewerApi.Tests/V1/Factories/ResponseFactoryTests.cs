@@ -337,7 +337,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             var expectedResponse = new GetPersonResponse()
             {
-                genderAssignedAtBirth = person.GenderAssignedAtBirth, 
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

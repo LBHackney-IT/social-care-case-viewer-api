@@ -12,7 +12,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string Pronoun { get; set; }
 
-        public bool genderAssignedAtBirth { get; set; }
+        public bool GenderAssignedAtBirth { get; set; }
 
         public string FirstName { get; set; }
 
