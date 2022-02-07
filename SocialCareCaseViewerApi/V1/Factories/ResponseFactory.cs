@@ -148,6 +148,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new GetPersonResponse()
             {
                 SexualOrientation = person.SexualOrientation,
+                Pronoun = person.Pronoun,
                 DateOfBirth = person.DateOfBirth,
                 DateOfDeath = person.DateOfDeath,
                 ContextFlag = person.AgeContext,
