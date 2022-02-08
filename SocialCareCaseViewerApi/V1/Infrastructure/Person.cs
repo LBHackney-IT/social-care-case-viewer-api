@@ -165,6 +165,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("accomodation_type")]
         public string? AccomodationType { get; set; }     
         [Column("access_to_home")]
-        public string? AccessToHome { get; set; }                     
+        public string? AccessToHome { get; set; }  
+
+        [Column("housing_officer")]
+        public string? HousingOfficer { get; set; }                            
     }
 }
