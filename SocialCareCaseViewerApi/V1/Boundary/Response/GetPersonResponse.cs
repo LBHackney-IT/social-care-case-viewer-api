@@ -38,8 +38,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool? DifficultyMakingDecisions { get; set; }
 
-        public String? CommunicationDifficultiesDetails { get; set; }
+        public string? CommunicationDifficultiesDetails { get; set; }
 
+
+        public string? Employment { get; set; }
 
         public string Religion { get; set; }
 

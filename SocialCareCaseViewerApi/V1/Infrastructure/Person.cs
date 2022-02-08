@@ -72,6 +72,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("communication_difficulties_details")]
         public string? CommunicationDifficultiesDetails { get; set; }
 
+        [Column("employment")]
+        public string? Employment { get; set; }        
+
 
         [Column("preferred_language")]
         [MaxLength(100)]

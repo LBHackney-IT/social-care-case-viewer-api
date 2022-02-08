@@ -163,6 +163,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 CommunicationDifficulties = person.CommunicationDifficulties,
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions,
                 CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
+                Employment = person.Employment,                
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,

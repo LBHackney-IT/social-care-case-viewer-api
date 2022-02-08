@@ -374,6 +374,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CommunicationDifficulties = person.CommunicationDifficulties, 
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions, 
                 CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails, 
+                Employment = person.Employment, 
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
