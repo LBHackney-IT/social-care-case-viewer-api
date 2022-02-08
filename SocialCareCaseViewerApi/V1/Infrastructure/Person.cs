@@ -154,6 +154,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? PrimarySupportReason { get; set; }
 
         [Column("care_provider")]
-        public string? CareProvider { get; set; }  
+        public string? CareProvider { get; set; } 
+
+        [Column("living_situation")]
+        public string? LivingSituation { get; set; }           
     }
 }
