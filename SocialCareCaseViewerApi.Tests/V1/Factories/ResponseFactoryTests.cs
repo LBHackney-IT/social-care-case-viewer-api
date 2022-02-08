@@ -380,6 +380,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 PrimarySupportReason = person.PrimarySupportReason,
                 TenureType = person.TenureType,
                 AccomodationType = person.AccomodationType,
+                AccessToHome = person.AccessToHome,
                 CareProvider = person.CareProvider,
                 LivingSituation = person.LivingSituation, 
                 Pronoun = person.Pronoun,
