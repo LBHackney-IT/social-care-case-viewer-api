@@ -96,6 +96,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            if (true)
+            {
+                response = response.Where(x => (x.FormName != "Person updated")).ToList();
+            }
+
             if (request.EndDate != null)
             {
                 if (DateTime.TryParseExact(((DateTime) request.EndDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
