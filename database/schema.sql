@@ -928,4 +928,5 @@ alter table if exists dbo.dm_persons
   add column immigration_status varchar,
   add column primary_support_reason varchar,
   add column care_provider varchar,
-  add column tenure_type varchar;
+  add column tenure_type varchar
+  add column accomodation_type varchar,;

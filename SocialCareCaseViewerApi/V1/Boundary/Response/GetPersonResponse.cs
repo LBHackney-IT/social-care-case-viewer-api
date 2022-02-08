@@ -52,7 +52,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? CareProvider { get; set; }       
         public string? LivingSituation { get; set; }    
 
-        public string? TenureType { get; set; }       
+        public string? TenureType { get; set; }   
+        public string? AccomodationType { get; set; }       
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }
