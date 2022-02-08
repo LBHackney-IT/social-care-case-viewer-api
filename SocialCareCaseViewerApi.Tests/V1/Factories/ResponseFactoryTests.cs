@@ -371,6 +371,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FluentInEnglish = person.FluentInEnglish,
                 InterpreterNeeded = person.InterpreterNeeded,
                 KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },
+                CommunicationDifficulties = person.communicationDifficulties,                
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
