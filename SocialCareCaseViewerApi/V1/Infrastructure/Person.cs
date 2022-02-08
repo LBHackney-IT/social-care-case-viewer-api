@@ -151,7 +151,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? ImmigrationStatus { get; set; }
 
         [Column("primary_support_reason")]
-        public string? PrimarySupportReason { get; set; }        
+        public string? PrimarySupportReason { get; set; }
 
+        [Column("care_provider")]
+        public string? CareProvider { get; set; }  
     }
 }
