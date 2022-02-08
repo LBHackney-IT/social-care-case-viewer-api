@@ -377,6 +377,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Employment = person.Employment,
                 MaritalStatus = person.MaritalStatus,
                 ImmigrationStatus = person.ImmigrationStatus, 
+                PrimarySupportReason = person.PrimarySupportReason, 
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
