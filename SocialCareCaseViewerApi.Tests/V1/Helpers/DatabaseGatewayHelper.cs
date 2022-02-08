@@ -121,5 +121,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.LastName, p => p.Random.String2(100))
                 .RuleFor(p => p.PersonId, personId);
         }
+
+       internal static KeyContact CreateKeyContactEntity(long personId)
+        {
+            return new Faker<KeyContact>()
+                .RuleFor(p => p.Name, p => p.Random.String2(100))
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.Email, p => p.Internet.Email());
+        }        
     }
 }

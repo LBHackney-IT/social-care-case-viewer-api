@@ -14,6 +14,8 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -38,6 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var phoneNumber1 = TestHelpers.CreatePhoneNumber(person.Id);
             var phoneNumber2 = TestHelpers.CreatePhoneNumber(person.Id);
 
+
             var otherName1 = TestHelpers.CreatePersonOtherName(person.Id);
             var otherName2 = TestHelpers.CreatePersonOtherName(person.Id);
 
@@ -52,6 +55,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 phoneNumber1,
                 phoneNumber2
             };
+
+   
 
             var residentResponse = TestHelpers.CreateAddNewResidentResponse(person.Id);
 
@@ -284,6 +289,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             PhoneNumber phoneNumber1 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
             PhoneNumber phoneNumber2 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
 
+            KeyContact keyContact1 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
+            KeyContact keyContact2 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
+
+
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
 
@@ -335,12 +344,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Type = phoneNumber2.Type
             };
 
+            KeyContactDomain keyContactDomain1 = new KeyContactDomain()
+            {
+                Name = keyContact1.Name,
+                Email = keyContact1.Email
+            }; 
+
+
+            KeyContactDomain keyContactDomain2 = new KeyContactDomain()
+            {
+                Name = keyContact2.Name,
+                Email = keyContact2.Email
+            };             
+
+
             var expectedResponse = new GetPersonResponse()
             {
                 GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 PreferredLanguage = person.PreferredLanguage,
                 FluentInEnglish = person.FluentInEnglish,
                 InterpreterNeeded = person.InterpreterNeeded,
+                KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },                
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

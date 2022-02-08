@@ -62,6 +62,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("interpreter_needed")]
         public bool? InterpreterNeeded { get; set; }
 
+
+        [Column("communication_difficulties")]
+        public bool? communicationDifficulties { get; set; }
+
         [Column("preferred_language")]
         [MaxLength(100)]
         public string? PreferredLanguage { get; set; }
