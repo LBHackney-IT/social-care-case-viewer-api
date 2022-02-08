@@ -34,9 +34,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool? InterpreterNeeded { get; set; }
 
-        public bool? CommunicationDifficulties {get; set;}
+        public bool? CommunicationDifficulties { get; set; }
 
-        public bool? DifficultyMakingDecisions {get; set;}
+        public bool? DifficultyMakingDecisions { get; set; }
+
+        public String? CommunicationDifficultiesDetails { get; set; }
+
 
         public string Religion { get; set; }
 

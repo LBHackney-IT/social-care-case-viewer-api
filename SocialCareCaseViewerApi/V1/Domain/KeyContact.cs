@@ -1,7 +1,7 @@
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Domain
 {
-    #nullable enable
+#nullable enable
     public class KeyContact
     {
         public string? Name { get; set; }

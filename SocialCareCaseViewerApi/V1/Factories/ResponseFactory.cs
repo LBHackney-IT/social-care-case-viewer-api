@@ -162,6 +162,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 InterpreterNeeded = person.InterpreterNeeded,
                 CommunicationDifficulties = person.CommunicationDifficulties,
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,
