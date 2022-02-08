@@ -142,5 +142,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("gender_assigned_at_birth")]
         public bool? GenderAssignedAtBirth { get; set; }
+
+        [Column("marital_status")]
+        public string? MaritalStatus { get; set; }
+
     }
 }

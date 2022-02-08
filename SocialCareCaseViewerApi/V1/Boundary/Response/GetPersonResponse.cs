@@ -43,6 +43,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string? Employment { get; set; }
 
+
+        public string? MaritalStatus { get; set; }        
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }
