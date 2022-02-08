@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 phoneNumber2
             };
 
-   
+
 
             var residentResponse = TestHelpers.CreateAddNewResidentResponse(person.Id);
 
@@ -313,6 +313,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 otherName2
             };
 
+            person.KeyContacts = new List<KeyContact>
+            {
+                keyContact1,
+                keyContact2
+            };
+
             AddressDomain addressDomain = new AddressDomain()
             {
                 Address = address.AddressLines,
@@ -348,14 +354,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 Name = keyContact1.Name,
                 Email = keyContact1.Email
-            }; 
+            };
 
 
             KeyContactDomain keyContactDomain2 = new KeyContactDomain()
             {
                 Name = keyContact2.Name,
                 Email = keyContact2.Email
-            };             
+            };
 
 
             var expectedResponse = new GetPersonResponse()
@@ -364,7 +370,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 PreferredLanguage = person.PreferredLanguage,
                 FluentInEnglish = person.FluentInEnglish,
                 InterpreterNeeded = person.InterpreterNeeded,
-                KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },                
+                KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
