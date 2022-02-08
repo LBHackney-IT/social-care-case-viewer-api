@@ -50,6 +50,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PreferredLanguage, f => f.Random.Word())
                 .RuleFor(p => p.FluentInEnglish, f => f.Random.Bool())
                 .RuleFor(p => p.InterpreterNeeded, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficulties, f => f.Random.Bool())
+                .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past())

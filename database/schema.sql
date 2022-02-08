@@ -921,4 +921,5 @@ alter table if exists dbo.dm_persons
   add column preferred_language varchar(100),
   add column fluent_in_english bool,
   add column interpreter_needed bool,
-  add column communication_difficulties bool;
+  add column communication_difficulties bool,
+  add column difficulty_making_decisions;

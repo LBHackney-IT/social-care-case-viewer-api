@@ -64,7 +64,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
 
         [Column("communication_difficulties")]
-        public bool? communicationDifficulties { get; set; }
+        public bool? CommunicationDifficulties { get; set; }
+
+        [Column("difficulty_making_decisions")]
+        public bool? DifficultyMakingDecisions { get; set; }        
+
 
         [Column("preferred_language")]
         [MaxLength(100)]
