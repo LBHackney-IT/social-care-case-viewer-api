@@ -146,5 +146,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("marital_status")]
         public string? MaritalStatus { get; set; }
 
+
+        [Column("immigration_status")]
+        public string? ImmigrationStatus { get; set; }
+
     }
 }

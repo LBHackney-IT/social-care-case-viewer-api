@@ -924,4 +924,5 @@ alter table if exists dbo.dm_persons
   add column communication_difficulties bool,
   add column difficulty_making_decisions,
   add column communication_difficulties_details varchar,
-  add column employment varchar;
+  add column employment varchar,
+  add column immigration_status varchar;
