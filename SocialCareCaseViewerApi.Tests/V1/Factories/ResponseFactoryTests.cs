@@ -384,6 +384,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CareProvider = person.CareProvider,
                 LivingSituation = person.LivingSituation, 
                 HousingOfficer = person.HousingOfficer,
+                HousingStaffInContact = person.HousingStaffInContact,             
                 Pronoun = person.Pronoun,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

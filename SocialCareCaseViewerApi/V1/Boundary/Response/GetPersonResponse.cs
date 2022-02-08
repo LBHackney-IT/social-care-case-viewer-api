@@ -55,7 +55,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? TenureType { get; set; }   
         public string? AccomodationType { get; set; }   
         public string? AccessToHome { get; set; }       
-        public string? HousingOfficer { get; set; }         
+        public string? HousingOfficer { get; set; }  
+        public bool? HousingStaffInContact { get; set; }                             
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }
