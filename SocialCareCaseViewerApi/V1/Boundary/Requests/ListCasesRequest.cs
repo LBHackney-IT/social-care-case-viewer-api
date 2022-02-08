@@ -47,5 +47,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "include_deleted_records_count")]
         public bool IncludeDeletedRecordsCount { get; set; } = false;
+
+        [FromQuery(Name = "exclude_audit_trail_events")]
+        public bool ExcludeAuditTrailEvents { get; set; } = false;
     }
 }
