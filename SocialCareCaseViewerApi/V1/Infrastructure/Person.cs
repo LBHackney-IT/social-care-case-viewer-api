@@ -177,7 +177,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public bool? CautionaryAlert { get; set; }
 
         [Column("posession_eviction_order")]
-        public string? PossessionEvictionOrder { get; set; }           
+        public string? PossessionEvictionOrder { get; set; }      
 
+        [Column("rent_record")]
+        public string? RentRecord { get; set; }      
     }
 }

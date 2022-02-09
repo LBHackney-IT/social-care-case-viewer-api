@@ -60,7 +60,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public bool? CautionaryAlert { get; set; }
 
-        public string? PossessionEvictionOrder { get; set; }           
+        public string? PossessionEvictionOrder { get; set; }   
+
+        public string? RentRecord { get; set; }      
 
 
         public string Religion { get; set; }
