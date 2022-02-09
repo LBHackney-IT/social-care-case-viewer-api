@@ -176,5 +176,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("cautionary_alert")]
         public bool? CautionaryAlert { get; set; }
 
+        [Column("posession_eviction_order")]
+        public string? PossessionEvictionOrder { get; set; }           
+
     }
 }
