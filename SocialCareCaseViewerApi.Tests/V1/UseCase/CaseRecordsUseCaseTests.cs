@@ -39,9 +39,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void GetResidentCasesReturnsTotalCount()
         {
             var request = TestHelpers.CreateListCasesRequest(1L);
+            request.ExcludeAuditTrailEvents = true;
 
             var expectedResponse = new List<CaseSubmission>
             {
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Person updated"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""))
