@@ -536,6 +536,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? lastName = null,
             string? workerEmail = null,
             bool? includeDeletedRecords = null,
+            bool? excludeAuditTrailEvents = null,
             bool? includeDeletedRecordsCount = null)
         {
             return new Faker<ListCasesRequest>()
@@ -544,6 +545,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.LastName, lastName)
                 .RuleFor(r => r.WorkerEmail, workerEmail)
                 .RuleFor(r => r.IncludeDeletedRecords, includeDeletedRecords ?? false)
+                .RuleFor(r => r.ExcludeAuditTrailEvents, excludeAuditTrailEvents ?? false)
                 .RuleFor(r => r.IncludeDeletedRecordsCount, includeDeletedRecordsCount ?? false);
         }
 
