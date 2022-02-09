@@ -195,6 +195,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? MentalHealthSectionStatus { get; set; }    
 
         [Column("deaf_register")]
-        public string? DeafRegister { get; set; }  
+        public string? DeafRegister { get; set; } 
+        
+        [Column("blind_register")]
+        public string? BlindRegister { get; set; }          
+
     }
 }
