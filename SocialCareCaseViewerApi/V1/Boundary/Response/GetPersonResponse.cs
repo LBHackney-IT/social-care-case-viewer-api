@@ -58,6 +58,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? HousingOfficer { get; set; }  
         public bool? HousingStaffInContact { get; set; }                             
 
+        public bool? CautionaryAlert { get; set; }
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }

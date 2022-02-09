@@ -171,6 +171,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? HousingOfficer { get; set; }       
 
         [Column("housing_staff_in_contact")]
-        public bool? HousingStaffInContact { get; set; }                             
+        public bool? HousingStaffInContact { get; set; }  
+
+        [Column("cautionary_alert")]
+        public bool? CautionaryAlert { get; set; }
+
     }
 }

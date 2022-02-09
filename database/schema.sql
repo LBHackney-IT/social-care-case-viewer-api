@@ -931,4 +931,5 @@ alter table if exists dbo.dm_persons
   add column tenure_type varchar
   add column accomodation_type varchar,
   add column access_to_home varchar,
-  add column housing_staff_in_contact bool;
+  add column housing_staff_in_contact bool,
+  add column cautionary_alert bool;
