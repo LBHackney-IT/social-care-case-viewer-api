@@ -31,6 +31,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public CareCaseDataList GetResidentCases(ListCasesRequest request)
         {
+            IEnumerable<string> caseExclusionList = new List<string> { "Person updated", "Person created", "Warning note added", "Warning note expired","Worker allocated", "Worker deallocated" };
             string? ncId = null;
 
             //grab both mosaic id and nc reference id
@@ -78,6 +79,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
                 allCareCaseData.AddRange(caseSubmissions);
                 totalCount += caseSubmissions.Count;
+            }
+            if (request.ExcludeAuditTrailEvents)
+            {
+                allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
             }
             var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
             .Skip(request.Cursor)
