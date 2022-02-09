@@ -35,7 +35,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _caseRecordsUseCase = new CaseRecordsUseCase(_mockProcessDataGateway.Object, _mockDatabaseGateWay.Object, _mockMongoGateway.Object);
         }
 
-                [Test]
+        [Test]
         public void GetResidentCasesReturnsResidentsSubmittedCasesWithTotalCount()
         {
             var request = TestHelpers.CreateListCasesRequest(1L);
