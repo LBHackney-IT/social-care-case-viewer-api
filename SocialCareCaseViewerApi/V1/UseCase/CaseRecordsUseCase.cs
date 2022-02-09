@@ -107,7 +107,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Cases = careCaseData.ToList(),
                 NextCursor = nextCursor,
-                TotalCount = careCaseData.Count,
+                TotalCount = allCareCaseData.Count,
                 DeletedRecordsCount = deletedRecordsCount
             };
         }
