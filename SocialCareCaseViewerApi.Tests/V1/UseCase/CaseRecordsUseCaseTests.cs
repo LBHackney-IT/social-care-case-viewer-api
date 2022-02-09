@@ -71,6 +71,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var expectedResponse = new List<CaseSubmission>
             {
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Person added"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Person updated"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Person created"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Warning note added"),

@@ -82,9 +82,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             if (request.ExcludeAuditTrailEvents)
             {
-                IEnumerable<string> caseExclusionList = new List<string>
+                var caseExclusionList = new List<string>
                 {
                     "Person updated",
+                    "Person added",
                     "Person created",
                     "Warning note added",
                     "Warning note expired",
