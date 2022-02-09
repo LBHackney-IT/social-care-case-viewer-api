@@ -192,6 +192,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? TenancyHouseholdStructure { get; set; } 
 
         [Column("mental_health_section_status")]
-        public string? MentalHealthSectionStatus { get; set; }         
+        public string? MentalHealthSectionStatus { get; set; }    
+
+        [Column("deaf_register")]
+        public string? DeafRegister { get; set; }  
     }
 }
