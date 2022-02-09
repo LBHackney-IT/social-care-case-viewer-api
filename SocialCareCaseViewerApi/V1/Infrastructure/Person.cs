@@ -187,5 +187,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("council_tenure_type")]
         public string? CouncilTenureType { get; set; }  
+
+        [Column("tenancy_household_structure")]
+        public string? TenancyHouseholdStructure { get; set; } 
+
+        [Column("mental_health_section_status")]
+        public string? MentalHealthSectionStatus { get; set; }         
     }
 }

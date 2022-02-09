@@ -64,8 +64,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string? RentRecord { get; set; }      
         public string? HousingBenefit { get; set; }  
+        public string? CouncilTenureType { get; set; } 
+        public string? TenancyHouseholdStructure { get; set; } 
+        public string? MentalHealthSectionStatus { get; set; }         
 
-        public string? CouncilTenureType { get; set; }  
 
         public string Religion { get; set; }
 

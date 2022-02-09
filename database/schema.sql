@@ -936,4 +936,6 @@ alter table if exists dbo.dm_persons
   add column posession_eviction_order varchar,
   add column rent_record varchar, 
   add column housing_benefit varchar,
-  add column council_tenure_type varchar;
+  add column council_tenure_type varchar,
+  add column tenancy_household_structure varchar,
+  add column mental_health_section_status varchar;
