@@ -183,6 +183,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? RentRecord { get; set; }   
 
         [Column("housing_benefit")]
-        public string? HousingBenefit { get; set; }              
+        public string? HousingBenefit { get; set; }        
+
+        [Column("council_tenure_type")]
+        public string? CouncilTenureType { get; set; }  
     }
 }
