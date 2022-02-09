@@ -70,7 +70,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string? DeafRegister { get; set; }
 
-        public string? BlindRegister { get; set; }            
+        public string? BlindRegister { get; set; } 
+
+        public string? BlueBadge { get; set; }                     
+
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }

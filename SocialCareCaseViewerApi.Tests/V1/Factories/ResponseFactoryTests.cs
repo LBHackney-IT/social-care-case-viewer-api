@@ -395,6 +395,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DeafRegister = person.DeafRegister,
                 BlindRegister = person.BlindRegister,    
                 Pronoun = person.Pronoun,
+                BlueBadge = person.BlueBadge,   
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
                 DateOfDeath = person.DateOfDeath.Value,

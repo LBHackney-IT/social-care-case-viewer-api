@@ -196,9 +196,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("deaf_register")]
         public string? DeafRegister { get; set; } 
-        
+
         [Column("blind_register")]
-        public string? BlindRegister { get; set; }          
+        public string? BlindRegister { get; set; }
+
+        [Column("blue_badge")]
+        public string? BlueBadge { get; set; }                     
 
     }
 }

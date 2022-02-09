@@ -940,4 +940,5 @@ alter table if exists dbo.dm_persons
   add column tenancy_household_structure varchar,
   add column mental_health_section_status varchar,
   add column deaf_register varchar,
-  add column blind_register varchar;
+  add column blind_register varchar,
+  add column blue_badge varchar;
