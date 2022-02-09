@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void GetResidentCasesReturnsResidentsSubmittedCasesWithTotalCount()
+        public void GetResidentCasesReturnsTotalCount()
         {
             var request = TestHelpers.CreateListCasesRequest(1L);
 
