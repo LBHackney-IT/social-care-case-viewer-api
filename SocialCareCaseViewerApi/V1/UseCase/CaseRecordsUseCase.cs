@@ -10,7 +10,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -23,12 +22,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
 
-        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
+        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway,
+            IMongoGateway mongoGateway)
         {
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
             _mongoGateway = mongoGateway;
         }
+
         public CareCaseDataList GetResidentCases(ListCasesRequest request)
         {
             string? ncId = null;
@@ -79,6 +80,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allCareCaseData.AddRange(caseSubmissions);
                 totalCount += caseSubmissions.Count;
             }
+            if (request.ExcludeAuditTrailEvents)
+            {
+                var caseExclusionList = new List<string>
+                {
+                    "Person updated",
+                    "Person added",
+                    "Person created",
+                    "Warning note added",
+                    "Warning note expired",
+                    "Worker allocated",
+                    "Worker deallocated"
+                };
+                allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
+            }
             var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
             .Skip(request.Cursor)
             .Take(request.Limit)
@@ -93,6 +108,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 Cases = careCaseData.ToList(),
                 NextCursor = nextCursor,
+                TotalCount = allCareCaseData.Count,
                 DeletedRecordsCount = deletedRecordsCount
             };
         }

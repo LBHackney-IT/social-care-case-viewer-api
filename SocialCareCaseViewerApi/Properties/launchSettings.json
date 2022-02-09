@@ -21,6 +21,7 @@
         "SCCV_MONGO_CONN_STRING": "mongodb://localhost:1433",
         "SCCV_MONGO_DB_NAME": "social_care_db",
         "SCCV_MONGO_COLLECTION_NAME": "form_data",
+        "HISTORICAL_DATA_CONNECTION_STRING": "Host=localhost;Port=5434;Database=testdb;Username=postgres;Password=mypassword",
         "SCCV_MONGO_COLLECTION_NAME_TEMP": "form_data_test"
       }
     }
