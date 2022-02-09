@@ -180,6 +180,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? PossessionEvictionOrder { get; set; }      
 
         [Column("rent_record")]
-        public string? RentRecord { get; set; }      
+        public string? RentRecord { get; set; }   
+
+        [Column("housing_benefit")]
+        public string? HousingBenefit { get; set; }              
     }
 }

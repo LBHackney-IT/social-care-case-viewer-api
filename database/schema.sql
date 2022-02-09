@@ -934,4 +934,5 @@ alter table if exists dbo.dm_persons
   add column housing_staff_in_contact bool,
   add column cautionary_alert bool,
   add column posession_eviction_order varchar,
-  add column rent_record varchar;
+  add column rent_record varchar, 
+  add column housing_benefit varchar;

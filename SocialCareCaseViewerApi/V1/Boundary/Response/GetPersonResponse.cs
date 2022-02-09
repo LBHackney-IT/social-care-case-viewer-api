@@ -63,8 +63,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? PossessionEvictionOrder { get; set; }   
 
         public string? RentRecord { get; set; }      
-
-
+        public string? HousingBenefit { get; set; }              
         public string Religion { get; set; }
 
         public string SexualOrientation { get; set; }
