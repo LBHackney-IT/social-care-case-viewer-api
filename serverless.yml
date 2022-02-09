@@ -9,10 +9,10 @@ provider:
   stage: ${opt:stage}
   region: eu-west-2
   apiGateway:
-    - apiKeys:
+    apiKeys:
       - secureAccess:
         - api-key-${self:service}-${self:provider.stage}
-    - usagePlan:
+    usagePlan:
       - secureAccess:
           throttle:
             burstLimit: 200
