@@ -23,15 +23,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
 
-        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
+        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway,
+            IMongoGateway mongoGateway)
         {
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
             _mongoGateway = mongoGateway;
         }
+
         public CareCaseDataList GetResidentCases(ListCasesRequest request)
         {
-            IEnumerable<string> caseExclusionList = new List<string> { "Person updated", "Person created", "Warning note added", "Warning note expired","Worker allocated", "Worker deallocated" };
+            IEnumerable<string> caseExclusionList = new List<string>
+            {
+                "Person updated",
+                "Person created",
+                "Warning note added",
+                "Warning note expired",
+                "Worker allocated",
+                "Worker deallocated"
+            };
             string? ncId = null;
 
             //grab both mosaic id and nc reference id
