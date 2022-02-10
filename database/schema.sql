@@ -941,4 +941,5 @@ alter table if exists dbo.dm_persons
   add column mental_health_section_status varchar,
   add column deaf_register varchar,
   add column blind_register varchar,
-  add column blue_badge varchar;
+  add column blue_badge varchar,
+  add column open_case bool;

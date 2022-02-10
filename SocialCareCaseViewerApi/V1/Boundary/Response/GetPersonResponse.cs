@@ -72,7 +72,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string? BlindRegister { get; set; } 
 
-        public string? BlueBadge { get; set; }                     
+        public string? BlueBadge { get; set; }     
+
+        public bool? OpenCase { get; set; }                     
 
         public string Religion { get; set; }
 

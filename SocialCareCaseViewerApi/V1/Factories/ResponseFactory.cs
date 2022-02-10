@@ -184,6 +184,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DeafRegister = person.DeafRegister,  
                 BlindRegister = person.BlindRegister, 
                 BlueBadge = person.BlueBadge,   
+                OpenCase = person.OpenCase,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,
