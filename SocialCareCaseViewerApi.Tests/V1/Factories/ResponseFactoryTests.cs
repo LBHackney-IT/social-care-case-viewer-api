@@ -18,6 +18,8 @@ using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetails;
+using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -296,6 +298,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             GpDetails gpDetails = DatabaseGatewayHelper.CreateGpDetailsEntity(person.Id);
 
+            TechUse techUse1 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
+            TechUse techUse2 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
 
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
@@ -326,7 +330,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             person.GpDetails = new List<GpDetails>
             {
                 gpDetails,
-            };            
+            };     
+            person.TechUse = new List<TechUse>
+            {
+                techUse1,
+                techUse2
+            };                        
 
             AddressDomain addressDomain = new AddressDomain()
             {
@@ -381,7 +390,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Email = gpDetails.Email
             };
 
+            TechUseDomain techUseDomain1 = new TechUseDomain()
+            {
+                TechType = techUse1.TechType
+            };
 
+
+            TechUseDomain techUseDomain2 = new TechUseDomain()
+            {
+                TechType = techUse2.TechType
+
+            };
 
             var expectedResponse = new GetPersonResponse()
             {
@@ -393,6 +412,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CommunicationDifficulties = person.CommunicationDifficulties, 
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions, 
                 CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails, 
+                TechUse = new List<TechUseDomain>() { techUseDomain1, techUseDomain2 },
                 Employment = person.Employment,
                 MaritalStatus = person.MaritalStatus,
                 ImmigrationStatus = person.ImmigrationStatus, 

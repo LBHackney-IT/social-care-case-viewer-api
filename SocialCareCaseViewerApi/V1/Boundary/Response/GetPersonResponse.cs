@@ -99,6 +99,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<GpDetails>? GpDetails { get; set; }
 
+        public List<TechUse>? TechUse { get; set; }
+
 
         public List<OtherName> OtherNames { get; set; }
     }
