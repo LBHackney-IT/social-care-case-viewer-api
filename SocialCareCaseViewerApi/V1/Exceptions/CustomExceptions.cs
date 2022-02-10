@@ -199,21 +199,6 @@ namespace SocialCareCaseViewerApi.V1.Exceptions
         public InvalidCaseStatusAnswersRequestException(string message) : base(message) { }
     }
 
-    public class MashReferralNotFoundException : Exception
-    {
-        public MashReferralNotFoundException(string message) : base(message) { }
-    }
-
-    public class MashResidentNotFoundException : Exception
-    {
-        public MashResidentNotFoundException(string message) : base(message) { }
-    }
-
-    public class MashReferralStageMismatchException : Exception
-    {
-        public MashReferralStageMismatchException(string message) : base(message) { }
-    }
-
     public class ProcessDataGatewayException : Exception
     {
         public ProcessDataGatewayException(string message) : base(message) { }
