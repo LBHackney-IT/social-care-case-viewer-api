@@ -89,6 +89,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     "Person created",
                     "Warning note added",
                     "Warning note expired",
+                    "Warning note created",
+                    "Warning note reviewed",
+                    "Warning note ended",
                     "Worker allocated",
                     "Worker deallocated"
                 };
