@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using FluentValidation;
 
@@ -15,6 +16,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; } = null!;
+
+        [JsonPropertyName("pinnedAt")]
+        public DateTime PinnedAt { get; set; }
     }
 
     public class CreateCaseSubmissionRequestValidator : AbstractValidator<CreateCaseSubmissionRequest>
