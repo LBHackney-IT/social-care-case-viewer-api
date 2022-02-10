@@ -50,6 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Workers = new List<Worker> { worker },
                 CreatedAt = dateTimeNow,
                 CreatedBy = worker,
+                PinnedAt = request.PinnedAt,
                 SubmissionState = SubmissionState.InProgress,
                 EditHistory = new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = worker, EditTime = dateTimeNow } },
                 FormAnswers = new Dictionary<string, string>()
