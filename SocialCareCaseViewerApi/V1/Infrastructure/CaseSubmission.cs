@@ -31,6 +31,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<EditHistory<Worker>> EditHistory { get; set; } = null!;
         public SubmissionState SubmissionState { get; set; }
         public string? Title { get; set; }
+        public DateTime PinnedAt { get; set; }
 
         public List<string>? Tags { get; set; }
 
