@@ -97,6 +97,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<KeyContact>? KeyContacts { get; set; }
 
+        public List<GpDetails>? GpDetails { get; set; }
+
+
         public List<OtherName> OtherNames { get; set; }
     }
 }

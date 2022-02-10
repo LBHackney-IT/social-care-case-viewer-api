@@ -16,6 +16,8 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetails;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -292,6 +294,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             KeyContact keyContact1 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
             KeyContact keyContact2 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
 
+            GpDetails gpDetails = DatabaseGatewayHelper.CreateGpDetailsEntity(person.Id);
+
+
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
@@ -318,6 +323,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 keyContact1,
                 keyContact2
             };
+            person.GpDetails = new List<GpDetails>
+            {
+                gpDetails,
+            };            
 
             AddressDomain addressDomain = new AddressDomain()
             {
@@ -362,6 +371,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Name = keyContact2.Name,
                 Email = keyContact2.Email
             };
+
+           GpDetailsDomain gpDetailsDomain = new GpDetailsDomain()
+            {
+                Name = gpDetails.Name,
+                Address = gpDetails.Address,
+                Postcode = gpDetails.Postcode,
+                PhoneNr = gpDetails.PhoneNr,
+                Email = gpDetails.Email
+            };
+
 
 
             var expectedResponse = new GetPersonResponse()
@@ -410,6 +429,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Gender = person.Gender,
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
+                GpDetails = new List<GpDetailsDomain>() { gpDetailsDomain },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,

@@ -12,11 +12,13 @@ using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetails;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -112,6 +114,18 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Name = keyContact.Name,
                 Email = keyContact.Email
+            };
+        }
+
+        public static GpDetails ToDomain(this dbGpDetails GpDetails)
+        {
+            return new GpDetails()
+            {
+                Name = GpDetails.Name,
+                Address = GpDetails.Address,
+                Postcode = GpDetails.Postcode,
+                PhoneNr =GpDetails.PhoneNr,
+                Email = GpDetails.Email
             };
         }
 

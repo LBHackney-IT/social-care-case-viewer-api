@@ -197,7 +197,9 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
-                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList()
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
+                GpDetails = person.GpDetails?.Select(x => x.ToDomain()).ToList()
+
             };
         }
 

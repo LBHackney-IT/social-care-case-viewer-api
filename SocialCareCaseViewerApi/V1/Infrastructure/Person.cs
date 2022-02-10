@@ -15,6 +15,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public List<WarningNote> WarningNotes { get; set; }
         public List<KeyContact>? KeyContacts { get; set; }
 
+        public List<GpDetails>? GpDetails { get; set; }
+
+
         [InverseProperty("Person")]
         public List<PersonalRelationship> PersonalRelationships { get; set; }
 
