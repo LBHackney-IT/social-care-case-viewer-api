@@ -126,7 +126,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Name = GpDetails.Name,
                 Address = GpDetails.Address,
                 Postcode = GpDetails.Postcode,
-                PhoneNr =GpDetails.PhoneNr,
+                PhoneNr = GpDetails.PhoneNr,
                 Email = GpDetails.Email
             };
         }
@@ -138,7 +138,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 TechType = TechUse.TechType
             };
-        }        
+        }
 
         public static OtherName ToDomain(this PersonOtherName otherName)
         {

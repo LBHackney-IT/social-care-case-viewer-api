@@ -231,7 +231,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Number, f => f.Random.Number(int.MaxValue).ToString())
                 .RuleFor(p => p.Type, f => f.Random.String2(1, 80));
         }
-        
+
 
         public static PersonOtherName CreatePersonOtherName(long? personId = null)
         {

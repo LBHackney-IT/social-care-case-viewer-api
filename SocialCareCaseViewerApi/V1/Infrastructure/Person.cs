@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? CommunicationDifficultiesDetails { get; set; }
 
         [Column("employment")]
-        public string? Employment { get; set; }        
+        public string? Employment { get; set; }
 
 
         [Column("preferred_language")]
@@ -159,55 +159,55 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? PrimarySupportReason { get; set; }
 
         [Column("care_provider")]
-        public string? CareProvider { get; set; } 
+        public string? CareProvider { get; set; }
 
         [Column("living_situation")]
-        public string? LivingSituation { get; set; }  
+        public string? LivingSituation { get; set; }
 
         [Column("tenure_type")]
-        public string? TenureType { get; set; }       
+        public string? TenureType { get; set; }
 
         [Column("accomodation_type")]
-        public string? AccomodationType { get; set; }     
+        public string? AccomodationType { get; set; }
         [Column("access_to_home")]
-        public string? AccessToHome { get; set; }  
+        public string? AccessToHome { get; set; }
 
         [Column("housing_officer")]
-        public string? HousingOfficer { get; set; }       
+        public string? HousingOfficer { get; set; }
 
         [Column("housing_staff_in_contact")]
-        public bool? HousingStaffInContact { get; set; }  
+        public bool? HousingStaffInContact { get; set; }
 
         [Column("cautionary_alert")]
         public bool? CautionaryAlert { get; set; }
 
         [Column("posession_eviction_order")]
-        public string? PossessionEvictionOrder { get; set; }      
+        public string? PossessionEvictionOrder { get; set; }
 
         [Column("rent_record")]
-        public string? RentRecord { get; set; }   
+        public string? RentRecord { get; set; }
 
         [Column("housing_benefit")]
-        public string? HousingBenefit { get; set; }        
+        public string? HousingBenefit { get; set; }
 
         [Column("council_tenure_type")]
-        public string? CouncilTenureType { get; set; }  
+        public string? CouncilTenureType { get; set; }
 
         [Column("tenancy_household_structure")]
-        public string? TenancyHouseholdStructure { get; set; } 
+        public string? TenancyHouseholdStructure { get; set; }
 
         [Column("mental_health_section_status")]
-        public string? MentalHealthSectionStatus { get; set; }    
+        public string? MentalHealthSectionStatus { get; set; }
 
         [Column("deaf_register")]
-        public string? DeafRegister { get; set; } 
+        public string? DeafRegister { get; set; }
 
         [Column("blind_register")]
         public string? BlindRegister { get; set; }
 
         [Column("blue_badge")]
-        public string? BlueBadge { get; set; }                     
+        public string? BlueBadge { get; set; }
         [Column("open_case")]
-        public bool? OpenCase { get; set; } 
+        public bool? OpenCase { get; set; }
     }
 }

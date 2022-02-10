@@ -36,6 +36,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("email")]
         [Required]
-        public string? Email { get; set; } = null!;                    
+        public string? Email { get; set; } = null!;
     }
 }

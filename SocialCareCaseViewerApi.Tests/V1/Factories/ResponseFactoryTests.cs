@@ -330,12 +330,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             person.GpDetails = new List<GpDetails>
             {
                 gpDetails,
-            };     
+            };
             person.TechUse = new List<TechUse>
             {
                 techUse1,
                 techUse2
-            };                        
+            };
 
             AddressDomain addressDomain = new AddressDomain()
             {
@@ -381,7 +381,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Email = keyContact2.Email
             };
 
-           GpDetailsDomain gpDetailsDomain = new GpDetailsDomain()
+            GpDetailsDomain gpDetailsDomain = new GpDetailsDomain()
             {
                 Name = gpDetails.Name,
                 Address = gpDetails.Address,
@@ -409,32 +409,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 FluentInEnglish = person.FluentInEnglish,
                 InterpreterNeeded = person.InterpreterNeeded,
                 KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },
-                CommunicationDifficulties = person.CommunicationDifficulties, 
-                DifficultyMakingDecisions = person.DifficultyMakingDecisions, 
-                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails, 
+                CommunicationDifficulties = person.CommunicationDifficulties,
+                DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
                 TechUse = new List<TechUseDomain>() { techUseDomain1, techUseDomain2 },
                 Employment = person.Employment,
                 MaritalStatus = person.MaritalStatus,
-                ImmigrationStatus = person.ImmigrationStatus, 
+                ImmigrationStatus = person.ImmigrationStatus,
                 PrimarySupportReason = person.PrimarySupportReason,
                 TenureType = person.TenureType,
                 AccomodationType = person.AccomodationType,
                 AccessToHome = person.AccessToHome,
                 CareProvider = person.CareProvider,
-                LivingSituation = person.LivingSituation, 
+                LivingSituation = person.LivingSituation,
                 HousingOfficer = person.HousingOfficer,
                 HousingStaffInContact = person.HousingStaffInContact,
-                CautionaryAlert = person.CautionaryAlert, 
-                PossessionEvictionOrder = person.PossessionEvictionOrder,  
-                RentRecord = person.RentRecord, 
-                HousingBenefit = person.HousingBenefit, 
-                CouncilTenureType = person.CouncilTenureType, 
+                CautionaryAlert = person.CautionaryAlert,
+                PossessionEvictionOrder = person.PossessionEvictionOrder,
+                RentRecord = person.RentRecord,
+                HousingBenefit = person.HousingBenefit,
+                CouncilTenureType = person.CouncilTenureType,
                 TenancyHouseholdStructure = person.TenancyHouseholdStructure,
                 MentalHealthSectionStatus = person.MentalHealthSectionStatus,
                 DeafRegister = person.DeafRegister,
-                BlindRegister = person.BlindRegister,    
+                BlindRegister = person.BlindRegister,
                 Pronoun = person.Pronoun,
-                BlueBadge = person.BlueBadge,  
+                BlueBadge = person.BlueBadge,
                 OpenCase = person.OpenCase,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,

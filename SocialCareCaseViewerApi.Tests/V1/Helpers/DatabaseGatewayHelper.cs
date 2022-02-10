@@ -125,30 +125,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonId, personId);
         }
 
-       internal static KeyContact CreateKeyContactEntity(long personId)
+        internal static KeyContact CreateKeyContactEntity(long personId)
         {
             return new Faker<KeyContact>()
                 .RuleFor(p => p.Name, p => p.Random.String2(100))
                 .RuleFor(p => p.PersonId, personId)
                 .RuleFor(p => p.Email, p => p.Internet.Email());
-        }   
+        }
 
-       internal static GpDetails CreateGpDetailsEntity(long personId)
+        internal static GpDetails CreateGpDetailsEntity(long personId)
         {
             return new Faker<GpDetails>()
                 .RuleFor(p => p.PersonId, personId)
                 .RuleFor(p => p.Name, p => p.Random.String2(100))
                 .RuleFor(p => p.Address, p => p.Random.String2(100))
-                .RuleFor(p => p.Postcode, p =>  p.Address.ZipCode()) 
-                .RuleFor(p => p.PhoneNr, p => p.Phone.PhoneNumber())                                               
+                .RuleFor(p => p.Postcode, p => p.Address.ZipCode())
+                .RuleFor(p => p.PhoneNr, p => p.Phone.PhoneNumber())
                 .RuleFor(p => p.Email, p => p.Internet.Email());
-        }  
-       internal static TechUse CreateTechUseEntity(long personId)
+        }
+        internal static TechUse CreateTechUseEntity(long personId)
         {
             return new Faker<TechUse>()
                 .RuleFor(p => p.PersonId, personId)
                 .RuleFor(p => p.TechType, p => p.Random.String2(100));
 
-        }                        
+        }
     }
 }

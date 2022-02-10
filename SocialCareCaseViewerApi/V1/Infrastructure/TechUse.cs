@@ -21,6 +21,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("tech_type")]
         [Required]
         public string? TechType { get; set; }
-                 
+
     }
 }
