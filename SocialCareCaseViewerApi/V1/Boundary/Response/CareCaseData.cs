@@ -34,6 +34,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public string? FormType { get; set; }
         [JsonProperty("title")]
         public string? Title { get; set; }
+        [JsonProperty("pinned_at")]
+        public string? PinnedAt { get; set; }
 
         [JsonProperty("deleted")]
         public bool Deleted { get; set; } = false;
