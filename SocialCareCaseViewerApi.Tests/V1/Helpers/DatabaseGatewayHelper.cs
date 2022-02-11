@@ -150,5 +150,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.TechType, p => p.Random.String2(100));
 
         }
+        internal static Disability CreateDisabilityEntity(long personId)
+        {
+            return new Faker<Disability>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.DisabilityType, p => p.Random.String2(100));
+
+        }
     }
 }

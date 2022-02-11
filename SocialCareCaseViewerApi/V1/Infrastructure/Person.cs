@@ -19,6 +19,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public List<TechUse>? TechUse { get; set; }
 
+        public List<Disability>? Disability { get; set; }
+
+
 
         [InverseProperty("Person")]
         public List<PersonalRelationship> PersonalRelationships { get; set; }

@@ -101,6 +101,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<TechUse>? TechUse { get; set; }
 
+        public List<Disability>? Disabilities { get; set; }
 
         public List<OtherName> OtherNames { get; set; }
     }

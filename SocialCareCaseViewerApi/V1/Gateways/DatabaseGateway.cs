@@ -864,6 +864,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.KeyContacts)
                 .Include(x => x.GpDetails)
                 .Include(x => x.TechUse)
+                .Include(x => x.Disability)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)

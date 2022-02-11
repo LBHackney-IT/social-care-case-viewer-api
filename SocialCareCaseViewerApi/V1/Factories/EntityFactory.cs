@@ -14,6 +14,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
@@ -21,6 +22,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetails;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -137,6 +139,14 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new TechUse()
             {
                 TechType = TechUse.TechType
+            };
+        }
+
+        public static Disability ToDomain(this dbDisability TechUse)
+        {
+            return new Disability()
+            {
+                DisabilityType = TechUse.DisabilityType
             };
         }
 

@@ -20,6 +20,8 @@ using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetails;
 using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using DisabilityDomain = SocialCareCaseViewerApi.V1.Domain.Disability;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -301,6 +303,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             TechUse techUse1 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
             TechUse techUse2 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
 
+            Disability disability1 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
+            Disability disability2 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
+
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
@@ -335,6 +340,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 techUse1,
                 techUse2
+            };
+
+            person.Disability = new List<Disability>
+            {
+                disability1,
+                disability2
             };
 
             AddressDomain addressDomain = new AddressDomain()
@@ -402,6 +413,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             };
 
+            DisabilityDomain disabilityDomain1 = new DisabilityDomain()
+            {
+                DisabilityType = disability1.DisabilityType
+            };
+
+            DisabilityDomain disabilityDomain2 = new DisabilityDomain()
+            {
+                DisabilityType = disability2.DisabilityType
+            };
+
             var expectedResponse = new GetPersonResponse()
             {
                 GenderAssignedAtBirth = person.GenderAssignedAtBirth,
@@ -450,6 +471,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
                 GpDetails = new List<GpDetailsDomain>() { gpDetailsDomain },
+                Disabilities = new List<DisabilityDomain>() { disabilityDomain1, disabilityDomain2 },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,
