@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("DM_OTHER_EMAIL_ADDRESSES", Schema = "dbo")]
+    [Table("dm_other_email_addresses", Schema = "dbo")]
     public class Email
     {
         [ForeignKey("PersonId")]
