@@ -22,6 +22,9 @@ using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using DisabilityDomain = SocialCareCaseViewerApi.V1.Domain.Disability;
+using OtherEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
+using OtherEmailDomain = SocialCareCaseViewerApi.V1.Domain.Email;
+
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -306,6 +309,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             Disability disability1 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
             Disability disability2 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
 
+            OtherEmail otherEmail1 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+            OtherEmail otherEmail2 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
@@ -346,6 +352,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 disability1,
                 disability2
+            };
+
+            person.OtherEmails = new List<OtherEmail>
+            {
+                otherEmail1,
+                otherEmail2
             };
 
             AddressDomain addressDomain = new AddressDomain()
@@ -423,6 +435,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisabilityType = disability2.DisabilityType
             };
 
+            OtherEmailDomain otherEmailDomain1 = new OtherEmailDomain()
+            {
+                EmailAddress = otherEmail1.EmailAddress
+            };
+
+            OtherEmailDomain otherEmailDomain2 = new OtherEmailDomain()
+            {
+                EmailAddress = otherEmail2.EmailAddress
+            };
+
             var expectedResponse = new GetPersonResponse()
             {
                 GenderAssignedAtBirth = person.GenderAssignedAtBirth,
@@ -478,7 +500,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Restricted = person.Restricted,
                 Title = person.Title,
                 OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
-                PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 }
+                PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 },
+                OtherEmails = new List<OtherEmailDomain>() { otherEmailDomain1, otherEmailDomain2 }
+
             };
 
             var result = ResponseFactory.ToResponse(person);

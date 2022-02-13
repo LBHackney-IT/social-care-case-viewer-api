@@ -21,6 +21,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public List<Disability>? Disability { get; set; }
 
+        public List<Email>? OtherEmails { get; set; }
 
 
         [InverseProperty("Person")]

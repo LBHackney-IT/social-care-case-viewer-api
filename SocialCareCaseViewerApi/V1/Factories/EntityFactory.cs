@@ -15,6 +15,7 @@ using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
@@ -23,6 +24,7 @@ using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetails;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
+using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.Email;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -150,6 +152,13 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static PersonOtherEmails ToDomain(this dbEmail Email)
+        {
+            return new PersonOtherEmails()
+            {
+                EmailAddress = Email.EmailAddress
+            };
+        }
         public static OtherName ToDomain(this PersonOtherName otherName)
         {
             return new OtherName()

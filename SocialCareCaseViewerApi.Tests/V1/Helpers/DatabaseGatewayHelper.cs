@@ -53,6 +53,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.CommunicationDifficulties, f => f.Random.Bool())
                 .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())
                 .RuleFor(p => p.CommunicationDifficultiesDetails, f => f.Random.Word())
+                .RuleFor(p => p.Employment, f => f.Random.Word())
+                .RuleFor(p => p.ImmigrationStatus, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past())
@@ -131,6 +133,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Name, p => p.Random.String2(100))
                 .RuleFor(p => p.PersonId, personId)
                 .RuleFor(p => p.Email, p => p.Internet.Email());
+        }
+
+        internal static Email CreateEmailEntity(long personId)
+        {
+            return new Faker<Email>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.EmailAddress, p => p.Internet.Email());
         }
 
         internal static GpDetails CreateGpDetailsEntity(long personId)

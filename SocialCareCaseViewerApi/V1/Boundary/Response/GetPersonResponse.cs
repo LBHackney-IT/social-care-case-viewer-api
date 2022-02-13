@@ -103,6 +103,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<Disability>? Disabilities { get; set; }
 
+        public List<Email>? OtherEmails { get; set; }
+
         public List<OtherName> OtherNames { get; set; }
     }
 }
