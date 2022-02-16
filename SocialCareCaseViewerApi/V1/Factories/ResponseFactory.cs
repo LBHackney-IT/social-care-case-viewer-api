@@ -144,10 +144,14 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             //get the current display address
             var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+            var displayGpDetails = person.GpDetails?.FirstOrDefault();
+            var lastUpdated = person.LastUpdated?.FirstOrDefault();
 
             return new GetPersonResponse()
             {
                 SexualOrientation = person.SexualOrientation,
+                Pronoun = person.Pronoun,
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 DateOfBirth = person.DateOfBirth,
                 DateOfDeath = person.DateOfDeath,
                 ContextFlag = person.AgeContext,
@@ -155,6 +159,34 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EmailAddress = person.EmailAddress,
                 Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
+                PreferredLanguage = person.PreferredLanguage,
+                FluentInEnglish = person.FluentInEnglish,
+                InterpreterNeeded = person.InterpreterNeeded,
+                CommunicationDifficulties = person.CommunicationDifficulties,
+                DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
+                Employment = person.Employment,
+                MaritalStatus = person.MaritalStatus,
+                ImmigrationStatus = person.ImmigrationStatus,
+                PrimarySupportReason = person.PrimarySupportReason,
+                CareProvider = person.CareProvider,
+                LivingSituation = person.LivingSituation,
+                TenureType = person.TenureType,
+                AccomodationType = person.AccomodationType,
+                AccessToHome = person.AccessToHome,
+                HousingOfficer = person.HousingOfficer,
+                HousingStaffInContact = person.HousingStaffInContact,
+                CautionaryAlert = person.CautionaryAlert,
+                PossessionEvictionOrder = person.PossessionEvictionOrder,
+                RentRecord = person.RentRecord,
+                HousingBenefit = person.HousingBenefit,
+                CouncilTenureType = person.CouncilTenureType,
+                TenancyHouseholdStructure = person.TenancyHouseholdStructure,
+                MentalHealthSectionStatus = person.MentalHealthSectionStatus,
+                DeafRegister = person.DeafRegister,
+                BlindRegister = person.BlindRegister,
+                BlueBadge = person.BlueBadge,
+                OpenCase = person.OpenCase,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,
@@ -164,9 +196,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Religion = person.Religion,
                 Restricted = person.Restricted,
                 Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
+                GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
+                LastUpdated = lastUpdated != null ? EntityFactory.DbLastUpdatedToDomain(lastUpdated) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
-                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList()
+                KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
+                Disabilities = person.Disability?.Select(x => x.ToDomain()).ToList(),
+                TechUse = person.TechUse?.Select(x => x.ToDomain()).ToList(),
+                OtherEmails = person.OtherEmails?.Select(x => x.ToDomain()).ToList()
             };
         }
 
