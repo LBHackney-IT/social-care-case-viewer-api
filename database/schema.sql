@@ -929,7 +929,7 @@ CREATE TABLE if not exists dbo.DM_GP_DETAILS (
   NAME varchar,
   ADDRESS varchar,
   POSTCODE varchar,
-  PHONE_NR varchar,
+  PHONE_NUMBER varchar,
   EMAIL varchar,
   CONSTRAINT XPKDM_GP_DETAILS PRIMARY KEY (GP_DETAILS_ID, PERSON_ID)
 );

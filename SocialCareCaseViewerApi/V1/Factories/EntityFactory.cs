@@ -21,7 +21,7 @@ using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
-using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetails;
+using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
 using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.Email;
@@ -40,6 +40,18 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 AddressLine1 = address.AddressLines,
                 PostCode = address.PostCode
+            };
+        }
+
+        public static GpDetailsDomain DbGpDetailsToDomain(dbGpDetails details)
+        {
+            return new GpDetailsDomain()
+            {
+                Name = details.Name,
+                Address = details.Address,
+                Postcode = details.Postcode,
+                PhoneNumber = details.PhoneNumber,
+                Email = details.Email
             };
         }
 
@@ -130,7 +142,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Name = GpDetails.Name,
                 Address = GpDetails.Address,
                 Postcode = GpDetails.Postcode,
-                PhoneNr = GpDetails.PhoneNr,
+                PhoneNumber = GpDetails.PhoneNumber,
                 Email = GpDetails.Email
             };
         }

@@ -17,7 +17,7 @@ using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
-using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetails;
+using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
@@ -409,7 +409,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Name = gpDetails.Name,
                 Address = gpDetails.Address,
                 Postcode = gpDetails.Postcode,
-                PhoneNr = gpDetails.PhoneNr,
+                PhoneNumber = gpDetails.PhoneNumber,
                 Email = gpDetails.Email
             };
 
@@ -492,7 +492,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Gender = person.Gender,
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
-                GpDetails = new List<GpDetailsDomain>() { gpDetailsDomain },
+                GpDetails = gpDetailsDomain,
                 Disabilities = new List<DisabilityDomain>() { disabilityDomain1, disabilityDomain2 },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,

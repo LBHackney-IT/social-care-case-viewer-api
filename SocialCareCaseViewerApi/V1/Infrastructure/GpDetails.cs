@@ -30,9 +30,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public string? Postcode { get; set; } = null!;
 
-        [Column("phone_nr")]
+        [Column("phone_number")]
         [Required]
-        public string? PhoneNr { get; set; } = null!;
+        public string? PhoneNumber { get; set; } = null!;
 
         [Column("email")]
         [Required]
