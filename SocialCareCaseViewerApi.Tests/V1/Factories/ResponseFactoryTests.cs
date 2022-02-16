@@ -303,6 +303,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             GpDetails gpDetails = DatabaseGatewayHelper.CreateGpDetailsEntity(person.Id);
 
+            LastUpdated lastUpdated = DatabaseGatewayHelper.CreateLastUpdatedEntity(person.Id);
+
             TechUse techUse1 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
             TechUse techUse2 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
 
@@ -342,6 +344,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 gpDetails,
             };
+
+            person.LastUpdated = new List<LastUpdated>
+            {
+                lastUpdated,
+            };
+
             person.TechUse = new List<TechUse>
             {
                 techUse1,
@@ -411,6 +419,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Postcode = gpDetails.Postcode,
                 PhoneNumber = gpDetails.PhoneNumber,
                 Email = gpDetails.Email
+            };
+
+            LastUpdatedDomain lastUpdatedDomain = new LastUpdatedDomain()
+            {
+                Housing = lastUpdated.Housing,
+                ContactDetails = lastUpdated.ContactDetails
             };
 
             TechUseDomain techUseDomain1 = new TechUseDomain()
@@ -493,6 +507,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
                 GpDetails = gpDetailsDomain,
+                LastUpdated = lastUpdatedDomain,
                 Disabilities = new List<DisabilityDomain>() { disabilityDomain1, disabilityDomain2 },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,

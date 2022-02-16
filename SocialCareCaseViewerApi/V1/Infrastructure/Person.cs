@@ -23,6 +23,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public List<Email>? OtherEmails { get; set; }
 
+        public List<LastUpdated>? LastUpdated { get; set; }
+
 
         [InverseProperty("Person")]
         public List<PersonalRelationship> PersonalRelationships { get; set; }

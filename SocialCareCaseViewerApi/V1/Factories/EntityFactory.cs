@@ -43,6 +43,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static LastUpdatedDomain DbLastUpdatedToDomain(LastUpdated lastUpdated)
+        {
+            return new LastUpdatedDomain()
+            {
+                Housing = lastUpdated.Housing,
+                ContactDetails = lastUpdated.ContactDetails
+            };
+        }
+
         public static GpDetailsDomain DbGpDetailsToDomain(dbGpDetails details)
         {
             return new GpDetailsDomain()

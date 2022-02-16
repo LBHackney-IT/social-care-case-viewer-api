@@ -153,6 +153,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PhoneNumber, p => p.Phone.PhoneNumber())
                 .RuleFor(p => p.Email, p => p.Internet.Email());
         }
+
+        internal static LastUpdated CreateLastUpdatedEntity(long personId)
+        {
+            return new Faker<LastUpdated>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.Housing, p => p.Date.Past())
+                .RuleFor(p => p.ContactDetails, p => p.Date.Past());
+        }
+
         internal static TechUse CreateTechUseEntity(long personId)
         {
             return new Faker<TechUse>()
