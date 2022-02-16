@@ -49,7 +49,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             var phoneNumber1 = TestHelpers.CreatePhoneNumber(person.Id);
             var phoneNumber2 = TestHelpers.CreatePhoneNumber(person.Id);
 
-
             var otherName1 = TestHelpers.CreatePersonOtherName(person.Id);
             var otherName2 = TestHelpers.CreatePersonOtherName(person.Id);
 
@@ -64,8 +63,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 phoneNumber1,
                 phoneNumber2
             };
-
-
 
             var residentResponse = TestHelpers.CreateAddNewResidentResponse(person.Id);
 
@@ -313,7 +310,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             OtherEmail otherEmail1 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
             OtherEmail otherEmail2 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
-
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
