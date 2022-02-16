@@ -978,4 +978,5 @@ alter table if exists dbo.dm_persons
   add column deaf_register varchar,
   add column blind_register varchar,
   add column blue_badge varchar,
-  add column open_case bool;
+  add column open_case bool,
+  add column allocated_team varchar;

@@ -40,9 +40,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string? CommunicationDifficultiesDetails { get; set; }
 
-
         public string? Employment { get; set; }
 
+        public string? AllocatedTeam { get; set; }
 
         public string? MaritalStatus { get; set; }
 

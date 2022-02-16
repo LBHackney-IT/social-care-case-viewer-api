@@ -71,7 +71,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("interpreter_needed")]
         public bool? InterpreterNeeded { get; set; }
 
-
         [Column("communication_difficulties")]
         public bool? CommunicationDifficulties { get; set; }
 
@@ -84,6 +83,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("employment")]
         public string? Employment { get; set; }
 
+        [Column("allocated_team")]
+        public string? AllocatedTeam { get; set; }
 
         [Column("preferred_language")]
         [MaxLength(100)]
@@ -100,12 +101,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("gender")]
         [MaxLength(1)]
         public string Gender { get; set; }
+
         [Column("nationality")]
         [MaxLength(80)]
         public string Nationality { get; set; }
+
         [Column("nhs_id")]
         [MaxLength(10)]
         public long? NhsNumber { get; set; }
+
         [Column("person_id_legacy")]
         [MaxLength(16)]
         public string PersonIdLegacy { get; set; }
@@ -113,6 +117,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         [Column("context_flag")]
         public string AgeContext { get; set; }
+
         [Column("from_dm_person")]
         [MaxLength(1)]
         public string DataIsFromDmPersonsBackup { get; set; }

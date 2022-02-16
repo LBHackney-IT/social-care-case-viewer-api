@@ -499,6 +499,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Religion = person.Religion,
                 Restricted = person.Restricted,
                 Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam,
                 OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
                 PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 },
                 OtherEmails = new List<OtherEmailDomain>() { otherEmailDomain1, otherEmailDomain2 }

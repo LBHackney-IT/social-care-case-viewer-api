@@ -194,6 +194,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Religion = person.Religion,
                 Restricted = person.Restricted,
                 Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),

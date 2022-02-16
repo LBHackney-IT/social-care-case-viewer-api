@@ -76,6 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
+                .RuleFor(p => p.AllocatedTeam, f => f.Random.Word())
                 .RuleFor(p => p.Restricted, f => f.Random.String2(1))
                 .RuleFor(p => p.MarkedForDeletion, f => markedForDeletion);
         }
