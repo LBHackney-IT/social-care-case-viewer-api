@@ -44,7 +44,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
             return new Faker<dbPerson>()
                 .RuleFor(p => p.Id, f => personId == null ? f.UniqueIndex : personId)
+                .RuleFor(p => p.Pronoun, f => f.Random.String2(3))
+                .RuleFor(p => p.GenderAssignedAtBirth, f => f.Random.Bool())
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.PreferredLanguage, f => f.Random.Word())
+                .RuleFor(p => p.FluentInEnglish, f => f.Random.Bool())
+                .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())
+                .RuleFor(p => p.InterpreterNeeded, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficulties, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficultiesDetails, f => f.Random.Word())
+                .RuleFor(p => p.Employment, f => f.Random.Word())
+                .RuleFor(p => p.ImmigrationStatus, f => f.Random.Word())
                 .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
                 .RuleFor(p => p.AgeContext, f => f.Random.String2(1))
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past())
@@ -66,6 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonIdLegacy, f => f.Random.String2(16))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
+                .RuleFor(p => p.AllocatedTeam, f => f.Random.Word())
                 .RuleFor(p => p.Restricted, f => f.Random.String2(1))
                 .RuleFor(p => p.MarkedForDeletion, f => markedForDeletion);
         }
@@ -115,6 +126,55 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.FirstName, p => p.Random.String2(100))
                 .RuleFor(p => p.LastName, p => p.Random.String2(100))
                 .RuleFor(p => p.PersonId, personId);
+        }
+
+        internal static KeyContact CreateKeyContactEntity(long personId)
+        {
+            return new Faker<KeyContact>()
+                .RuleFor(p => p.Name, p => p.Random.String2(100))
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.Email, p => p.Internet.Email());
+        }
+
+        internal static Email CreateEmailEntity(long personId)
+        {
+            return new Faker<Email>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.EmailAddress, p => p.Internet.Email());
+        }
+
+        internal static GpDetails CreateGpDetailsEntity(long personId)
+        {
+            return new Faker<GpDetails>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.Name, p => p.Random.String2(100))
+                .RuleFor(p => p.Address, p => p.Random.String2(100))
+                .RuleFor(p => p.Postcode, p => p.Address.ZipCode())
+                .RuleFor(p => p.PhoneNumber, p => p.Phone.PhoneNumber())
+                .RuleFor(p => p.Email, p => p.Internet.Email());
+        }
+
+        internal static LastUpdated CreateLastUpdatedEntity(long personId)
+        {
+            return new Faker<LastUpdated>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.Housing, p => p.Date.Past())
+                .RuleFor(p => p.ContactDetails, p => p.Date.Past());
+        }
+
+        internal static TechUse CreateTechUseEntity(long personId)
+        {
+            return new Faker<TechUse>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.TechType, p => p.Random.String2(100));
+
+        }
+        internal static Disability CreateDisabilityEntity(long personId)
+        {
+            return new Faker<Disability>()
+                .RuleFor(p => p.PersonId, personId)
+                .RuleFor(p => p.DisabilityType, p => p.Random.String2(100));
+
         }
     }
 }

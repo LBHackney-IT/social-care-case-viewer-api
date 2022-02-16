@@ -11,10 +11,20 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
+using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
+using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.Email;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -30,6 +40,27 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 AddressLine1 = address.AddressLines,
                 PostCode = address.PostCode
+            };
+        }
+
+        public static LastUpdatedDomain DbLastUpdatedToDomain(LastUpdated lastUpdated)
+        {
+            return new LastUpdatedDomain()
+            {
+                Housing = lastUpdated.Housing,
+                ContactDetails = lastUpdated.ContactDetails
+            };
+        }
+
+        public static GpDetailsDomain DbGpDetailsToDomain(dbGpDetails details)
+        {
+            return new GpDetailsDomain()
+            {
+                Name = details.Name,
+                Address = details.Address,
+                Postcode = details.Postcode,
+                PhoneNumber = details.PhoneNumber,
+                Email = details.Email
             };
         }
 
@@ -104,6 +135,51 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static KeyContact ToDomain(this dbKeyContact keyContact)
+        {
+            return new KeyContact()
+            {
+                Name = keyContact.Name,
+                Email = keyContact.Email
+            };
+        }
+
+        public static GpDetails ToDomain(this dbGpDetails GpDetails)
+        {
+            return new GpDetails()
+            {
+                Name = GpDetails.Name,
+                Address = GpDetails.Address,
+                Postcode = GpDetails.Postcode,
+                PhoneNumber = GpDetails.PhoneNumber,
+                Email = GpDetails.Email
+            };
+        }
+
+
+        public static TechUse ToDomain(this dbTechUse TechUse)
+        {
+            return new TechUse()
+            {
+                TechType = TechUse.TechType
+            };
+        }
+
+        public static Disability ToDomain(this dbDisability TechUse)
+        {
+            return new Disability()
+            {
+                DisabilityType = TechUse.DisabilityType
+            };
+        }
+
+        public static PersonOtherEmails ToDomain(this dbEmail Email)
+        {
+            return new PersonOtherEmails()
+            {
+                EmailAddress = Email.EmailAddress
+            };
+        }
         public static OtherName ToDomain(this PersonOtherName otherName)
         {
             return new OtherName()
@@ -238,6 +314,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
+            };
+        }
+
+        public static dbKeyContact ToEntity(this KeyContact contact, long personId)
+        {
+            return new dbKeyContact
+            {
+                Name = contact.Name,
+                Email = contact.Email,
+                PersonId = personId,
             };
         }
 

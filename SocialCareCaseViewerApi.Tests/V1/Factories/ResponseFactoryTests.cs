@@ -14,6 +14,17 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using PhoneNumberDomain = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
+using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using DisabilityDomain = SocialCareCaseViewerApi.V1.Domain.Disability;
+using OtherEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
+using OtherEmailDomain = SocialCareCaseViewerApi.V1.Domain.Email;
+
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -284,6 +295,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             PhoneNumber phoneNumber1 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
             PhoneNumber phoneNumber2 = DatabaseGatewayHelper.CreatePhoneNumberEntity(person.Id);
 
+            KeyContact keyContact1 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
+            KeyContact keyContact2 = DatabaseGatewayHelper.CreateKeyContactEntity(person.Id);
+
+            GpDetails gpDetails = DatabaseGatewayHelper.CreateGpDetailsEntity(person.Id);
+
+            LastUpdated lastUpdated = DatabaseGatewayHelper.CreateLastUpdatedEntity(person.Id);
+
+            TechUse techUse1 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
+            TechUse techUse2 = DatabaseGatewayHelper.CreateTechUseEntity(person.Id);
+
+            Disability disability1 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
+            Disability disability2 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
+
+            OtherEmail otherEmail1 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+            OtherEmail otherEmail2 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
 
@@ -302,6 +329,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             {
                 otherName1,
                 otherName2
+            };
+
+            person.KeyContacts = new List<KeyContact>
+            {
+                keyContact1,
+                keyContact2
+            };
+            person.GpDetails = new List<GpDetails>
+            {
+                gpDetails,
+            };
+
+            person.LastUpdated = new List<LastUpdated>
+            {
+                lastUpdated,
+            };
+
+            person.TechUse = new List<TechUse>
+            {
+                techUse1,
+                techUse2
+            };
+
+            person.Disability = new List<Disability>
+            {
+                disability1,
+                disability2
+            };
+
+            person.OtherEmails = new List<OtherEmail>
+            {
+                otherEmail1,
+                otherEmail2
             };
 
             AddressDomain addressDomain = new AddressDomain()
@@ -335,8 +395,100 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Type = phoneNumber2.Type
             };
 
+            KeyContactDomain keyContactDomain1 = new KeyContactDomain()
+            {
+                Name = keyContact1.Name,
+                Email = keyContact1.Email
+            };
+
+
+            KeyContactDomain keyContactDomain2 = new KeyContactDomain()
+            {
+                Name = keyContact2.Name,
+                Email = keyContact2.Email
+            };
+
+            GpDetailsDomain gpDetailsDomain = new GpDetailsDomain()
+            {
+                Name = gpDetails.Name,
+                Address = gpDetails.Address,
+                Postcode = gpDetails.Postcode,
+                PhoneNumber = gpDetails.PhoneNumber,
+                Email = gpDetails.Email
+            };
+
+            LastUpdatedDomain lastUpdatedDomain = new LastUpdatedDomain()
+            {
+                Housing = lastUpdated.Housing,
+                ContactDetails = lastUpdated.ContactDetails
+            };
+
+            TechUseDomain techUseDomain1 = new TechUseDomain()
+            {
+                TechType = techUse1.TechType
+            };
+
+
+            TechUseDomain techUseDomain2 = new TechUseDomain()
+            {
+                TechType = techUse2.TechType
+
+            };
+
+            DisabilityDomain disabilityDomain1 = new DisabilityDomain()
+            {
+                DisabilityType = disability1.DisabilityType
+            };
+
+            DisabilityDomain disabilityDomain2 = new DisabilityDomain()
+            {
+                DisabilityType = disability2.DisabilityType
+            };
+
+            OtherEmailDomain otherEmailDomain1 = new OtherEmailDomain()
+            {
+                EmailAddress = otherEmail1.EmailAddress
+            };
+
+            OtherEmailDomain otherEmailDomain2 = new OtherEmailDomain()
+            {
+                EmailAddress = otherEmail2.EmailAddress
+            };
+
             var expectedResponse = new GetPersonResponse()
             {
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
+                PreferredLanguage = person.PreferredLanguage,
+                FluentInEnglish = person.FluentInEnglish,
+                InterpreterNeeded = person.InterpreterNeeded,
+                KeyContacts = new List<KeyContactDomain>() { keyContactDomain1, keyContactDomain2 },
+                CommunicationDifficulties = person.CommunicationDifficulties,
+                DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
+                TechUse = new List<TechUseDomain>() { techUseDomain1, techUseDomain2 },
+                Employment = person.Employment,
+                MaritalStatus = person.MaritalStatus,
+                ImmigrationStatus = person.ImmigrationStatus,
+                PrimarySupportReason = person.PrimarySupportReason,
+                TenureType = person.TenureType,
+                AccomodationType = person.AccomodationType,
+                AccessToHome = person.AccessToHome,
+                CareProvider = person.CareProvider,
+                LivingSituation = person.LivingSituation,
+                HousingOfficer = person.HousingOfficer,
+                HousingStaffInContact = person.HousingStaffInContact,
+                CautionaryAlert = person.CautionaryAlert,
+                PossessionEvictionOrder = person.PossessionEvictionOrder,
+                RentRecord = person.RentRecord,
+                HousingBenefit = person.HousingBenefit,
+                CouncilTenureType = person.CouncilTenureType,
+                TenancyHouseholdStructure = person.TenancyHouseholdStructure,
+                MentalHealthSectionStatus = person.MentalHealthSectionStatus,
+                DeafRegister = person.DeafRegister,
+                BlindRegister = person.BlindRegister,
+                Pronoun = person.Pronoun,
+                BlueBadge = person.BlueBadge,
+                OpenCase = person.OpenCase,
                 EmailAddress = person.EmailAddress,
                 DateOfBirth = person.DateOfBirth.Value,
                 DateOfDeath = person.DateOfDeath.Value,
@@ -350,13 +502,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Gender = person.Gender,
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
+                GpDetails = gpDetailsDomain,
+                LastUpdated = lastUpdatedDomain,
+                Disabilities = new List<DisabilityDomain>() { disabilityDomain1, disabilityDomain2 },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,
                 Restricted = person.Restricted,
                 Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam,
                 OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
-                PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 }
+                PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 },
+                OtherEmails = new List<OtherEmailDomain>() { otherEmailDomain1, otherEmailDomain2 }
+
             };
 
             var result = ResponseFactory.ToResponse(person);
