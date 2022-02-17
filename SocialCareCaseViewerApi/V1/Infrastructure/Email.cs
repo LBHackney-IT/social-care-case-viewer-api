@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
-    [Table("dm_other_email_addresses", Schema = "dbo")]
-    public class Email
+    [Table("dm_email_addresses", Schema = "dbo")]
+    public class EmailAddress
     {
         [ForeignKey("PersonId")]
         public Person Person { get; set; }
@@ -20,7 +20,11 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("email")]
         [Required]
-        public string? EmailAddress { get; set; }
+        public string? Email { get; set; }
+
+        [Column("type")]
+        [Required]
+        public string? Type { get; set; }
 
     }
 }
