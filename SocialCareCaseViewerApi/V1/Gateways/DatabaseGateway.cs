@@ -307,6 +307,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            //replace gp details
+            _databaseContext.GpDetails.RemoveRange(person.GpDetails);
+
+            if (request.GpDetails != null)
+            {
+                foreach (var entry in request.GpDetails)
+                {
+                    person.GpDetails.Add(entry.ToEntity(person.Id));
+                }
+            }
+
             //replace phone numbers
             _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
 
