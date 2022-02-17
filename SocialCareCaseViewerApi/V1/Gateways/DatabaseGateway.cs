@@ -308,7 +308,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     person.TechUse.Add(new dbTechUse {TechType = entry, PersonId = person.Id,});
                 }
             }
-
             //replace key contacts
             _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
 
