@@ -101,7 +101,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public LastUpdatedDomain? LastUpdated { get; set; }
 
-        public List<TechUse>? TechUse { get; set; }
+        public List<string>? TechUse { get; set; }
 
         public List<Disability>? Disabilities { get; set; }
 
