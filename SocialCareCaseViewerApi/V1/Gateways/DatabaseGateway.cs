@@ -266,6 +266,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
+                .Include(x => x.KeyContacts)
+                .Include(x => x.GpDetails)
+                .Include(x => x.TechUse)
+                .Include(x => x.Disability)
+                .Include(x => x.OtherEmails)
                 .FirstOrDefault(x => x.Id == request.Id);
 
             if (person == null)
@@ -290,6 +295,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.Restricted = request.Restricted;
             person.SexualOrientation = request.SexualOrientation;
             person.Title = request.Title;
+
+            //replace key contacts
+            _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
+
+            if (request.KeyContacts != null)
+            {
+                foreach (var contact in request.KeyContacts)
+                {
+                    person.KeyContacts.Add(contact.ToEntity(person.Id));
+                }
+            }
 
             //replace phone numbers
             _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
