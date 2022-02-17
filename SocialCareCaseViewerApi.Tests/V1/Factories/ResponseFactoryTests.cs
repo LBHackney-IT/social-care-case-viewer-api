@@ -423,18 +423,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 ContactDetails = lastUpdated.ContactDetails
             };
 
-            TechUseDomain techUseDomain1 = new TechUseDomain()
-            {
-                TechType = techUse1.TechType
-            };
-
-
-            TechUseDomain techUseDomain2 = new TechUseDomain()
-            {
-                TechType = techUse2.TechType
-
-            };
-
             DisabilityDomain disabilityDomain1 = new DisabilityDomain()
             {
                 DisabilityType = disability1.DisabilityType
@@ -465,7 +453,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CommunicationDifficulties = person.CommunicationDifficulties,
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions,
                 CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
-                TechUse = new List<TechUseDomain>() { techUseDomain1, techUseDomain2 },
+                TechUse = new List<string>() { techUse1.TechType, techUse2.TechType },
                 Employment = person.Employment,
                 MaritalStatus = person.MaritalStatus,
                 ImmigrationStatus = person.ImmigrationStatus,
