@@ -41,6 +41,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
+        public List<KeyContact> KeyContacts { get; set; }
+
         [EmailAddress]
         //allow front end to send empty string for email
         public string EmailAddress
