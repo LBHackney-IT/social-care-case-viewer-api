@@ -18,6 +18,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
@@ -306,6 +307,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 foreach (var entry in request.TechUse)
                 {
                     person.TechUse.Add(new dbTechUse { TechType = entry, PersonId = person.Id, });
+                }
+            }
+
+            //replace disablities
+            _databaseContext.Disabilities.RemoveRange(person.Disability);
+
+            if (request.Disabilities != null)
+            {
+                foreach (var entry in request.Disabilities)
+                {
+                    person.Disability.Add(new dbDisability { DisabilityType = entry, PersonId = person.Id, });
                 }
             }
             //replace key contacts
