@@ -305,7 +305,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 foreach (var entry in request.TechUse)
                 {
-                    person.TechUse.Add(new dbTechUse {TechType = entry, PersonId = person.Id,});
+                    person.TechUse.Add(new dbTechUse { TechType = entry, PersonId = person.Id, });
                 }
             }
             //replace key contacts
