@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public List<String> TechUse { get; set; }
 
         public List<String> Disabilities { get; set; }
-        
+
         public List<EmailAddress> Emails { get; set; }
 
         [EmailAddress]
