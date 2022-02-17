@@ -21,6 +21,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<Team> Teams { get; set; }
         public DbSet<PersonOtherName> PersonOtherNames { get; set; }
         public DbSet<KeyContact> KeyContacts { get; set; }
+        public DbSet<GpDetails> GpDetails { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
         public DbSet<Audit> Audits { get; set; }

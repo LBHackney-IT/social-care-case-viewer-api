@@ -317,6 +317,19 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static dbGpDetails ToEntity(this GpDetails entry, long personId)
+        {
+            return new dbGpDetails
+            {
+                Name = entry.Name,
+                Email = entry.Email,
+                Address = entry.Address,
+                Postcode = entry.Postcode,
+                PhoneNumber = entry.PhoneNumber,
+                PersonId = personId,
+            };
+        }
+
         public static dbKeyContact ToEntity(this KeyContact contact, long personId)
         {
             return new dbKeyContact
