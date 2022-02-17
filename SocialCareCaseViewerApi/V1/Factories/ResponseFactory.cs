@@ -205,7 +205,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
                 Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
                 TechUse = person.TechUse?.Select(x => x.TechType).ToList(),
-                OtherEmails = person.OtherEmails?.Select(x => x.ToDomain()).ToList()
+                Emails = person.Emails?.Select(x => x.ToDomain()).ToList()
             };
         }
 

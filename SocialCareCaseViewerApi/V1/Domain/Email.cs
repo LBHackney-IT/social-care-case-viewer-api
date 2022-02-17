@@ -2,9 +2,9 @@
 namespace SocialCareCaseViewerApi.V1.Domain
 {
 #nullable enable
-    public class Email
+    public class EmailAddress
     {
-        public string? EmailAddress { get; set; }
-
+        public string? Type { get; set; }
+        public string? Email { get; set; }
     }
 }

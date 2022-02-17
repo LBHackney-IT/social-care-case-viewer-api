@@ -273,7 +273,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.GpDetails)
                 .Include(x => x.TechUse)
                 .Include(x => x.Disability)
-                .Include(x => x.OtherEmails)
+                .Include(x => x.Emails)
                 .FirstOrDefault(x => x.Id == request.Id);
 
             if (person == null)
@@ -310,7 +310,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
-            //replace disablities
+            //replace disabilities
             _databaseContext.Disabilities.RemoveRange(person.Disability);
 
             if (request.Disabilities != null)
@@ -337,6 +337,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.GpDetails != null)
             {
                 person.GpDetails.Add(request.GpDetails.ToEntity(person.Id));
+            }
+
+            //replace emails
+            _databaseContext.Emails.RemoveRange(person.Emails);
+
+            if (request.Emails != null)
+            {
+                foreach (var email in request.Emails)
+                {
+                    person.Emails.Add(email.ToEntity(person.Id));
+                }
             }
 
             //replace phone numbers
@@ -913,7 +924,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.GpDetails)
                 .Include(x => x.TechUse)
                 .Include(x => x.Disability)
-                .Include(x => x.OtherEmails)
+                .Include(x => x.Emails)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)

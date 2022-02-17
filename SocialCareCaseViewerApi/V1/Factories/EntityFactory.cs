@@ -11,11 +11,12 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
-using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
+using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
@@ -24,7 +25,8 @@ using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
-using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.Email;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
+using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -173,11 +175,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static PersonOtherEmails ToDomain(this dbEmail Email)
+        public static EmailAddress ToDomain(this dbEmailAddress email)
         {
-            return new PersonOtherEmails()
+            return new EmailAddress()
             {
-                EmailAddress = Email.EmailAddress
+                Email = email.Email,
+                Type = email.Type
             };
         }
         public static OtherName ToDomain(this PersonOtherName otherName)
@@ -314,6 +317,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
+            };
+        }
+
+        public static dbEmailAddress ToEntity(this EmailAddress entry, long personId)
+        {
+            return new dbEmailAddress()
+            {
+                Email = entry.Email,
+                Type = entry.Type
             };
         }
 
