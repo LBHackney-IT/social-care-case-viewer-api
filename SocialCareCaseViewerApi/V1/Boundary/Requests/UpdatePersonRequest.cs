@@ -52,6 +52,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public List<String> TechUse { get; set; }
 
+        public List<String> Disabilities { get; set; }
+
         [EmailAddress]
         //allow front end to send empty string for email
         public string EmailAddress

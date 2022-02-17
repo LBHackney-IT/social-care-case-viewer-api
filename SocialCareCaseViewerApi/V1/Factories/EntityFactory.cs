@@ -157,11 +157,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
 
 
-        public static TechUse ToDomain(this dbTechUse TechUse)
+        public static TechUse ToDomain(this dbTechUse techUse)
         {
             return new TechUse()
             {
-                TechType = TechUse.TechType
+                TechType = techUse.TechType
             };
         }
 

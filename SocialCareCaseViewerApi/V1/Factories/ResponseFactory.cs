@@ -203,7 +203,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
-                Disabilities = person.Disability?.Select(x => x.ToDomain()).ToList(),
+                Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
                 TechUse = person.TechUse?.Select(x => x.TechType).ToList(),
                 OtherEmails = person.OtherEmails?.Select(x => x.ToDomain()).ToList()
             };
