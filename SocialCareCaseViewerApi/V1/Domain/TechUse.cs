@@ -5,6 +5,5 @@ namespace SocialCareCaseViewerApi.V1.Domain
     public class TechUse
     {
         public string? TechType { get; set; }
-
     }
 }

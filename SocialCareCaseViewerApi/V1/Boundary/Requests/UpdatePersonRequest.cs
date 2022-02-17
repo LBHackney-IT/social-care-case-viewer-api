@@ -6,6 +6,7 @@ using SocialCareCaseViewerApi.V1.Infrastructure;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -47,7 +48,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public List<KeyContact> KeyContacts { get; set; }
 
-        public List<GpDetails> GpDetails { get; set; }
+        public GpDetailsDomain GpDetails { get; set; }
+
+        public List<String> TechUse { get; set; }
 
         [EmailAddress]
         //allow front end to send empty string for email

@@ -165,11 +165,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static Disability ToDomain(this dbDisability TechUse)
+        public static Disability ToDomain(this dbDisability disability)
         {
             return new Disability()
             {
-                DisabilityType = TechUse.DisabilityType
+                DisabilityType = disability.DisabilityType
             };
         }
 
@@ -336,6 +336,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Name = contact.Name,
                 Email = contact.Email,
+                PersonId = personId,
+            };
+        }
+
+        public static dbTechUse ToEntity(this TechUse tech, long personId)
+        {
+            return new dbTechUse
+            {
+                TechType = tech.TechType,
                 PersonId = personId,
             };
         }

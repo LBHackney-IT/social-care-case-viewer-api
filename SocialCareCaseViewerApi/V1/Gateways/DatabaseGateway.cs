@@ -13,9 +13,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
@@ -296,6 +298,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.SexualOrientation = request.SexualOrientation;
             person.Title = request.Title;
 
+            //replace tech used
+            _databaseContext.TechUse.RemoveRange(person.TechUse);
+
+            if (request.TechUse != null)
+            {
+                foreach (var entry in request.TechUse)
+                {
+                    person.TechUse.Add(new dbTechUse {TechType = entry, PersonId = person.Id,});
+                }
+            }
+
             //replace key contacts
             _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
 
@@ -312,10 +325,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.GpDetails != null)
             {
-                foreach (var entry in request.GpDetails)
-                {
-                    person.GpDetails.Add(entry.ToEntity(person.Id));
-                }
+                person.GpDetails.Add(request.GpDetails.ToEntity(person.Id));
             }
 
             //replace phone numbers
