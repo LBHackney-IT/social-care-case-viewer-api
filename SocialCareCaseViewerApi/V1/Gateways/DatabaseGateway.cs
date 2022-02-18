@@ -320,6 +320,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.TenureType = request.TenureType;
             person.AccomodationType = request.AccomodationType;
             person.AccessToHome = request.AccessToHome;
+            person.HousingOfficer = request.HousingOfficer;
+            person.HousingStaffInContact = request.HousingStaffInContact;
+            person.CautionaryAlert = request.CautionaryAlert;
+            person.PossessionEvictionOrder = request.PossessionEvictionOrder;
+            person.RentRecord = request.RentRecord;
+            person.HousingBenefit = request.HousingBenefit;
+            person.CouncilTenureType = request.CouncilTenureType;
+            person.MentalHealthSectionStatus = request.MentalHealthSectionStatus;
+            person.DeafRegister = request.DeafRegister;
+            person.BlindRegister = request.BlindRegister;
+            person.BlueBadge = request.BlueBadge;
+            person.OpenCase = request.OpenCase;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
