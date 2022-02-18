@@ -13,6 +13,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("submissionState")]
         public string? SubmissionState { get; set; }
 
+        [JsonPropertyName("pinnedAt")]
+        public string? PinnedAt { get; set; }
+
         [JsonPropertyName("residents")]
         public List<long>? Residents { get; set; }
 
