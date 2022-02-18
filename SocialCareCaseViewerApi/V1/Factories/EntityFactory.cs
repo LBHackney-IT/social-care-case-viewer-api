@@ -160,7 +160,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-
         public static TechUse ToDomain(this dbTechUse techUse)
         {
             return new TechUse()
@@ -185,12 +184,22 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = email.Type
             };
         }
+
         public static OtherName ToDomain(this PersonOtherName otherName)
         {
             return new OtherName()
             {
                 FirstName = otherName.FirstName,
                 LastName = otherName.LastName
+            };
+        }
+
+        public static LastUpdated ToDomain(this dbLastUpdated update)
+        {
+            return new LastUpdated()
+            {
+                Type = update.Type,
+                UpdatedAt = update.UpdatedAt
             };
         }
 

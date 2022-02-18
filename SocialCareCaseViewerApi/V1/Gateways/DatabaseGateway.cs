@@ -338,7 +338,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.LastUpdated != null)
             {
-                person.LastUpdated.Add(request.LastUpdated.ToEntity(person.Id));
+                foreach (var entry in request.LastUpdated)
+                {
+                    person.LastUpdated.Add(entry.ToEntity(person.Id));
+                }
             }
 
             //replace tech used
