@@ -18,10 +18,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Key]
         public int Id { get; set; }
 
-        [Column("housing")]
-        public DateTime? Housing { get; set; }
+        [Column("type")]
+        public string? Type { get; set; }
 
-        [Column("contact_details")]
-        public DateTime? ContactDetails { get; set; }
+        [Column("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
     }
 }
