@@ -101,7 +101,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string EmailAddress { get; set; }
 
         [Column("gender")]
-        [MaxLength(1)]
         public string Gender { get; set; }
 
         [Column("nationality")]
@@ -180,6 +179,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("accomodation_type")]
         public string? AccomodationType { get; set; }
+
         [Column("access_to_home")]
         public string? AccessToHome { get; set; }
 
