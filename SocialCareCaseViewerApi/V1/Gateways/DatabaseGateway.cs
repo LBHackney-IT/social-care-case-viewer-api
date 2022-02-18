@@ -301,6 +301,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.SexualOrientation = request.SexualOrientation;
             person.Title = request.Title;
             person.FluentInEnglish = request.FluentInEnglish;
+            person.InterpreterNeeded = request.InterpreterNeeded;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
