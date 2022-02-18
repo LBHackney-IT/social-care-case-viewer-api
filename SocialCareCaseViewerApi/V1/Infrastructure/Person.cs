@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
@@ -21,7 +22,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public List<Disability>? Disability { get; set; }
 
-        public List<Email>? OtherEmails { get; set; }
+        public List<EmailAddress>? Emails { get; set; }
 
         public List<LastUpdated>? LastUpdated { get; set; }
 
@@ -101,7 +102,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string EmailAddress { get; set; }
 
         [Column("gender")]
-        [MaxLength(1)]
         public string Gender { get; set; }
 
         [Column("nationality")]
@@ -180,6 +180,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("accomodation_type")]
         public string? AccomodationType { get; set; }
+
         [Column("access_to_home")]
         public string? AccessToHome { get; set; }
 
@@ -218,6 +219,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("blue_badge")]
         public string? BlueBadge { get; set; }
+
         [Column("open_case")]
         public bool? OpenCase { get; set; }
     }

@@ -22,8 +22,8 @@ using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using DisabilityDomain = SocialCareCaseViewerApi.V1.Domain.Disability;
-using OtherEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
-using OtherEmailDomain = SocialCareCaseViewerApi.V1.Domain.Email;
+using EmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
+using EmailDomain = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
@@ -308,8 +308,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             Disability disability1 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
             Disability disability2 = DatabaseGatewayHelper.CreateDisabilityEntity(person.Id);
 
-            OtherEmail otherEmail1 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
-            OtherEmail otherEmail2 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+            EmailAddress email1 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
+            EmailAddress email2 = DatabaseGatewayHelper.CreateEmailEntity(person.Id);
 
             PersonOtherName otherName1 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
             PersonOtherName otherName2 = DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id);
@@ -358,10 +358,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 disability2
             };
 
-            person.OtherEmails = new List<OtherEmail>
+            person.Emails = new List<EmailAddress>
             {
-                otherEmail1,
-                otherEmail2
+                email1,
+                email2
             };
 
             AddressDomain addressDomain = new AddressDomain()
@@ -419,20 +419,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             LastUpdatedDomain lastUpdatedDomain = new LastUpdatedDomain()
             {
-                Housing = lastUpdated.Housing,
-                ContactDetails = lastUpdated.ContactDetails
-            };
-
-            TechUseDomain techUseDomain1 = new TechUseDomain()
-            {
-                TechType = techUse1.TechType
-            };
-
-
-            TechUseDomain techUseDomain2 = new TechUseDomain()
-            {
-                TechType = techUse2.TechType
-
+                Type = lastUpdated.Type,
+                UpdatedAt = lastUpdated.UpdatedAt
             };
 
             DisabilityDomain disabilityDomain1 = new DisabilityDomain()
@@ -445,14 +433,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 DisabilityType = disability2.DisabilityType
             };
 
-            OtherEmailDomain otherEmailDomain1 = new OtherEmailDomain()
+            EmailDomain emailDomain1 = new EmailDomain()
             {
-                EmailAddress = otherEmail1.EmailAddress
+                Email = email1.Email,
+                Type = email1.Type
             };
 
-            OtherEmailDomain otherEmailDomain2 = new OtherEmailDomain()
+            EmailDomain emailDomain2 = new EmailDomain()
             {
-                EmailAddress = otherEmail2.EmailAddress
+                Email = email2.Email,
+                Type = email2.Type
             };
 
             var expectedResponse = new GetPersonResponse()
@@ -465,7 +455,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 CommunicationDifficulties = person.CommunicationDifficulties,
                 DifficultyMakingDecisions = person.DifficultyMakingDecisions,
                 CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
-                TechUse = new List<TechUseDomain>() { techUseDomain1, techUseDomain2 },
+                TechUse = new List<string>() { techUse1.TechType, techUse2.TechType },
+                Disabilities = new List<string>() { disability1.DisabilityType, disability2.DisabilityType },
                 Employment = person.Employment,
                 MaritalStatus = person.MaritalStatus,
                 ImmigrationStatus = person.ImmigrationStatus,
@@ -503,8 +494,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
                 GpDetails = gpDetailsDomain,
-                LastUpdated = lastUpdatedDomain,
-                Disabilities = new List<DisabilityDomain>() { disabilityDomain1, disabilityDomain2 },
+                LastUpdated = new List<LastUpdatedDomain>() { lastUpdatedDomain },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,
@@ -513,7 +503,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 AllocatedTeam = person.AllocatedTeam,
                 OtherNames = new List<OtherName>() { personOtherName1, personOtherName2 },
                 PhoneNumbers = new List<PhoneNumberDomain>() { phoneNumberDomain1, phoneNumberDomain2 },
-                OtherEmails = new List<OtherEmailDomain>() { otherEmailDomain1, otherEmailDomain2 }
+                Emails = new List<EmailDomain>() { emailDomain1, emailDomain2 }
 
             };
 

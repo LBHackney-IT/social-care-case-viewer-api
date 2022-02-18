@@ -11,20 +11,24 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
-using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.Email;
+using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
+using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
-using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.Email;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
+using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -43,12 +47,12 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static LastUpdatedDomain DbLastUpdatedToDomain(LastUpdated lastUpdated)
+        public static LastUpdatedDomain DbLastUpdatedToDomain(dbLastUpdated lastUpdated)
         {
             return new LastUpdatedDomain()
             {
-                Housing = lastUpdated.Housing,
-                ContactDetails = lastUpdated.ContactDetails
+                Type = lastUpdated.Type,
+                UpdatedAt = lastUpdated.UpdatedAt
             };
         }
 
@@ -144,48 +148,58 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static GpDetails ToDomain(this dbGpDetails GpDetails)
+        public static GpDetails ToDomain(this dbGpDetails gpDetails)
         {
             return new GpDetails()
             {
-                Name = GpDetails.Name,
-                Address = GpDetails.Address,
-                Postcode = GpDetails.Postcode,
-                PhoneNumber = GpDetails.PhoneNumber,
-                Email = GpDetails.Email
+                Name = gpDetails.Name,
+                Address = gpDetails.Address,
+                Postcode = gpDetails.Postcode,
+                PhoneNumber = gpDetails.PhoneNumber,
+                Email = gpDetails.Email
             };
         }
 
-
-        public static TechUse ToDomain(this dbTechUse TechUse)
+        public static TechUse ToDomain(this dbTechUse techUse)
         {
             return new TechUse()
             {
-                TechType = TechUse.TechType
+                TechType = techUse.TechType
             };
         }
 
-        public static Disability ToDomain(this dbDisability TechUse)
+        public static Disability ToDomain(this dbDisability disability)
         {
             return new Disability()
             {
-                DisabilityType = TechUse.DisabilityType
+                DisabilityType = disability.DisabilityType
             };
         }
 
-        public static PersonOtherEmails ToDomain(this dbEmail Email)
+        public static EmailAddress ToDomain(this dbEmailAddress email)
         {
-            return new PersonOtherEmails()
+            return new EmailAddress()
             {
-                EmailAddress = Email.EmailAddress
+                Email = email.Email,
+                Type = email.Type
             };
         }
+
         public static OtherName ToDomain(this PersonOtherName otherName)
         {
             return new OtherName()
             {
                 FirstName = otherName.FirstName,
                 LastName = otherName.LastName
+            };
+        }
+
+        public static LastUpdated ToDomain(this dbLastUpdated update)
+        {
+            return new LastUpdated()
+            {
+                Type = update.Type,
+                UpdatedAt = update.UpdatedAt
             };
         }
 
@@ -317,12 +331,54 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static dbEmailAddress ToEntity(this EmailAddress entry, long personId)
+        {
+            return new dbEmailAddress()
+            {
+                Email = entry.Email,
+                Type = entry.Type
+            };
+        }
+
+        public static dbLastUpdated ToEntity(this LastUpdated entry, long personId)
+        {
+            return new dbLastUpdated
+            {
+                Type = entry.Type,
+                UpdatedAt = entry.UpdatedAt,
+                PersonId = personId,
+            };
+        }
+
+        public static dbGpDetails ToEntity(this GpDetails entry, long personId)
+        {
+            return new dbGpDetails
+            {
+                Name = entry.Name,
+                Email = entry.Email,
+                Address = entry.Address,
+                Postcode = entry.Postcode,
+                PhoneNumber = entry.PhoneNumber,
+                PersonId = personId,
+            };
+        }
+
+
         public static dbKeyContact ToEntity(this KeyContact contact, long personId)
         {
             return new dbKeyContact
             {
                 Name = contact.Name,
                 Email = contact.Email,
+                PersonId = personId,
+            };
+        }
+
+        public static dbTechUse ToEntity(this TechUse tech, long personId)
+        {
+            return new dbTechUse
+            {
+                TechType = tech.TechType,
                 PersonId = personId,
             };
         }

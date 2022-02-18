@@ -136,11 +136,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Email, p => p.Internet.Email());
         }
 
-        internal static Email CreateEmailEntity(long personId)
+        internal static EmailAddress CreateEmailEntity(long personId)
         {
-            return new Faker<Email>()
+            return new Faker<EmailAddress>()
                 .RuleFor(p => p.PersonId, personId)
-                .RuleFor(p => p.EmailAddress, p => p.Internet.Email());
+                .RuleFor(p => p.Email, p => p.Internet.Email())
+                .RuleFor(p => p.Type, p => p.Random.String2(5));
         }
 
         internal static GpDetails CreateGpDetailsEntity(long personId)
@@ -158,8 +159,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<LastUpdated>()
                 .RuleFor(p => p.PersonId, personId)
-                .RuleFor(p => p.Housing, p => p.Date.Past())
-                .RuleFor(p => p.ContactDetails, p => p.Date.Past());
+                .RuleFor(p => p.Type, p => p.Random.String2(100))
+                .RuleFor(p => p.UpdatedAt, p => p.Date.Past());
         }
 
         internal static TechUse CreateTechUseEntity(long personId)
