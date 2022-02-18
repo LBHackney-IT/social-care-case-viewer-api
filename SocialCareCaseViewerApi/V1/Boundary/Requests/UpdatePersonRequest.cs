@@ -91,6 +91,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string? LivingSituation { get; set; }
 
+        public string? TenureType { get; set; }
+
+        public string? AccomodationType { get; set; }
+
+        public string? AccessToHome { get; set; }
+
 
 
 

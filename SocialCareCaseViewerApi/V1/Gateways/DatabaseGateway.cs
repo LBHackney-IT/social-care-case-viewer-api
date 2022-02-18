@@ -317,6 +317,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.PrimarySupportReason = request.PrimarySupportReason;
             person.CareProvider = request.CareProvider;
             person.LivingSituation = request.LivingSituation;
+            person.TenureType = request.TenureType;
+            person.AccomodationType = request.AccomodationType;
+            person.AccessToHome = request.AccessToHome;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
