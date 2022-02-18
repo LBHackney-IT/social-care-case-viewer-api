@@ -16,8 +16,6 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
-
-
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
 {
