@@ -306,6 +306,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.DifficultyMakingDecisions = request.DifficultyMakingDecisions;
             person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails;
             person.Employment = request.Employment;
+            person.AllocatedTeam = request.AllocatedTeam;
+            person.PreferredLanguage = request.PreferredLanguage;
+            person.Nationality = request.Nationality;
+            person.CreatedBy = request.CreatedBy;
+            person.Pronoun = request.Pronoun;
+            person.GenderAssignedAtBirth = request.GenderAssignedAtBirth;
+            person.MaritalStatus = request.MaritalStatus;
+            person.ImmigrationStatus = request.ImmigrationStatus;
+            person.PrimarySupportReason = request.PrimarySupportReason;
+            person.CareProvider = request.CareProvider;
+            person.LivingSituation = request.LivingSituation;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
