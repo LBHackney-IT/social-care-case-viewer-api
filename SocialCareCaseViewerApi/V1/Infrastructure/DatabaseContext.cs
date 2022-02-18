@@ -25,6 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<TechUse> TechUse { get; set; }
         public DbSet<Disability> Disabilities { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<LastUpdated> LastUpdated { get; set; }
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
         public DbSet<EmailAddress> Emails { get; set; }
         public DbSet<Audit> Audits { get; set; }

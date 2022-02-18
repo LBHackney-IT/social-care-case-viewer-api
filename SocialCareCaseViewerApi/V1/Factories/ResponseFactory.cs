@@ -145,7 +145,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             //get the current display address
             var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
             var displayGpDetails = person.GpDetails?.FirstOrDefault();
-            var lastUpdated = person.LastUpdated?.FirstOrDefault();
+            var displayLastUpdated = person.LastUpdated?.FirstOrDefault();
 
             return new GetPersonResponse()
             {
@@ -199,7 +199,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AllocatedTeam = person.AllocatedTeam,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
-                LastUpdated = lastUpdated != null ? EntityFactory.DbLastUpdatedToDomain(lastUpdated) : null,
+                LastUpdated = displayLastUpdated != null ? EntityFactory.DbLastUpdatedToDomain(displayLastUpdated) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),

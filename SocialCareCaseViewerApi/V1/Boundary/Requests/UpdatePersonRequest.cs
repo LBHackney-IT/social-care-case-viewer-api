@@ -50,6 +50,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public List<KeyContact> KeyContacts { get; set; }
 
         public GpDetailsDomain GpDetails { get; set; }
+        
+        public LastUpdatedDomain LastUpdated { get; set; }
 
         public List<String> TechUse { get; set; }
 

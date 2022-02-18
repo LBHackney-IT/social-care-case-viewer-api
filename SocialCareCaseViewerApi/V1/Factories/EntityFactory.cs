@@ -14,6 +14,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
@@ -23,6 +24,7 @@ using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
+using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
 using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
@@ -45,7 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static LastUpdatedDomain DbLastUpdatedToDomain(LastUpdated lastUpdated)
+        public static LastUpdatedDomain DbLastUpdatedToDomain(dbLastUpdated lastUpdated)
         {
             return new LastUpdatedDomain()
             {
@@ -326,6 +328,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Email = entry.Email,
                 Type = entry.Type
+            };
+        }
+
+        public static dbLastUpdated ToEntity(this LastUpdated entry, long personId)
+        {
+            return new dbLastUpdated
+            {
+                Type = entry.Type,
+                UpdatedAt = entry.UpdatedAt,
+                PersonId = personId,
             };
         }
 
