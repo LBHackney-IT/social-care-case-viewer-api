@@ -218,6 +218,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("blue_badge")]
         public string? BlueBadge { get; set; }
+
         [Column("open_case")]
         public bool? OpenCase { get; set; }
     }

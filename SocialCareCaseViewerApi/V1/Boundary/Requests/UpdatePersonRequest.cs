@@ -97,8 +97,29 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string? AccessToHome { get; set; }
 
+        public string? HousingOfficer { get; set; }
 
+        public bool? HousingStaffInContact { get; set; }
 
+        public bool? CautionaryAlert { get; set; }
+
+        public string? PossessionEvictionOrder { get; set; }
+
+        public string? RentRecord { get; set; }
+
+        public string? HousingBenefit { get; set; }
+
+        public string? CouncilTenureType { get; set; }
+
+        public string? MentalHealthSectionStatus { get; set; }
+
+        public string? DeafRegister { get; set; }
+
+        public string? BlindRegister { get; set; }
+
+        public string? BlueBadge { get; set; }
+
+        public bool? OpenCase { get; set; }
 
         [EmailAddress]
         //allow front end to send empty string for email
