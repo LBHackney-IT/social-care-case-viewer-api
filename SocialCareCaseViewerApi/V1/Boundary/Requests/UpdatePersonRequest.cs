@@ -65,6 +65,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public bool? CommunicationDifficulties { get; set; }
 
+        public bool? DifficultyMakingDecisions { get; set; }
+
+        public string? CommunicationDifficultiesDetails { get; set; }
+
+        public string? Employment { get; set; }
+
         [EmailAddress]
         //allow front end to send empty string for email
         public string EmailAddress
