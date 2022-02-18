@@ -71,6 +71,29 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public string? Employment { get; set; }
 
+        public string? AllocatedTeam { get; set; }
+
+        public string? PreferredLanguage { get; set; }
+
+        public string? Nationality { get; set; }
+
+        public string? Pronoun { get; set; }
+
+        public bool? GenderAssignedAtBirth { get; set; }
+
+        public string? MaritalStatus { get; set; }
+
+        public string? ImmigrationStatus { get; set; }
+
+        public string? PrimarySupportReason { get; set; }
+
+        public string? CareProvider { get; set; }
+
+        public string? LivingSituation { get; set; }
+
+
+
+
         [EmailAddress]
         //allow front end to send empty string for email
         public string EmailAddress
