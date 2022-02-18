@@ -217,10 +217,22 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 throw new GetSubmissionException($"Submission with ID {submissionId} not found");
             }
 
+            if (updatedSubmission.PinnedAt == null)
+            {
+                throw new GetSubmissionException($"Submission with ID {submissionId} not found");
+            }
+
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
 
-            updatedSubmission.PinnedAt = DateTime.Parse(request.PinnedAt);
+            if (updatedSubmission.PinnedAt.HasValue)
+            {
+                updatedSubmission.PinnedAt = DateTime.Parse(request.PinnedAt);
+            }
+            else
+            {
+                updatedSubmission.PinnedAt = null;
+            }
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
