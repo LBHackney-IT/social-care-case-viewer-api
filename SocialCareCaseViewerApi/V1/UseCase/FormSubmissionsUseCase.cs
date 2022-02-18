@@ -220,6 +220,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
 
+            updatedSubmission.PinnedAt = DateTime.Parse(request.PinnedAt);
+
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updatedSubmission);
