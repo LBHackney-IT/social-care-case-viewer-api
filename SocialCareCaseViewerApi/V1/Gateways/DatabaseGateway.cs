@@ -18,6 +18,7 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
@@ -274,6 +275,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.TechUse)
                 .Include(x => x.Disability)
                 .Include(x => x.Emails)
+                .Include(x => x.LastUpdated)
                 .FirstOrDefault(x => x.Id == request.Id);
 
             if (person == null)
@@ -298,6 +300,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.Restricted = request.Restricted;
             person.SexualOrientation = request.SexualOrientation;
             person.Title = request.Title;
+
+            //replace Last Updated
+            _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
+
+            if (request.LastUpdated != null)
+            {
+                person.LastUpdated.Add(request.LastUpdated.ToEntity(person.Id));
+            }
 
             //replace tech used
             _databaseContext.TechUse.RemoveRange(person.TechUse);
