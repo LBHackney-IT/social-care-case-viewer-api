@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Domain
 #nullable enable
     public class LastUpdatedDomain
     {
-        public DateTime? Housing { get; set; }
-        public DateTime? ContactDetails { get; set; }
+        public string? Type { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }
