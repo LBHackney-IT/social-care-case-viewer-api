@@ -49,8 +49,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new LastUpdatedDomain()
             {
-                Housing = lastUpdated.Housing,
-                ContactDetails = lastUpdated.ContactDetails
+                Type = lastUpdated.Type,
+                UpdatedAt = lastUpdated.UpdatedAt
             };
         }
 
