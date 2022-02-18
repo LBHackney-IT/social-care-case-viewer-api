@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string CreatedBy { get; set; } = null!;
 
         [JsonPropertyName("pinnedAt")]
-        public DateTime PinnedAt { get; set; }
+        public DateTime? PinnedAt { get; set; }
     }
 
     public class CreateCaseSubmissionRequestValidator : AbstractValidator<CreateCaseSubmissionRequest>
