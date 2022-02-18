@@ -61,6 +61,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public bool? FluentInEnglish { get; set; }
 
+        public bool? InterpreterNeeded { get; set; }
+
         [EmailAddress]
         //allow front end to send empty string for email
         public string EmailAddress
