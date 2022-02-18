@@ -302,6 +302,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.Title = request.Title;
             person.FluentInEnglish = request.FluentInEnglish;
             person.InterpreterNeeded = request.InterpreterNeeded;
+            person.CommunicationDifficulties = request.CommunicationDifficulties;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
