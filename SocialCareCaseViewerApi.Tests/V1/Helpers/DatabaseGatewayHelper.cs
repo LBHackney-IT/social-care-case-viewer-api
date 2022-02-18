@@ -159,8 +159,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<LastUpdated>()
                 .RuleFor(p => p.PersonId, personId)
-                .RuleFor(p => p.Housing, p => p.Date.Past())
-                .RuleFor(p => p.ContactDetails, p => p.Date.Past());
+                .RuleFor(p => p.Type, p => p.Random.String2(100))
+                .RuleFor(p => p.UpdatedAt, p => p.Date.Past());
         }
 
         internal static TechUse CreateTechUseEntity(long personId)

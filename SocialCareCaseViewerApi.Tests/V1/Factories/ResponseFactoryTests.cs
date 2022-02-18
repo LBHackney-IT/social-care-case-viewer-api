@@ -419,8 +419,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             LastUpdatedDomain lastUpdatedDomain = new LastUpdatedDomain()
             {
-                Housing = lastUpdated.Housing,
-                ContactDetails = lastUpdated.ContactDetails
+                Type = lastUpdated.Type,
+                UpdatedAt = lastUpdated.UpdatedAt
             };
 
             DisabilityDomain disabilityDomain1 = new DisabilityDomain()
