@@ -354,6 +354,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+
         public static dbKeyContact ToEntity(this KeyContact contact, long personId)
         {
             return new dbKeyContact
