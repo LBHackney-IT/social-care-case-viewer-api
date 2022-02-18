@@ -494,7 +494,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 LastName = person.LastName,
                 NhsNumber = person.NhsNumber.Value,
                 GpDetails = gpDetailsDomain,
-                LastUpdated = lastUpdatedDomain,
+                LastUpdated = new List<LastUpdatedDomain>() { lastUpdatedDomain },
                 Id = person.Id,
                 PreferredMethodOfContact = person.PreferredMethodOfContact,
                 Religion = person.Religion,
