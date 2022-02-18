@@ -148,15 +148,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static GpDetails ToDomain(this dbGpDetails GpDetails)
+        public static GpDetails ToDomain(this dbGpDetails gpDetails)
         {
             return new GpDetails()
             {
-                Name = GpDetails.Name,
-                Address = GpDetails.Address,
-                Postcode = GpDetails.Postcode,
-                PhoneNumber = GpDetails.PhoneNumber,
-                Email = GpDetails.Email
+                Name = gpDetails.Name,
+                Address = gpDetails.Address,
+                Postcode = gpDetails.Postcode,
+                PhoneNumber = gpDetails.PhoneNumber,
+                Email = gpDetails.Email
             };
         }
 
