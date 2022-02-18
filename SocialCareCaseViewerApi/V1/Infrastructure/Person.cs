@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SocialCareCaseViewerApi.V1.Domain;
 
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {

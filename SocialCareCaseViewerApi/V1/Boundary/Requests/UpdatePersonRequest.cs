@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Infrastructure;
 using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
-using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
@@ -34,6 +33,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public DateTime? DateOfBirth { get; set; }
 
         public DateTime? DateOfDeath { get; set; }
+
         public string Ethnicity { get; set; }
 
         public string FirstLanguage { get; set; }
@@ -43,15 +43,16 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string SexualOrientation { get; set; }
 
         public long? NhsNumber { get; set; }
+
         public AddressDomain Address { get; set; }
 
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
+        public List<LastUpdated> LastUpdated { get; set; }
+
         public List<KeyContact> KeyContacts { get; set; }
 
         public GpDetailsDomain GpDetails { get; set; }
-
-        public LastUpdatedDomain LastUpdated { get; set; }
 
         public List<String> TechUse { get; set; }
 

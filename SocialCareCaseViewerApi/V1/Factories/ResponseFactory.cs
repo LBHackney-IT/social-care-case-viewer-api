@@ -16,6 +16,8 @@ using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
+
+
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
 {
@@ -145,7 +147,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             //get the current display address
             var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
             var displayGpDetails = person.GpDetails?.FirstOrDefault();
-            var displayLastUpdated = person.LastUpdated?.FirstOrDefault();
 
             return new GetPersonResponse()
             {
@@ -199,11 +200,11 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 AllocatedTeam = person.AllocatedTeam,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
-                LastUpdated = displayLastUpdated != null ? EntityFactory.DbLastUpdatedToDomain(displayLastUpdated) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
                 Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
+                LastUpdated = person.LastUpdated?.Select(x => x.ToDomain()).ToList(),
                 TechUse = person.TechUse?.Select(x => x.TechType).ToList(),
                 Emails = person.Emails?.Select(x => x.ToDomain()).ToList()
             };

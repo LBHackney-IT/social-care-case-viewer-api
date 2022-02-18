@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Domain;
 using Email = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
@@ -96,11 +100,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<PhoneNumber> PhoneNumbers { get; set; }
 
+        public List<LastUpdated>? LastUpdated { get; set; }
+
         public List<KeyContact>? KeyContacts { get; set; }
 
         public GpDetailsDomain? GpDetails { get; set; }
-
-        public LastUpdatedDomain? LastUpdated { get; set; }
 
         public List<string>? TechUse { get; set; }
 
