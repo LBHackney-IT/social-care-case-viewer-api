@@ -25,6 +25,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public List<EditHistory<WorkerResponse>>? EditHistory { get; set; } = null!;
         public string SubmissionState { get; set; } = null!;
         public string? Title { get; set; }
+        public DateTime? PinnedAt { get; set; }
 
         // outer hashset string represents step id for form
         // value represents JSON string of question ids (as stringified ints) to answers, answers in the format
