@@ -550,7 +550,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
             string? updatedBy = null,
-            string?  pinnedAt = null,
+            string? pinnedAt = null,
             string? submissionState = null,
             List<long>? residents = null,
             string? rejectionReason = null
