@@ -225,7 +225,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 updatedSubmission.PinnedAt = String.IsNullOrEmpty(request.PinnedAt) ? (DateTime?) null : DateTime.Parse(request.PinnedAt);
             }
 
-
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
             _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), updatedSubmission);
