@@ -63,6 +63,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void GetResidentCasesReturnsPinnedCasesBeforeEverythingElse()
+        {
+            var request = TestHelpers.CreateListCasesRequest(1L);
+
+            var dbReturnedCases = new List<CaseSubmission>
+            {
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? "")),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""))
+            };
+
+            dbReturnedCases.First().PinnedAt = null;
+
+            _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
+            _mockProcessDataGateway.Setup(x => x.GetProcessData(request, request.MosaicId)).Returns(() => new Tuple<IEnumerable<CareCaseData>, int>(new List<CareCaseData>(), 0));
+            _mockMongoGateway
+                .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
+                    It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
+                .Returns((dbReturnedCases, 2));
+
+            var response = _caseRecordsUseCase.GetResidentCases(request);
+
+            response.Cases.Count.Should().Be(4);
+            response.Cases.Last().Should().BeEquivalentTo(dbReturnedCases.First().ToCareCaseData(request));
+        }
+
+        [Test]
         public void GetResidentCasesReturnsResidentsSubmittedCasesExcludingAuditTrailEventsWhenExcludeAuditTrailEventsIsSetToTrue()
         {
             var request = TestHelpers.CreateListCasesRequest(1L);
