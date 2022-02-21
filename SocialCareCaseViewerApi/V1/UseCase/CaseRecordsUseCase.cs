@@ -97,19 +97,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 };
                 allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
             }
-            var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
-            .Skip(request.Cursor)
-            .Take(request.Limit)
-            .ToList();
+
+            var pinnedCases = allCareCaseData.Where(x => !String.IsNullOrEmpty(x.PinnedAt)).OrderByDescending(x => x.PinnedAt).ToList();
+            var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
+            var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
+
+            pinnedCases.AddRange(careCaseData);
+
+            var combinedCases = pinnedCases.ToList();
+
+            combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
 
             int? nextCursor = request.Cursor + request.Limit;
 
             //support page size 1
-            if (nextCursor == totalCount || careCaseData.Count < request.Limit) nextCursor = null;
+            if (nextCursor == totalCount || combinedCases.Count < request.Limit) nextCursor = null;
 
             return new CareCaseDataList
             {
-                Cases = careCaseData.ToList(),
+                Cases = combinedCases.ToList(),
                 NextCursor = nextCursor,
                 TotalCount = allCareCaseData.Count,
                 DeletedRecordsCount = deletedRecordsCount
