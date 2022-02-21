@@ -83,7 +83,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _mockMongoGateway
                 .Setup(x => x.LoadRecordsByFilter(MongoConnectionStrings.Map[Collection.ResidentCaseSubmissions],
                     It.IsAny<FilterDefinition<CaseSubmission>>(), It.IsAny<Pagination>()))
-                .Returns((dbReturnedCases, 2));
+                .Returns((dbReturnedCases, 4));
 
             var response = _caseRecordsUseCase.GetResidentCases(request);
 
