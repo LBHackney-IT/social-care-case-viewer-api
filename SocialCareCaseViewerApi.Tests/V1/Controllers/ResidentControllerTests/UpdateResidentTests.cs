@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
-        public void UpdatePersonReturns200WhenSuccessful()
+        public void UpdatePersonReturns204WhenSuccessful()
         {
             var request = new UpdatePersonRequest();
 
@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
-        public void PatchPersonReturns200WhenSuccessful()
+        public void PatchPersonReturns204WhenSuccessful()
         {
             var request = new PatchPersonRequest();
 
