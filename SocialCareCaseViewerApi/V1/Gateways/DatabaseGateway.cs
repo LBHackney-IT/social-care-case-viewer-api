@@ -480,6 +480,356 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
+        public void PatchPerson(PatchPersonRequest request)
+        {
+            Person person = _databaseContext
+                .Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.OtherNames)
+                .Include(x => x.KeyContacts)
+                .Include(x => x.GpDetails)
+                .Include(x => x.TechUse)
+                .Include(x => x.Disability)
+                .Include(x => x.Emails)
+                .Include(x => x.LastUpdated)
+                .FirstOrDefault(x => x.Id == request.Id);
+
+            if (person == null)
+            {
+                throw new UpdatePersonException("Person not found");
+            }
+
+            if (request.ContextFlag != null)
+            {
+                person.AgeContext = request.ContextFlag;
+            }
+            if (request.DateOfBirth != null)
+            {
+                person.DateOfBirth = request.DateOfBirth;
+            }
+            if (request.DateOfDeath != null)
+            {
+                person.DateOfDeath = request.DateOfDeath;
+            }
+            if (request.EmailAddress != null)
+            {
+                person.EmailAddress = request.EmailAddress;
+            }
+            if (request.EmailAddress != null)
+            {
+                person.EmailAddress = request.EmailAddress;
+            }
+            if (request.Ethnicity != null)
+            {
+                person.Ethnicity = request.Ethnicity;
+            }
+            if (request.FirstLanguage != null)
+            {
+                person.FirstLanguage = request.FirstLanguage;
+            }
+            if (request.FirstName != null)
+            {
+                person.FirstName = request.FirstName;
+            }
+            if (request.FirstName != null && request.LastName != null)
+            {
+                person.FullName = $"{request.FirstName} {request.LastName}";
+            }
+            if (request.Gender != null)
+            {
+                person.Gender = request.Gender;
+            }
+            if (request.CreatedBy != null)
+            {
+                person.LastModifiedBy = request.CreatedBy;
+            }
+            if (request.LastName != null)
+            {
+                person.LastName = request.LastName;
+            }
+            if (request.NhsNumber != null)
+            {
+                person.NhsNumber = request.NhsNumber;
+            }
+            if (request.PreferredMethodOfContact != null)
+            {
+                person.PreferredMethodOfContact = request.PreferredMethodOfContact;
+            }
+            if (request.Religion != null)
+            {
+                person.Religion = request.Religion;
+            }
+            if (request.Restricted != null)
+            {
+                person.Restricted = request.Restricted;
+            }
+            if (request.SexualOrientation != null)
+            {
+                person.SexualOrientation = request.SexualOrientation;
+            }
+            if (request.Title != null)
+            {
+                person.Title = request.Title;
+            }
+            if (request.FluentInEnglish != null)
+            {
+                person.FluentInEnglish = request.FluentInEnglish;
+            }
+            if (request.InterpreterNeeded != null)
+            {
+                person.InterpreterNeeded = request.InterpreterNeeded;
+            }
+            if (request.CommunicationDifficulties != null)
+            {
+                person.CommunicationDifficulties = request.CommunicationDifficulties;
+            }
+            if (request.DifficultyMakingDecisions != null)
+            {
+                person.DifficultyMakingDecisions = request.DifficultyMakingDecisions;
+            }
+            if (request.CommunicationDifficultiesDetails != null)
+            {
+                person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails;
+            }
+            if (request.Employment != null)
+            {
+                person.Employment = request.Employment;
+            }
+            if (request.AllocatedTeam != null)
+            {
+                person.AllocatedTeam = request.AllocatedTeam;
+            }
+            if (request.PreferredLanguage != null)
+            {
+                person.PreferredLanguage = request.PreferredLanguage;
+            }
+            if (request.Nationality != null)
+            {
+                person.Nationality = request.Nationality;
+            }
+            if (request.CreatedBy != null)
+            {
+                person.CreatedBy = request.CreatedBy;
+            }
+            if (request.Pronoun != null)
+            {
+                person.Pronoun = request.Pronoun;
+            }
+            if (request.GenderAssignedAtBirth != null)
+            {
+                person.GenderAssignedAtBirth = request.GenderAssignedAtBirth;
+            }
+            if (request.MaritalStatus != null)
+            {
+                person.MaritalStatus = request.MaritalStatus;
+            }
+            if (request.ImmigrationStatus != null)
+            {
+                person.ImmigrationStatus = request.ImmigrationStatus;
+            }
+            if (request.PrimarySupportReason != null)
+            {
+                person.PrimarySupportReason = request.PrimarySupportReason;
+            }
+            if (request.CareProvider != null)
+            {
+                person.CareProvider = request.CareProvider;
+            }
+            if (request.LivingSituation != null)
+            {
+                person.LivingSituation = request.LivingSituation;
+            }
+            if (request.TenureType != null)
+            {
+                person.TenureType = request.TenureType;
+            }
+            if (request.AccomodationType != null)
+            {
+                person.AccomodationType = request.AccomodationType;
+            }
+            if (request.AccessToHome != null)
+            {
+                person.AccessToHome = request.AccessToHome;
+            }
+            if (request.HousingOfficer != null)
+            {
+                person.HousingOfficer = request.HousingOfficer;
+            }
+            if (request.HousingStaffInContact != null)
+            {
+                person.HousingStaffInContact = request.HousingStaffInContact;
+            }
+            if (request.CautionaryAlert != null)
+            {
+                person.CautionaryAlert = request.CautionaryAlert;
+            }
+            if (request.PossessionEvictionOrder != null)
+            {
+                person.PossessionEvictionOrder = request.PossessionEvictionOrder;
+            }
+            if (request.RentRecord != null)
+            {
+                person.RentRecord = request.RentRecord;
+            }
+            if (request.HousingBenefit != null)
+            {
+                person.HousingBenefit = request.HousingBenefit;
+            }
+            if (request.CouncilTenureType != null)
+            {
+                person.CouncilTenureType = request.CouncilTenureType;
+            }
+            if (request.MentalHealthSectionStatus != null)
+            {
+                person.MentalHealthSectionStatus = request.MentalHealthSectionStatus;
+            }
+            if (request.DeafRegister != null)
+            {
+                person.DeafRegister = request.DeafRegister;
+            }
+            if (request.BlindRegister != null)
+            {
+                person.BlindRegister = request.BlindRegister;
+            }
+            if (request.BlueBadge != null)
+            {
+                person.BlueBadge = request.BlueBadge;
+            }
+            if (request.OpenCase != null)
+            {
+                person.OpenCase = request.OpenCase;
+            }
+
+            //replace Last Updated
+            if (request.LastUpdated != null)
+            {
+                _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
+                foreach (var entry in request.LastUpdated)
+                {
+                    person.LastUpdated.Add(entry.ToEntity(person.Id));
+                }
+            }
+
+            //replace tech used
+            if (request.TechUse != null)
+            {
+                _databaseContext.TechUse.RemoveRange(person.TechUse);
+                foreach (var entry in request.TechUse)
+                {
+                    person.TechUse.Add(new dbTechUse { TechType = entry, PersonId = person.Id, });
+                }
+            }
+
+            //replace disabilities
+            if (request.Disabilities != null)
+            {
+                _databaseContext.Disabilities.RemoveRange(person.Disability);
+                foreach (var entry in request.Disabilities)
+                {
+                    person.Disability.Add(new dbDisability { DisabilityType = entry, PersonId = person.Id, });
+                }
+            }
+            //replace key contacts
+            if (request.KeyContacts != null)
+            {
+                _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
+                foreach (var contact in request.KeyContacts)
+                {
+                    person.KeyContacts.Add(contact.ToEntity(person.Id));
+                }
+            }
+
+            //replace gp details
+            if (request.GpDetails != null)
+            {
+                _databaseContext.GpDetails.RemoveRange(person.GpDetails);
+                person.GpDetails.Add(request.GpDetails.ToEntity(person.Id));
+            }
+
+            //replace emails
+            if (request.Emails != null)
+            {
+                _databaseContext.Emails.RemoveRange(person.Emails);
+                foreach (var email in request.Emails)
+                {
+                    person.Emails.Add(email.ToEntity(person.Id));
+                }
+            }
+
+            //replace phone numbers
+            if (request.PhoneNumbers != null)
+            {
+                _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
+                foreach (var number in request.PhoneNumbers)
+                {
+                    person.PhoneNumbers.Add(number.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //replace other names
+            if (request.OtherNames != null)
+            {
+                _databaseContext.PersonOtherNames.RemoveRange(person.OtherNames);
+                foreach (var otherName in request.OtherNames)
+                {
+                    person.OtherNames.Add(otherName.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //check for changed address
+            if (request.Address != null)
+            {
+                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+
+                if (displayAddress == null)
+                {
+                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                        request.Address.Uprn, request.CreatedBy));
+                }
+                else
+                {
+                    //has address changed?
+                    if (!(request.Address.Address == displayAddress.AddressLines
+                          && request.Address.Postcode == displayAddress.PostCode
+                          && displayAddress.Uprn == request.Address.Uprn))
+                    {
+                        displayAddress.IsDisplayAddress = "N";
+                        displayAddress.EndDate = DateTime.Now;
+                        displayAddress.LastModifiedBy = request.CreatedBy;
+
+                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                            request.Address.Uprn, request.CreatedBy));
+                    }
+                }
+            }
+
+            DateTime dt = DateTime.Now;
+
+            UpdatePersonCaseNote note = new UpdatePersonCaseNote()
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MosaicId = person.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                WorkerEmail = request.CreatedBy,
+                Note = $"{dt.ToShortDateString()} Person details updated - by {request.CreatedBy}.",
+                FormNameOverall = "API_Update_Person",
+                FormName = "Person updated",
+                CreatedBy = request.CreatedBy
+            };
+
+            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            //TODO: refactor so gateways don't call each other
+            _ = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+
+            _databaseContext.SaveChanges();
+        }
+
         public static Person AddNewPerson(AddNewResidentRequest request)
         {
             return new Person

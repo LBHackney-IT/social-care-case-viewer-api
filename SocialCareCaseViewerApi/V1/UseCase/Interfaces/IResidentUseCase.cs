@@ -10,5 +10,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         ResidentInformationList GetResidentsByQuery(ResidentQueryParam rqp, int cursor, int limit);
         GetPersonResponse? GetResident(GetPersonRequest request);
         void UpdateResident(UpdatePersonRequest request);
+        void PatchResident(PatchPersonRequest request);
     }
 }

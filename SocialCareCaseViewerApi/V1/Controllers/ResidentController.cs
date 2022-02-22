@@ -106,12 +106,35 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="500">There was a problem updating the records</response>
         ///
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPatch]
+        [HttpPut]
         public IActionResult UpdatePerson([FromBody] UpdatePersonRequest request)
         {
             try
             {
                 _residentUseCase.UpdateResident(request);
+                return StatusCode(204);
+            }
+            catch (UpdatePersonException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Patch resident details
+        /// </summary>
+        /// <response code="204">Success</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        /// <response code="500">There was a problem updating the records</response>
+        ///
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPatch]
+        public IActionResult PatchPerson([FromBody] PatchPersonRequest request)
+        {
+            try
+            {
+                _residentUseCase.PatchResident(request);
                 return StatusCode(204);
             }
             catch (UpdatePersonException ex)

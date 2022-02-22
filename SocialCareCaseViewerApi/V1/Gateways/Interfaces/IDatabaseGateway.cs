@@ -38,5 +38,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         PersonalRelationship GetPersonalRelationshipById(long relationshipId);
         void DeleteRelationship(long relationshipId);
         void CreateRequestAudit(CreateRequestAuditRequest request);
+        void PatchPerson(PatchPersonRequest request);
     }
 }
