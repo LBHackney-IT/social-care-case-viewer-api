@@ -36,6 +36,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
+        public void PatchPersonReturns200WhenSuccessful()
+        {
+            var request = new PatchPersonRequest();
+
+            var result = _residentController.PatchPerson(request) as ObjectResult;
+
+            result?.StatusCode.Should().Be(204);
+        }
+
+        [Test]
         public void UpdatePersonReturns404WhenPersonNotFound()
         {
             var request = new UpdatePersonRequest();

@@ -1198,6 +1198,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void PatchPersonSetsCorrectValuesForPersonEntity()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
+            PatchPersonRequest request = GetValidPatchPersonRequest(person.Id);
+
+            request.Title = null;
+            request.Religion = "";
+            request.FirstLanguage = "TestLanguage";
+
+            person.Title.Should().NotBeNull();
+            person.Religion.Should().NotBeNull();
+            person.FirstLanguage.Should().NotBeEquivalentTo("TestLanguage");
+
+            _classUnderTest.PatchPerson(request);
+
+            person.Title.Should().NotBeNull();
+            person.Religion.Should().BeEmpty();
+            person.FirstLanguage.Should().Be(request.FirstLanguage);
+        }
+
+        [Test]
         public void UpdatePersonSetsNewDisplayAddressWhenOneDoesntExist()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
@@ -1575,6 +1596,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Address, address)
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
                 .RuleFor(p => p.OtherNames, otherNames);
+        }
+
+        private static PatchPersonRequest GetValidPatchPersonRequest(long personId)
+        {
+
+            return new Faker<PatchPersonRequest>()
+                .RuleFor(p => p.Id, personId)
+                .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.Religion, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.String2(2));
         }
     }
 }
