@@ -239,6 +239,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     CompletedSteps = caseSubmission.FormAnswers.Count,
                     Title = caseSubmission.Title,
                     Deleted = caseSubmission.Deleted ?? false,
+                    PinnedAt = caseSubmission.PinnedAt,
                     DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
                 };
             }
@@ -270,7 +271,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastEdited = caseSubmission.EditHistory.Last().EditTime,
                 CompletedSteps = caseSubmission.FormAnswers.Count,
                 Deleted = caseSubmission.Deleted ?? false,
-                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
+                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null,
+                PinnedAt = caseSubmission.PinnedAt
             };
         }
 
@@ -286,6 +288,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstName = resident.FirstName,
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
+                PinnedAt = caseSubmission.PinnedAt.ToString(),
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),

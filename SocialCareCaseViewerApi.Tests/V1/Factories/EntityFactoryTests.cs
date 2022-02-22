@@ -277,6 +277,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Residents = databaseCaseSubmission1.Residents,
                 Workers = databaseCaseSubmission1.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = databaseCaseSubmission1.CreatedAt,
+                PinnedAt = databaseCaseSubmission1.PinnedAt,
                 CreatedBy = databaseCaseSubmission1.CreatedBy.ToDomain(false),
                 EditHistory = databaseCaseSubmission1.EditHistory.Select(e => new EditHistory<Worker>
                 {
@@ -301,6 +302,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
                 Workers = databaseCaseSubmission2.Workers.Select(w => w.ToDomain(false)).ToList(),
                 CreatedAt = databaseCaseSubmission2.CreatedAt,
                 CreatedBy = databaseCaseSubmission2.CreatedBy.ToDomain(false),
+                PinnedAt = databaseCaseSubmission2.PinnedAt,
                 EditHistory = databaseCaseSubmission2.EditHistory.Select(e => new EditHistory<Worker>
                 {
                     EditTime = e.EditTime,

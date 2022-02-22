@@ -506,6 +506,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.Residents, residents)
                 .RuleFor(s => s.Workers, workers)
                 .RuleFor(s => s.CreatedAt, f => createdAt ?? f.Date.Recent())
+                .RuleFor(s => s.PinnedAt, f => f.Date.Recent())
                 .RuleFor(s => s.CreatedBy, workers[0])
                 .RuleFor(s => s.EditHistory,
                     f => new List<EditHistory<Worker>>
@@ -549,6 +550,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static UpdateCaseSubmissionRequest UpdateCaseSubmissionRequest(
             string? updatedBy = null,
+            string? pinnedAt = null,
             string? submissionState = null,
             List<long>? residents = null,
             string? rejectionReason = null
@@ -558,6 +560,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(s => s.EditedBy, f => updatedBy ?? f.Person.Email)
                 .RuleFor(s => s.SubmissionState, submissionState)
                 .RuleFor(s => s.Residents, residents)
+                .RuleFor(s => s.PinnedAt, f => pinnedAt ?? f.Date.Past().ToString())
                 .RuleFor(s => s.RejectionReason, rejectionReason);
         }
 

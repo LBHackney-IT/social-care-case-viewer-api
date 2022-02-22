@@ -172,6 +172,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void ExecuteUpdateSubmissionToPinnedStatusSuccessfullyUpdatesSubmissionPinnedAt()
+        {
+            var request = TestHelpers.UpdateCaseSubmissionRequest(pinnedAt: DateTime.Today.ToString());
+            var createdSubmission = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress);
+            createdSubmission.PinnedAt = null;
+            var worker = TestHelpers.CreateWorker();
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.EditedBy)).Returns(worker);
+            _mockMongoGateway.Setup(x => x.LoadRecordById<CaseSubmission>(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()))).Returns(createdSubmission);
+
+            var response = _formSubmissionsUseCase.ExecuteUpdateSubmission(createdSubmission.SubmissionId.ToString(), request);
+
+            _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(createdSubmission.SubmissionId.ToString()), createdSubmission), Times.Once);
+            createdSubmission.PinnedAt.Should().NotBeNull();
+            response.PinnedAt.Should().Equals(createdSubmission.PinnedAt);
+        }
+
+        [Test]
         public void ExecuteUpdateSubmissionToSubmittedSuccessfullyUpdatesSubmissionState()
         {
             var request = TestHelpers.UpdateCaseSubmissionRequest(submissionState: "submitted");
