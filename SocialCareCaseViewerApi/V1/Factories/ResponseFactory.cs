@@ -200,6 +200,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
+                ResidentTeams = person.ResidentTeams?.Select(x => x.ToDomain()).ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
                 Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
                 LastUpdated = person.LastUpdated?.Select(x => x.ToDomain()).ToList(),

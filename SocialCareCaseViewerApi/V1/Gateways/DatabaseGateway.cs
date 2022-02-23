@@ -970,11 +970,34 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Disability)
                 .Include(x => x.Emails)
                 .Include(x => x.LastUpdated)
+                .Include(x => x.ResidentTeams)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
+        }
+
+        public List<Person> GetResidentsByTeamId(int teamId)
+        {
+            if (teamId == 0)
+            {
+                return null;
+            }
+
+            var team = _teamGateway.GetTeamByTeamId(teamId);
+            var dbResidentTeams = team?.ResidentTeams;
+
+            List<Person> domainResidents = new List<Person>();
+            if (dbResidentTeams != null)
+            {
+                foreach (var residentTeam in dbResidentTeams)
+                {
+                    domainResidents.Add(residentTeam.Person);
+                }
+            }
+
+            return domainResidents;
         }
 
         public List<long> GetPersonIdsByEmergencyId(string id)

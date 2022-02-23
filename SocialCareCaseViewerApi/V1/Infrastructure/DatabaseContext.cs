@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates;
 
@@ -27,6 +26,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
         public DbSet<LastUpdated> LastUpdated { get; set; }
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
+        public DbSet<ResidentTeam> ResidentTeams { get; set; }
         public DbSet<EmailAddress> Emails { get; set; }
         public DbSet<Audit> Audits { get; set; }
         public DbSet<WarningNote> WarningNotes { get; set; }

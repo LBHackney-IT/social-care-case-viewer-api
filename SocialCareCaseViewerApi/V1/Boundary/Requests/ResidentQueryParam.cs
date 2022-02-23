@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         /// </example>
         /// Databind to the team
         [FromQuery(Name = "team_id")]
-        public string TeamId { get; set; }
+        public int TeamId { get; set; }
 
         /// <example>
         /// Tessellate

@@ -10,5 +10,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         Team CreateTeam(CreateTeamRequest request);
         Infrastructure.Team? GetTeamByTeamId(int id);
         IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context);
+        object GetResidentsTeamByTeamId(int teamId);
     }
 }
