@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using Email = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
@@ -111,6 +112,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public List<string>? Disabilities { get; set; }
 
         public List<EmailAddress>? Emails { get; set; }
+
+        public List<ResidentTeam>? ResidentTeams { get; set; }
 
         public List<OtherName> OtherNames { get; set; }
     }
