@@ -14,6 +14,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "first_name")]
         public string FirstName { get; set; }
 
+
+        /// <example>
+        /// Ciasom
+        /// </example>
+        /// Databind to the team
+        [FromQuery(Name = "team_id")]
+        public string TeamId { get; set; }
+
         /// <example>
         /// Tessellate
         /// </example>
