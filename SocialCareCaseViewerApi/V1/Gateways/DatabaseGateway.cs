@@ -979,6 +979,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
         }
 
+        public List<Person> GetPersonsByTeamId(int teamId)
+        {
+            var results = _databaseContext.Persons
+                .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
+                .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
+                .Where(x =>
+                (teamId == x.ResidentTeams.FirstOrDefault().TeamId) && x.MarkedForDeletion == false).ToList();
+            return results;
+        }
+
         // public List<Person> GetResidentsByTeamId(int teamId)
         // {
         //     if (teamId == 0)
