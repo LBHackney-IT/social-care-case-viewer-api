@@ -115,6 +115,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public List<ResidentTeam>? ResidentTeams { get; set; }
 
+        public List<ResidentWorker>? ResidentWorkers { get; set; }
+
         public List<OtherName> OtherNames { get; set; }
     }
 }

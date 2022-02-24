@@ -15,6 +15,7 @@ using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
 using dbResidentTeam = SocialCareCaseViewerApi.V1.Infrastructure.ResidentTeam;
+using dbResidentWorker = SocialCareCaseViewerApi.V1.Infrastructure.ResidentWorker;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
@@ -141,12 +142,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static ResidentWorker ToDomain(this dbResidentWorker worker)
+        {
+            return new ResidentWorker()
+            {
+                Id = worker.Id,
+                PersonId = worker.PersonId,
+                WorkerId = worker.WorkerId,
+                UpdatedAt = worker.UpdatedAt
+            };
+        }
 
         public static ResidentTeam ToDomain(this dbResidentTeam team)
         {
             return new ResidentTeam()
             {
-                Team = team.Team
+                Id = team.Id,
+                PersonId = team.PersonId,
+                TeamId = team.Team.Id,
+                Summary = team.Summary,
+                RagRating = team.RagRating
             };
         }
 
@@ -378,11 +393,26 @@ namespace SocialCareCaseViewerApi.V1.Factories
         }
 
 
+        public static dbResidentWorker ToEntity(this ResidentWorker worker, long personId)
+        {
+            return new dbResidentWorker
+            {
+                PersonId = worker.PersonId,
+                Worker = worker.Worker,
+                UpdatedAt = worker.UpdatedAt
+            };
+        }
+
+
         public static dbResidentTeam ToEntity(this ResidentTeam team, long personId)
         {
             return new dbResidentTeam
             {
-                Team = team.Team
+                PersonId = team.PersonId,
+                TeamId = team.Id,
+                Summary = team.Summary,
+                RagRating = team.RagRating,
+                UpdatedAt = team.UpdatedAt
             };
         }
 
