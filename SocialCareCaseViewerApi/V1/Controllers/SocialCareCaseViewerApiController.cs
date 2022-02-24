@@ -34,6 +34,19 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         }
 
         /// <summary>
+        /// Find residents on the waiting list by Team ID
+        /// </summary>
+        /// <response code="200">Success. Returns residents related to the specified Team ID and not assigned to any worker on that Team</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        [ProducesResponseType(typeof(WaitingList), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("waitinglist")]
+        public IActionResult GetResidentWaitingList([FromQuery] WaitingListRequest request)
+        {
+            return Ok();
+        }
+
+        /// <summary>
         /// Find allocations by Mosaic ID, Worker ID or Worker Email
         /// </summary>
         /// <response code="200">Success. Returns allocations related to the specified Mosaic ID, Worker ID or Worker Email</response>

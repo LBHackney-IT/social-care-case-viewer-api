@@ -161,7 +161,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PersonId = team.PersonId,
                 TeamId = team.Team.Id,
                 Summary = team.Summary,
-                RagRating = team.RagRating
+                RagRating = team.RagRating,
+                UpdatedAt = team.UpdatedAt
             };
         }
 
