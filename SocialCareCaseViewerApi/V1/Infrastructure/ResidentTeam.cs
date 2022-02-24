@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,9 +20,20 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public long PersonId { get; set; }
 
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
 
         [Column("team_id")]
+        [Required]
         public int TeamId { get; set; }
-        public Team Team { get; set; }
+
+        [Column("rag_rating")]
+        public string RagRating { get; set; }
+
+        [Column("summary")]
+        public string Summary { get; set; }
+
+        [Column("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
     }
 }

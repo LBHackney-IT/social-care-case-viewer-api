@@ -42,10 +42,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             int totalCount = 0;
             List<ResidentInformation> matchingResidents = new List<ResidentInformation>();
 
-            if (rqp.TeamId != null)
-            {
-                var residentsWithMatchingTeamIds = _databaseGateway.GetTeamByTeamId(rqp.TeamId);
-            }
+            // if (rqp.TeamId != null)
+            // {
+            //     var residentsWithMatchingTeamIds = _databaseGateway.GetTeamByTeamId(rqp.TeamId);
+            // }
 
             if (!string.IsNullOrEmpty(rqp.MosaicId))
             {
