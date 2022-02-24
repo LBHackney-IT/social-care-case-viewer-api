@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
@@ -34,6 +35,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         /// British
         /// </example>
         public string Nationality { get; set; }
+        public List<ResidentTeamResponse> ResidentTeams { get; set; }
+        public List<ResidentWorker> ResidentTWorkers { get; set; }
         public List<Phone> PhoneNumber { get; set; }
         public List<Address> AddressList { get; set; }
         /// <example>
