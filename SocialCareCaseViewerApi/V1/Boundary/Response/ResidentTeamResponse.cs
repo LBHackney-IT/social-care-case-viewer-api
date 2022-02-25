@@ -1,3 +1,5 @@
+using System;
+
 namespace SocialCareCaseViewerApi.V1.Boundary.Response
 {
     public class ResidentTeamResponse
@@ -8,5 +10,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string RagRating { get; set; }
 
+        public DateTime UpdatedAt { get; set; }
     }
 }

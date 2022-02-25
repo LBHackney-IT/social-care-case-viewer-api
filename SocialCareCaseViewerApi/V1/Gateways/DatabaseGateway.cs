@@ -683,7 +683,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            var allocation = new AllocationSet
+            var residentTeam = new AllocationSet
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
@@ -693,7 +693,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = allocatedBy.Email
             };
 
-            _databaseContext.Allocations.Add(allocation);
+            _databaseContext.ResidentTeams.Add(allocation);
             _databaseContext.SaveChanges();
 
 
@@ -984,8 +984,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var results = _databaseContext.Persons
                 .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
                 .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
-                .Where(x =>
-                (teamId == x.ResidentTeams.FirstOrDefault().TeamId) && x.MarkedForDeletion == false).ToList();
+                .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
             return results;
         }
 

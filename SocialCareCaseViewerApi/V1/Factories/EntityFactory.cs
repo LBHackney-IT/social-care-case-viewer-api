@@ -147,6 +147,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             return new ResidentWorker()
             {
                 Id = worker.Id,
+                TeamId = worker.Team.Id,
                 PersonId = worker.PersonId,
                 WorkerId = worker.WorkerId,
                 UpdatedAt = worker.UpdatedAt
@@ -398,6 +399,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new dbResidentWorker
             {
+                TeamId = worker.TeamId,
                 PersonId = worker.PersonId,
                 Worker = worker.Worker,
                 UpdatedAt = worker.UpdatedAt
