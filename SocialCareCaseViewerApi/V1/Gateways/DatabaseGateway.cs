@@ -480,18 +480,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
-
-        public void UpdatePatchPerson(UpdatePersonRequest request)
-        {
-            Person person = _databaseContext
-                .Persons
-                .FirstOrDefault(x => x.Id == request.Id);
-
-
-            _databaseContext.SaveChanges();
-
-
-        }        
         public static Person AddNewPerson(AddNewResidentRequest request)
         {
             return new Person
