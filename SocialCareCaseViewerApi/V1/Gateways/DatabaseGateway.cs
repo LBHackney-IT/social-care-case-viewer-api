@@ -686,6 +686,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 PersonId = request.PersonId,
                 TeamId = request.AllocatedTeamId,
                 RagRating = request.RagRating,
+                AllocationDate = request.AllocationDate,
                 Summary = request.Summary,
                 CarePackage = request.CarePackage,
                 CreatedBy = request.CreatedBy
