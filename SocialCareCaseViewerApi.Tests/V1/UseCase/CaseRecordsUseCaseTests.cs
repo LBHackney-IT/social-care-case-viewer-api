@@ -104,7 +104,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), createdAt: DateTime.Today.AddDays(-2))
             };
 
-            dbReturnedCases.Last().PinnedAt = null;
+            dbReturnedCases[0].PinnedAt = null;
+            dbReturnedCases[1].PinnedAt = null;
+            dbReturnedCases[2].PinnedAt = null;
+            dbReturnedCases.Last().PinnedAt = DateTime.Today;
 
             _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");
             _mockDatabaseGateWay.Setup(x => x.GetPersonIdByNCReference(request.MosaicId)).Returns(request.MosaicId ?? "");
