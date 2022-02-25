@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("care_package")]
         public string CarePackage { get; set; }
 
-        [Column("updated_at")]
+        [Column("allocation_date")]
         public DateTime AllocationDate { get; set; }
 
         [ForeignKey("CreatedBy")]
