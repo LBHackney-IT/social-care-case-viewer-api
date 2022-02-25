@@ -39,6 +39,35 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return Ok(_residentUseCase.GetResidentsByQuery(rqp, (int) cursor, (int) limit));
         }
 
+
+
+
+
+
+
+
+
+
+
+
+        /// WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
+        /// <summary>
+        /// Creates a new person record and adds all related entities
+        /// </summary>
+        /// <response code="201">Records successfully inserted</response>
+        /// <response code="400">One or more request parameters are invalid or missing</response>
+        [ProducesResponseType(typeof(AllocateResidentResponse), StatusCodes.Status201Created)]
+        [HttpPost]
+        public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentRequest allocateRequest)
+        {
+        }
+
+
+
+
+
+
+
         /// <summary>
         /// Creates a new person record and adds all related entities
         /// </summary>
