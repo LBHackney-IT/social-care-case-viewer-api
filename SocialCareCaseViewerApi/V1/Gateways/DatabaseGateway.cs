@@ -683,7 +683,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            var residentTeam = new AllocationSet
+            var allocation = new AllocationSet
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
@@ -693,7 +693,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = allocatedBy.Email
             };
 
-            _databaseContext.ResidentTeams.Add(allocation);
+            _databaseContext.Allocations.Add(allocation);
             _databaseContext.SaveChanges();
 
 
