@@ -679,6 +679,57 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocationsPerWorker;
         }
 
+        public CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request)
+        {
+            var allocation = new AllocationSet
+            {
+                PersonId = request.PersonId,
+                TeamId = request.AllocatedTeamId
+            };
+
+            _databaseContext.Allocations.Add(allocation);
+            _databaseContext.SaveChanges();
+
+
+            var response = new CreateAllocationResponse();
+            //Add note
+            try
+            {
+                var dt = DateTime.Now;
+
+                var note = new AllocationCaseNote
+                {
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    MosaicId = person.Id.ToString(),
+                    Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                    WorkerEmail = allocatedBy.Email,
+                    Note =
+                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                    FormNameOverall = "API_Allocation",
+                    FormName = "Worker allocated",
+                    AllocationId = allocation.Id.ToString(),
+                    CreatedBy = request.CreatedBy
+                };
+
+                var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                response.AllocationId = allocation.Id;
+            }
+            catch (Exception ex)
+            {
+                //roll back allocation record
+                _databaseContext.Allocations.Remove(allocation);
+                _databaseContext.SaveChanges();
+
+                throw new UpdateAllocationException(
+                    $"Unable to create a case note. Allocation not created: {ex.Message}");
+            }
+
+            return response;
+        }
+
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);

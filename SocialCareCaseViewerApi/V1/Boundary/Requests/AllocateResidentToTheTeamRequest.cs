@@ -6,6 +6,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class AllocateResidentToTheTeamRequest
     {
+        [JsonPropertyName("personId")]
+        public int PersonId { get; set; }
+
         [JsonPropertyName("allocatedTeamId")]
         public int AllocatedTeamId { get; set; }
 
