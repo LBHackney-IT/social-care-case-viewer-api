@@ -99,18 +99,31 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
             }
 
-            var pinnedCases = allCareCaseData
-                .Where(x => !String.IsNullOrEmpty(x.PinnedAt))
-                .OrderByDescending(x => x.PinnedAt)
-                .ToList();
-            var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
-            var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
+            var combinedCases = new List<CareCaseData>();
 
-            pinnedCases.AddRange(careCaseData);
+            if (request.PinnedFirst)
+            {
+                var pinnedCases = allCareCaseData
+                    .Where(x => !String.IsNullOrEmpty(x.PinnedAt))
+                    .OrderByDescending(x => x.PinnedAt)
+                    .ToList();
+                var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
+                var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
 
-            var combinedCases = pinnedCases.ToList();
+                pinnedCases.AddRange(careCaseData);
 
-            combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
+                combinedCases = pinnedCases.ToList();
+
+                combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
+
+            }
+            else
+            {
+                combinedCases = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
+                    .Skip(request.Cursor)
+                    .Take(request.Limit)
+                    .ToList();
+            }
 
             int? nextCursor = request.Cursor + request.Limit;
 

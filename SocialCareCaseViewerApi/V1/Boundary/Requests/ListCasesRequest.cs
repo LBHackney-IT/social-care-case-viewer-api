@@ -42,6 +42,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "order_by")]
         public string? OrderBy { get; set; } = null!;
 
+        [FromQuery(Name = "pinned_first")]
+        public bool PinnedFirst { get; set; } = false;
+
         [FromQuery(Name = "include_deleted_records")]
         public bool IncludeDeletedRecords { get; set; } = false;
 
