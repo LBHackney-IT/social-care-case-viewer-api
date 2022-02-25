@@ -20,6 +20,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _databaseGateway = databaseGateway;
         }
 
+        public AddNewResidentResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request)
+        {
+            return _databaseGateway.AllocateResidentToTheTeam(request);
+        }
+
         public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)
         {
             return _databaseGateway.AddNewResident(request);
