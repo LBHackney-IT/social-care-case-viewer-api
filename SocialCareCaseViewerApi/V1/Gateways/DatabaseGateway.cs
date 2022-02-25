@@ -710,7 +710,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             catch (Exception ex)
             {
                 //roll back allocation record
-                _databaseContext.Allocations.Remove(allocation);
+                _databaseContext.ResidentTeams.Remove(allocation);
                 _databaseContext.SaveChanges();
 
                 throw new UpdateAllocationException(
