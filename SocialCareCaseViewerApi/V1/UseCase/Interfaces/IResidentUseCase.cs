@@ -14,5 +14,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         ResidentInformationList GetWaitingListByQuery(ResidentQueryParam rqp, int cursor, int limit);
         ResidentInformationList GetWaitingList(ResidentQueryParam rqp, int cursor, int limit);
         ResidentInformationList GetUnallocatedList(int teamId, int cursor, int limit);
+        CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request);
     }
 }
