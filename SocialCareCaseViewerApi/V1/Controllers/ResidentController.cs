@@ -58,6 +58,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <response code="400">One or more request parameters are invalid or missing</response>
         [ProducesResponseType(typeof(AllocateResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
+        [Route("{id}/allocateteam")]
         public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentRequest allocateRequest)
         {
         }
