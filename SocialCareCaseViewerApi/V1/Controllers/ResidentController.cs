@@ -61,10 +61,27 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("{residentid}/allocateteam")]
         public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentToTheTeamRequest allocateRequest, int residentid)
         {
-            allocateRequest.PersonId = residentid;
             var validator = new AllocateResidentToTheTeamRequestValidator();
             var validationResults = validator.Validate(allocateRequest);
+
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }            
+
+            try
+            {
+            allocateRequest.PersonId = residentid;
             return Ok(_residentUseCase.AllocateResidentToTheTeam(allocateRequest));
+            }
+
+            catch (Exception e) when (
+                e is PersonNotFoundException ||
+                e is WorkerNotFoundException
+            )
+            {
+                return BadRequest(e.Message);
+            }            
         }
 
 
