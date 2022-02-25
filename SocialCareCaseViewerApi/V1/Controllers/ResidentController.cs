@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(AllocateResidentResponse), StatusCodes.Status201Created)]
         [HttpPost]
         [Route("{id}/allocateteam")]
-        public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentRequest allocateRequest)
+        public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentToTheTeamRequest allocateRequest)
         {
         }
 
