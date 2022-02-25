@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request)
         {
-            _databaseGateway.AllocateResidentToTheTeam(request);
+            return _databaseGateway.AllocateResidentToTheTeam(request);
         }
 
         public AddNewResidentResponse AddNewResident(AddNewResidentRequest request)

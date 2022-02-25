@@ -17,7 +17,6 @@ using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
-using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
@@ -480,6 +479,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
         }
 
+
+        public void UpdatePatchPerson(UpdatePersonRequest request)
+        {
+            Person person = _databaseContext
+                .Persons
+                .FirstOrDefault(x => x.Id == request.Id);
+
+
+            _databaseContext.SaveChanges();
+
+
+        }        
         public static Person AddNewPerson(AddNewResidentRequest request)
         {
             return new Person
@@ -679,62 +690,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return allocationsPerWorker;
         }
 
-        public CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request)
-        {
-            var allocation = new AllocationSet
-            {
-                PersonId = request.PersonId,
-                TeamId = request.AllocatedTeamId
-            };
-
-            _databaseContext.Allocations.Add(allocation);
-            _databaseContext.SaveChanges();
-
-
-            var response = new CreateAllocationResponse();
-            //Add note
-            try
-            {
-                var dt = DateTime.Now;
-
-                var note = new AllocationCaseNote
-                {
-                    FirstName = person.FirstName,
-                    LastName = person.LastName,
-                    MosaicId = person.Id.ToString(),
-                    Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
-                    WorkerEmail = allocatedBy.Email,
-                    Note =
-                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
-                    FormNameOverall = "API_Allocation",
-                    FormName = "Worker allocated",
-                    AllocationId = allocation.Id.ToString(),
-                    CreatedBy = request.CreatedBy
-                };
-
-                var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
-
-                response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-                response.AllocationId = allocation.Id;
-            }
-            catch (Exception ex)
-            {
-                //roll back allocation record
-                _databaseContext.Allocations.Remove(allocation);
-                _databaseContext.SaveChanges();
-
-                throw new UpdateAllocationException(
-                    $"Unable to create a case note. Allocation not created: {ex.Message}");
-            }
-
-            return response;
-        }
-
         public CreateAllocationResponse CreateAllocation(CreateAllocationRequest request)
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            var allocation = new AllocationSet
+            var allocation = new ResidentTeam
             {
                 PersonId = person.Id,
                 WorkerId = worker.Id,
@@ -1021,45 +981,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Disability)
                 .Include(x => x.Emails)
                 .Include(x => x.LastUpdated)
-                .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
-                .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
             return _databaseContext.Persons.Where(x => ids.Contains(x.Id) && x.MarkedForDeletion == false).ToList();
         }
-
-        public List<Person> GetPersonsByTeamId(int teamId)
-        {
-            var results = _databaseContext.Persons
-                .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
-                .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
-                .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
-            return results;
-        }
-
-        // public List<Person> GetResidentsByTeamId(int teamId)
-        // {
-        //     if (teamId == 0)
-        //     {
-        //         return null;
-        //     }
-        //
-        //     var team = _teamGateway.GetTeamByTeamId(teamId);
-        //     var dbResidentTeams = team?.ResidentTeams;
-        //
-        //     List<Person> domainResidents = new List<Person>();
-        //     if (dbResidentTeams != null)
-        //     {
-        //         foreach (var residentTeam in dbResidentTeams)
-        //         {
-        //             domainResidents.Add(residentTeam.Person);
-        //         }
-        //     }
-        //
-        //     return domainResidents;
-        // }
 
         public List<long> GetPersonIdsByEmergencyId(string id)
         {
