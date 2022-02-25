@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
         /// WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
         /// <summary>
-        /// Creates a new person record and adds all related entities
+        /// Creates a new Allocation Resident/Team
         /// </summary>
         /// <response code="201">Records successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
