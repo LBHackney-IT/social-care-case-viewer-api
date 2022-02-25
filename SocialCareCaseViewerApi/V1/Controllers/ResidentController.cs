@@ -61,6 +61,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("{residentid}/allocateteam")]
         public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentToTheTeamRequest allocateRequest, int residentid)
         {
+            allocateRequest.PersonId = residentid;            
             var validator = new AllocateResidentToTheTeamRequestValidator();
             var validationResults = validator.Validate(allocateRequest);
 
@@ -71,7 +72,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-            allocateRequest.PersonId = residentid;
             return Ok(_residentUseCase.AllocateResidentToTheTeam(allocateRequest));
             }
 
