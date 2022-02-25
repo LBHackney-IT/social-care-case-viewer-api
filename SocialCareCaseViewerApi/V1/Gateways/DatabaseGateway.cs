@@ -691,6 +691,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = request.CreatedBy
             };
 
+            var residentTeams = _databaseContext.Persons
+                .Where(x => x.Id == request.PersonId)
+                .Include(x => x.ResidentTeams).FirstOrDefault().ResidentTeams;
+            _databaseContext.ResidentTeams.RemoveRange(residentTeams);
             _databaseContext.ResidentTeams.Add(allocation);
             _databaseContext.SaveChanges();
 
