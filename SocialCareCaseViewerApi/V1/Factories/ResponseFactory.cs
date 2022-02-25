@@ -374,8 +374,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Id = team.TeamId,
                 Summary = team.Summary,
-                RagRating = team.RagRating,
-                UpdatedAt = team.UpdatedAt
+                RagRating = team.RagRating
             }).ToList();
         }
 

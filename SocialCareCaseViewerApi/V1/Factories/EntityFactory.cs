@@ -149,8 +149,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Id = worker.Id,
                 TeamId = worker.Team.Id,
                 PersonId = worker.PersonId,
-                WorkerId = worker.WorkerId,
-                UpdatedAt = worker.UpdatedAt
+                WorkerId = worker.WorkerId
             };
         }
 
@@ -162,8 +161,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PersonId = team.PersonId,
                 TeamId = team.Team.Id,
                 Summary = team.Summary,
-                RagRating = team.RagRating,
-                UpdatedAt = team.UpdatedAt
+                RagRating = team.RagRating
             };
         }
 
@@ -401,8 +399,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 TeamId = worker.TeamId,
                 PersonId = worker.PersonId,
-                Worker = worker.Worker,
-                UpdatedAt = worker.UpdatedAt
+                Worker = worker.Worker
             };
         }
 
@@ -414,8 +411,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 PersonId = team.PersonId,
                 TeamId = team.Id,
                 Summary = team.Summary,
-                RagRating = team.RagRating,
-                UpdatedAt = team.UpdatedAt
+                RagRating = team.RagRating
             };
         }
 

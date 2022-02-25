@@ -1008,7 +1008,6 @@ CREATE TABLE if not exists DBO.SCCV_RESIDENTTEAM (
   SUMMARY varchar,
   CARE_PACKAGE varchar,
   PERSON_ID bigint NOT NULL,
-  CARE_PACKAGE varchar,
   TEAM_ID bigint NOT NULL,
   CREATED_BY timestamp
 );
