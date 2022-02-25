@@ -34,16 +34,16 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Summary { get; set; }
 
         [Column("care_package")]
-        public string CarePackage { get; set; }        
+        public string CarePackage { get; set; }
 
         [Column("updated_at")]
         public DateTime AllocationDate { get; set; }
 
-        [ForeignKey("WorkerId")]
-        public Worker Worker { get; set; }        
+        [ForeignKey("CreatedBy")]
+        public Worker Worker { get; set; }
 
         [Column("created_by")]
-        public int WorkerId { get; set; }
+        public int CreatedBy { get; set; }
 
     }
 }
