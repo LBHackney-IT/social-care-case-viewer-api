@@ -19,6 +19,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public long PersonId { get; set; }
 
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
+
+        [Column("team_id")]
+        [Required]
+        public int TeamId { get; set; }
+
         [Column("worker_id")]
         public int WorkerId { get; set; }
         public Worker Worker { get; set; }

@@ -331,6 +331,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Gender = person.Gender,
                 Restricted = person.Restricted,
                 ResidentTeams = person.ResidentTeams?.Count > 0 ? person.ResidentTeams.ToResponse() : null,
+                ResidentWorkers = person.ResidentWorkers?.Count > 0 ? person.ResidentWorkers.ToResponse() : null,
                 AddressList = person.Addresses?.Count > 0 ? person.Addresses.ToResponse() : null,
                 PhoneNumber = person.PhoneNumbers?.Count > 0 ? person.PhoneNumbers.ToResponse() : null,
                 Uprn = person.Addresses?.FirstOrDefault(a => a.EndDate == null)?.Uprn?.ToString() //use same logic as in legacy platform API for compatibility
@@ -359,13 +360,22 @@ namespace SocialCareCaseViewerApi.V1.Factories
             }).ToList();
         }
 
+        public static List<ResidentWorkerResponse> ToResponse(this List<dbResidentWorker> worker)
+        {
+            return worker.Select(worker => new ResidentWorkerResponse
+            {
+                Id = worker.WorkerId,
+            }).ToList();
+        }
+
         public static List<ResidentTeamResponse> ToResponse(this List<dbResidentTeam> teams)
         {
             return teams.Select(team => new ResidentTeamResponse
             {
                 Id = team.TeamId,
                 Summary = team.Summary,
-                RagRating = team.RagRating
+                RagRating = team.RagRating,
+                UpdatedAt = team.UpdatedAt
             }).ToList();
         }
 

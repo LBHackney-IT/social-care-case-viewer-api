@@ -22,31 +22,15 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         private readonly IVisitsUseCase _visitsUseCase;
         private readonly IWarningNoteUseCase _warningNoteUseCase;
         private readonly IGetVisitByVisitIdUseCase _getVisitByVisitIdUseCase;
-        private readonly IResidentUseCase _residentUseCase;
 
         public SocialCareCaseViewerApiController(IAllocationsUseCase allocationUseCase, ICaseNotesUseCase caseNotesUseCase,
-            IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase, IResidentUseCase residentUseCase)
+            IVisitsUseCase visitsUseCase, IWarningNoteUseCase warningNotesUseCase, IGetVisitByVisitIdUseCase getVisitByVisitIdUseCase)
         {
             _allocationUseCase = allocationUseCase;
             _caseNotesUseCase = caseNotesUseCase;
             _visitsUseCase = visitsUseCase;
             _warningNoteUseCase = warningNotesUseCase;
             _getVisitByVisitIdUseCase = getVisitByVisitIdUseCase;
-            _residentUseCase = residentUseCase;
-        }
-
-        /// <summary>
-        /// Find residents on the waiting list by Team ID
-        /// </summary>
-        /// <response code="200">Success. Returns residents related to the specified Team ID and not assigned to any worker on that Team</response>
-        /// <response code="400">One or more request parameters are invalid or missing</response>
-        [ProducesResponseType(typeof(ResidentInformationList),StatusCodes.Status200OK)]
-        [HttpGet]
-        [Route("waitinglist")]
-        public IActionResult GetResidentWaitingList([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
-        {
-            var test = _residentUseCase.GetWaitingList(rqp, (int) cursor, (int) limit);
-            return Ok(_residentUseCase.GetWaitingList(rqp, (int) cursor, (int) limit));
         }
 
         /// <summary>

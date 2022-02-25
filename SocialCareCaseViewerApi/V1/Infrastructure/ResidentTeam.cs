@@ -34,6 +34,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string Summary { get; set; }
 
         [Column("updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }
