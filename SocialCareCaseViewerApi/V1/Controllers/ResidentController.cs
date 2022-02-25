@@ -56,11 +56,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// </summary>
         /// <response code="201">Records successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
-        [ProducesResponseType(typeof(AddNewResidentResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]
-        [Route("{id}/allocateteam")]
-        public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentToTheTeamRequest allocateRequest)
+        [Route("{residentid}/allocateteam")]
+        public IActionResult AllocateResidentToTheTeam([FromBody] AllocateResidentToTheTeamRequest allocateRequest, int residentid)
         {
+            allocateRequest.PersonId = residentid;
             var validator = new AllocateResidentToTheTeamRequestValidator();
             var validationResults = validator.Validate(allocateRequest);
             return Ok(_residentUseCase.AllocateResidentToTheTeam(allocateRequest));
