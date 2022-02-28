@@ -1261,7 +1261,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Emails.Should().BeEquivalentTo(request.Emails);
         }
 
-                [Test]
+        [Test]
         public void PatchPersonRemovesListTypesForPersonEntityWhenNullValueIsRequested()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
