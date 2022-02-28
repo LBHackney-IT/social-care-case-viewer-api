@@ -8,6 +8,7 @@ using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
 
+#nullable enable
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class PatchPersonRequest
