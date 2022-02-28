@@ -59,5 +59,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             result?.StatusCode.Should().Be(404);
             result?.Value.Should().Be("Person not found");
         }
+
+        [Test]
+        public void PatchPersonReturns404WhenPersonNotFound()
+        {
+            var request = new PatchPersonRequest();
+
+            _mockResidentUseCase
+                .Setup(x => x.PatchResident(request))
+                .Throws(new UpdatePersonException("Person not found"));
+
+            var result = _residentController.PatchPerson(request) as ObjectResult;
+
+            result?.StatusCode.Should().Be(404);
+            result?.Value.Should().Be("Person not found");
+        }
     }
 }
