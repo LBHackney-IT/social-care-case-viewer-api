@@ -719,7 +719,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 _databaseContext.SaveChanges();
 
                 throw new UpdateAllocationException(
-                    $"Unable to create a case note. Allocation not created: {ex.Message}");
+                    $"Unable to create an allocation. Allocation not created: {ex.Message}");
             }
 
             return response;
