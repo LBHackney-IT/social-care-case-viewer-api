@@ -500,206 +500,56 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 throw new UpdatePersonException("Person not found");
             }
 
-            if (request.ContextFlag != null)
-            {
-                person.AgeContext = request.ContextFlag;
-            }
-            if (request.DateOfBirth != null)
-            {
-                person.DateOfBirth = request.DateOfBirth;
-            }
-            if (request.DateOfDeath != null)
-            {
-                person.DateOfDeath = request.DateOfDeath;
-            }
-            if (request.EmailAddress != null)
-            {
-                person.EmailAddress = request.EmailAddress;
-            }
-            if (request.EmailAddress != null)
-            {
-                person.EmailAddress = request.EmailAddress;
-            }
-            if (request.Ethnicity != null)
-            {
-                person.Ethnicity = request.Ethnicity;
-            }
-            if (request.FirstLanguage != null)
-            {
-                person.FirstLanguage = request.FirstLanguage;
-            }
-            if (request.FirstName != null)
-            {
-                person.FirstName = request.FirstName;
-            }
             if (request.FirstName != null && request.LastName != null)
             {
                 person.FullName = $"{request.FirstName} {request.LastName}";
             }
-            if (request.Gender != null)
-            {
-                person.Gender = request.Gender;
-            }
-            if (request.CreatedBy != null)
-            {
-                person.LastModifiedBy = request.CreatedBy;
-            }
-            if (request.LastName != null)
-            {
-                person.LastName = request.LastName;
-            }
-            if (request.NhsNumber != null)
-            {
-                person.NhsNumber = request.NhsNumber;
-            }
-            if (request.PreferredMethodOfContact != null)
-            {
-                person.PreferredMethodOfContact = request.PreferredMethodOfContact;
-            }
-            if (request.Religion != null)
-            {
-                person.Religion = request.Religion;
-            }
-            if (request.Restricted != null)
-            {
-                person.Restricted = request.Restricted;
-            }
-            if (request.SexualOrientation != null)
-            {
-                person.SexualOrientation = request.SexualOrientation;
-            }
-            if (request.Title != null)
-            {
-                person.Title = request.Title;
-            }
-            if (request.FluentInEnglish != null)
-            {
-                person.FluentInEnglish = request.FluentInEnglish;
-            }
-            if (request.InterpreterNeeded != null)
-            {
-                person.InterpreterNeeded = request.InterpreterNeeded;
-            }
-            if (request.CommunicationDifficulties != null)
-            {
-                person.CommunicationDifficulties = request.CommunicationDifficulties;
-            }
-            if (request.DifficultyMakingDecisions != null)
-            {
-                person.DifficultyMakingDecisions = request.DifficultyMakingDecisions;
-            }
-            if (request.CommunicationDifficultiesDetails != null)
-            {
-                person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails;
-            }
-            if (request.Employment != null)
-            {
-                person.Employment = request.Employment;
-            }
-            if (request.AllocatedTeam != null)
-            {
-                person.AllocatedTeam = request.AllocatedTeam;
-            }
-            if (request.PreferredLanguage != null)
-            {
-                person.PreferredLanguage = request.PreferredLanguage;
-            }
-            if (request.Nationality != null)
-            {
-                person.Nationality = request.Nationality;
-            }
-            if (request.CreatedBy != null)
-            {
-                person.CreatedBy = request.CreatedBy;
-            }
-            if (request.Pronoun != null)
-            {
-                person.Pronoun = request.Pronoun;
-            }
-            if (request.GenderAssignedAtBirth != null)
-            {
-                person.GenderAssignedAtBirth = request.GenderAssignedAtBirth;
-            }
-            if (request.MaritalStatus != null)
-            {
-                person.MaritalStatus = request.MaritalStatus;
-            }
-            if (request.ImmigrationStatus != null)
-            {
-                person.ImmigrationStatus = request.ImmigrationStatus;
-            }
-            if (request.PrimarySupportReason != null)
-            {
-                person.PrimarySupportReason = request.PrimarySupportReason;
-            }
-            if (request.CareProvider != null)
-            {
-                person.CareProvider = request.CareProvider;
-            }
-            if (request.LivingSituation != null)
-            {
-                person.LivingSituation = request.LivingSituation;
-            }
-            if (request.TenureType != null)
-            {
-                person.TenureType = request.TenureType;
-            }
-            if (request.AccomodationType != null)
-            {
-                person.AccomodationType = request.AccomodationType;
-            }
-            if (request.AccessToHome != null)
-            {
-                person.AccessToHome = request.AccessToHome;
-            }
-            if (request.HousingOfficer != null)
-            {
-                person.HousingOfficer = request.HousingOfficer;
-            }
-            if (request.HousingStaffInContact != null)
-            {
-                person.HousingStaffInContact = request.HousingStaffInContact;
-            }
-            if (request.CautionaryAlert != null)
-            {
-                person.CautionaryAlert = request.CautionaryAlert;
-            }
-            if (request.PossessionEvictionOrder != null)
-            {
-                person.PossessionEvictionOrder = request.PossessionEvictionOrder;
-            }
-            if (request.RentRecord != null)
-            {
-                person.RentRecord = request.RentRecord;
-            }
-            if (request.HousingBenefit != null)
-            {
-                person.HousingBenefit = request.HousingBenefit;
-            }
-            if (request.CouncilTenureType != null)
-            {
-                person.CouncilTenureType = request.CouncilTenureType;
-            }
-            if (request.MentalHealthSectionStatus != null)
-            {
-                person.MentalHealthSectionStatus = request.MentalHealthSectionStatus;
-            }
-            if (request.DeafRegister != null)
-            {
-                person.DeafRegister = request.DeafRegister;
-            }
-            if (request.BlindRegister != null)
-            {
-                person.BlindRegister = request.BlindRegister;
-            }
-            if (request.BlueBadge != null)
-            {
-                person.BlueBadge = request.BlueBadge;
-            }
-            if (request.OpenCase != null)
-            {
-                person.OpenCase = request.OpenCase;
-            }
+            person.AgeContext = request.ContextFlag ?? person.AgeContext;
+            person.DateOfBirth = request.DateOfBirth ?? person.DateOfBirth;
+            person.DateOfDeath = request.DateOfDeath ?? person.DateOfDeath;
+            person.EmailAddress = request.EmailAddress ?? person.EmailAddress;
+            person.Ethnicity = request.Ethnicity ?? person.Ethnicity;
+            person.FirstLanguage = request.FirstLanguage ?? person.FirstLanguage;
+            person.FirstName = request.FirstName ?? person.FirstName;
+            person.Gender = request.Gender ?? person.Gender;
+            person.LastModifiedBy = request.CreatedBy ?? person.LastModifiedBy;
+            person.LastName = request.LastName ?? person.LastName;
+            person.NhsNumber = request.NhsNumber ?? person.NhsNumber;
+            person.PreferredMethodOfContact = request.PreferredMethodOfContact ?? person.PreferredMethodOfContact;
+            person.Religion = request.Religion ?? person.Religion;
+            person.Restricted = request.Restricted ?? person.Restricted;
+            person.SexualOrientation = request.SexualOrientation ?? person.SexualOrientation;
+            person.Title = request.Title ?? person.Title;
+            person.FluentInEnglish = request.FluentInEnglish ?? person.FluentInEnglish;
+            person.InterpreterNeeded = request.InterpreterNeeded ?? person.InterpreterNeeded;
+            person.CommunicationDifficulties = request.CommunicationDifficulties ?? person.CommunicationDifficulties;
+            person.DifficultyMakingDecisions = request.DifficultyMakingDecisions ?? person.DifficultyMakingDecisions;
+            person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails ?? person.CommunicationDifficultiesDetails;
+            person.Employment = request.Employment ?? person.Employment;
+            person.AllocatedTeam = request.AllocatedTeam ?? person.AllocatedTeam;
+            person.HousingOfficer = request.HousingOfficer ?? person.HousingOfficer;
+            person.AccessToHome = request.AccessToHome ?? person.AccessToHome;
+            person.AccomodationType = request.AccomodationType ?? person.AccomodationType;
+            person.TenureType = request.TenureType ?? person.TenureType;
+            person.LivingSituation = request.LivingSituation ?? person.LivingSituation;
+            person.CareProvider = request.CareProvider ?? person.CareProvider;
+            person.PrimarySupportReason = request.PrimarySupportReason ?? person.PrimarySupportReason;
+            person.ImmigrationStatus = request.ImmigrationStatus ?? person.ImmigrationStatus;
+            person.MaritalStatus = request.MaritalStatus ?? person.MaritalStatus;
+            person.GenderAssignedAtBirth = request.GenderAssignedAtBirth ?? person.GenderAssignedAtBirth;
+            person.Pronoun = request.Pronoun ?? person.Pronoun;
+            person.CreatedBy = request.CreatedBy ?? person.CreatedBy;
+            person.Nationality = request.Nationality ?? person.Nationality;
+            person.HousingStaffInContact = request.HousingStaffInContact ?? person.HousingStaffInContact;
+            person.CautionaryAlert = request.CautionaryAlert ?? person.CautionaryAlert;
+            person.PossessionEvictionOrder = request.PossessionEvictionOrder ?? person.PossessionEvictionOrder;
+            person.RentRecord = request.RentRecord ?? person.RentRecord;
+            person.HousingBenefit = request.HousingBenefit ?? person.HousingBenefit;
+            person.MentalHealthSectionStatus = request.MentalHealthSectionStatus ?? person.MentalHealthSectionStatus;
+            person.DeafRegister = request.DeafRegister ?? person.DeafRegister;
+            person.BlindRegister = request.BlindRegister ?? person.BlindRegister;
+            person.BlueBadge = request.BlueBadge ?? person.BlueBadge;
+            person.OpenCase = request.OpenCase ?? person.OpenCase;
 
             //replace Last Updated
             if (request.LastUpdated != null)
