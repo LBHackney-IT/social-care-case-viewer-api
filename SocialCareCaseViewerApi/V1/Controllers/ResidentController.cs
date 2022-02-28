@@ -76,7 +76,8 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
 
             catch (Exception e) when (
-                e is PersonNotFoundException
+                e is PersonNotFoundException ||
+                e is TeamNotFoundException
             )
             {
                 return BadRequest(e.Message);
