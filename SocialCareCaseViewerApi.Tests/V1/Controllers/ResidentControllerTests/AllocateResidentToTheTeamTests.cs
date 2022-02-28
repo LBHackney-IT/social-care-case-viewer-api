@@ -22,7 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         private Mock<ICreateRequestAuditUseCase> _mockCreateRequestAuditUseCase = null!;
 
         [SetUp]
-     
+
         public void SetUp()
         {
             _mockResidentUseCase = new Mock<IResidentUseCase>();
@@ -31,10 +31,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             _request = new AllocateResidentToTheTeamRequest();
         }
 
-        [Test]   
+        [Test]
         public void AllocateresidentReturns204WhenSuccessful()
         {
-            var result = _residentController.AllocateResidentToTheTeam(_request,2) as NoContentResult;
+            var result = _residentController.AllocateResidentToTheTeam(_request, 2) as NoContentResult;
             result?.StatusCode.Should().Be(204);
 
         }
@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             var result = _residentController.AllocateResidentToTheTeam(_request, 999) as ObjectResult;
 
             result?.StatusCode.Should().Be(400);
-        }                 
+        }
     }
 
 }
