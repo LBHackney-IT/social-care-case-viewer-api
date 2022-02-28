@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
 
         [Test]
-        public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
+        public async Task PatchResidentWithNewTitleUpdatesTheTitle()
         {
             var patchUri = new Uri("/api/v1/residents", UriKind.Relative);
             var request = new PatchPersonRequest()
@@ -41,6 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
             var patchResidentResponse = await Client.PatchAsync(patchUri, requestContent).ConfigureAwait(true);
+
             patchResidentResponse.StatusCode.Should().Be(204);
             _resident.Title.Should().Equals(request.Title);
         }
