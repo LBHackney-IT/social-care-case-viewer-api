@@ -241,7 +241,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker();
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
             var team = TestHelpers.CreateTeam();
-            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -294,7 +294,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
             var differentTeam = TestHelpers.CreateTeam(name: "different team X", context: worker.ContextFlag);
             var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
-            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -1684,9 +1684,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                     .RuleFor(o => o.Email, f => f.Internet.Email())
             };
 
-            var techUse = new List<string>() {"Tech One", "Tech Two"};
+            var techUse = new List<string>() { "Tech One", "Tech Two" };
 
-            var disabilities = new List<string>() {"Disability One", "Disability Two"};
+            var disabilities = new List<string>() { "Disability One", "Disability Two" };
 
             var emailAddress = new List<EmailAddress>()
             {
