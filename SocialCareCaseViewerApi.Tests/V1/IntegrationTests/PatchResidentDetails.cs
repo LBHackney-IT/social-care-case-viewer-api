@@ -34,9 +34,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var request = new PatchPersonRequest()
             {
                 Id = _resident.Id,
-                EmailAddress =_existingDbWorker.Email,
+                EmailAddress = _existingDbWorker.Email,
                 Title = "Update"
-            } ;
+            };
 
             var serializedRequest = JsonSerializer.Serialize(request);
             var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
