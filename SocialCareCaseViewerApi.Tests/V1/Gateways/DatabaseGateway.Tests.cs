@@ -1261,6 +1261,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Emails.Should().BeEquivalentTo(request.Emails);
         }
 
+                [Test]
+        public void PatchPersonRemovesListTypesForPersonEntityWhenNullValueIsRequested()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
+            PatchPersonRequest request = GetValidPatchPersonRequest(person.Id);
+
+            request.LastUpdated = null;
+            request.KeyContacts = null;
+            request.GpDetails = null;
+            request.TechUse = null;
+            request.Disabilities = null;
+            request.Emails = null;
+            request.PhoneNumbers = null;
+
+            _classUnderTest.PatchPerson(request);
+
+            person.LastUpdated.Should().BeEmpty();
+            person.PhoneNumbers.Should().BeEmpty();
+            person.LastUpdated.Should().BeEmpty();
+            person.KeyContacts.Should().BeEmpty();
+            person.TechUse.Should().BeEmpty();
+            person.Disability.Should().BeEmpty();
+            person.Emails.Should().BeEmpty();
+        }
+
         [Test]
         public void UpdatePersonSetsNewDisplayAddressWhenOneDoesntExist()
         {
