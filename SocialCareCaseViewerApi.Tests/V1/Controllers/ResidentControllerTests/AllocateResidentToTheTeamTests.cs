@@ -63,13 +63,28 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
-        public void AllocateResidentReturns400StatusWhenAllocateTeamExceptionThrown()
+        public void AllocateResidentReturns400StatusWhenPersonNotFoundExceptionExceptionThrown()
         {
-            const string errorMessage = "Failed to allocate team";
+            const string errorMessage = "Person not found";
             var request = _request;
             request.AllocatedTeamId = 1;
             _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
                 .Throws(new PersonNotFoundException(errorMessage));
+
+            var response = _residentController.AllocateResidentToTheTeam(_request, 2) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
+        }
+
+        [Test]
+        public void AllocateResidentReturns400StatusWhenTeamNotFoundExceptionThrown()
+        {
+            const string errorMessage = "Team not found";
+            var request = _request;
+            request.AllocatedTeamId = 1;
+            _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
+                .Throws(new TeamNotFoundException(errorMessage));
 
             var response = _residentController.AllocateResidentToTheTeam(_request, 2) as ObjectResult;
 
