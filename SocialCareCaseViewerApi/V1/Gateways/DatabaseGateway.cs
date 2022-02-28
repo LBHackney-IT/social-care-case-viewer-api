@@ -548,6 +548,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.MentalHealthSectionStatus = request.MentalHealthSectionStatus ?? person.MentalHealthSectionStatus;
             person.DeafRegister = request.DeafRegister ?? person.DeafRegister;
             person.BlindRegister = request.BlindRegister ?? person.BlindRegister;
+            person.PreferredLanguage = request.PreferredLanguage;
             person.BlueBadge = request.BlueBadge ?? person.BlueBadge;
             person.OpenCase = request.OpenCase ?? person.OpenCase;
             person.CouncilTenureType = request.CouncilTenureType ?? person.CouncilTenureType;

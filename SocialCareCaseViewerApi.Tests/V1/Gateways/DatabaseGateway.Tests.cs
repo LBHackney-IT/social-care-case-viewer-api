@@ -1603,12 +1603,108 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
         private static PatchPersonRequest GetValidPatchPersonRequest(long personId)
         {
+            AddressDomain address = new Faker<AddressDomain>()
+                .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+                .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Uprn, f => f.Random.Int());
+
+            var phoneNumbers = new List<PhoneNumber>()
+            {
+                new Faker<PhoneNumber>()
+                    .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
+                    .RuleFor(p => p.Type, f => f.Random.Word())
+            };
+
+            var otherNames = new List<OtherName>()
+            {
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName),
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName)
+            };
+
+            var lastUpdated = new List<LastUpdatedDomain>()
+            {
+                new Faker<LastUpdatedDomain>()
+                    .RuleFor(o => o.Type, f => f.Random.Word())
+                    .RuleFor(o => o.UpdatedAt, f => f.Date.Recent()),
+            };
+
+            var keyContacts = new List<KeyContact>()
+            {
+                new Faker<KeyContact>()
+                    .RuleFor(o => o.Name, f => f.Random.String2(3))
+                    .RuleFor(o => o.Email, f => f.Internet.Email())
+            };
+
+            var techUse = new List<string>()
+            {
+                "Tech One",
+                "Tech Two"
+            };
+
+            var disabilities = new List<string>()
+            {
+                "Disability One",
+                "Disability Two"
+            };
+
+            var emailAddress = new List<EmailAddress>()
+            {
+                new Faker<EmailAddress>()
+                    .RuleFor(o => o.Type, f => f.Random.Word())
+                    .RuleFor(o => o.Email, f => f.Internet.Email())
+            };
+
+            GpDetailsDomain gpDetailsDomain = new Faker<GpDetailsDomain>()
+                .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+                .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Email, f => f.Internet.Email())
+                .RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber());
 
             return new Faker<PatchPersonRequest>()
                 .RuleFor(p => p.Id, personId)
+                .RuleFor(p => p.Pronoun, f => f.Random.String2(3))
+                .RuleFor(p => p.GenderAssignedAtBirth, f => f.Random.Bool())
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.PreferredLanguage, f => f.Random.Word())
+                .RuleFor(p => p.FluentInEnglish, f => f.Random.Bool())
+                .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())
+                .RuleFor(p => p.InterpreterNeeded, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficulties, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficultiesDetails, f => f.Random.Word())
+                .RuleFor(p => p.Employment, f => f.Random.Word())
+                .RuleFor(p => p.ImmigrationStatus, f => f.Random.Word())
+                .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
+                .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
+                .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(20))
+                .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
+                .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+                .RuleFor(p => p.FirstName, f => f.Random.Word())
+                .RuleFor(p => p.LastName, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.String2(1))
+                .RuleFor(p => p.Gender, f => f.Random.String2(1))
+                .RuleFor(p => p.Nationality, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.Word())
+                .RuleFor(p => p.NhsNumber, f => f.Random.Number())
+                .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
-                .RuleFor(p => p.Title, f => f.Random.String2(2));
+                .RuleFor(p => p.AllocatedTeam, f => f.Random.Word())
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.Address, address)
+                .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+                .RuleFor(p => p.OtherNames, otherNames)
+                .RuleFor(p => p.LastUpdated, lastUpdated)
+                .RuleFor(p => p.KeyContacts, keyContacts)
+                .RuleFor(p => p.GpDetails, gpDetailsDomain)
+                .RuleFor(p => p.TechUse, techUse)
+                .RuleFor(p => p.Disabilities, disabilities)
+                .RuleFor(p => p.Emails, emailAddress)
+                .RuleFor(p => p.OtherNames, otherNames);
         }
     }
 }
