@@ -241,7 +241,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker();
             var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
             var team = TestHelpers.CreateTeam();
-            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -294,7 +294,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
             var differentTeam = TestHelpers.CreateTeam(name: "different team X", context: worker.ContextFlag);
             var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
-            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+            worker.WorkerTeams = new List<WorkerTeam> {workerTeam};
 
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.WorkerTeams.Add(workerTeam);
@@ -1206,19 +1206,59 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
             PatchPersonRequest request = GetValidPatchPersonRequest(person.Id);
 
-            request.Title = null;
-            request.Religion = "";
-            request.FirstLanguage = "TestLanguage";
-
-            person.Title.Should().NotBeNull();
-            person.Religion.Should().NotBeNull();
-            person.FirstLanguage.Should().NotBeEquivalentTo("TestLanguage");
-
             _classUnderTest.PatchPerson(request);
 
-            person.Title.Should().NotBeNull();
-            person.Religion.Should().BeEmpty();
+            person.Title.Should().Be(request.Title);
+            person.FirstName.Should().Be(request.FirstName);
+            person.LastName.Should().Be(request.LastName);
+            person.Gender.Should().Be(request.Gender);
+            person.DateOfBirth.Should().Be(request.DateOfBirth);
+            person.DateOfDeath.Should().Be(request.DateOfDeath);
+            person.Ethnicity.Should().Be(request.Ethnicity);
             person.FirstLanguage.Should().Be(request.FirstLanguage);
+            person.Religion.Should().Be(request.Religion);
+            person.SexualOrientation.Should().Be(request.SexualOrientation);
+            person.NhsNumber.Should().Be(request.NhsNumber);
+            person.FluentInEnglish.Should().Be(request.FluentInEnglish);
+            person.InterpreterNeeded.Should().Be(request.InterpreterNeeded);
+            person.CommunicationDifficulties.Should().Be(request.CommunicationDifficulties);
+            person.DifficultyMakingDecisions.Should().Be(request.DifficultyMakingDecisions);
+            person.CommunicationDifficultiesDetails.Should().Be(request.CommunicationDifficultiesDetails);
+            person.Employment.Should().Be(request.Employment);
+            person.AllocatedTeam.Should().Be(request.AllocatedTeam);
+            person.PreferredLanguage.Should().Be(request.PreferredLanguage);
+            person.Nationality.Should().Be(request.Nationality);
+            person.Pronoun.Should().Be(request.Pronoun);
+            person.GenderAssignedAtBirth.Should().Be(request.GenderAssignedAtBirth);
+            person.MaritalStatus.Should().Be(request.MaritalStatus);
+            person.ImmigrationStatus.Should().Be(request.ImmigrationStatus);
+            person.PrimarySupportReason.Should().Be(request.PrimarySupportReason);
+            person.CareProvider.Should().Be(request.CareProvider);
+            person.LivingSituation.Should().Be(request.LivingSituation);
+            person.AccomodationType.Should().Be(request.AccomodationType);
+            person.AccessToHome.Should().Be(request.AccessToHome);
+            person.HousingOfficer.Should().Be(request.HousingOfficer);
+            person.HousingStaffInContact.Should().Be(request.HousingStaffInContact);
+            person.CautionaryAlert.Should().Be(request.CautionaryAlert);
+            person.PossessionEvictionOrder.Should().Be(request.PossessionEvictionOrder);
+            person.FirstName.Should().Be(request.FirstName);
+            person.RentRecord.Should().Be(request.RentRecord);
+            person.HousingBenefit.Should().Be(request.HousingBenefit);
+            person.CouncilTenureType.Should().Be(request.CouncilTenureType);
+            person.MentalHealthSectionStatus.Should().Be(request.MentalHealthSectionStatus);
+            person.DeafRegister.Should().Be(request.DeafRegister);
+            person.BlindRegister.Should().Be(request.BlindRegister);
+            person.BlueBadge.Should().Be(request.BlueBadge);
+            person.OpenCase.Should().Be(request.OpenCase);
+            person.LastUpdated.Should().BeEquivalentTo(request.LastUpdated);
+            person.OtherNames.Should().BeEquivalentTo(request.OtherNames);
+            person.PhoneNumbers.Should().BeEquivalentTo(request.PhoneNumbers);
+            person.LastUpdated.Should().BeEquivalentTo(request.LastUpdated);
+            person.KeyContacts.Should().BeEquivalentTo(request.KeyContacts);
+            person.GpDetails.Should().BeEquivalentTo(request.GpDetails);
+            person.TechUse[0].TechType.Should().BeEquivalentTo(request.TechUse[0]);
+            person.Disability[0].DisabilityType.Should().BeEquivalentTo(request.Disabilities[0]);
+            person.Emails.Should().BeEquivalentTo(request.Emails);
         }
 
         [Test]
@@ -1608,11 +1648,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
                 .RuleFor(a => a.Uprn, f => f.Random.Int());
 
+            const string phoneNumberOne = "07755555555";
+            const string phoneNumberTypeOne = "Mobile";
+
+            const string phoneNumberTwo = "07977777777";
+            const string phoneNumberTypeTwo = "Fax";
+
             var phoneNumbers = new List<PhoneNumber>()
             {
-                new Faker<PhoneNumber>()
-                    .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
-                    .RuleFor(p => p.Type, f => f.Random.Word())
+                new PhoneNumber() {Number = phoneNumberOne, Type = phoneNumberTypeOne},
+                new PhoneNumber() {Number = phoneNumberTwo, Type = phoneNumberTypeTwo}
             };
 
             var otherNames = new List<OtherName>()
@@ -1639,17 +1684,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                     .RuleFor(o => o.Email, f => f.Internet.Email())
             };
 
-            var techUse = new List<string>()
-            {
-                "Tech One",
-                "Tech Two"
-            };
+            var techUse = new List<string>() {"Tech One", "Tech Two"};
 
-            var disabilities = new List<string>()
-            {
-                "Disability One",
-                "Disability Two"
-            };
+            var disabilities = new List<string>() {"Disability One", "Disability Two"};
 
             var emailAddress = new List<EmailAddress>()
             {
@@ -1683,13 +1720,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Ethnicity, f => f.Random.String2(20))
                 .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
                 .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
-                .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
                 .RuleFor(p => p.FirstName, f => f.Random.Word())
                 .RuleFor(p => p.LastName, f => f.Random.Word())
                 .RuleFor(p => p.Title, f => f.Random.String2(1))
                 .RuleFor(p => p.Gender, f => f.Random.String2(1))
                 .RuleFor(p => p.Nationality, f => f.Random.Word())
-                .RuleFor(p => p.Title, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.String2(5))
                 .RuleFor(p => p.NhsNumber, f => f.Random.Number())
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
                 .RuleFor(p => p.Religion, f => f.Random.Word())
