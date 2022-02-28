@@ -38,14 +38,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.AllocatedTeamId)
                 .NotNull().WithMessage("Team Id Required")
                 .InclusiveBetween(1, int.MaxValue).WithMessage($"Team Id must be grater than 1");
-            RuleFor(x => x.RagRating)
-                .NotNull().WithMessage("RagRating required");
-            RuleFor(x => x.CarePackage)
-                .NotNull().WithMessage("CarePackage required");
-            RuleFor(x => x.Summary)
-                .NotNull().WithMessage("Summary required");
-            RuleFor(x => x.AllocationDate)
-                .NotNull().WithMessage("Allocation start date required");
         }
     }
 }

@@ -1,4 +1,3 @@
-using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -38,6 +37,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             result?.StatusCode.Should().Be(204);
 
         }
+
         [Test]
         public void AllocateResidentReturns400WhenPersonNotFound()
         {
@@ -50,6 +50,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
 
             result?.StatusCode.Should().Be(400);
         }
-    }
 
+        [Test]
+        public void AllocateResidentReturns400WhenValidationResultsIsNotValid()
+        {
+            var request = _request;
+            request.AllocatedTeamId = 1;
+            var response = _residentController.AllocateResidentToTheTeam(request, 0) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("Resident Id must be grater than 1");
+        }
+
+        [Test]
+        public void AllocateResidentReturns400StatusWhenAllocateTeamExceptionThrown()
+        {
+            const string errorMessage = "Failed to allocate team";
+            var request = _request;
+            request.AllocatedTeamId = 1;
+            _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
+                .Throws(new PersonNotFoundException(errorMessage));
+
+            var response = _residentController.AllocateResidentToTheTeam(_request, 2) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
+        }
+    }
 }
