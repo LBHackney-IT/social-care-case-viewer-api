@@ -550,6 +550,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.BlindRegister = request.BlindRegister ?? person.BlindRegister;
             person.BlueBadge = request.BlueBadge ?? person.BlueBadge;
             person.OpenCase = request.OpenCase ?? person.OpenCase;
+            person.CouncilTenureType = request.CouncilTenureType ?? person.CouncilTenureType;
 
             //replace Last Updated
             if (request.LastUpdated != null)

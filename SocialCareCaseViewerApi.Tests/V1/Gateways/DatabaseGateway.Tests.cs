@@ -20,10 +20,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
