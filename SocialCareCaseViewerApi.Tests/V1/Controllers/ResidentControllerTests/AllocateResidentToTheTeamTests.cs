@@ -31,24 +31,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
-        public void AllocateresidentReturns204WhenSuccessful()
+        public void AllocateResidentReturns204WhenSuccessful()
         {
             var result = _residentController.AllocateResidentToTheTeam(_request, 2) as NoContentResult;
             result?.StatusCode.Should().Be(204);
-
-        }
-
-        [Test]
-        public void AllocateResidentReturns400WhenPersonNotFound()
-        {
-
-            _mockResidentUseCase
-                .Setup(x => x.AllocateResidentToTheTeam(_request))
-                .Throws(new PersonNotFoundException("Person not found"));
-
-            var result = _residentController.AllocateResidentToTheTeam(_request, 999) as ObjectResult;
-
-            result?.StatusCode.Should().Be(400);
         }
 
         [Test]
