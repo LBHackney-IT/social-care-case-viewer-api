@@ -41,11 +41,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         public void AllocateResidentReturns400WhenValidationResultsIsNotValid()
         {
             var request = _request;
-            request.AllocatedTeamId = 1;
+            request.AllocatedTeamId = 2;
             var response = _residentController.AllocateResidentToTheTeam(request, 0) as BadRequestObjectResult;
 
             response?.StatusCode.Should().Be(400);
-            response?.Value.Should().Be("Resident Id must be grater than 1");
+            response?.Value.Should().Be("Resident Id must be grater than 0");
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
                 .Throws(new PersonNotFoundException(errorMessage));
 
-            var response = _residentController.AllocateResidentToTheTeam(_request, 2) as ObjectResult;
+            var response = _residentController.AllocateResidentToTheTeam(_request, 1) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
@@ -72,7 +72,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
                 .Throws(new TeamNotFoundException(errorMessage));
 
-            var response = _residentController.AllocateResidentToTheTeam(_request, 2) as ObjectResult;
+            var response = _residentController.AllocateResidentToTheTeam(_request, 1) as ObjectResult;
 
             response?.StatusCode.Should().Be(400);
             response?.Value.Should().Be(errorMessage);
