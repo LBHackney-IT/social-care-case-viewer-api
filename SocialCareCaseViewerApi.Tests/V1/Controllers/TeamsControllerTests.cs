@@ -19,15 +19,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         private TeamController _teamController;
         private Mock<ITeamsUseCase> _teamsUseCase;
 
-        private Mock<IResidentUseCase> _residentUseCase;
-
-
         [SetUp]
         public void Setup()
         {
             _teamsUseCase = new Mock<ITeamsUseCase>();
-            _residentUseCase = new Mock<IResidentUseCase>();
-            _teamController = new TeamController(_teamsUseCase.Object, _residentUseCase.Object);
+            _teamController = new TeamController(_teamsUseCase.Object);
         }
 
         [Test]
