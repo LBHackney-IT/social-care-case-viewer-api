@@ -10,7 +10,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public long PersonId { get; set; }
 
         [JsonPropertyName("allocatedTeamId")]
-        public int AllocatedTeamId { get; set; }
+        public int TeamId { get; set; }
 
         [JsonPropertyName("createdBy")]
         public int CreatedBy { get; set; }
@@ -34,7 +34,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(x => x.PersonId)
                 .GreaterThan(0).WithMessage("Resident Id must be grater than 0");
-            RuleFor(x => x.AllocatedTeamId)
+            RuleFor(x => x.TeamId)
                 .GreaterThan(0).WithMessage("Team Id must be grater than 0");
         }
     }

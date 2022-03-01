@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             return new AllocateResidentToTheTeamRequest()
             {
                 PersonId = 555,
-                AllocatedTeamId = 777,
+                TeamId = 777,
                 CreatedBy = 1,
                 Summary = _faker.Lorem.Sentence(),
                 CarePackage = _faker.Name.Random.String(),
@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ValidationFailsIfTeamIdLessThan1()
         {
             var request = GetValidRequest();
-            request.AllocatedTeamId = 0;
+            request.TeamId = 0;
             var validator = new AllocateResidentToTheTeamRequestValidator();
 
             var validationResponse = validator.Validate(request);
