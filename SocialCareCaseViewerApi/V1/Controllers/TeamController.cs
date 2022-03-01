@@ -14,12 +14,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class TeamController : Controller
     {
         private readonly ITeamsUseCase _teamsUseCase;
-        private readonly IResidentUseCase _residentUseCase;
 
-        public TeamController(ITeamsUseCase teamsUseCase, IResidentUseCase residentUseCase)
+        public TeamController(ITeamsUseCase teamsUseCase)
         {
             _teamsUseCase = teamsUseCase;
-            _residentUseCase = residentUseCase;
         }
 
         /// <summary>
@@ -42,22 +40,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             }
 
             return Ok(team);
-        }
-
-        /// <summary>
-        /// Get a team by team name
-        /// </summary>
-        /// <response code="200">Successful request and team returned</response>
-        /// <response code="404">No team found for request</response>
-        /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
-        [Produces("application/json")]
-        [HttpGet]
-        [Route("{name}/allocations")]
-        public IActionResult GetTeamAllocationsByName(string name, int? cursor = 0, int? limit = 20)
-        {
-            var team = _teamsUseCase.ExecuteGetByName(name);
-            return Ok(_residentUseCase.GetUnallocatedList(team.Id, (int) cursor, (int) limit));
         }
 
         /// <summary>
