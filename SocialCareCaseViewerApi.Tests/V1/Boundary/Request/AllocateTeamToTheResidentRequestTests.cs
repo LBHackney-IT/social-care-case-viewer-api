@@ -54,26 +54,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ValidationFailsIfResidentIdLessThan1()
         {
             var request = GetValidRequest();
-            request.PersonId = 1;
+            request.PersonId = 0;
             var validator = new AllocateResidentToTheTeamRequestValidator();
 
             var validationResponse = validator.Validate(request);
 
             validationResponse.IsValid.Should().Be(false);
-            validationResponse.ToString().Should().Be("Resident Id must be grater than 1");
+            validationResponse.ToString().Should().Be("Resident Id must be grater than 0");
         }
 
         [Test]
         public void ValidationFailsIfTeamIdLessThan1()
         {
             var request = GetValidRequest();
-            request.AllocatedTeamId = 1;
+            request.AllocatedTeamId = 0;
             var validator = new AllocateResidentToTheTeamRequestValidator();
 
             var validationResponse = validator.Validate(request);
 
             validationResponse.IsValid.Should().Be(false);
-            validationResponse.ToString().Should().Be("Team Id must be grater than 1");
+            validationResponse.ToString().Should().Be("Team Id must be grater than 0");
         }
     }
 }
