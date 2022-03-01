@@ -39,5 +39,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
         void DeleteRelationship(long relationshipId);
         void CreateRequestAudit(CreateRequestAuditRequest request);
         CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request);
+        List<Person> GetPersonsByTeamId(int requestTeamId);
     }
 }
