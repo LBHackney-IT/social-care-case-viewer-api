@@ -54,7 +54,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Creates a new Allocation Resident/Team
         /// </summary>
-        /// <response code="201">Records successfully inserted</response>
+        /// <response code="204">Records successfully inserted</response>
         /// <response code="400">One or more request parameters are invalid or missing</response>
         [ProducesResponseType(typeof(CreateAllocationResponse), StatusCodes.Status201Created)]
         [HttpPost]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
 using Bogus;
+using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -41,10 +42,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ValidationPassesWhenAllPropertiesAreSetWithValidValues()
         {
             var request = GetValidRequest();
+            var validator = new AllocateResidentToTheTeamRequestValidator();
 
-            var errors = ValidationHelper.ValidateModel(request);
+            var validationResponse = validator.Validate(request);
 
-            Assert.AreEqual(0, errors.Count);
+            validationResponse.IsValid.Should().Be(true);
 
         }
 
@@ -52,26 +54,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         public void ValidationFailsIfResidentIdLessThan1()
         {
             var request = GetValidRequest();
+            request.PersonId = 1;
+            var validator = new AllocateResidentToTheTeamRequestValidator();
 
-            request.PersonId = 0;
+            var validationResponse = validator.Validate(request);
 
-            var errors = ValidationHelper.ValidateModel(request);
-
-            Assert.AreEqual(1, errors.Count);
-            Assert.IsTrue(errors.First().ErrorMessage == "Resident Id must be grater than 1.");
+            validationResponse.IsValid.Should().Be(false);
+            validationResponse.ToString().Should().Be("Resident Id must be grater than 1");
         }
 
         [Test]
         public void ValidationFailsIfTeamIdLessThan1()
         {
             var request = GetValidRequest();
+            request.AllocatedTeamId = 1;
+            var validator = new AllocateResidentToTheTeamRequestValidator();
 
-            request.AllocatedTeamId = 0;
+            var validationResponse = validator.Validate(request);
 
-            var errors = ValidationHelper.ValidateModel(request);
-
-            Assert.AreEqual(1, errors.Count);
-            Assert.IsTrue(errors.First().ErrorMessage == "Resident Id must be grater than 1.");
+            validationResponse.IsValid.Should().Be(false);
+            validationResponse.ToString().Should().Be("Team Id must be grater than 1");
         }
     }
 }
