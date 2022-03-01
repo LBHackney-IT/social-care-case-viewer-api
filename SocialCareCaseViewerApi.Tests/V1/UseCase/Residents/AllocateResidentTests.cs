@@ -26,7 +26,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         {
             return new Faker<AllocateResidentToTheTeamRequest>()
                 .RuleFor(x => x.PersonId, _faker.Random.Long())
-                .RuleFor(x => x.AllocatedTeamId, _faker.Random.Int());
+                .RuleFor(x => x.TeamId, _faker.Random.Int());
         }
 
         [Test]
