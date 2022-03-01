@@ -11,5 +11,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase.Interfaces
         GetPersonResponse? GetResident(GetPersonRequest request);
         void UpdateResident(UpdatePersonRequest request);
         CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request);
+        ResidentInformationList GetUnallocatedList(int teamId, int cursor, int limit);
     }
 }
