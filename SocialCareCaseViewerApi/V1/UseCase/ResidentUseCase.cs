@@ -119,5 +119,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 TotalCount = totalCount
             };
         }
+
+
+        public ResidentInformationList GetUnallocatedList(int teamId, int cursor, int limit)
+        {
+            List<ResidentInformation> residents = new List<ResidentInformation>();
+            var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId);
+            if (matchingPersons != null)
+            {
+                foreach (var person in matchingPersons)
+                {
+                    residents.Add(person.ToResidentInformationResponse());
+                }
+            }
+            return new ResidentInformationList
+            {
+                Residents = residents,
+                NextCursor = "test",
+                TotalCount = 1
+            };
+        }
     }
 }

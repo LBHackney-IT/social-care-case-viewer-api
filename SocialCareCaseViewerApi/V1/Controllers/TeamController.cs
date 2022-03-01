@@ -14,6 +14,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
     public class TeamController : Controller
     {
         private readonly ITeamsUseCase _teamsUseCase;
+        private readonly IResidentUseCase _residentUseCase;
 
         public TeamController(ITeamsUseCase teamsUseCase)
         {
