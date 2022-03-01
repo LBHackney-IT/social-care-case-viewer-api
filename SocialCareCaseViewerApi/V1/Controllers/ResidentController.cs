@@ -39,18 +39,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
             return Ok(_residentUseCase.GetResidentsByQuery(rqp, (int) cursor, (int) limit));
         }
 
-
-
-
-
-
-
-
-
-
-
-
-        /// WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
         /// <summary>
         /// Creates a new Allocation Resident/Team
         /// </summary>
@@ -83,8 +71,6 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-
 
         /// <summary>
         /// Creates a new person record and adds all related entities
