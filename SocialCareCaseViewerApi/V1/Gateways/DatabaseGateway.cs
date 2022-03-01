@@ -44,6 +44,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
+        public List<Person> GetPersonsByTeamId(int teamId)
+        {
+            var results = _databaseContext.Persons
+                .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
+                .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
+                .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
+            return results;
+        }
+
         public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail)
         {
             List<Allocation> allocations = new List<Allocation>();
