@@ -23,7 +23,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             _resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext);
             (_existingDbWorker, _existingDbTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
 
-
         }
 
 
@@ -34,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var request = new PatchPersonRequest()
             {
                 Id = _resident.Id,
-                EmailAddress = _existingDbWorker.Email,
+                EmailAddress = _resident.EmailAddress,
                 Title = "Update"
             };
 

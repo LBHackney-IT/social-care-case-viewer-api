@@ -19,45 +19,45 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [Range(1, int.MaxValue, ErrorMessage = "Please enter valid person id")]
         public long Id { get; set; }
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
-        public List<OtherName> OtherNames { get; set; }
+        public List<OtherName>? OtherNames { get; set; }
 
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
 
         public DateTime? DateOfDeath { get; set; }
 
-        public string Ethnicity { get; set; }
+        public string? Ethnicity { get; set; }
 
-        public string FirstLanguage { get; set; }
+        public string? FirstLanguage { get; set; }
 
-        public string Religion { get; set; }
+        public string? Religion { get; set; }
 
-        public string SexualOrientation { get; set; }
+        public string? SexualOrientation { get; set; }
 
         public long? NhsNumber { get; set; }
 
-        public AddressDomain Address { get; set; }
+        public AddressDomain? Address { get; set; }
 
-        public List<PhoneNumber> PhoneNumbers { get; set; }
+        public List<PhoneNumber>? PhoneNumbers { get; set; }
 
-        public List<LastUpdated> LastUpdated { get; set; }
+        public List<LastUpdated>? LastUpdated { get; set; }
 
-        public List<KeyContact> KeyContacts { get; set; }
+        public List<KeyContact>? KeyContacts { get; set; }
 
-        public GpDetailsDomain GpDetails { get; set; }
+        public GpDetailsDomain? GpDetails { get; set; }
 
-        public List<String> TechUse { get; set; }
+        public List<String>? TechUse { get; set; }
 
-        public List<String> Disabilities { get; set; }
+        public List<String>? Disabilities { get; set; }
 
-        public List<EmailAddress> Emails { get; set; }
+        public List<EmailAddress>? Emails { get; set; }
 
         public bool? FluentInEnglish { get; set; }
 
@@ -123,7 +123,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [EmailAddress]
         //allow front end to send empty string for email
-        public string EmailAddress
+        public string? EmailAddress
         {
             get
             {
@@ -135,16 +135,16 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             }
         }
 
-        public string PreferredMethodOfContact { get; set; }
+        public string? PreferredMethodOfContact { get; set; }
 
         [MaxLength(1)]
         [RegularExpression("(?i:^A|C)", ErrorMessage = "The context_flag must be 'A' or 'C' only.")]
-        public string ContextFlag { get; set; }
+        public string? ContextFlag { get; set; }
 
         [EmailAddress]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         [RegularExpression("(?i:^Y|N)", ErrorMessage = "Restricted must be 'Y' or 'N' only.")]
-        public string Restricted { get; set; }
+        public string? Restricted { get; set; }
     }
 }
