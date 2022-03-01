@@ -1019,5 +1019,6 @@ CREATE TABLE if not exists DBO.SCCV_RESIDENTWORKER (
     PERSON_ID bigint NOT NULL,
     WORKER_ID bigint NOT NULL,
     TEAM_ID bigint NOT NULL,
-    UPDATED_AT timestamp
+    ALLOCATION_DATE timestamp,
+    CREATED_BY INT
 );
