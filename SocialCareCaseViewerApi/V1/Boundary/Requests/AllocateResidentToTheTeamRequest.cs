@@ -33,9 +33,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public AllocateResidentToTheTeamRequestValidator()
         {
             RuleFor(x => x.PersonId)
-                .InclusiveBetween(1, int.MaxValue).WithMessage("Resident Id must be grater than 1");
+                .GreaterThan(1).WithMessage("Resident Id must be grater than 1");
             RuleFor(x => x.AllocatedTeamId)
-                .InclusiveBetween(1, int.MaxValue).WithMessage("Team Id must be grater than 1");
+                .GreaterThan(1).WithMessage("Team Id must be grater than 1");
         }
     }
 }
