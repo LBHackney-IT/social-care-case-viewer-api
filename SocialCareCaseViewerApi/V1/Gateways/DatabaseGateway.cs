@@ -681,10 +681,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public CreateAllocationResponse AllocateResidentToTheTeam(AllocateResidentToTheTeamRequest request)
         {
-            var allocation = new ResidentTeam()
+            var allocationTeam = new ResidentTeam()
             {
                 PersonId = request.PersonId,
-                TeamId = request.AllocatedTeamId,
+                TeamId = request.TeamId,
                 RagRating = request.RagRating,
                 AllocationDate = request.AllocationDate,
                 Summary = request.Summary,
@@ -696,13 +696,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var resident = _databaseContext.Persons.Find(request.PersonId);
 
-            var team = _databaseContext.Teams.Find(request.AllocatedTeamId);
+            var team = _databaseContext.Teams.Find(request.TeamId);
 
-            var residentTeams = _databaseContext.Persons
-                .Where(x => x.Id == request.PersonId)
-                .Include(x => x.ResidentTeams).FirstOrDefault().ResidentTeams;
-            _databaseContext.ResidentTeams.RemoveRange(residentTeams);
-            _databaseContext.ResidentTeams.Add(allocation);
+            var residentTeams = resident.ResidentTeams;
+
+            if (residentTeams != null)
+            {
+                _databaseContext.ResidentTeams.RemoveRange(residentTeams);
+            }
+
+            _databaseContext.ResidentTeams.Add(allocationTeam);
             _databaseContext.SaveChanges();
 
             var response = new CreateAllocationResponse();
@@ -722,19 +725,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         $"{dt.ToShortDateString()} | Allocation | {resident.FirstName} {resident.LastName} was allocated to the team {team.Name} (by {worker.FirstName} {worker.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Team allocated",
-                    AllocationId = allocation.Id.ToString(),
+                    AllocationId = allocationTeam.Id.ToString(),
                     CreatedBy = worker.Email
                 };
 
                 var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
 
                 response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-                response.AllocationId = allocation.Id;
+                response.AllocationId = allocationTeam.Id;
             }
             catch (Exception ex)
             {
                 //roll back allocation record
-                _databaseContext.ResidentTeams.Remove(allocation);
+                _databaseContext.ResidentTeams.Remove(allocationTeam);
                 _databaseContext.SaveChanges();
 
                 throw new UpdateAllocationException(

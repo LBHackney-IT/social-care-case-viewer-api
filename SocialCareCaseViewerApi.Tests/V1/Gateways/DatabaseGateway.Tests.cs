@@ -425,6 +425,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
         }
 
+
+        [Test]
+        public void AllocateResidentToTheTeamShouldInsertIntoTheDatabase()
+        {
+            var worker = TestHelpers.CreateWorker();
+            var team = TestHelpers.CreateTeam();
+            var resident = TestHelpers.CreatePerson();
+            var allocationRequest = new AllocateResidentToTheTeamRequest()
+            {
+                PersonId = resident.Id,
+                TeamId = team.Id,
+                RagRating = "Red",
+                AllocationDate = DateTime.Today,
+                Summary = "Summary",
+                CarePackage = "Some package",
+                CreatedBy = worker.Id
+            };
+
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.AllocateResidentToTheTeam(allocationRequest);
+            var query = DatabaseContext.ResidentTeams;
+            var insertedRecord = query.First(x => x.Id == response.AllocationId);
+
+            insertedRecord.Should().BeEquivalentTo(allocationRequest);
+        }
+
+
+
+
+
+
+
+
+
+
+
         [Test]
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
         {
