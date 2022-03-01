@@ -93,6 +93,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     "Warning Note Reviewed",
                     "Warning Note Ended",
                     "Worker allocated",
+                    "Team allocated",
                     "Worker deallocated"
                 };
                 allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
