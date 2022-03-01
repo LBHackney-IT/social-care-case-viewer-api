@@ -692,6 +692,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 CreatedBy = request.CreatedBy
             };
 
+            var worker = _databaseContext.Workers.Find(request.CreatedBy);
+
+            var resident = _databaseContext.Persons.Find(request.PersonId);
+
+            var team = _databaseContext.Teams.Find(request.AllocatedTeamId);
+
             var residentTeams = _databaseContext.Persons
                 .Where(x => x.Id == request.PersonId)
                 .Include(x => x.ResidentTeams).FirstOrDefault().ResidentTeams;
@@ -705,7 +711,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 var dt = DateTime.Now;
 
-                var note = new AllocationCaseNote();
+                var note = new AllocationCaseNote
+                {
+                    FirstName = resident.FirstName,
+                    LastName = resident.LastName,
+                    MosaicId = resident.Id.ToString(),
+                    Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                    WorkerEmail = worker.Email,
+                    Note =
+                        $"{dt.ToShortDateString()} | Allocation | {resident.FirstName} {resident.LastName} was allocated to the team {team.Name} (by {worker.FirstName} {worker.LastName})",
+                    FormNameOverall = "API_Allocation",
+                    FormName = "Team allocated",
+                    AllocationId = allocation.Id.ToString(),
+                    CreatedBy = worker.Email
+                };
 
                 var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
 
