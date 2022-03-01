@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
-using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
@@ -14,8 +13,6 @@ using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
-using dbResidentTeam = SocialCareCaseViewerApi.V1.Infrastructure.ResidentTeam;
-using dbResidentWorker = SocialCareCaseViewerApi.V1.Infrastructure.ResidentWorker;
 using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
 using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
@@ -139,29 +136,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Number = phoneNumber.Number,
                 Type = phoneNumber.Type
-            };
-        }
-
-        public static ResidentWorker ToDomain(this dbResidentWorker worker)
-        {
-            return new ResidentWorker()
-            {
-                Id = worker.Id,
-                TeamId = worker.Team.Id,
-                PersonId = worker.PersonId,
-                WorkerId = worker.WorkerId
-            };
-        }
-
-        public static ResidentTeam ToDomain(this dbResidentTeam team)
-        {
-            return new ResidentTeam()
-            {
-                Id = team.Id,
-                PersonId = team.PersonId,
-                TeamId = team.Team.Id,
-                Summary = team.Summary,
-                RagRating = team.RagRating
             };
         }
 
@@ -389,29 +363,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Postcode = entry.Postcode,
                 PhoneNumber = entry.PhoneNumber,
                 PersonId = personId,
-            };
-        }
-
-
-        public static dbResidentWorker ToEntity(this ResidentWorker worker, long personId)
-        {
-            return new dbResidentWorker
-            {
-                TeamId = worker.TeamId,
-                PersonId = worker.PersonId,
-                Worker = worker.Worker
-            };
-        }
-
-
-        public static dbResidentTeam ToEntity(this ResidentTeam team, long personId)
-        {
-            return new dbResidentTeam
-            {
-                PersonId = team.PersonId,
-                TeamId = team.Id,
-                Summary = team.Summary,
-                RagRating = team.RagRating
             };
         }
 
