@@ -9,8 +9,6 @@ using SocialCareCaseViewerApi.V1.Domain;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
-using dbResidentTeam = SocialCareCaseViewerApi.V1.Infrastructure.ResidentTeam;
-using dbResidentWorker = SocialCareCaseViewerApi.V1.Infrastructure.ResidentWorker;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
@@ -202,8 +200,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
                 KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
-                ResidentTeams = person.ResidentTeams?.Select(x => x.ToDomain()).ToList(),
-                ResidentWorkers = person.ResidentWorkers?.Select(x => x.ToDomain()).ToList(),
                 PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
                 Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
                 LastUpdated = person.LastUpdated?.Select(x => x.ToDomain()).ToList(),
@@ -330,8 +326,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Nationality = person.Nationality,
                 Gender = person.Gender,
                 Restricted = person.Restricted,
-                ResidentTeams = person.ResidentTeams?.Count > 0 ? person.ResidentTeams.ToResponse() : null,
-                ResidentWorkers = person.ResidentWorkers?.Count > 0 ? person.ResidentWorkers.ToResponse() : null,
                 AddressList = person.Addresses?.Count > 0 ? person.Addresses.ToResponse() : null,
                 PhoneNumber = person.PhoneNumbers?.Count > 0 ? person.PhoneNumbers.ToResponse() : null,
                 Uprn = person.Addresses?.FirstOrDefault(a => a.EndDate == null)?.Uprn?.ToString() //use same logic as in legacy platform API for compatibility
@@ -357,24 +351,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 DisplayAddressFlag = address.IsDisplayAddress,
                 AddressLine1 = address.AddressLines,
                 PostCode = address.PostCode
-            }).ToList();
-        }
-
-        public static List<ResidentWorkerResponse> ToResponse(this List<dbResidentWorker> worker)
-        {
-            return worker.Select(worker => new ResidentWorkerResponse
-            {
-                Id = worker.WorkerId,
-            }).ToList();
-        }
-
-        public static List<ResidentTeamResponse> ToResponse(this List<dbResidentTeam> teams)
-        {
-            return teams.Select(team => new ResidentTeamResponse
-            {
-                Id = team.TeamId,
-                Summary = team.Summary,
-                RagRating = team.RagRating
             }).ToList();
         }
 
