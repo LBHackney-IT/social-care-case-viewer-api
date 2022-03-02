@@ -15,6 +15,8 @@ using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
+using dbResidentTeam = SocialCareCaseViewerApi.V1.Infrastructure.ResidentTeam;
+using dbResidentWorker = SocialCareCaseViewerApi.V1.Infrastructure.ResidentWorker;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Factories
