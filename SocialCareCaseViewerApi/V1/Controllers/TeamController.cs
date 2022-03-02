@@ -130,11 +130,12 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
-        [Route("{name}/allocations")]
-        public IActionResult GetTeamAllocationsByName(string name, int? cursor = 0, int? limit = 20)
+        [Route("{teamId}/allocations")]
+        public IActionResult GetTeamAllocationsById(int teamId, int? cursor = 0, int? limit = 20)
         {
-            var team = _teamsUseCase.ExecuteGetByName(name);
-            return Ok(_residentUseCase.GetUnallocatedList(team.Id, (int) cursor, (int) limit));
+            var residentsList = _residentUseCase.GetUnallocatedList(teamId, (int) cursor, (int) limit);
+
+            return Ok(residentsList);
         }
     }
 }
