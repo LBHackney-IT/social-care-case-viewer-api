@@ -666,5 +666,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             response.Should().BeEquivalentTo(expectedResponse);
         }
+
+        [Test]
+        public void CanMapResidentTeamFromInfrastructureToResponse()
+        {
+            /// To be coded
+        }
+
+        [Test]
+        public void CanMapResidentWorkerFromInfrastructureToResponse()
+        {
+            /// To be coded
+        }
     }
 }
