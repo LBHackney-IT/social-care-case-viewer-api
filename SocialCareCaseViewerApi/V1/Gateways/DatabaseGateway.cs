@@ -44,12 +44,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Person> GetPersonsByTeamId(int teamId)
+        public List<Person> GetPersonsByTeamId(int teamId, string view)
         {
-            var results = _databaseContext.Persons
-                .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
-                .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
-                .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
+            var results = new List<Person>();
+            if (view == "unallocated")
+            {
+                results = _databaseContext.Persons
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
+                    .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
+                    .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
+            }
+
+            if (view == "allocated")
+            {
+                results = _databaseContext.Persons
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
+                    .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
+                    .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId == x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
+            }
+
             return results;
         }
 
