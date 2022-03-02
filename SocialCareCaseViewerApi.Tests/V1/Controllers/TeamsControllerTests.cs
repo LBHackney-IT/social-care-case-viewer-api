@@ -148,22 +148,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.Value.Should().Be(errorMessage);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
         [Test]
         public void GetTeamAllocationsReturns200AndResidentInformationListWhenSuccessful()
         {
-            // TO BE IMPLEMENTED
+            /// TO BE CODED
             // var request = TestHelpers.CreateGetTeamsRequest();
             // var teamsList = new ListTeamsResponse()
             // {
@@ -179,7 +167,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndEmptyResidentInformationListWhenNoTeamsFound()
         {
-            // TO BE IMPLEMENTED
+            /// TO BE CODED
             // var request = TestHelpers.CreateGetTeamsRequest();
             // var teamsList = new ListTeamsResponse()
             // {

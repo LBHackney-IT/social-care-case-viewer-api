@@ -1562,6 +1562,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             result.Should().BeNull();
         }
 
+        [Test]
+        public void GetGetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        {
+            /// TO BE CODED
+        }
+
+        [Test]
+        public void GetGetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamAndWorker()
+        {
+            /// TO BE CODED
+        }
+
+
+        [Test]
+        public void GetGetPersonsByTeamIdReturnsEmptyListWhenPersonDoesntHaveTeamAssigned()
+        {
+            /// TO BE CODED
+        }
+
         private Person SavePersonToDatabase(Person person)
         {
             DatabaseContext.Persons.Add(person);

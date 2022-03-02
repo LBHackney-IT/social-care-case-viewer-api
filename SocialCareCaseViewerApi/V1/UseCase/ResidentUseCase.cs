@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             int totalCount = 0;
             var residents = new List<ResidentInformation>();
-            var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId);
+            var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId, view);
             if (matchingPersons != null)
             {
                 foreach (var person in matchingPersons)
