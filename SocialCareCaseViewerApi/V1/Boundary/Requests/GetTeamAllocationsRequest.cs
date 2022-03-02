@@ -15,7 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public GetTeamAllocationsRequestValidator()
         {
             RuleFor(w => w.View)
-                .NotNull().WithMessage("Worker Id must be provided");
+                .NotNull().WithMessage("Type of view must be provided");
         }
     }
 }
