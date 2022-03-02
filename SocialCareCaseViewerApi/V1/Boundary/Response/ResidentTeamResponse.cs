@@ -10,6 +10,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public string RagRating { get; set; }
 
+        public string CarePackage { get; set; }
+
         public DateTime AllocationDate { get; set; }
     }
 }

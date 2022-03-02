@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Domain;
+using SocialCareCaseViewerApi.V1.Exceptions;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Domain.CaseSubmission;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
@@ -395,6 +396,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 Id = team.TeamId,
                 Summary = team.Summary,
+                CarePackage = team.CarePackage,
+                AllocationDate = team.AllocationDate,
                 RagRating = team.RagRating
             }).ToList();
         }

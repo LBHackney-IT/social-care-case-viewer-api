@@ -670,7 +670,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapResidentTeamFromInfrastructureToResponse()
         {
-            /// To be coded
+            // var dbPhoneNumber = TestHelpers.CreatePhoneNumber();
+            //
+            // var expectedResponse = new Phone()
+            // {
+            //     PhoneNumber = dbPhoneNumber.Number,
+            //     PhoneType = dbPhoneNumber.Type
+            // };
+            //
+            // var response = dbPhoneNumber.ToResponse();
+            //
+            // response.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
