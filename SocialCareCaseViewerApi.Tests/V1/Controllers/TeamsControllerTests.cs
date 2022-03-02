@@ -147,5 +147,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response?.StatusCode.Should().Be(422);
             response?.Value.Should().Be(errorMessage);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [Test]
+        public void GetTeamAllocationsReturns200AndResidentInformationListWhenSuccessful()
+        {
+            // TO BE IMPLEMENTED
+            // var request = TestHelpers.CreateGetTeamsRequest();
+            // var teamsList = new ListTeamsResponse()
+            // {
+            //     Teams = new List<TeamResponse> { TestHelpers.CreateTeam().ToDomain().ToResponse() }
+            // };
+            // _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
+            // var response = _teamController.GetTeams(request) as ObjectResult;
+            //
+            // response?.StatusCode.Should().Be(200);
+            // response?.Value.Should().BeEquivalentTo(teamsList);
+        }
+
+        [Test]
+        public void GetTeamAllocationsReturns200AndEmptyResidentInformationListWhenNoTeamsFound()
+        {
+            // TO BE IMPLEMENTED
+            // var request = TestHelpers.CreateGetTeamsRequest();
+            // var teamsList = new ListTeamsResponse()
+            // {
+            //     Teams = new List<TeamResponse>()
+            // };
+            // _teamsUseCase.Setup(x => x.ExecuteGet(request)).Returns(teamsList);
+            // var response = _teamController.GetTeams(request) as ObjectResult;
+            //
+            // response?.StatusCode.Should().Be(200);
+            // ((ListTeamsResponse) response?.Value)?.Teams.Should().BeEmpty();
+        }
     }
 }
