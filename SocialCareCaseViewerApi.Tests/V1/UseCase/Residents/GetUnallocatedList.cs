@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _residentUseCase
                 .GetUnallocatedList(1, cursor: 0, limit: 20)
                 .Should()
-                .BeEquivalentTo(new ResidentInformationList() { Residents = new List<ResidentInformation>(), NextCursor = "", TotalCount = 0});
+                .BeEquivalentTo(new ResidentInformationList() { Residents = new List<ResidentInformation>(), NextCursor = "", TotalCount = 0 });
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             _residentUseCase
                 .GetUnallocatedList(1, cursor: 0, limit: 20)
                 .Should()
-                .BeEquivalentTo(new ResidentInformationList() { Residents = residents, NextCursor = "", TotalCount = 1});
+                .BeEquivalentTo(new ResidentInformationList() { Residents = residents, NextCursor = "", TotalCount = 1 });
         }
     }
 }
