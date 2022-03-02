@@ -120,10 +120,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-
         public ResidentInformationList GetUnallocatedList(int teamId, int cursor, int limit)
         {
-            List<ResidentInformation> residents = new List<ResidentInformation>();
+            int totalCount = 0;
+            var residents = new List<ResidentInformation>();
             var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId);
             if (matchingPersons != null)
             {
@@ -132,11 +132,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     residents.Add(person.ToResidentInformationResponse());
                 }
             }
+            var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
+            totalCount = residents.Count;
             return new ResidentInformationList
             {
                 Residents = residents,
-                NextCursor = "test",
-                TotalCount = 1
+                NextCursor = nextCursor,
+                TotalCount = totalCount
             };
         }
     }
