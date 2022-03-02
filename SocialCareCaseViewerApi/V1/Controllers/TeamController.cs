@@ -131,9 +131,9 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Produces("application/json")]
         [HttpGet]
         [Route("{teamId}/allocations")]
-        public IActionResult GetTeamAllocationsById(int teamId, int? cursor = 0, int? limit = 20)
+        public IActionResult GetTeamAllocationsById([FromQuery] GetTeamAllocationsRequest request, int teamId, int? cursor = 0, int? limit = 20)
         {
-            var residentsList = _residentUseCase.GetUnallocatedList(teamId, (int) cursor, (int) limit);
+            var residentsList = _residentUseCase.GetAllocatedList(teamId, request.View, (int) cursor, (int) limit);
 
             return Ok(residentsList);
         }

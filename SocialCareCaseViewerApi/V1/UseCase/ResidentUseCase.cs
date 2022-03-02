@@ -120,7 +120,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public ResidentInformationList GetUnallocatedList(int teamId, int cursor, int limit)
+        public ResidentInformationList GetAllocatedList(int teamId, string view, int cursor, int limit)
         {
             int totalCount = 0;
             var residents = new List<ResidentInformation>();
@@ -134,6 +134,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             }
             var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
             totalCount = residents.Count;
+
             return new ResidentInformationList
             {
                 Residents = residents,
