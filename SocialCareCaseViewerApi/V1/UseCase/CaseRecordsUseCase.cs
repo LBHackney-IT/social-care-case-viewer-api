@@ -122,6 +122,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     .Skip(request.Cursor)
                     .Take(request.Limit)
                     .ToList();
+
+                combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
             }
 
             int? nextCursor = request.Cursor + request.Limit;
