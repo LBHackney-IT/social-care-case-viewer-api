@@ -34,6 +34,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         /// British
         /// </example>
         public string Nationality { get; set; }
+        public List<ResidentTeamResponse> ResidentTeams { get; set; }
+        public List<ResidentWorkerResponse> ResidentWorkers { get; set; }
         public List<Phone> PhoneNumber { get; set; }
         public List<Address> AddressList { get; set; }
         /// <example>
