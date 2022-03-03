@@ -460,6 +460,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.ContextFlag, f => contextFlag ?? f.Random.String2(1, "ACac"));
         }
 
+        public static GetTeamAllocationsRequest CreateGetTeamAllocationsRequest(string? view = null)
+        {
+            return new Faker<GetTeamAllocationsRequest>()
+                .RuleFor(t => t.View, f => view ?? "allocated");
+        }        
+
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
             string? formId = null,
             int? residentId = null,
