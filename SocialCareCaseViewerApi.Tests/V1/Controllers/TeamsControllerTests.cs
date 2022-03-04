@@ -151,35 +151,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndResidentInformationListWhenSuccessful()
         {
-             var request = TestHelpers.CreateGetTeamAllocationsRequest();
-             var team = TestHelpers.CreateTeam();
+            var request = TestHelpers.CreateGetTeamAllocationsRequest();
+            var team = TestHelpers.CreateTeam();
 
-             var teamAllocationList = new ResidentInformationList()
-             {
-                 Residents = new List<ResidentInformation>(){  }
-             };
-              _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
-             var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
+            var teamAllocationList = new ResidentInformationList()
+            {
+                Residents = new List<ResidentInformation>() { }
+            };
+            _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
+            var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
             //
-             response?.StatusCode.Should().Be(200);
-             response?.Value.Should().BeEquivalentTo(teamAllocationList);
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(teamAllocationList);
         }
 
         [Test]
         public void GetTeamAllocationsReturns200AndEmptyResidentInformationListWhenNoTeamsFound()
         {
-             var request = TestHelpers.CreateGetTeamAllocationsRequest();
-             var team = TestHelpers.CreateTeam();
+            var request = TestHelpers.CreateGetTeamAllocationsRequest();
+            var team = TestHelpers.CreateTeam();
 
-             var teamAllocationList = new ResidentInformationList()
-             {
-                 Residents = new List<ResidentInformation>() { TestHelpers.CreatePerson().ToResidentInformationResponse() }
-             };
-              _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
-             var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
+            var teamAllocationList = new ResidentInformationList()
+            {
+                Residents = new List<ResidentInformation>() { TestHelpers.CreatePerson().ToResidentInformationResponse() }
+            };
+            _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
+            var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
             //
-             response?.StatusCode.Should().Be(200);
-             response?.Value.Should().BeEquivalentTo(teamAllocationList);
+            response?.StatusCode.Should().Be(200);
+            response?.Value.Should().BeEquivalentTo(teamAllocationList);
         }
     }
 }
