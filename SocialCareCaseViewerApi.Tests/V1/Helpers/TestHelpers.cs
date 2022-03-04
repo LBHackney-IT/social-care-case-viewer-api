@@ -232,6 +232,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Type, f => f.Random.String2(1, 80));
         }
 
+        public static ResidentTeam CreateResidentTeam()
+        {
+            return new Faker<ResidentTeam>()
+                .RuleFor(p => p.AllocationDate, f => f.Date.Recent().Date)
+                .RuleFor(p => p.CarePackage, f => f.Random.String2(1, 80))
+                .RuleFor(p => p.Id, f => f.UniqueIndex)
+                .RuleFor(p => p.RagRating, f => f.Random.String2(1, 80))
+                .RuleFor(p => p.Summary, f => f.Random.String2(1, 80));
+        }
+
         public static PersonOtherName CreatePersonOtherName(long? personId = null)
         {
             var person = CreatePerson();
