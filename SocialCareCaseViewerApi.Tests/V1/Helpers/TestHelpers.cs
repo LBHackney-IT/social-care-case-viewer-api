@@ -242,6 +242,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.Summary, f => f.Random.String2(1, 80));
         }
 
+        public static ResidentWorker CreateResidentWorker()
+        {
+            return new Faker<ResidentWorker>()
+                .RuleFor(p => p.Id, f => f.UniqueIndex);
+        }
+
         public static PersonOtherName CreatePersonOtherName(long? personId = null)
         {
             var person = CreatePerson();
