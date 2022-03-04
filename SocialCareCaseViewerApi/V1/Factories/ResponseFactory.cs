@@ -390,6 +390,17 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static ResidentTeamResponse ToResponse(this dbResidentTeam team)
+        {
+            return new ResidentTeamResponse
+            {
+                Id = team.Id,
+                Summary = team.Summary,
+                CarePackage = team.CarePackage,
+                AllocationDate = team.AllocationDate,
+                RagRating = team.RagRating
+            };
+        }
         public static List<ResidentTeamResponse> ToResponse(this List<dbResidentTeam> teams)
         {
             return teams.Select(team => new ResidentTeamResponse
