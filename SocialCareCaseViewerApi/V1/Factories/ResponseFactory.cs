@@ -413,6 +413,15 @@ namespace SocialCareCaseViewerApi.V1.Factories
             }).ToList();
         }
 
+        public static ResidentWorkerResponse ToResponse(this dbResidentWorker team)
+        {
+            return new ResidentWorkerResponse
+            {
+                Id = team.Id
+            };
+        }
+
+
         public static List<ResidentWorkerResponse> ToResponse(this List<dbResidentWorker> worker)
         {
             return worker.Select(worker => new ResidentWorkerResponse
