@@ -464,7 +464,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         {
             return new Faker<GetTeamAllocationsRequest>()
                 .RuleFor(t => t.View, f => view ?? "allocated");
-        }        
+        }
 
         public static CreateCaseSubmissionRequest CreateCaseSubmissionRequest(
             string? formId = null,
