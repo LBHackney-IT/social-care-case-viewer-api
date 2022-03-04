@@ -19,12 +19,10 @@ using KeyContactDomain = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using GpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
 using GpDetailsDomain = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
 using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
-using TechUseDomain = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using DisabilityDomain = SocialCareCaseViewerApi.V1.Domain.Disability;
 using EmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using EmailDomain = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
-
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using WarningNoteReview = SocialCareCaseViewerApi.V1.Infrastructure.WarningNoteReview;
 
@@ -670,17 +668,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         [Test]
         public void CanMapResidentTeamFromInfrastructureToResponse()
         {
-            // var dbPhoneNumber = TestHelpers.CreatePhoneNumber();
-            //
-            // var expectedResponse = new Phone()
-            // {
-            //     PhoneNumber = dbPhoneNumber.Number,
-            //     PhoneType = dbPhoneNumber.Type
-            // };
-            //
-            // var response = dbPhoneNumber.ToResponse();
-            //
-            // response.Should().BeEquivalentTo(expectedResponse);
+            var dbResidentTeam = TestHelpers.CreateResidentTeam();
+
+            var expectedResponse = new ResidentTeamResponse()
+            {
+                AllocationDate = dbResidentTeam.AllocationDate,
+                Id = dbResidentTeam.Id,
+                CarePackage = dbResidentTeam.CarePackage,
+                Summary = dbResidentTeam.Summary,
+                RagRating = dbResidentTeam.RagRating
+            };
+
+            var response = dbResidentTeam.ToResponse();
+
+            response.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
