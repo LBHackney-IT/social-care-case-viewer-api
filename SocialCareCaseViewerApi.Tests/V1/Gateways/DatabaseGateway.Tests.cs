@@ -1563,22 +1563,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetGetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        public void GetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
         {
-            /// TO BE CODED
+            var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: "email@example.com"));
+            var allocationRequest = new AllocateResidentToTheTeamRequest()
+            {
+                PersonId = resident.Id,
+                TeamId = team.Id,
+                RagRating = "Red",
+                AllocationDate = DateTime.Today,
+                Summary = "Summary",
+                CarePackage = "Some package",
+                CreatedBy = worker.Id
+            };
+
+            _classUnderTest.AllocateResidentToTheTeam(allocationRequest);
+
+            var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
+            var residents = new List<Person> { resident };
+            result.Should().BeEquivalentTo(residents);
         }
 
         [Test]
-        public void GetGetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamAndWorker()
+        public void GetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamAndWorker()
         {
-            /// TO BE CODED
+            //THIS DOESN'T EXIST YET..?      
         }
 
 
         [Test]
-        public void GetGetPersonsByTeamIdReturnsEmptyListWhenPersonDoesntHaveTeamAssigned()
+        public void GetPersonsByTeamIdReturnsEmptyListWhenPersonDoesntHaveTeamAssigned()
         {
-            /// TO BE CODED
+            var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: "email@example.com"));
+            var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
+            var residents = new List<Person> { };
+
+            result.Should().BeEquivalentTo(residents);
         }
 
         private Person SavePersonToDatabase(Person person)
