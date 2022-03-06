@@ -15,7 +15,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public GetTeamAllocationsRequestValidator()
         {
             RuleFor(w => w.View)
-                .NotNull().WithMessage("Type of view must be provided");
+                .NotNull().WithMessage("Type of view must be provided")
+                .Matches("(?i:^allocated|unallocated)").WithMessage("View must be 'allocated' or 'unallocated'");
+
         }
     }
 }
