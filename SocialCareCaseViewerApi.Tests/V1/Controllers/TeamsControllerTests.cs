@@ -151,7 +151,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndResidentInformationListWhenSuccessful()
         {
-            var request = TestHelpers.CreateGetTeamAllocationsRequest();
+            var request = TestHelpers.CreateGetTeamAllocationsRequest("allocated");
             var team = TestHelpers.CreateTeam();
 
             var teamAllocationList = new ResidentInformationList()
@@ -168,7 +168,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndEmptyResidentInformationListWhenNoTeamsFound()
         {
-            var request = TestHelpers.CreateGetTeamAllocationsRequest();
+            var request = TestHelpers.CreateGetTeamAllocationsRequest("allocated");
             var team = TestHelpers.CreateTeam();
 
             var teamAllocationList = new ResidentInformationList()

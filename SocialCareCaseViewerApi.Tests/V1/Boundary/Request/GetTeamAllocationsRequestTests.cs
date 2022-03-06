@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
+using System.Collections.Generic;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 {
@@ -11,37 +10,43 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     public class GetTeamAllocationsRequestTests
     {
         [Test]
-        public void GetGetTeamAllocationsRequestValidationWithMissingViewReturnsError()
+        public void GetTeamAllocationsRequestValidationWithMissingOrInvalidViewReturnsError()
         {
-            /// TO BE CODED
-            // var badGetTeamsRequests = new List<(GetTeamsRequest, string)>()
-            // {
-            //     (TestHelpers.CreateGetTeamsRequest(contextFlag: "d"), "Context flag must be 'A' or 'C'"),
-            //     (TestHelpers.CreateGetTeamsRequest(contextFlag: ""), "Context flag must be 'A' or 'C'"),
-            //     (TestHelpers.CreateGetTeamsRequest(contextFlag: "aa"), "Context flag must be 1 character in length"),
-            // };
-            //
-            // var validator = new GetTeamsRequestValidator();
-            //
-            // foreach (var (request, expectedErrorMessage) in badGetTeamsRequests)
-            // {
-            //     var validationResponse = validator.Validate(request);
-            //
-            //     validationResponse.IsValid.Should().Be(false);
-            //     validationResponse.ToString().Should().Be(expectedErrorMessage);
-            // }
+            var invalidGetTeamAllocationRequests = new List<(GetTeamAllocationsRequest, string)>()
+            {
+                (TestHelpers.CreateGetTeamAllocationsRequest(view: ""), "View must be 'allocated' or 'unallocated'"),
+                (TestHelpers.CreateGetTeamAllocationsRequest(view: "invalid"), "View must be 'allocated' or 'unallocated'"),
+                (TestHelpers.CreateGetTeamAllocationsRequest(view: null), "Type of view must be provided"),
+            };
+
+            var validator = new GetTeamAllocationsRequestValidator();
+
+            foreach (var (request, expectedErrorMessage) in invalidGetTeamAllocationRequests)
+            {
+                var validationResponse = validator.Validate(request);
+
+                validationResponse.IsValid.Should().Be(false);
+                validationResponse.ToString().Should().Be(expectedErrorMessage);
+            }
         }
 
         [Test]
         public void ValidGetTeamRequestReturnsNoErrorsOnValidation()
         {
-            /// TO BE CODED
-            // var createTeamRequest = TestHelpers.CreateGetTeamsRequest();
-            // var validator = new GetTeamsRequestValidator();
-            //
-            // var validationResponse = validator.Validate(createTeamRequest);
-            //
-            // validationResponse.IsValid.Should().Be(true);
+            var correctGetTeamAllocationRequests = new List<GetTeamAllocationsRequest>()
+            {
+                (TestHelpers.CreateGetTeamAllocationsRequest(view: "allocated")),
+                (TestHelpers.CreateGetTeamAllocationsRequest(view: "unallocated")),
+            };
+
+            var validator = new GetTeamAllocationsRequestValidator();
+
+            foreach (var request in correctGetTeamAllocationRequests)
+            {
+                var validationResponse = validator.Validate(request);
+
+                validationResponse.IsValid.Should().Be(true);
+            }
         }
     }
 }
