@@ -151,16 +151,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndResidentInformationListWhenSuccessful()
         {
-            var request = TestHelpers.CreateGetTeamAllocationsRequest("allocated");
+            var request = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
             var team = TestHelpers.CreateTeam();
 
             var teamAllocationList = new ResidentInformationList()
             {
-                Residents = new List<ResidentInformation>() { }
+                Residents = new List<ResidentInformation>() { TestHelpers.CreatePerson().ToResidentInformationResponse() }
             };
             _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
-            //
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamAllocationList);
         }
@@ -168,16 +167,42 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         [Test]
         public void GetTeamAllocationsReturns200AndEmptyResidentInformationListWhenNoTeamsFound()
         {
-            var request = TestHelpers.CreateGetTeamAllocationsRequest("allocated");
+            var request = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
 
             var teamAllocationList = new ResidentInformationList()
             {
-                Residents = new List<ResidentInformation>() { TestHelpers.CreatePerson().ToResidentInformationResponse() }
+                Residents = new List<ResidentInformation>() {}
             };
             _residentUseCase.Setup(x => x.GetAllocatedList(0, request.View, 0, 20)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, 0) as ObjectResult;
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamAllocationList);
+        }
+
+        [Test]
+        public void GetTeamAllocationsReturnsWhenValidationResultsIsNotValid()
+        {
+            var getTeamAllocationRequest = TestHelpers.CreateGetTeamAllocationsRequest("");
+
+            var response = _teamController.GetTeamAllocationsById(getTeamAllocationRequest, 1) as BadRequestObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be("View must be 'allocated' or 'unallocated'");
+        }
+
+        [Test]
+        public void GetTeamAllocationsReturns400WhenTeamNotFoundExceptionThrown()
+        {
+            const string errorMessage = "Team not found";
+            var getTeamAllocationRequest = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
+
+            _residentUseCase.Setup(x => x.GetAllocatedList(1, "unallocated", 0, 20))
+                .Throws(new TeamNotFoundException(errorMessage));
+
+            var response = _teamController.GetTeamAllocationsById(getTeamAllocationRequest, 1) as ObjectResult;
+
+            response?.StatusCode.Should().Be(400);
+            response?.Value.Should().Be(errorMessage);
         }
     }
 }
