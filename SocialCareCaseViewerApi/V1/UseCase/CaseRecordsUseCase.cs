@@ -109,8 +109,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
                 var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
 
-                pinnedCases.Concat(careCaseData);
-
                 combinedCases = pinnedCases
                     .Concat(careCaseData)
                     .Skip(request.Cursor)
