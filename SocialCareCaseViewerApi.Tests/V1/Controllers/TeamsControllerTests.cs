@@ -176,7 +176,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             };
             _residentUseCase.Setup(x => x.GetAllocatedList(0, request.View, 0, 20)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, 0) as ObjectResult;
-            
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamAllocationList);
         }
