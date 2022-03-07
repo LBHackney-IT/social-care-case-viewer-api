@@ -133,9 +133,24 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Route("{teamId}/allocations")]
         public IActionResult GetTeamAllocationsById([FromQuery] GetTeamAllocationsRequest request, int teamId, int? cursor = 0, int? limit = 20)
         {
-            var residentsList = _residentUseCase.GetAllocatedList(teamId, request.View, (int) cursor, (int) limit);
+            var validator = new GetTeamAllocationsRequestValidator();
+            var validationResults = validator.Validate(request);
 
-            return Ok(residentsList);
+            if (!validationResults.IsValid)
+            {
+                return BadRequest(validationResults.ToString());
+            }
+
+            try
+            {
+                return Ok(_residentUseCase.GetAllocatedList(teamId, request.View, (int) cursor, (int) limit));
+            }
+            catch (Exception e) when (
+                e is TeamNotFoundException
+            )
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
