@@ -1174,5 +1174,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission), Times.Once);
         }
+
+        [Test]
+        public void SanitiseResidentReturnsResidentWithoutRelatedObjects()
+        {
+        }
     }
 }
