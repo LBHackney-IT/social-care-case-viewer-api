@@ -105,17 +105,17 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             {
                 var pinnedCases = allCareCaseData
                     .Where(x => !String.IsNullOrEmpty(x.PinnedAt))
-                    .OrderByDescending(x => x.PinnedAt)
-                    .ToList();
+                    .OrderByDescending(x => x.PinnedAt);
                 var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
                 var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
 
-                pinnedCases.AddRange(careCaseData);
+                pinnedCases.Concat(careCaseData);
 
-                combinedCases = pinnedCases.ToList();
-
-                combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
-
+                combinedCases = pinnedCases
+                    .Concat(careCaseData)
+                    .Skip(request.Cursor)
+                    .Take(request.Limit)
+                    .ToList();
             }
             else
             {
@@ -123,8 +123,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     .Skip(request.Cursor)
                     .Take(request.Limit)
                     .ToList();
-
-                combinedCases.Skip(request.Cursor).Take(request.Limit).ToList();
             }
 
             int? nextCursor = request.Cursor + request.Limit;
