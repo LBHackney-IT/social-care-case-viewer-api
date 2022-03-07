@@ -169,7 +169,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
 
-            var teamAllocationList = new ResidentInformationList() {Residents = new List<ResidentInformation>() { }};
+            var teamAllocationList = new ResidentInformationList() { Residents = new List<ResidentInformation>() { } };
             _residentUseCase.Setup(x => x.GetAllocatedList(0, request.View, 0, 20)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, 0) as ObjectResult;
             response?.StatusCode.Should().Be(200);
