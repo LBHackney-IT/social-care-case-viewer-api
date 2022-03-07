@@ -1563,23 +1563,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        public void GetResidentsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
         {
             var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
-            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: "email@example.com"));
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+
+            var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1,teamId: team.Id, residentId: resident.Id));
+            resident.ResidentTeams.Add(residentTeam);
+
+            var residentWorker = SaveResidentWorkerToDatabase(DatabaseGatewayHelper.CreateResidentWorkerDatabaseEntity(id: 1, teamId: 2, residentId: resident.Id, workerId: worker.Id));
+            resident.ResidentWorkers.Add(residentWorker);
+
+
             var allocationRequest = new AllocateResidentToTheTeamRequest()
             {
                 PersonId = resident.Id,
                 TeamId = team.Id,
-                RagRating = "Red",
-                AllocationDate = DateTime.Today,
-                Summary = "Summary",
-                CarePackage = "Some package",
                 CreatedBy = worker.Id
             };
 
             _classUnderTest.AllocateResidentToTheTeam(allocationRequest);
+
+            resident.ResidentTeams.First().TeamId.Should().NotBe(resident.ResidentWorkers.First().TeamId);
 
             var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
             var residents = new List<Person> { resident };
@@ -1587,18 +1593,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetPersonsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamAndWorker()
+        public void GetResidentsByTeamIdReturnsEmptyListWhenPersonDoesntHaveTeamAssigned()
         {
-            //THIS DOESN'T EXIST YET..?      
-        }
-
-
-        [Test]
-        public void GetPersonsByTeamIdReturnsEmptyListWhenPersonDoesntHaveTeamAssigned()
-        {
-            var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var resident = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            resident.ResidentTeams = new List<ResidentTeam>();
+            var residentDb = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(email: "email@example.com"));
             var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
             var residents = new List<Person> { };
 
@@ -1610,6 +1610,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
             return person;
+        }
+
+        private ResidentTeam SaveResidentTeamToDatabase(ResidentTeam team)
+        {
+            DatabaseContext.ResidentTeams.Add(team);
+            DatabaseContext.SaveChanges();
+            return team;
+        }
+
+        private ResidentWorker SaveResidentWorkerToDatabase(ResidentWorker worker)
+        {
+            DatabaseContext.ResidentWorkers.Add(worker);
+            DatabaseContext.SaveChanges();
+            return worker;
         }
 
         private dbAddress SaveAddressToDatabase(dbAddress address)

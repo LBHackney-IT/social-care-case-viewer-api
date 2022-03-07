@@ -17,7 +17,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(w => w.View)
                 .NotNull().WithMessage("Type of view must be provided")
                 .Matches("(?i:^allocated|unallocated)").WithMessage("View must be 'allocated' or 'unallocated'");
-
         }
     }
 }
