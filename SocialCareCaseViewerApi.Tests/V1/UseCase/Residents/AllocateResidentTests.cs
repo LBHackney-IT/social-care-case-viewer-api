@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         }
 
         [Test]
-        public void ExecutePatchCallsDatabaseGateway()
+        public void ExecutePostCallsDatabaseGateway()
         {
             var request = GetValidAllocateResidentToTheTeamRequest();
 
