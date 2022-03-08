@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -125,9 +126,12 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             int totalCount = 0;
             var residents = new List<ResidentInformation>();
             var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId, view);
-            if (matchingPersons != null)
+            matchingPersons.Sort((x, y) => DateTime.Compare(x.ResidentTeams.First().AllocationDate, y.ResidentTeams.First().AllocationDate));
+            var orderedPersons = matchingPersons.OrderByDescending(person => (RagRatingToNumber)Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams.FirstOrDefault().RagRating, true));
+
+            if (orderedPersons != null)
             {
-                foreach (var person in matchingPersons)
+                foreach (var person in orderedPersons)
                 {
                     residents.Add(person.ToResidentInformationResponse());
                 }
@@ -141,6 +145,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 NextCursor = nextCursor,
                 TotalCount = totalCount
             };
+        }
+
+        private enum RagRatingToNumber
+        {
+            Green,
+            Amber,
+            Red,
+            Purple
         }
     }
 }
