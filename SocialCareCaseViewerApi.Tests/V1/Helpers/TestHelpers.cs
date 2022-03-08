@@ -15,6 +15,10 @@ using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
+using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using EmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
+using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -178,6 +182,78 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         }
 
+        public static InfrastructurePerson CreatePersonWithRelatedAttributes()
+        {
+            var addresses = new List<Address>();
+            var otherNames = new List<PersonOtherName>();
+            var phoneNumbers = new List<PhoneNumber>();
+            var allocations = new List<AllocationSet>();
+            var warningNotes = new List<WarningNote>();
+            var keyContacts = new List<KeyContact>();
+            var techUse = new List<TechUse>();
+            var disability = new List<Disability>();
+
+            return new Faker<InfrastructurePerson>()
+                .RuleFor(p => p.Id, f => f.UniqueIndex + 1)
+                .RuleFor(p => p.Addresses, f => addresses)
+                .RuleFor(p => p.OtherNames, f => otherNames)
+                .RuleFor(p => p.PhoneNumbers, f => phoneNumbers)
+                .RuleFor(p => p.Allocations, f => allocations)
+                .RuleFor(p => p.WarningNotes, f => warningNotes)
+                .RuleFor(p => p.KeyContacts, f => keyContacts)
+                .RuleFor(p => p.TechUse, f => techUse)
+                .RuleFor(p => p.Disability, f => disability);
+
+        }
+
+        public static LastUpdated CreateLastUpdated(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<LastUpdated>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
+        public static EmailAddress CreateEmailAddress(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<EmailAddress>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
+        public static Disability CreateDisability(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<Disability>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
+        public static KeyContact CreateKeyContact(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<KeyContact>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
+        public static TechUse CreateTechUse(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<TechUse>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
+        public static GpDetails CreateGpDetails(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<GpDetails>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
+        }
+
         public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
         {
             return new Faker<InfrastructurePerson>()
@@ -242,6 +318,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonId, personId ?? person.Id)
                 .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                 .RuleFor(p => p.LastName, f => f.Person.LastName);
+        }
+
+        public static AllocationSet CreatePersonAllocationSet(long? personId = null)
+        {
+            var person = CreatePerson();
+
+            return new Faker<AllocationSet>()
+                .RuleFor(p => p.PersonId, personId ?? person.Id);
         }
 
         public static AddNewResidentResponse CreateAddNewResidentResponse(
