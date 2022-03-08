@@ -126,15 +126,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             int totalCount = 0;
             var residents = new List<ResidentInformation>();
             var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId, view);
-            matchingPersons.Sort((x, y) => DateTime.Compare(x.ResidentTeams.First().AllocationDate, y.ResidentTeams.First().AllocationDate));
-            var orderedPersons = matchingPersons.OrderByDescending(person => (RagRatingToNumber) Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams.FirstOrDefault().RagRating, true));
 
-            if (orderedPersons != null)
+            if (matchingPersons != null)
             {
-                foreach (var person in orderedPersons)
-                {
-                    residents.Add(person.ToResidentInformationResponse());
-                }
+                matchingPersons.Sort((x, y) => DateTime.Compare(x.ResidentTeams.First().AllocationDate, y.ResidentTeams.First().AllocationDate));
+                var orderedPersons = matchingPersons
+                    .OrderByDescending(person => (RagRatingToNumber) Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams?.FirstOrDefault().RagRating, true));
+                residents.AddRange(orderedPersons.Select(person => person.ToResidentInformationResponse()));
             }
             var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
             totalCount = residents.Count;
