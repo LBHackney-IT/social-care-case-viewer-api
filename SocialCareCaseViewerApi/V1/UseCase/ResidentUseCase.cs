@@ -127,7 +127,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             var residents = new List<ResidentInformation>();
             var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId, view);
             matchingPersons.Sort((x, y) => DateTime.Compare(x.ResidentTeams.First().AllocationDate, y.ResidentTeams.First().AllocationDate));
-            var orderedPersons = matchingPersons.OrderByDescending(person => (RagRatingToNumber)Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams.FirstOrDefault().RagRating, true));
+            var orderedPersons = matchingPersons.OrderByDescending(person => (RagRatingToNumber) Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams.FirstOrDefault().RagRating, true));
 
             if (orderedPersons != null)
             {
