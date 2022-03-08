@@ -39,6 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         [Test]
         public void ReturnsEmptyListWhenNoResidentsAreAllocatedToTheTeam()
         {
+            _mockDatabaseGateway.Setup(x => x.GetPersonsByTeamId(1, "unallocated")).Returns(new List<Person>() { });
             _residentUseCase
                 .GetAllocatedList(1, "unallocated", cursor: 0, limit: 20)
                 .Should()
@@ -49,6 +50,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         public void ReturnsListOfResidentsAllocatedToTheTeam()
         {
             var person = TestHelpers.CreatePerson();
+            var residentTeam = new ResidentTeam()
+            {
+                TeamId = 1,
+                RagRating = "Green"
+            };
+
+            person.ResidentTeams = new List<ResidentTeam>() { residentTeam };
             var residents = new List<ResidentInformation>();
             residents.Add(person.ToResidentInformationResponse());
 
