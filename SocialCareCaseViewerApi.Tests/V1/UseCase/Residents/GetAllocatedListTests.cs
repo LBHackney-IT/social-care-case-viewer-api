@@ -50,7 +50,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             var residents = new List<ResidentInformation>();
             residents.Add(person.ToResidentInformationResponse());
 
-            _mockDatabaseGateway.Setup(x => x.GetPersonsByTeamId(1, "unallocated")).Returns(new List<Person>() { person });
+            _mockDatabaseGateway.Setup(x => x.GetResidentsByTeamId(1, "unallocated")).Returns(new List<Person>() { person });
             _residentUseCase
                 .GetAllocatedList(1, "unallocated")
                 .Should()
@@ -100,7 +100,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
             }
 
             _mockDatabaseGateway.Setup(x =>
-                    x.GetPersonsByTeamId(1, "unallocated"))
+                    x.GetResidentsByTeamId(1, "unallocated"))
                 .Returns((residentsList.ToList()));
 
             var result = _residentUseCase

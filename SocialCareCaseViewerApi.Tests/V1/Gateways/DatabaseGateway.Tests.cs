@@ -1586,7 +1586,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             resident.ResidentTeams.First().TeamId.Should().NotBe(resident.ResidentWorkers.First().TeamId);
 
-            var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
+            var result = _classUnderTest.GetResidentsByTeamId((int) team.Id, "unallocated");
             var residents = new List<Person> { resident };
             result.Should().BeEquivalentTo(residents);
         }
@@ -1598,7 +1598,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             resident.ResidentTeams = new List<ResidentTeam>();
             var residentDb = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>()));
-            var result = _classUnderTest.GetPersonsByTeamId((int) team.Id, "unallocated");
+            var result = _classUnderTest.GetResidentsByTeamId((int) team.Id, "unallocated");
             var residents = new List<Person> { };
 
             result.Should().BeEquivalentTo(residents);
