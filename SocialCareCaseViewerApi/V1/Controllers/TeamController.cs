@@ -125,10 +125,10 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         /// <summary>
         /// Get a team by team name
         /// </summary>
-        /// <response code="200">Successful request and team returned</response>
-        /// <response code="404">No team found for request</response>
+        /// <response code="200">Successful request and resident information list returned</response>
+        /// <response code="404">No allocations found for request</response>
         /// <response code="500">Server error</response>
-        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
         [Produces("application/json")]
         [HttpGet]
         [Route("{teamId}/allocations")]
