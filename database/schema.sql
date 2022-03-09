@@ -1001,3 +1001,10 @@ CREATE TABLE if not exists dbo.DM_PERSON_LAST_UPDATED (
 
 ALTER TABLE dbo.DM_PERSONS
 ALTER COLUMN GENDER TYPE varchar(255);
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS btree_gin;
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS index_full_name_search
+    ON dbo.dm_persons
+        USING gin (first_name gin_trgm_ops, last_name gin_trgm_ops);
