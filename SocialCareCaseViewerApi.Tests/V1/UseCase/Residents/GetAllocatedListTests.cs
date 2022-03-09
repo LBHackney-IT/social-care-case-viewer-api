@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         public void ReturnsListWhenTeamHasResidentsAssigned()
         {
             var residentsList = new List<Person>();
-            var ragList = new List<string>{ "purple","red","amber","green","purple","red","amber","green",};
+            var ragList = new List<string> { "purple", "red", "amber", "green", "purple", "red", "amber", "green", };
             var allocationTimes = new List<DateTime>
             {
                 DateTime.Parse("01/03/2022 00:00:00"),
@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
                 DateTime.Parse("01/01/2022 00:00:00"),
             };
 
-            var orderedRagList = new List<string>{ "purple","purple","red","red","amber","amber","green","green",};
+            var orderedRagList = new List<string> { "purple", "purple", "red", "red", "amber", "amber", "green", "green", };
             var orderedAllocationTimes = new List<DateTime>
             {
                 DateTime.Parse("01/01/2022 00:00:00"),
