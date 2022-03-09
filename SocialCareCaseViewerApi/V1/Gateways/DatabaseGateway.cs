@@ -47,7 +47,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<Person> GetPersonsByTeamId(int teamId, string view)
         {
             var results = new List<Person>();
-            // here(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
             if (view == "unallocated")
             {
                 results = _databaseContext.Persons
