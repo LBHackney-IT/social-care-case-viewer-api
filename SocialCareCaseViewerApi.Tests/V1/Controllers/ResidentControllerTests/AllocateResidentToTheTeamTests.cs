@@ -41,6 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         public void AllocateResidentReturns400WhenValidationResultsIsNotValid()
         {
             var request = _request;
+            request.RagRating = "red";
             request.TeamId = 2;
             var response = _residentController.AllocateResidentToTheTeam(request, 0) as BadRequestObjectResult;
 
@@ -54,6 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             const string errorMessage = "Person not found";
             var request = _request;
             request.TeamId = 1;
+            request.RagRating = "red";
             _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
                 .Throws(new PersonNotFoundException(errorMessage));
 
@@ -68,6 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         {
             const string errorMessage = "Team not found";
             var request = _request;
+            request.RagRating = "red";
             request.TeamId = 1;
             _mockResidentUseCase.Setup(x => x.AllocateResidentToTheTeam(_request))
                 .Throws(new TeamNotFoundException(errorMessage));
