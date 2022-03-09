@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var matchingResults = new List<SearchResult>();
             matchingResults = FilterByNameAgainstAllRecords(request);
 
-            if(matchingResults.Count > 0) totalCount = matchingResults.FirstOrDefault().TotalRecords;
+            if (matchingResults.Count > 0) totalCount = matchingResults.FirstOrDefault().TotalRecords;
 
             var dbRecords = _databaseContext.Persons
                 .Where(p => matchingResults.Select(x => x.PersonId).ToList().Contains(p.Id))
@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var sortedDbRecords = new List<ResidentInformation>();
 
-            foreach(var result in matchingResults)
+            foreach (var result in matchingResults)
             {
                 sortedDbRecords.Add(dbRecords.First(x => x.MosaicId == result.PersonId.ToString()));
             }
@@ -59,7 +59,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         private List<SearchResult> FilterByNameAgainstAllRecords(PersonSearchRequest request)
         {
             var postcode = request.Postcode == null ? "" : $"{request.Postcode}%";
-            var dateOfBirthRangeStart = request.DateOfBirth == null ? "" : $"{request.DateOfBirth}T00:00:00.000Z"; 
+            var dateOfBirthRangeStart = request.DateOfBirth == null ? "" : $"{request.DateOfBirth}T00:00:00.000Z";
             var dateOfBirthRangeEnd = request.DateOfBirth == null ? "" : $"{request.DateOfBirth}T23:59:59.000Z";
             var name = request.Name == null ? "" : $"{request.Name}";
             var cursor = request.Cursor ?? 0;
@@ -85,7 +85,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 sb.Append(@" AND ({0} <% Person.first_name OR {0} <% Person.last_name)");
             }
-            if(!string.IsNullOrEmpty(request.DateOfBirth))
+            if (!string.IsNullOrEmpty(request.DateOfBirth))
             {
                 sb.Append(@" AND (Person.date_of_birth BETWEEN {1}::timestamp AND {2}::timestamp)");
             }

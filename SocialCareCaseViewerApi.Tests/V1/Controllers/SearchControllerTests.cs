@@ -47,19 +47,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             _mockSearchUseCase.Verify(x => x.GetResidentsByQuery(It.IsAny<PersonSearchRequest>()));
         }
 
-        //[Test]
-        //public void CallsResidentUseCaseWithCorrectMosaicIdWhenPersonIdProvided()
-        //{
-        //    var request = new PersonSearchRequest() { PersonId = "123" };
-        //    var residentQueryParam = new ResidentQueryParam() { MosaicId = "123" };
-
-        //    _mockResidentUseCase.Setup(x => x.GetResidentsByQuery(It.IsAny<ResidentQueryParam>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new ResidentInformationList());
-        //    _searchController.GetPersonRecordsBySearchQuery(request);
-
-        //    _mockResidentUseCase.Verify(x => x.GetResidentsByQuery(residentQueryParam, It.IsAny<int>(), It.IsAny<int>()), Times.Once);
-        //}
-
-        //TODO: add other statuses
         [Test]
         public void Returns200AndResidentInformationListWhenPersonIdIsNotProvided()
         {
@@ -76,10 +63,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(residentInformationList);
         }
-
-        //calls usecase with correct object x2
-        //calls with default cursor and limit
-        //resturns correct object result
-
     }
 }

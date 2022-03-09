@@ -75,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Persons.AddRange(new List<Person>() { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { Name = "ciasom" } ;
+            var query = new PersonSearchRequest() { Name = "ciasom" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
 
@@ -132,7 +132,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Persons.Add(person3);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { Name = "ciasom"};
+            var query = new PersonSearchRequest() { Name = "ciasom" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
 
@@ -285,7 +285,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Addresses.Add(address2);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { Postcode = "E8 1DY" , Name = person.FirstName };
+            var query = new PersonSearchRequest() { Postcode = "E8 1DY", Name = person.FirstName };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
 
@@ -389,7 +389,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Addresses.Add(address);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { Postcode = "E8 1DY" }; 
+            var query = new PersonSearchRequest() { Postcode = "E8 1DY" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
 
@@ -458,7 +458,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Addresses.Add(currentAddress);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { Name= "foo" };
+            var query = new PersonSearchRequest() { Name = "foo" };
 
             var (response, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
             response.First().Uprn.Should().Be(currentAddress.Uprn.ToString());
@@ -507,7 +507,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
         {
             var personRecords = new List<Person>();
 
-            for(int i = 0; i < 25; i++)
+            for (int i = 0; i < 25; i++)
             {
                 personRecords.Add(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "foo"));
             }

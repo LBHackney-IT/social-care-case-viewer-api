@@ -18,8 +18,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
         private SearchUseCase _searchUseCase = null!;
         private Mock<ISearchGateway> _mockSearchGateway = null!;
         private readonly Fixture _fixture = new Fixture();
-       // private const int MinimumLimit = 10;
-       // private const int MaximumLimit = 100;
 
         [SetUp]
         public void SetUp()
@@ -37,39 +35,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
 
             _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()), Times.Once);
         }
-
-        //cursor, count
-        //[Test]
-        //public void IfLimitLessThanTheMinimumWillUseTheMinimumLimit()
-        //{
-        //    _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0));
-        //    _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }, 0, 4);
-        //    _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), 0, MinimumLimit));
-        //}
-
-        //[Test]
-        //public void IfLimitIsOnTheMinimumBoundaryWillUseTheMinimumLimit()
-        //{
-        //    _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0));
-        //    _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }, 0, 10);
-        //    _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), 0, MinimumLimit));
-        //}
-
-        //[Test]
-        //public void IfLimitMoreThanTheMaximumWillUseTheMaximumLimit()
-        //{
-        //    _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), It.IsAny<int>(), It.IsAny<int>())).Returns((new List<ResidentInformation>(), 0));
-        //    _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }, 0, 400);
-        //    _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), 0, MaximumLimit));
-        //}
-
-        //[Test]
-        //public void IfLimitIsOnTheMaximumBoundaryWillUseTheMaximumLimit()
-        //{
-        //    _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), It.IsAny<int>(), It.IsAny<int>())).Returns((new List<ResidentInformation>(), 0));
-        //    _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }, 0, 100);
-        //    _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>(), 0, MaximumLimit));
-        //}
 
         [Test]
         public void ReturnsTheNextCursor()
@@ -92,7 +57,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
 
             _mockSearchGateway.Setup(x =>
                     x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()))
-                .Returns((residents.ToList(), 0, null)) ;
+                .Returns((residents.ToList(), 0, null));
 
             _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }).NextCursor.Should().Be("");
         }

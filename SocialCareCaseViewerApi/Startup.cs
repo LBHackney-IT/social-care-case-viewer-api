@@ -24,7 +24,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SocialCareCaseViewerApi
 {
-    public class Startup
+    public static class Startup
     {
         private static List<ApiVersionDescription> APIVersions { get; set; }
         private const string ApiName = "Social Care Case Viewer API";
@@ -117,8 +117,7 @@ namespace SocialCareCaseViewerApi
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
             services.AddDbContext<DatabaseContext>(
-                opt => opt.UseNpgsql(connectionString ?? throw new InvalidOperationException("Must provide CONNECTION_STRING environment variable"),
-                option => option.UseTrigrams()));
+                opt => opt.UseNpgsql(connectionString ?? throw new InvalidOperationException("Must provide CONNECTION_STRING environment variable")));
 
             services.AddSingleton<ISccvDbContext, SccvDbContext>();
 

@@ -28,7 +28,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         {
             if (!string.IsNullOrEmpty(request.PersonId))
             {
-                return Ok(_residentUseCase.GetResidentsByQuery(new ResidentQueryParam() { MosaicId = request.PersonId } , request.Cursor ?? 0, 20)); 
+                return Ok(_residentUseCase.GetResidentsByQuery(new ResidentQueryParam() { MosaicId = request.PersonId }, request.Cursor ?? 0, 20));
             }
             else
             {
