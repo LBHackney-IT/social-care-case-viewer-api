@@ -123,7 +123,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public AllocatedResidentsToTheTeamList GetAllocatedList(int teamId, string view)
         {
-            int totalCount = 0;
             var residents = new List<ResidentInformation>();
             var matchingPersons = _databaseGateway.GetPersonsByTeamId(teamId, view);
 
