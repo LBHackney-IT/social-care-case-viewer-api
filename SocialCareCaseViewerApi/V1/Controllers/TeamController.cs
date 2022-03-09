@@ -132,7 +132,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
         [Produces("application/json")]
         [HttpGet]
         [Route("{teamId}/allocations")]
-        public IActionResult GetTeamAllocationsById([FromQuery] GetTeamAllocationsRequest request, int teamId, int? cursor = 0, int? limit = 20)
+        public IActionResult GetTeamAllocationsById([FromQuery] GetTeamAllocationsRequest request, int teamId)
         {
             var validator = new GetTeamAllocationsRequestValidator();
             var validationResults = validator.Validate(request);
@@ -144,7 +144,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
 
             try
             {
-                return Ok(_residentUseCase.GetAllocatedList(teamId, request.View, (int) cursor, (int) limit));
+                return Ok(_residentUseCase.GetAllocatedList(teamId, request.View));
             }
             catch (Exception e) when (
                 e is TeamNotFoundException

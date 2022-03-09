@@ -25,18 +25,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
         {
             _mockDatabaseGateway = new Mock<IDatabaseGateway>();
             _residentUseCase = new ResidentUseCase(_mockDatabaseGateway.Object);
-
-            _mockDatabaseGateway.Setup(x => x.GetResidentsBySearchCriteria(It.IsAny<int>(), It.IsAny<int>(), null, null, null, null, null, null, null))
-               .Returns((new List<ResidentInformation>(), 0));
         }
 
         [Test]
         public void ReturnsEmptyListWhenTeamHasNoResidentsAssigned()
         {
             _residentUseCase
-                .GetAllocatedList(teamId: 1, view: "unallocated", cursor: 0, limit: 20)
+                .GetAllocatedList(teamId: 1, view: "unallocated")
                 .Should()
-                .BeEquivalentTo(new ResidentInformationList() { Residents = new List<ResidentInformation>(), NextCursor = "", TotalCount = 0 });
+                .BeEquivalentTo(new AllocatedResidentsToTheTeamList() { Residents = new List<ResidentInformation>() });
         }
 
         [Test]
@@ -55,9 +52,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
 
             _mockDatabaseGateway.Setup(x => x.GetPersonsByTeamId(1, "unallocated")).Returns(new List<Person>() { person });
             _residentUseCase
-                .GetAllocatedList(1, "unallocated", cursor: 0, limit: 20)
+                .GetAllocatedList(1, "unallocated")
                 .Should()
-                .BeEquivalentTo(new ResidentInformationList() { Residents = residents, NextCursor = "", TotalCount = 1 });
+                .BeEquivalentTo(new AllocatedResidentsToTheTeamList() { Residents = residents });
         }
 
 
@@ -107,7 +104,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
                 .Returns((residentsList.ToList()));
 
             var result = _residentUseCase
-                .GetAllocatedList(teamId: 1, view: "unallocated", cursor: 0, limit: 20);
+                .GetAllocatedList(teamId: 1, view: "unallocated");
 
             for (int i = 0; i < 8; i++)
             {
