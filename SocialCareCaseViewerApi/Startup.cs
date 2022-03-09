@@ -24,7 +24,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SocialCareCaseViewerApi
 {
-    public static class Startup
+    public class Startup
     {
         private static List<ApiVersionDescription> APIVersions { get; set; }
         private const string ApiName = "Social Care Case Viewer API";
