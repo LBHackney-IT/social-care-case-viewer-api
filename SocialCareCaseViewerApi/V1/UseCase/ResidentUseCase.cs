@@ -121,7 +121,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             };
         }
 
-        public ResidentInformationList GetAllocatedList(int teamId, string view, int cursor, int limit)
+        public AllocatedResidentsToTheTeamList GetAllocatedList(int teamId, string view)
         {
             int totalCount = 0;
             var residents = new List<ResidentInformation>();
@@ -134,14 +134,10 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                     .OrderByDescending(person => (RagRatingToNumber) Enum.Parse(typeof(RagRatingToNumber), person.ResidentTeams?.FirstOrDefault().RagRating, true));
                 residents.AddRange(orderedPersons.Select(person => person.ToResidentInformationResponse()));
             }
-            var nextCursor = residents.Count == limit ? residents.Max(r => long.Parse(r.MosaicId)).ToString() : "";
-            totalCount = residents.Count;
 
-            return new ResidentInformationList
+            return new AllocatedResidentsToTheTeamList
             {
-                Residents = residents,
-                NextCursor = nextCursor,
-                TotalCount = totalCount
+                Residents = residents
             };
         }
 
