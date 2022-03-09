@@ -265,6 +265,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             public SearchResultPerson[] SearchResults { get; set; } //should be ordered
             public int? NextOffset { get; set; } //in response object but outside of array} 
+            public int? TotalRecords { get; set; }
         }
 
         public class SearchResultPerson
@@ -289,7 +290,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var dbRecords = _databaseContext.Persons
-                    .Where(p => peopleIds.Contains(p.Id) && p.MarkedForDeletion == false)
+                    .Where(p => peopleIds.Contains(p.Id))
                     .Include(p => p.Addresses)
                     .Include(p => p.PhoneNumbers)
                     .Select(x => x.ToResidentInformationResponse()).ToList(); //20 or less people that the sql query returned
@@ -298,7 +299,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //loop through each list and insert the resident info into the dataSet
             foreach (var person in dbRecords)
             {
-                SearchResultPerson searchResultPerson = dataSet.Where(x => x.PersonId.ToString() == person.MosaicId).First();
+                SearchResultPerson searchResultPerson = dataSet.First(x => x.PersonId.ToString() == person.MosaicId);
                 searchResultPerson.Resident = person;
             }
             return dataSet;
