@@ -261,7 +261,44 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             return resident.ToResponse(address, names, phoneNumbers, caseNoteId, caseNoteErrorMessage);
         }
+        public class SearchResult
+        {
+            public SearchResultPerson[] SearchResults { get; set; } //should be ordered
+            public int? NextOffset { get; set; } //in response object but outside of array} 
+        }
 
+        public class SearchResultPerson {
+        //TODO: would hasNoKey be better?
+        public long PersonId { get; set; } //get the resident details
+        public int TotalRecords { get; set; }
+        public float Score { get; set; }
+        public int RowNumber { get; set; }
+        public ResidentInformationResponse? Resident { get; set; } }
+        
+        public SearchResultPerson[] Search (SearchResultPerson[] dataSet) {
+        // var dataSet = result sql query
+        // dbRecords = where personId > database to get residents
+        // returns resident details loses order by score
+        List<long> peopleIds = new List<long>();
+        foreach (var searchResult in dataSet){
+            peopleIds.Add(searchResult.PersonId); 
+        }
+        
+        var dbRecords = _databaseContext.Persons
+                .Where(p => peopleIds.Contains(p.Id) && p.MarkedForDeletion == false)
+                .Include(p => p.Addresses)
+                .Include(p => p.PhoneNumbers)
+                .Select(x => x.ToResidentInformationResponse()).ToList(); //20 or less people that the sql query returned
+
+        //TODO - insert resident details into the ordred dataSet
+        //loop through each list and insert the resident info into the dataSet
+        foreach (var person in dbRecords) {
+            SearchResultPerson searchResultPerson = dataSet.Where(x => x.PersonId.ToString() == person.MosaicId).First();
+            searchResultPerson.Resident = person;
+        }
+        return dataSet;
+    }
+    
         public void UpdatePerson(UpdatePersonRequest request)
         {
             Person person = _databaseContext
