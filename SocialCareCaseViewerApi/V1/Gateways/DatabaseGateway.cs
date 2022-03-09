@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Person> GetPersonsByTeamId(int teamId, string view)
+        public List<Person> GetResidentsByTeamId(int teamId, string view)
         {
             var results = new List<Person>();
             if (view == "unallocated")
