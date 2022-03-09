@@ -154,11 +154,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             var request = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
             var team = TestHelpers.CreateTeam();
 
-            var teamAllocationList = new ResidentInformationList()
+            var teamAllocationList = new AllocatedResidentsToTheTeamList()
             {
                 Residents = new List<ResidentInformation>() { TestHelpers.CreatePerson().ToResidentInformationResponse() }
             };
-            _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View, 0, 20)).Returns(teamAllocationList);
+            _residentUseCase.Setup(x => x.GetAllocatedList(team.Id, request.View)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, team.Id) as ObjectResult;
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamAllocationList);
@@ -169,8 +169,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         {
             var request = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
 
-            var teamAllocationList = new ResidentInformationList() { Residents = new List<ResidentInformation>() { } };
-            _residentUseCase.Setup(x => x.GetAllocatedList(0, request.View, 0, 20)).Returns(teamAllocationList);
+            var teamAllocationList = new AllocatedResidentsToTheTeamList() { Residents = new List<ResidentInformation>() { } };
+            _residentUseCase.Setup(x => x.GetAllocatedList(0, request.View)).Returns(teamAllocationList);
             var response = _teamController.GetTeamAllocationsById(request, 0) as ObjectResult;
             response?.StatusCode.Should().Be(200);
             response?.Value.Should().BeEquivalentTo(teamAllocationList);
@@ -193,7 +193,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
             const string errorMessage = "Team not found";
             var getTeamAllocationRequest = TestHelpers.CreateGetTeamAllocationsRequest("unallocated");
 
-            _residentUseCase.Setup(x => x.GetAllocatedList(1, "unallocated", 0, 20))
+            _residentUseCase.Setup(x => x.GetAllocatedList(1, "unallocated"))
                 .Throws(new TeamNotFoundException(errorMessage));
 
             var response = _teamController.GetTeamAllocationsById(getTeamAllocationRequest, 1) as ObjectResult;
