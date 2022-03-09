@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 CreatedBy = 1,
                 Summary = _faker.Lorem.Sentence(),
                 CarePackage = _faker.Name.Random.String(),
-                RagRating = _faker.Name.Random.String(),
+                RagRating = "red",
                 AllocationDate = _faker.Date.Recent()
             };
         }
@@ -68,6 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var request = GetValidRequest();
             request.TeamId = 0;
+            request.RagRating = "red";
             var validator = new AllocateResidentToTheTeamRequestValidator();
 
             var validationResponse = validator.Validate(request);
