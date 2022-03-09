@@ -36,6 +36,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .GreaterThan(0).WithMessage("Resident Id must be grater than 0");
             RuleFor(x => x.TeamId)
                 .GreaterThan(0).WithMessage("Team Id must be grater than 0");
+            RuleFor(x => x.RagRating)
+                .NotNull().WithMessage("RAG rating must be provided")
+                .Matches("(?i:^green|red|amber|purple)").WithMessage("RAG rating must be 'green', 'red', 'amber' or 'purple'");
         }
     }
 }

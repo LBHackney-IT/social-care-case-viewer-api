@@ -47,12 +47,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<Person> GetPersonsByTeamId(int teamId, string view)
         {
             var results = new List<Person>();
+            // here(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
             if (view == "unallocated")
             {
                 results = _databaseContext.Persons
                     .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
                     .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
-                    .Where(x => teamId == x.ResidentTeams.FirstOrDefault().TeamId && teamId != x.ResidentWorkers.FirstOrDefault().TeamId && x.MarkedForDeletion == false).ToList();
+                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId) && x.ResidentWorkers.FirstOrDefault().TeamId != teamId && x.MarkedForDeletion == false).ToList();
             }
 
             return results;
