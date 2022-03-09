@@ -177,7 +177,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers
         }
 
         [Test]
-        public void GetTeamAllocationsReturnsWhenValidationResultsIsNotValid()
+        public void GetTeamAllocationsReturns400WhenValidationResultsIsNotValid()
         {
             var getTeamAllocationRequest = TestHelpers.CreateGetTeamAllocationsRequest("");
 

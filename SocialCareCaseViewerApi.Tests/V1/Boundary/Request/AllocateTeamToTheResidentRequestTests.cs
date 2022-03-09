@@ -75,5 +75,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             validationResponse.IsValid.Should().Be(false);
             validationResponse.ToString().Should().Be("Team Id must be grater than 0");
         }
+
+        [Test]
+        public void ValidationFailsIfRagRatingDifferentThanExpected()
+        {
+            var request = GetValidRequest();
+            request.RagRating = "Yellow";
+            var validator = new AllocateResidentToTheTeamRequestValidator();
+
+            var validationResponse = validator.Validate(request);
+
+            validationResponse.IsValid.Should().Be(false);
+            validationResponse.ToString().Should().Be("RAG rating must be 'green', 'red', 'amber' or 'purple'");
+        }
+        [Test]
+        public void ValidationFailsIfRagRatingNull()
+        {
+            var request = GetValidRequest();
+            request.RagRating = null;
+            var validator = new AllocateResidentToTheTeamRequestValidator();
+
+            var validationResponse = validator.Validate(request);
+
+            validationResponse.IsValid.Should().Be(false);
+            validationResponse.ToString().Should().Be("RAG rating must be provided");
+        }
+
     }
 }
