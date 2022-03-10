@@ -1260,9 +1260,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             submission.EditHistory =
                 new List<EditHistory<Worker>> {new EditHistory<Worker> {Worker = workers.First(), EditTime = DateTime.Now}};
 
-            var (caseSubmissionResponse, _) = _formSubmissionsUseCase.ExecutePost(request);
+            var (caseSubmissionResponse, caseSubmissionForPost) = _formSubmissionsUseCase.ExecutePost(request);
 
-            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), submission), Times.Once);
+            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), caseSubmissionForPost), Times.Once);
+
+            caseSubmissionForPost.FormId.Should().Be(submission.FormId);
+            caseSubmissionForPost.Residents.Should().BeEquivalentTo(submission.Residents);
+            caseSubmissionForPost.Workers.Should().BeEquivalentTo(submission.Workers);
+            // caseSubmissionForPost.CreatedAt.Should().Be(submission.CreatedAt);
+            caseSubmissionForPost.CreatedBy.Should().Be(submission.CreatedBy);
+            caseSubmissionForPost.PinnedAt.Should().Be(submission.PinnedAt);
+            caseSubmissionForPost.SubmissionState.Should().Be(submission.SubmissionState);
+            caseSubmissionForPost.FormAnswers.Should().BeEquivalentTo(submission.FormAnswers);
+            // caseSubmissionForPost.EditHistory.Should().BeEquivalentTo(submission.EditHistory);
 
             caseSubmissionResponse.Residents.First().Addresses.First().Person.Should().BeNull();
             caseSubmissionResponse.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
