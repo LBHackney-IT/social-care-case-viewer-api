@@ -700,11 +700,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var residentTeams = resident.ResidentTeams;
 
-            if (residentTeams != null)
-            {
-                _databaseContext.ResidentTeams.RemoveRange(residentTeams);
-            }
-
             _databaseContext.ResidentTeams.Add(allocationTeam);
             _databaseContext.SaveChanges();
 
