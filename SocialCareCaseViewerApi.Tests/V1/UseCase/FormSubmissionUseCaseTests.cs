@@ -1219,9 +1219,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = TestHelpers.CreateCaseSubmissionRequest();
             var workers = new List<Worker> { TestHelpers.CreateWorker() };
 
-            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers.First);
-            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents.First);
-
             residents.First().Addresses.First().Person.Should().NotBeNull();
             residents.First().PhoneNumbers.First().Person.Should().NotBeNull();
             residents.First().OtherNames.First().Person.Should().NotBeNull();
@@ -1234,57 +1231,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             residents.First().Emails.First().Person.Should().NotBeNull();
             residents.First().LastUpdated.First().Person.Should().NotBeNull();
 
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers.First);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents.First);
 
-            var sanitisedPerson = person;
-            sanitisedPerson.Addresses.First().Person = null;
-            sanitisedPerson.PhoneNumbers.First().Person = null;
-            sanitisedPerson.OtherNames.First().Person = null;
-            sanitisedPerson.Allocations.First().Person = null;
-            sanitisedPerson.WarningNotes.First().Person = null;
-            sanitisedPerson.KeyContacts.First().Person = null;
-            sanitisedPerson.GpDetails.First().Person = null;
-            sanitisedPerson.TechUse.First().Person = null;
-            sanitisedPerson.Disability.First().Person = null;
-            sanitisedPerson.Emails.First().Person = null;
-            sanitisedPerson.LastUpdated.First().Person = null;
+            var (_, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
 
-            var submission = TestHelpers.CreateCaseSubmission(deleted: false, formId: FormIdName.ChildCaseNote);
-            submission.FormId = request.FormId;
-            submission.Residents = new List<Person> { sanitisedPerson };
-            submission.Workers = workers;
-            submission.CreatedAt = DateTime.Now;
-            submission.CreatedBy = workers.First();
-            submission.PinnedAt = request.PinnedAt;
-            submission.SubmissionState = SubmissionState.InProgress;
-            submission.FormAnswers = new Dictionary<string, string>();
-            submission.EditHistory =
-                new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = workers.First(), EditTime = DateTime.Now } };
+            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), caseSubmission), Times.Once);
 
-            var (caseSubmissionResponse, caseSubmissionForPost) = _formSubmissionsUseCase.ExecutePost(request);
-
-            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), caseSubmissionForPost), Times.Once);
-
-            caseSubmissionForPost.FormId.Should().Be(submission.FormId);
-            caseSubmissionForPost.Residents.Should().BeEquivalentTo(submission.Residents);
-            caseSubmissionForPost.Workers.Should().BeEquivalentTo(submission.Workers);
-            // caseSubmissionForPost.CreatedAt.Should().Be(submission.CreatedAt);
-            caseSubmissionForPost.CreatedBy.Should().Be(submission.CreatedBy);
-            caseSubmissionForPost.PinnedAt.Should().Be(submission.PinnedAt);
-            caseSubmissionForPost.SubmissionState.Should().Be(submission.SubmissionState);
-            caseSubmissionForPost.FormAnswers.Should().BeEquivalentTo(submission.FormAnswers);
-            // caseSubmissionForPost.EditHistory.Should().BeEquivalentTo(submission.EditHistory);
-
-            caseSubmissionResponse.Residents.First().Addresses.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().OtherNames.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().Allocations.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().WarningNotes.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().KeyContacts.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().GpDetails.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().TechUse.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().Disability.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().Emails.First().Person.Should().BeNull();
-            caseSubmissionResponse.Residents.First().LastUpdated.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Addresses.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().OtherNames.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Allocations.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().WarningNotes.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().KeyContacts.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().GpDetails.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().TechUse.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Disability.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Emails.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().LastUpdated.First().Person.Should().BeNull();
         }
     }
 }
