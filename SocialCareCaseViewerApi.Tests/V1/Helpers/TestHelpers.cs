@@ -214,58 +214,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static LastUpdated CreateLastUpdated(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<LastUpdated>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static EmailAddress CreateEmailAddress(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<EmailAddress>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static Disability CreateDisability(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<Disability>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static KeyContact CreateKeyContact(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<KeyContact>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static TechUse CreateTechUse(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<TechUse>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static GpDetails CreateGpDetails(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<GpDetails>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static AllocationSet CreatePersonAllocationSet(long? personId = null)
         {
-            var person = CreatePerson();
-
             return new Faker<AllocationSet>()
-                .RuleFor(p => p.PersonId, personId ?? person.Id);
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
         public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
