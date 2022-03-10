@@ -1235,7 +1235,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             residents.First().Emails.First().Person.Should().NotBeNull();
             residents.First().LastUpdated.First().Person.Should().NotBeNull();
 
-            var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
+            var (caseSubmissionResponse, _) = _formSubmissionsUseCase.ExecutePost(request);
 
             caseSubmissionResponse.Residents.First().Addresses.First().Person.Should().BeNull();
             caseSubmissionResponse.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
