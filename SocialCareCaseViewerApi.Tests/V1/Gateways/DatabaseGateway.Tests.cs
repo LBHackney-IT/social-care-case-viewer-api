@@ -1572,9 +1572,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id));
             resident.ResidentTeams.Add(residentTeam);
 
-            var residentWorker = SaveResidentWorkerToDatabase(DatabaseGatewayHelper.CreateResidentWorkerDatabaseEntity(id: 1, teamId: 2, residentId: resident.Id, workerId: worker.Id));
-            resident.ResidentWorkers.Add(residentWorker);
-
             var allocationRequest = new AllocateResidentToTheTeamRequest()
             {
                 PersonId = resident.Id,
@@ -1584,7 +1581,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.AllocateResidentToTheTeam(allocationRequest);
 
-            resident.ResidentTeams.First().TeamId.Should().NotBe(resident.ResidentWorkers.First().TeamId);
+            resident.ResidentTeams.First().Worker.Should().Be(null);
 
             var result = _classUnderTest.GetResidentsByTeamId((int) team.Id, "unallocated");
             var residents = new List<Person> { resident };
