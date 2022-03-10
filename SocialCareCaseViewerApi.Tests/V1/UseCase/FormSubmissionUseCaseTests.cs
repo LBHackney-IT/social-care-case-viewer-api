@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers[0]);
             _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents[0]);
-            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
+
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
@@ -1221,7 +1221,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers.First);
             _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents.First);
-            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
 
             residents.First().Addresses.First().Person.Should().NotBeNull();
             residents.First().PhoneNumbers.First().Person.Should().NotBeNull();
@@ -1235,7 +1234,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             residents.First().Emails.First().Person.Should().NotBeNull();
             residents.First().LastUpdated.First().Person.Should().NotBeNull();
 
+
+            var sanitisedPerson = person;
+            sanitisedPerson.Addresses.First().Person = null;
+            sanitisedPerson.PhoneNumbers.First().Person = null;
+            sanitisedPerson.OtherNames.First().Person = null;
+            sanitisedPerson.Allocations.First().Person = null;
+            sanitisedPerson.WarningNotes.First().Person = null;
+            sanitisedPerson.KeyContacts.First().Person = null;
+            sanitisedPerson.GpDetails.First().Person = null;
+            sanitisedPerson.TechUse.First().Person = null;
+            sanitisedPerson.Disability.First().Person = null;
+            sanitisedPerson.Emails.First().Person = null;
+            sanitisedPerson.LastUpdated.First().Person = null;
+
+            var submission = TestHelpers.CreateCaseSubmission(deleted: false, formId: FormIdName.ChildCaseNote);
+            submission.FormId = request.FormId;
+            submission.Residents = new List<Person> { sanitisedPerson };
+            submission.Workers = workers;
+            submission.CreatedAt = DateTime.Now;
+            submission.CreatedBy = workers.First();
+            submission.PinnedAt = request.PinnedAt;
+            submission.SubmissionState = SubmissionState.InProgress;
+            submission.FormAnswers = new Dictionary<string, string>();
+            submission.EditHistory =
+                new List<EditHistory<Worker>> {new EditHistory<Worker> {Worker = workers.First(), EditTime = DateTime.Now}};
+
             var (caseSubmissionResponse, _) = _formSubmissionsUseCase.ExecutePost(request);
+
+            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), submission), Times.Once);
 
             caseSubmissionResponse.Residents.First().Addresses.First().Person.Should().BeNull();
             caseSubmissionResponse.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
