@@ -20,6 +20,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Required]
         public long PersonId { get; set; }
 
+        [ForeignKey("WorkerId")]
+        public Worker Worker { get; set; }
+
+        [Column("worker_id")]
+        [Required]
+        public int WorkerId { get; set; }
+
         [ForeignKey("TeamId")]
         public Team Team { get; set; }
 
@@ -40,10 +47,13 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DateTime AllocationDate { get; set; }
 
         [ForeignKey("CreatedBy")]
-        public Worker Worker { get; set; }
+        public Worker CreatedByWorker { get; set; }
 
         [Column("created_by")]
         public int CreatedBy { get; set; }
+
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
 
         [ForeignKey("DeallocatedBy")]
         public Worker DeallocationWorker { get; set; }

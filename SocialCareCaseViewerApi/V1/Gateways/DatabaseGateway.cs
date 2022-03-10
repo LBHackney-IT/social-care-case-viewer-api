@@ -47,15 +47,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<Person> GetResidentsByTeamId(int teamId, string view)
         {
             var results = new List<Person>();
+            var test = new List<Person>();
+            var test_2 = new List<Person>();
             if (view == "unallocated")
             {
+                test = _databaseContext.Persons
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team).ToList();
+                test_2 = test.Where(x =>
+                        x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null) &&
+                        x.MarkedForDeletion == false)
+                    .ToList();
                 results = _databaseContext.Persons
-                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team)
-                    .Include(x => x.ResidentWorkers).ThenInclude(x => x.Worker)
-                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId) && x.ResidentWorkers.FirstOrDefault().TeamId != teamId && x.MarkedForDeletion == false).ToList();
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team).ToList()
+                    .Where(x => x.ResidentTeams.Any(x => (x.TeamId == teamId && x.Worker == null)) && x.MarkedForDeletion == false).ToList();
             }
 
-            return results;
+            return test_2;
         }
 
         public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail)
