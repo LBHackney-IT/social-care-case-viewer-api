@@ -1258,7 +1258,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             submission.SubmissionState = SubmissionState.InProgress;
             submission.FormAnswers = new Dictionary<string, string>();
             submission.EditHistory =
-                new List<EditHistory<Worker>> {new EditHistory<Worker> {Worker = workers.First(), EditTime = DateTime.Now}};
+                new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = workers.First(), EditTime = DateTime.Now } };
 
             var (caseSubmissionResponse, caseSubmissionForPost) = _formSubmissionsUseCase.ExecutePost(request);
 
