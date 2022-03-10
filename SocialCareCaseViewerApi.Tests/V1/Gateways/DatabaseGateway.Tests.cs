@@ -1615,13 +1615,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             return team;
         }
 
-        private ResidentWorker SaveResidentWorkerToDatabase(ResidentWorker worker)
-        {
-            DatabaseContext.ResidentWorkers.Add(worker);
-            DatabaseContext.SaveChanges();
-            return worker;
-        }
-
         private dbAddress SaveAddressToDatabase(dbAddress address)
         {
             DatabaseContext.Addresses.Add(address);
