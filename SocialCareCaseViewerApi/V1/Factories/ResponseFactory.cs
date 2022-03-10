@@ -331,7 +331,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Restricted = person.Restricted,
                 AddressList = person.Addresses?.Count > 0 ? person.Addresses.ToResponse() : null,
                 ResidentTeams = person.ResidentTeams?.Count > 0 ? person.ResidentTeams.ToResponse() : null,
-                ResidentWorkers = person.ResidentWorkers?.Count > 0 ? person.ResidentWorkers.ToResponse() : null,
                 PhoneNumber = person.PhoneNumbers?.Count > 0 ? person.PhoneNumbers.ToResponse() : null,
                 Uprn = person.Addresses?.FirstOrDefault(a => a.EndDate == null)?.Uprn?.ToString() //use same logic as in legacy platform API for compatibility
             };
@@ -412,15 +411,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 RagRating = team.RagRating
             }).ToList();
         }
-
-        public static ResidentWorkerResponse ToResponse(this dbResidentWorker team)
-        {
-            return new ResidentWorkerResponse
-            {
-                Id = team.Id
-            };
-        }
-
 
         public static List<ResidentWorkerResponse> ToResponse(this List<dbResidentWorker> worker)
         {

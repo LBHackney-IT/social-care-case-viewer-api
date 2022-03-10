@@ -28,8 +28,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         public List<ResidentTeam>? ResidentTeams { get; set; }
 
-        public List<ResidentWorker>? ResidentWorkers { get; set; }
-
         [InverseProperty("Person")]
         public List<PersonalRelationship> PersonalRelationships { get; set; }
 
