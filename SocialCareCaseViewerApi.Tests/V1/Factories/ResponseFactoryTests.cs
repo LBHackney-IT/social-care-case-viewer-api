@@ -683,21 +683,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
 
             response.Should().BeEquivalentTo(expectedResponse);
         }
-
-        [Test]
-        public void CanMapResidentWorkerFromInfrastructureToResponse()
-        {
-
-            var dbResidentWorker = TestHelpers.CreateResidentWorker();
-
-            var expectedResponse = new ResidentWorkerResponse()
-            {
-                Id = dbResidentWorker.Id
-            };
-
-            var response = dbResidentWorker.ToResponse();
-
-            response.Should().BeEquivalentTo(expectedResponse);
-        }
     }
 }

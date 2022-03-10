@@ -52,9 +52,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("created_by")]
         public int CreatedBy { get; set; }
 
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
-
         [ForeignKey("DeallocatedBy")]
         public Worker DeallocationWorker { get; set; }
 
