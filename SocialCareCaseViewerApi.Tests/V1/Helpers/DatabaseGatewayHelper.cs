@@ -48,19 +48,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             };
         }
 
-
-        public static ResidentWorker CreateResidentWorkerDatabaseEntity(int id, int teamId, long residentId, int workerId)
-        {
-            return new ResidentWorker
-            {
-                Id = id,
-                WorkerId = workerId,
-                TeamId = teamId,
-                PersonId = residentId,
-            };
-        }
-
-
         public static dbPerson CreatePersonDatabaseEntity(long? personId = null, string firstName = null, string lastName = null, bool markedForDeletion = false)
         {
             string fName = string.IsNullOrEmpty(firstName) ? "First" : firstName;
