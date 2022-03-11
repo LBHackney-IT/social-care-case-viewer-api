@@ -54,6 +54,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .ThenInclude(x => x.Team).ToList()
                     .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null && x.DeallocationWorker == null) && x.MarkedForDeletion == false).ToList();
             }
+            if (view == "allocated")
+            {
+                results = _databaseContext.Persons
+                    .Include(x => x.ResidentTeams)
+                    .ThenInclude(x => x.Team).ToList()
+                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker != null && x.DeallocationWorker == null) && x.MarkedForDeletion == false).ToList();
+            }
 
             return results;
         }

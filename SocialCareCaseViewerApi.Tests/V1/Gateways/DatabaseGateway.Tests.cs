@@ -1567,19 +1567,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2));
 
             var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id, workerId: 1));
             resident.ResidentTeams.Add(residentTeam);
-
-            var allocationRequest = new AllocateResidentToTheTeamRequest()
-            {
-                PersonId = resident.Id,
-                TeamId = team.Id,
-                CreatedBy = worker.Id
-            };
-
-            _classUnderTest.AllocateResidentToTheTeam(allocationRequest);
 
             resident.ResidentTeams.First().Worker.Should().Be(null);
 
