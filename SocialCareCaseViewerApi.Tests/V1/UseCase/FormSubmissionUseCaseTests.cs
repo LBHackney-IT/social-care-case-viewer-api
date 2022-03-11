@@ -1160,7 +1160,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         [TestCase(FormIdName.ChildCaseNote)]
         [TestCase(FormIdName.AdultCaseNote)]
-        public void ExcecuteDeleteCallsMongoDbGaetwayWhenTheSubmissionTypeIsSupported(string formId)
+        public void ExcecuteDeleteCallsMongoDbGatewayWhenTheSubmissionTypeIsSupported(string formId)
         {
             var request = TestHelpers.DeleteCaseSubmissionRequest();
             var submission = TestHelpers.CreateCaseSubmission(formId: formId);
