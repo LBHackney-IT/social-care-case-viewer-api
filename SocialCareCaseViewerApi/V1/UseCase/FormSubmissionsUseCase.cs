@@ -417,6 +417,48 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 name.Person = null;
             }
 
+            for (var index = 0; index < residentToSanitise.WarningNotes?.Count; index++)
+            {
+                var name = residentToSanitise.WarningNotes[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.GpDetails?.Count; index++)
+            {
+                var name = residentToSanitise.GpDetails[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.TechUse?.Count; index++)
+            {
+                var name = residentToSanitise.TechUse[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Disability?.Count; index++)
+            {
+                var name = residentToSanitise.Disability[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Emails?.Count; index++)
+            {
+                var name = residentToSanitise.Emails[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.LastUpdated?.Count; index++)
+            {
+                var name = residentToSanitise.LastUpdated[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.KeyContacts?.Count; index++)
+            {
+                var name = residentToSanitise.KeyContacts[index];
+                name.Person = null;
+            }
+
             for (var index = 0; index < residentToSanitise.Allocations?.Count; index++)
             {
                 var allocation = residentToSanitise.Allocations[index];

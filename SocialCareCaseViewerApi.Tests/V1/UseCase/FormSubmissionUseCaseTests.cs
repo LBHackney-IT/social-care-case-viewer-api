@@ -55,7 +55,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers[0]);
             _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents[0]);
-            _mockMongoGateway.Setup(x => x.InsertRecord(It.IsAny<string>(), It.IsAny<CaseSubmission>()));
+
 
             var (caseSubmissionResponse, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
             var expectedResponse = TestHelpers.CreateCaseSubmission(SubmissionState.InProgress,
@@ -1173,6 +1173,82 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             _formSubmissionsUseCase.ExecuteDelete(submission.SubmissionId.ToString(), request);
 
             _mockMongoGateway.Verify(x => x.UpsertRecord(CollectionName, ObjectId.Parse(submission.SubmissionId.ToString()), submission), Times.Once);
+        }
+
+        [Test]
+        public void SanitiseResidentReturnsResidentWithoutRelatedObjects()
+        {
+            var person = TestHelpers.CreatePersonWithRelatedAttributes();
+
+            var address = TestHelpers.CreateAddress(person.Id);
+            address.Person = person;
+            var phoneNumber = TestHelpers.CreatePhoneNumber(person.Id);
+            phoneNumber.Person = person;
+            var otherName = TestHelpers.CreatePersonOtherName(person.Id);
+            otherName.Person = person;
+            var allocation = TestHelpers.CreatePersonAllocationSet(person.Id);
+            allocation.Person = person;
+            var warningNote = TestHelpers.CreateWarningNote(person.Id);
+            warningNote.Person = person;
+            var keyContact = TestHelpers.CreateKeyContact(person.Id);
+            keyContact.Person = person;
+            var gpDetails = TestHelpers.CreateGpDetails(person.Id);
+            gpDetails.Person = person;
+            var techUse = TestHelpers.CreateTechUse(person.Id);
+            techUse.Person = person;
+            var disability = TestHelpers.CreateDisability(person.Id);
+            disability.Person = person;
+            var emailAddress = TestHelpers.CreateEmailAddress(person.Id);
+            emailAddress.Person = person;
+            var lastUpdated = TestHelpers.CreateLastUpdated(person.Id);
+            lastUpdated.Person = person;
+
+            person.Addresses.Add(address);
+            person.PhoneNumbers.Add(phoneNumber);
+            person.OtherNames.Add(otherName);
+            person.Allocations.Add(allocation);
+            person.WarningNotes.Add(warningNote);
+            person.KeyContacts?.Add(keyContact);
+            person.GpDetails?.Add(gpDetails);
+            person.TechUse?.Add(techUse);
+            person.Disability?.Add(disability);
+            person.Emails?.Add(emailAddress);
+            person.LastUpdated?.Add(lastUpdated);
+
+            var residents = new List<Person> { person };
+            var request = TestHelpers.CreateCaseSubmissionRequest();
+            var workers = new List<Worker> { TestHelpers.CreateWorker() };
+
+            residents.First().Addresses.First().Person.Should().NotBeNull();
+            residents.First().PhoneNumbers.First().Person.Should().NotBeNull();
+            residents.First().OtherNames.First().Person.Should().NotBeNull();
+            residents.First().Allocations.First().Person.Should().NotBeNull();
+            residents.First().WarningNotes.First().Person.Should().NotBeNull();
+            residents.First().KeyContacts.First().Person.Should().NotBeNull();
+            residents.First().GpDetails.First().Person.Should().NotBeNull();
+            residents.First().TechUse.First().Person.Should().NotBeNull();
+            residents.First().Disability.First().Person.Should().NotBeNull();
+            residents.First().Emails.First().Person.Should().NotBeNull();
+            residents.First().LastUpdated.First().Person.Should().NotBeNull();
+
+            _mockDatabaseGateway.Setup(x => x.GetWorkerByEmail(request.CreatedBy)).Returns(workers.First);
+            _mockDatabaseGateway.Setup(x => x.GetPersonDetailsById(request.ResidentId)).Returns(residents.First);
+
+            var (_, caseSubmission) = _formSubmissionsUseCase.ExecutePost(request);
+
+            _mockMongoGateway.Verify(x => x.InsertRecord(It.IsAny<string>(), caseSubmission), Times.Once);
+
+            caseSubmission.Residents.First().Addresses.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().PhoneNumbers.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().OtherNames.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Allocations.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().WarningNotes.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().KeyContacts.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().GpDetails.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().TechUse.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Disability.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().Emails.First().Person.Should().BeNull();
+            caseSubmission.Residents.First().LastUpdated.First().Person.Should().BeNull();
         }
     }
 }
