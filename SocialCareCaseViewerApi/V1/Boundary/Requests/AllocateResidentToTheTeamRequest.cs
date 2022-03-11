@@ -12,6 +12,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [JsonPropertyName("allocatedTeamId")]
         public int TeamId { get; set; }
 
+        [JsonPropertyName("workerId")]
+        public int WorkerId { get; set; }
+
         [JsonPropertyName("createdBy")]
         public int CreatedBy { get; set; }
 

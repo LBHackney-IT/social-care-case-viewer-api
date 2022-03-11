@@ -52,7 +52,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 results = _databaseContext.Persons
                     .Include(x => x.ResidentTeams)
                     .ThenInclude(x => x.Team).ToList()
-                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null) && x.MarkedForDeletion == false).ToList();
+                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null && x.DeallocationWorker == null) && x.MarkedForDeletion == false).ToList();
             }
 
             return results;

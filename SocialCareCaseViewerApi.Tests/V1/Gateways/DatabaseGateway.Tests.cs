@@ -1567,9 +1567,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         {
             var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
-            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 2));
 
-            var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id));
+            var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id, workerId: 1));
             resident.ResidentTeams.Add(residentTeam);
 
             var allocationRequest = new AllocateResidentToTheTeamRequest()
@@ -1584,6 +1584,23 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             resident.ResidentTeams.First().Worker.Should().Be(null);
 
             var result = _classUnderTest.GetResidentsByTeamId((int) team.Id, "unallocated");
+            var residents = new List<Person> { resident };
+            result.Should().BeEquivalentTo(residents);
+        }
+
+        [Test]
+        public void GetResidentsByTeamIdAllocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        {
+            var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
+
+            var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id, workerId: worker.Id));
+            resident.ResidentTeams.Add(residentTeam);
+
+            resident.ResidentTeams.First().WorkerId.Should().Be(worker.Id);
+
+            var result = _classUnderTest.GetResidentsByTeamId((int) team.Id, "allocated");
             var residents = new List<Person> { resident };
             result.Should().BeEquivalentTo(residents);
         }

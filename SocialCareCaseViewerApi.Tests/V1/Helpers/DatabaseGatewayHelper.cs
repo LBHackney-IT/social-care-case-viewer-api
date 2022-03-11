@@ -38,12 +38,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
 
-        public static ResidentTeam CreateResidentTeamDatabaseEntity(int id, int teamId, long residentId)
+        public static ResidentTeam CreateResidentTeamDatabaseEntity(int id, int teamId, long residentId, int workerId)
         {
             return new ResidentTeam
             {
                 Id = id,
                 TeamId = teamId,
+                WorkerId = workerId,
                 PersonId = residentId
             };
         }
