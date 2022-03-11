@@ -68,7 +68,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var request = GetValidRequest();
             request.TeamId = 0;
+<<<<<<< HEAD
             request.RagRating = "red";
+=======
+>>>>>>> allocate_team_to_resident
             var validator = new AllocateResidentToTheTeamRequestValidator();
 
             var validationResponse = validator.Validate(request);
@@ -76,6 +79,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             validationResponse.IsValid.Should().Be(false);
             validationResponse.ToString().Should().Be("Team Id must be grater than 0");
         }
+<<<<<<< HEAD
 
         [Test]
         public void ValidationFailsIfRagRatingDifferentThanExpected()
@@ -102,5 +106,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             validationResponse.ToString().Should().Be("RAG rating must be provided");
         }
 
+=======
+>>>>>>> allocate_team_to_resident
     }
 }

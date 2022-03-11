@@ -404,7 +404,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 foreach (var email in request.Emails)
                 {
-                    person.Emails.Add(email.ToEntity(person.Id));
+                    person.Emails.Add(email.ToEntity());
                 }
             }
 

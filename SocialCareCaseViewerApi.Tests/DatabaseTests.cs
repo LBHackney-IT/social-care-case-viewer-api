@@ -22,6 +22,10 @@ namespace SocialCareCaseViewerApi.Tests
             DatabaseContext = new DatabaseContext(builder.Options);
 
             DatabaseContext.Database.EnsureCreated();
+
+            DatabaseContext.Database.ExecuteSqlRaw("CREATE EXTENSION IF NOT EXISTS pg_trgm;");
+            DatabaseContext.Database.ExecuteSqlRaw("CREATE EXTENSION IF NOT EXISTS btree_gin;");
+
             _transaction = DatabaseContext.Database.BeginTransaction();
 
             MongoDbTestContext = new MongoDbTestContext();
