@@ -16,6 +16,9 @@ using System.Text.RegularExpressions;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
 using Address = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
+using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
@@ -266,6 +269,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
+                .Include(x => x.KeyContacts)
+                .Include(x => x.GpDetails)
+                .Include(x => x.TechUse)
+                .Include(x => x.Disability)
+                .Include(x => x.Emails)
+                .Include(x => x.LastUpdated)
                 .FirstOrDefault(x => x.Id == request.Id);
 
             if (person == null)
@@ -290,6 +299,100 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.Restricted = request.Restricted;
             person.SexualOrientation = request.SexualOrientation;
             person.Title = request.Title;
+            person.FluentInEnglish = request.FluentInEnglish;
+            person.InterpreterNeeded = request.InterpreterNeeded;
+            person.CommunicationDifficulties = request.CommunicationDifficulties;
+            person.DifficultyMakingDecisions = request.DifficultyMakingDecisions;
+            person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails;
+            person.Employment = request.Employment;
+            person.AllocatedTeam = request.AllocatedTeam;
+            person.PreferredLanguage = request.PreferredLanguage;
+            person.Nationality = request.Nationality;
+            person.CreatedBy = request.CreatedBy;
+            person.Pronoun = request.Pronoun;
+            person.GenderAssignedAtBirth = request.GenderAssignedAtBirth;
+            person.MaritalStatus = request.MaritalStatus;
+            person.ImmigrationStatus = request.ImmigrationStatus;
+            person.PrimarySupportReason = request.PrimarySupportReason;
+            person.CareProvider = request.CareProvider;
+            person.LivingSituation = request.LivingSituation;
+            person.TenureType = request.TenureType;
+            person.AccomodationType = request.AccomodationType;
+            person.AccessToHome = request.AccessToHome;
+            person.HousingOfficer = request.HousingOfficer;
+            person.HousingStaffInContact = request.HousingStaffInContact;
+            person.CautionaryAlert = request.CautionaryAlert;
+            person.PossessionEvictionOrder = request.PossessionEvictionOrder;
+            person.RentRecord = request.RentRecord;
+            person.HousingBenefit = request.HousingBenefit;
+            person.CouncilTenureType = request.CouncilTenureType;
+            person.MentalHealthSectionStatus = request.MentalHealthSectionStatus;
+            person.DeafRegister = request.DeafRegister;
+            person.BlindRegister = request.BlindRegister;
+            person.BlueBadge = request.BlueBadge;
+            person.OpenCase = request.OpenCase;
+
+            //replace Last Updated
+            _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
+
+            if (request.LastUpdated != null)
+            {
+                foreach (var entry in request.LastUpdated)
+                {
+                    person.LastUpdated.Add(entry.ToEntity(person.Id));
+                }
+            }
+
+            //replace tech used
+            _databaseContext.TechUse.RemoveRange(person.TechUse);
+
+            if (request.TechUse != null)
+            {
+                foreach (var entry in request.TechUse)
+                {
+                    person.TechUse.Add(new dbTechUse { TechType = entry, PersonId = person.Id, });
+                }
+            }
+
+            //replace disabilities
+            _databaseContext.Disabilities.RemoveRange(person.Disability);
+
+            if (request.Disabilities != null)
+            {
+                foreach (var entry in request.Disabilities)
+                {
+                    person.Disability.Add(new dbDisability { DisabilityType = entry, PersonId = person.Id, });
+                }
+            }
+            //replace key contacts
+            _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
+
+            if (request.KeyContacts != null)
+            {
+                foreach (var contact in request.KeyContacts)
+                {
+                    person.KeyContacts.Add(contact.ToEntity(person.Id));
+                }
+            }
+
+            //replace gp details
+            _databaseContext.GpDetails.RemoveRange(person.GpDetails);
+
+            if (request.GpDetails != null)
+            {
+                person.GpDetails.Add(request.GpDetails.ToEntity(person.Id));
+            }
+
+            //replace emails
+            _databaseContext.Emails.RemoveRange(person.Emails);
+
+            if (request.Emails != null)
+            {
+                foreach (var email in request.Emails)
+                {
+                    person.Emails.Add(email.ToEntity());
+                }
+            }
 
             //replace phone numbers
             _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
@@ -861,6 +964,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
                 .Include(x => x.OtherNames)
+                .Include(x => x.KeyContacts)
+                .Include(x => x.GpDetails)
+                .Include(x => x.TechUse)
+                .Include(x => x.Disability)
+                .Include(x => x.Emails)
+                .Include(x => x.LastUpdated)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)

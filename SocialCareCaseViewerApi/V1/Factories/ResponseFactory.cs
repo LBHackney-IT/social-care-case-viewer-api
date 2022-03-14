@@ -14,7 +14,6 @@ using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using AddressResponse = SocialCareCaseViewerApi.V1.Boundary.Response.Address;
 using CaseStatus = SocialCareCaseViewerApi.V1.Domain.CaseStatus;
-using MashReferral = SocialCareCaseViewerApi.V1.Boundary.Response.MashReferral;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 
 #nullable enable
@@ -145,10 +144,13 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             //get the current display address
             var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+            var displayGpDetails = person.GpDetails?.FirstOrDefault();
 
             return new GetPersonResponse()
             {
                 SexualOrientation = person.SexualOrientation,
+                Pronoun = person.Pronoun,
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
                 DateOfBirth = person.DateOfBirth,
                 DateOfDeath = person.DateOfDeath,
                 ContextFlag = person.AgeContext,
@@ -156,6 +158,34 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EmailAddress = person.EmailAddress,
                 Ethnicity = person.Ethnicity,
                 FirstLanguage = person.FirstLanguage,
+                PreferredLanguage = person.PreferredLanguage,
+                FluentInEnglish = person.FluentInEnglish,
+                InterpreterNeeded = person.InterpreterNeeded,
+                CommunicationDifficulties = person.CommunicationDifficulties,
+                DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
+                Employment = person.Employment,
+                MaritalStatus = person.MaritalStatus,
+                ImmigrationStatus = person.ImmigrationStatus,
+                PrimarySupportReason = person.PrimarySupportReason,
+                CareProvider = person.CareProvider,
+                LivingSituation = person.LivingSituation,
+                TenureType = person.TenureType,
+                AccomodationType = person.AccomodationType,
+                AccessToHome = person.AccessToHome,
+                HousingOfficer = person.HousingOfficer,
+                HousingStaffInContact = person.HousingStaffInContact,
+                CautionaryAlert = person.CautionaryAlert,
+                PossessionEvictionOrder = person.PossessionEvictionOrder,
+                RentRecord = person.RentRecord,
+                HousingBenefit = person.HousingBenefit,
+                CouncilTenureType = person.CouncilTenureType,
+                TenancyHouseholdStructure = person.TenancyHouseholdStructure,
+                MentalHealthSectionStatus = person.MentalHealthSectionStatus,
+                DeafRegister = person.DeafRegister,
+                BlindRegister = person.BlindRegister,
+                BlueBadge = person.BlueBadge,
+                OpenCase = person.OpenCase,
                 FirstName = person.FirstName,
                 Gender = person.Gender,
                 LastName = person.LastName,
@@ -165,9 +195,16 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Religion = person.Religion,
                 Restricted = person.Restricted,
                 Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
+                GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
-                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList()
+                KeyContacts = person.KeyContacts?.Select(x => x.ToDomain()).ToList(),
+                PhoneNumbers = person.PhoneNumbers?.Select(x => x.ToDomain()).ToList(),
+                Disabilities = person.Disability?.Select(x => x.DisabilityType).ToList(),
+                LastUpdated = person.LastUpdated?.Select(x => x.ToDomain()).ToList(),
+                TechUse = person.TechUse?.Select(x => x.TechType).ToList(),
+                Emails = person.Emails?.Select(x => x.ToDomain()).ToList()
             };
         }
 
@@ -248,6 +285,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastEdited = caseSubmission.LastEdited?.ToString("O"),
                 CompletedSteps = caseSubmission.CompletedSteps,
                 Deleted = caseSubmission.Deleted,
+                PinnedAt = caseSubmission.PinnedAt,
                 DeletionDetails = caseSubmission.DeletionDetails
             };
         }
@@ -344,53 +382,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 EndDate = caseStatus.EndDate?.ToString("O"),
                 Notes = caseStatus.Notes,
                 Answers = caseStatus.Answers
-            };
-        }
-
-        public static MashReferral ToResponse(this Domain.MashReferral mashReferral)
-        {
-            return new MashReferral
-            {
-                Id = mashReferral.Id,
-                Referrer = mashReferral.Referrer,
-                RequestedSupport = mashReferral.RequestedSupport,
-                Stage = mashReferral.Stage,
-                ReferralCreatedAt = mashReferral.ReferralCreatedAt.ToString("O"),
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
-                ReferralCategory = mashReferral.ReferralCategory,
-                ContactDecisionCreatedAt = mashReferral.ContactDecisionCreatedAt?.ToString("O"),
-                ContactDecisionUrgentContactRequired = mashReferral.ContactDecisionUrgentContactRequired,
-                InitialDecision = mashReferral.InitialDecision,
-                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
-                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
-                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt?.ToString("O"),
-                ScreeningDecision = mashReferral.ScreeningDecision,
-                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
-                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt?.ToString("O"),
-                FinalDecision = mashReferral.FinalDecision,
-                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
-                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt?.ToString("O"),
-                MashResidents = mashReferral.MashResidents.Select(x => x.ToResponse()).ToList(),
-                Worker = mashReferral.Worker?.ToResponse()
-            };
-        }
-
-        public static MashResidentResponse ToResponse(this Domain.MashResident mashResident)
-        {
-            return new MashResidentResponse
-            {
-                Id = mashResident.Id,
-                FirstName = mashResident.FirstName,
-                LastName = mashResident.LastName,
-                DateOfBirth = mashResident.DateOfBirth?.ToString("O"),
-                Gender = mashResident.Gender,
-                Ethnicity = mashResident.Ethnicity,
-                FirstLanguage = mashResident.FirstLanguage,
-                School = mashResident.School,
-                Address = mashResident.Address,
-                Postcode = mashResident.Postcode,
-                SocialCareId = mashResident.SocialCareId
             };
         }
     }

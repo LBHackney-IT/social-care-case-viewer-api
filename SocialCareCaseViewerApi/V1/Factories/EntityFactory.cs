@@ -11,11 +11,24 @@ using Address = SocialCareCaseViewerApi.V1.Domain.Address;
 using CaseSubmission = SocialCareCaseViewerApi.V1.Infrastructure.CaseSubmission;
 using DbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
 using dbPhoneNumber = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
+using dbEmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
+using dbKeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using dbGpDetails = SocialCareCaseViewerApi.V1.Infrastructure.GpDetails;
+using dbLastUpdated = SocialCareCaseViewerApi.V1.Infrastructure.LastUpdated;
+using dbTechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
+using dbDisability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using dbEmail = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
 using DbTeam = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using dbWarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using DbWorker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
-using MashResident = SocialCareCaseViewerApi.V1.Infrastructure.MashResident;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
+using GpDetails = SocialCareCaseViewerApi.V1.Domain.GpDetailsDomain;
+using LastUpdated = SocialCareCaseViewerApi.V1.Domain.LastUpdatedDomain;
+using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
+using Disability = SocialCareCaseViewerApi.V1.Domain.Disability;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
+using PersonOtherEmails = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Domain.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Domain.Worker;
@@ -31,6 +44,27 @@ namespace SocialCareCaseViewerApi.V1.Factories
             {
                 AddressLine1 = address.AddressLines,
                 PostCode = address.PostCode
+            };
+        }
+
+        public static LastUpdatedDomain DbLastUpdatedToDomain(dbLastUpdated lastUpdated)
+        {
+            return new LastUpdatedDomain()
+            {
+                Type = lastUpdated.Type,
+                UpdatedAt = lastUpdated.UpdatedAt
+            };
+        }
+
+        public static GpDetailsDomain DbGpDetailsToDomain(dbGpDetails details)
+        {
+            return new GpDetailsDomain()
+            {
+                Name = details.Name,
+                Address = details.Address,
+                Postcode = details.Postcode,
+                PhoneNumber = details.PhoneNumber,
+                Email = details.Email
             };
         }
 
@@ -105,12 +139,67 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
+        public static KeyContact ToDomain(this dbKeyContact keyContact)
+        {
+            return new KeyContact()
+            {
+                Name = keyContact.Name,
+                Email = keyContact.Email
+            };
+        }
+
+        public static GpDetails ToDomain(this dbGpDetails gpDetails)
+        {
+            return new GpDetails()
+            {
+                Name = gpDetails.Name,
+                Address = gpDetails.Address,
+                Postcode = gpDetails.Postcode,
+                PhoneNumber = gpDetails.PhoneNumber,
+                Email = gpDetails.Email
+            };
+        }
+
+        public static TechUse ToDomain(this dbTechUse techUse)
+        {
+            return new TechUse()
+            {
+                TechType = techUse.TechType
+            };
+        }
+
+        public static Disability ToDomain(this dbDisability disability)
+        {
+            return new Disability()
+            {
+                DisabilityType = disability.DisabilityType
+            };
+        }
+
+        public static EmailAddress ToDomain(this dbEmailAddress email)
+        {
+            return new EmailAddress()
+            {
+                Email = email.Email,
+                Type = email.Type
+            };
+        }
+
         public static OtherName ToDomain(this PersonOtherName otherName)
         {
             return new OtherName()
             {
                 FirstName = otherName.FirstName,
                 LastName = otherName.LastName
+            };
+        }
+
+        public static LastUpdated ToDomain(this dbLastUpdated update)
+        {
+            return new LastUpdated()
+            {
+                Type = update.Type,
+                UpdatedAt = update.UpdatedAt
             };
         }
 
@@ -150,6 +239,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                     CompletedSteps = caseSubmission.FormAnswers.Count,
                     Title = caseSubmission.Title,
                     Deleted = caseSubmission.Deleted ?? false,
+                    PinnedAt = caseSubmission.PinnedAt,
                     DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
                 };
             }
@@ -181,7 +271,8 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 LastEdited = caseSubmission.EditHistory.Last().EditTime,
                 CompletedSteps = caseSubmission.FormAnswers.Count,
                 Deleted = caseSubmission.Deleted ?? false,
-                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null
+                DeletionDetails = includeDeletionDetails ? caseSubmission.DeletionDetails : null,
+                PinnedAt = caseSubmission.PinnedAt
             };
         }
 
@@ -197,6 +288,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 FirstName = resident.FirstName,
                 LastName = resident.LastName,
                 OfficerEmail = caseSubmission.Workers[0].Email,
+                PinnedAt = caseSubmission.PinnedAt.ToString(),
                 CaseFormTimestamp = caseSubmission.SubmittedAt?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 FormName = caseSubmission.FormId,
                 DateOfBirth = resident.DateOfBirth?.ToString("dd/MM/yyyy"),
@@ -239,6 +331,58 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Type = number.Type,
                 PersonId = personId,
                 CreatedBy = createdBy
+            };
+        }
+
+        public static dbEmailAddress ToEntity(this EmailAddress entry)
+        {
+            return new dbEmailAddress()
+            {
+                Email = entry.Email,
+                Type = entry.Type
+            };
+        }
+
+        public static dbLastUpdated ToEntity(this LastUpdated entry, long personId)
+        {
+            return new dbLastUpdated
+            {
+                Type = entry.Type,
+                UpdatedAt = entry.UpdatedAt,
+                PersonId = personId,
+            };
+        }
+
+        public static dbGpDetails ToEntity(this GpDetails entry, long personId)
+        {
+            return new dbGpDetails
+            {
+                Name = entry.Name,
+                Email = entry.Email,
+                Address = entry.Address,
+                Postcode = entry.Postcode,
+                PhoneNumber = entry.PhoneNumber,
+                PersonId = personId,
+            };
+        }
+
+
+        public static dbKeyContact ToEntity(this KeyContact contact, long personId)
+        {
+            return new dbKeyContact
+            {
+                Name = contact.Name,
+                Email = contact.Email,
+                PersonId = personId,
+            };
+        }
+
+        public static dbTechUse ToEntity(this TechUse tech, long personId)
+        {
+            return new dbTechUse
+            {
+                TechType = tech.TechType,
+                PersonId = personId,
             };
         }
 
@@ -308,6 +452,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Answers = caseStatus.Answers.Select(a => a.ToDomain()).ToList()
             };
         }
+
         public static Domain.CaseStatusAnswer ToDomain(this Infrastructure.CaseStatusAnswer caseStatusAnswer)
         {
             return new Domain.CaseStatusAnswer()
@@ -319,53 +464,6 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 GroupId = caseStatusAnswer.GroupId,
                 EndDate = caseStatusAnswer.EndDate,
                 DiscardedAt = caseStatusAnswer.DiscardedAt
-            };
-        }
-
-        public static Domain.MashReferral ToDomain(this Infrastructure.MashReferral mashReferral)
-        {
-            return new Domain.MashReferral
-            {
-                Id = mashReferral.Id,
-                ReferralDocumentURI = mashReferral.ReferralDocumentURI,
-                Referrer = mashReferral.Referrer,
-                Stage = mashReferral.Stage,
-                ReferralCategory = mashReferral.ReferralCategory,
-                ReferralCreatedAt = mashReferral.ReferralCreatedAt,
-                ContactDecisionCreatedAt = mashReferral.ContactDecisionCreatedAt,
-                ContactDecisionUrgentContactRequired = mashReferral.ContactDecisionUrgentContactRequired,
-                InitialDecision = mashReferral.InitialDecision,
-                InitialDecisionReferralCategory = mashReferral.InitialDecisionReferralCategory,
-                InitialDecisionUrgentContactRequired = mashReferral.InitialDecisionUrgentContactRequired,
-                InitialDecisionCreatedAt = mashReferral.InitialDecisionCreatedAt,
-                ScreeningDecision = mashReferral.ScreeningDecision,
-                ScreeningUrgentContactRequired = mashReferral.ScreeningUrgentContactRequired,
-                ScreeningCreatedAt = mashReferral.ScreeningCreatedAt,
-                FinalDecision = mashReferral.FinalDecision,
-                FinalDecisionReferralCategory = mashReferral.FinalDecisionReferralCategory,
-                FinalDecisionUrgentContactRequired = mashReferral.FinalDecisionUrgentContactRequired,
-                FinalDecisionCreatedAt = mashReferral.FinalDecisionCreatedAt,
-                RequestedSupport = mashReferral.RequestedSupport,
-                MashResidents = mashReferral.MashResidents.Select(x => x.ToDomain()).ToList(),
-                Worker = mashReferral.Worker?.ToDomain(true)
-            };
-        }
-
-        public static Domain.MashResident ToDomain(this MashResident resident)
-        {
-            return new Domain.MashResident
-            {
-                Id = resident.Id,
-                FirstName = resident.FirstName,
-                LastName = resident.LastName,
-                DateOfBirth = resident.DateOfBirth,
-                Gender = resident.Gender,
-                Ethnicity = resident.Ethnicity,
-                FirstLanguage = resident.FirstLanguage,
-                School = resident.School,
-                Address = resident.Address,
-                Postcode = resident.Postcode,
-                SocialCareId = resident.SocialCareId
             };
         }
     }

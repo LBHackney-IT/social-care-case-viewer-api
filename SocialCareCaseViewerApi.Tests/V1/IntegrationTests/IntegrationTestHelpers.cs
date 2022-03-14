@@ -148,49 +148,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             return (caseStatuses, person);
         }
-
-        public static MashReferral SaveMashReferralToDatabase(DatabaseContext databaseContext, string stage = null, int? workerId = null)
-        {
-            var (existingDbWorker, _) = SetupExistingWorker(databaseContext);
-            var mashreferral = new Faker<MashReferral>()
-                .RuleFor(w => w.Id, f => f.UniqueIndex)
-                .RuleFor(w => w.Referrer, f => f.Person.FullName)
-                .RuleFor(w => w.RequestedSupport, f => f.Random.String2(20))
-                .RuleFor(w => w.ReferralDocumentURI, f => f.Random.String2(20))
-                .RuleFor(w => w.Stage, f => stage ?? f.Random.String2(20))
-                .RuleFor(w => w.WorkerId, workerId ?? existingDbWorker.Id)
-                .Generate();
-
-            databaseContext.MashReferrals.Add(mashreferral);
-            databaseContext.SaveChanges();
-
-            return mashreferral;
-        }
-
-        public static MashResident CreateMashResident(DatabaseContext databaseContext, MashReferral referral, DbPerson personMatch = null)
-        {
-            var mashResident = new Faker<MashResident>()
-                .RuleFor(r => r.Id, f => f.UniqueIndex)
-                .RuleFor(r => r.FirstName, f => personMatch?.FirstName ?? f.Person.FirstName)
-                .RuleFor(r => r.LastName, f => personMatch?.LastName ?? f.Person.LastName)
-                .RuleFor(r => r.DateOfBirth, f => personMatch?.DateOfBirth ?? f.Person.DateOfBirth)
-                .RuleFor(r => r.Gender, f => personMatch?.Gender ?? f.Random.String2(1, "MF"))
-                .RuleFor(r => r.Ethnicity, f => personMatch?.Ethnicity ?? f.Commerce.Color())
-                .RuleFor(r => r.FirstLanguage, f => personMatch?.FirstLanguage ?? f.Random.Word())
-                .RuleFor(r => r.School, f => f.Random.String2(1, 5))
-                .RuleFor(r => r.Address, f => f.Address.State())
-                .RuleFor(r => r.Postcode, f => f.Address.ZipCode())
-                .RuleFor(r => r.SocialCareId, f => personMatch?.Id ?? f.UniqueIndex)
-                .Generate();
-
-            mashResident.MashReferralId = referral.Id;
-            mashResident.MashReferral = referral;
-
-
-            databaseContext.MashResidents.Add(mashResident);
-            databaseContext.SaveChanges();
-
-            return mashResident;
-        }
     }
 }

@@ -20,8 +20,14 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<Worker> Workers { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<PersonOtherName> PersonOtherNames { get; set; }
+        public DbSet<KeyContact> KeyContacts { get; set; }
+        public DbSet<GpDetails> GpDetails { get; set; }
+        public DbSet<TechUse> TechUse { get; set; }
+        public DbSet<Disability> Disabilities { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<LastUpdated> LastUpdated { get; set; }
         public DbSet<WorkerTeam> WorkerTeams { get; set; }
+        public DbSet<EmailAddress> Emails { get; set; }
         public DbSet<Audit> Audits { get; set; }
         public DbSet<WarningNote> WarningNotes { get; set; }
         public DbSet<WarningNoteReview> WarningNoteReview { get; set; }
@@ -34,9 +40,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<PersonImport> PersonImport { get; set; }
         public DbSet<CaseStatus> CaseStatuses { get; set; }
         public DbSet<CaseStatusAnswer> CaseStatusAnswers { get; set; }
-        public DbSet<MashReferral> MashReferrals { get; set; }
-        public DbSet<MashResident> MashResidents { get; set; }
         public DbSet<UPRNupdate> UPRNupdates { get; set; }
+
+        public DbSet<SearchResult> SearchResults { get; set; }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {

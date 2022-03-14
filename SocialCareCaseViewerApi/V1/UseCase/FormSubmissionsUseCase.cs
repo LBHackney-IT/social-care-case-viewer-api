@@ -50,6 +50,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 Workers = new List<Worker> { worker },
                 CreatedAt = dateTimeNow,
                 CreatedBy = worker,
+                PinnedAt = request.PinnedAt,
                 SubmissionState = SubmissionState.InProgress,
                 EditHistory = new List<EditHistory<Worker>> { new EditHistory<Worker> { Worker = worker, EditTime = dateTimeNow } },
                 FormAnswers = new Dictionary<string, string>()
@@ -218,6 +219,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
             UpdateSubmissionState(updatedSubmission, request, worker);
             UpdateResidents(updatedSubmission, request);
+
+            if (request.PinnedAt != null)
+            {
+                updatedSubmission.PinnedAt = String.IsNullOrEmpty(request.PinnedAt) ? (DateTime?) null : DateTime.Parse(request.PinnedAt);
+            }
 
             updatedSubmission.EditHistory.Add(new EditHistory<Worker> { Worker = worker, EditTime = DateTime.Now });
 
@@ -408,6 +414,48 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             for (var index = 0; index < residentToSanitise.OtherNames?.Count; index++)
             {
                 var name = residentToSanitise.OtherNames[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.WarningNotes?.Count; index++)
+            {
+                var name = residentToSanitise.WarningNotes[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.GpDetails?.Count; index++)
+            {
+                var name = residentToSanitise.GpDetails[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.TechUse?.Count; index++)
+            {
+                var name = residentToSanitise.TechUse[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Disability?.Count; index++)
+            {
+                var name = residentToSanitise.Disability[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.Emails?.Count; index++)
+            {
+                var name = residentToSanitise.Emails[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.LastUpdated?.Count; index++)
+            {
+                var name = residentToSanitise.LastUpdated[index];
+                name.Person = null;
+            }
+
+            for (var index = 0; index < residentToSanitise.KeyContacts?.Count; index++)
+            {
+                var name = residentToSanitise.KeyContacts[index];
                 name.Person = null;
             }
 

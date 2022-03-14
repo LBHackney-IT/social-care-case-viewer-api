@@ -1,18 +1,22 @@
 service: social-care-case-viewer-api
+
+variablesResolutionMode: 20210326
+
 provider:
   name: aws
   runtime: dotnetcore3.1
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
   region: eu-west-2
-  apiKeys:
-    - secureAccess:
-      - api-key-${self:service}-${self:provider.stage}
-  usagePlan:
-    - secureAccess:
-        throttle:
-          burstLimit: 200
-          rateLimit: 100
+  apiGateway:
+    apiKeys:
+      - secureAccess:
+        - api-key-${self:service}-${self:provider.stage}
+    usagePlan:
+      - secureAccess:
+          throttle:
+            burstLimit: 200
+            rateLimit: 100
 
 package:
   artifact: ./SocialCareCaseViewerApi/bin/release/netcoreapp3.1/social-care-case-viewer-api.zip
@@ -24,15 +28,15 @@ functions:
     role: lambdaExecutionRole
     timeout: 30
     environment:
-      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password~true}
-      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string~true}
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
+      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
       SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
       SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
-      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key~true}
+      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
       HOME: /tmp
-      SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_notes_response~true}
-      HISTORICAL_DATA_CONNECTION_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/historical-data-postgres-conn-string~true}
+      SOCIAL_CARE_FIX_HISTORIC_CASE_NOTE_RESPONSE: ${ssm:/aws/reference/secretsmanager/social_care_case_viewer_api_fix_historic_case_notes_response}
+      HISTORICAL_DATA_CONNECTION_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/historical-data-postgres-conn-string}
     events:
       - http:
           path: /{proxy+}
@@ -51,12 +55,12 @@ functions:
     package:
       artifact: ./MongoDBImport/bin/release/netcoreapp3.1/mongodb-import.zip
     environment:
-      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password~true}
-      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string~true}
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password}
+      SCCV_MONGO_CONN_STRING: ${ssm:/social-care-case-viewer-api/${self:provider.stage}/docdb-conn-string}
       SCCV_MONGO_DB_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-name}
       SCCV_MONGO_COLLECTION_NAME: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection}
       SCCV_MONGO_COLLECTION_NAME_TEMP: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-collection-temp}
-      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key~true}
+      RDS_CA_2019: ${ssm:/social-care-docdb/${self:provider.stage}/docdb-public-key}
       SCCV_MONGO_IMPORT_COLLECTION_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/collection-name}
       SCCV_MONGO_IMPORT_FILE_NAME: ${ssm:/social-care-docdb-import/${self:provider.stage}/file-name}
   alertsHandler:
@@ -69,7 +73,7 @@ functions:
         artifact: ./AlertsHandlerLambda/bin/release/netcoreapp3.1/alerts-handler-lambda.zip
     environment:
         GOOGLE_API_URL: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-api-url}
-        GOOGLE_CHAT_ROOM_PATH: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-chat-room-path~true}
+        GOOGLE_CHAT_ROOM_PATH: ${ssm:/social-care-alerts-handler/${self:provider.stage}/google-chat-room-path}
     events:
       - sns:
           arn:

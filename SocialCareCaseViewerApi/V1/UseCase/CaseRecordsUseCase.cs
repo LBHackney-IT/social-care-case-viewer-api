@@ -10,7 +10,6 @@ using SocialCareCaseViewerApi.V1.Boundary.Response;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
-using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using SocialCareCaseViewerApi.V1.UseCase.Interfaces;
 
@@ -23,12 +22,14 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         private readonly IDatabaseGateway _databaseGateway;
         private readonly IMongoGateway _mongoGateway;
 
-        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway, IMongoGateway mongoGateway)
+        public CaseRecordsUseCase(IProcessDataGateway processDataGateway, IDatabaseGateway databaseGateway,
+            IMongoGateway mongoGateway)
         {
             _processDataGateway = processDataGateway;
             _databaseGateway = databaseGateway;
             _mongoGateway = mongoGateway;
         }
+
         public CareCaseDataList GetResidentCases(ListCasesRequest request)
         {
             string? ncId = null;
@@ -79,20 +80,58 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 allCareCaseData.AddRange(caseSubmissions);
                 totalCount += caseSubmissions.Count;
             }
-            var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
-            .Skip(request.Cursor)
-            .Take(request.Limit)
-            .ToList();
+            if (request.ExcludeAuditTrailEvents)
+            {
+                var caseExclusionList = new List<string>
+                {
+                    "Person updated",
+                    "Person added",
+                    "Person created",
+                    "Warning Note Added",
+                    "Warning Note Expired",
+                    "Warning Note Created",
+                    "Warning Note Reviewed",
+                    "Warning Note Ended",
+                    "Worker allocated",
+                    "Worker deallocated"
+                };
+                allCareCaseData = allCareCaseData.Where(x => (!caseExclusionList.Contains(x.FormName))).ToList();
+            }
+
+            var combinedCases = new List<CareCaseData>();
+
+            if (request.PinnedFirst)
+            {
+                var pinnedCases = allCareCaseData
+                    .Where(x => !String.IsNullOrEmpty(x.PinnedAt))
+                    .OrderByDescending(x => x.PinnedAt);
+                var regularCases = allCareCaseData.Where(x => String.IsNullOrEmpty(x.PinnedAt));
+                var careCaseData = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", regularCases);
+
+                combinedCases = pinnedCases
+                    .Concat(careCaseData)
+                    .Skip(request.Cursor)
+                    .Take(request.Limit)
+                    .ToList();
+            }
+            else
+            {
+                combinedCases = SortData(request.SortBy ?? "", request.OrderBy ?? "desc", allCareCaseData)
+                    .Skip(request.Cursor)
+                    .Take(request.Limit)
+                    .ToList();
+            }
 
             int? nextCursor = request.Cursor + request.Limit;
 
             //support page size 1
-            if (nextCursor == totalCount || careCaseData.Count < request.Limit) nextCursor = null;
+            if (nextCursor == totalCount || combinedCases.Count < request.Limit) nextCursor = null;
 
             return new CareCaseDataList
             {
-                Cases = careCaseData.ToList(),
+                Cases = combinedCases.ToList(),
                 NextCursor = nextCursor,
+                TotalCount = allCareCaseData.Count,
                 DeletedRecordsCount = deletedRecordsCount
             };
         }

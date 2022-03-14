@@ -121,7 +121,7 @@ namespace SocialCareCaseViewerApi
 
             services.AddSingleton<ISccvDbContext, SccvDbContext>();
 
-            //TODO: migrate historical data to service database 
+            //TODO: migrate historical data to service database
             var historicalDataConnectionString = Environment.GetEnvironmentVariable("HISTORICAL_DATA_CONNECTION_STRING") ?? "Host=;Database=;";
 
             services.AddDbContext<HistoricalDataContext>(options => options
@@ -138,8 +138,8 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ITeamGateway, TeamGateway>();
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
             services.AddScoped<IWorkerGateway, WorkerGateway>();
-            services.AddScoped<IMashReferralGateway, MashReferralGateway>();
             services.AddScoped<IHistoricalDataGateway, HistoricalDataGateway>();
+            services.AddScoped<ISearchGateway, SearchGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -158,8 +158,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseStatusesUseCase, CaseStatusesUseCase>();
             services.AddScoped<ICreateRequestAuditUseCase, CreateRequestAuditUseCase>();
             services.AddScoped<IResidentUseCase, ResidentUseCase>();
-            services.AddScoped<IMashReferralUseCase, MashReferralUseCase>();
-            services.AddScoped<IMashResidentUseCase, MashResidentUseCase>();
+            services.AddScoped<ISearchUseCase, SearchUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
