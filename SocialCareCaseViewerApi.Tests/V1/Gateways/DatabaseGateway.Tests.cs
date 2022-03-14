@@ -1563,7 +1563,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetResidentsByTeamIdUnallocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        public void GetResidentsByTeamIdUnallocatedReturnsResidentsAssignedToTheTeamButNotWorker()
         {
             var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
@@ -1579,7 +1579,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetResidentsByTeamIdAllocatedReturnsPersonAssignedToTheTeamButNotWorker()
+        public void GetResidentsByTeamIdAllocatedReturnsResidentsAssignedToTheTeamAndWorker()
         {
             var resident = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
