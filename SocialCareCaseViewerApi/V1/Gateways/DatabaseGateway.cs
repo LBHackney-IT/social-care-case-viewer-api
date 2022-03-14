@@ -47,19 +47,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public List<Person> GetResidentsByTeamId(int teamId, string view)
         {
             var results = new List<Person>();
+            var test = new List<Person>();
+            var juris = new List<Person>();
             if (view == "unallocated")
             {
                 results = _databaseContext.Persons
-                    .Include(x => x.ResidentTeams)
-                    .ThenInclude(x => x.Team).ToList()
-                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null && x.DeallocationWorker == null) && x.MarkedForDeletion == false).ToList();
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Worker)
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team).ToList()
+                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker == null) && x.MarkedForDeletion == false).ToList();
             }
             if (view == "allocated")
             {
+                juris = _databaseContext.Persons.Include(x => x.ResidentTeams).ThenInclude(x => x.Team).ToList();
+                test = _databaseContext.Persons.Include(x => x.ResidentTeams).ThenInclude(x => x.Team).Include(x => x.ResidentTeams).ThenInclude(x => x.Worker).ToList();
                 results = _databaseContext.Persons
-                    .Include(x => x.ResidentTeams)
-                    .ThenInclude(x => x.Team).ToList()
-                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker != null && x.DeallocationWorker == null) && x.MarkedForDeletion == false).ToList();
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Worker)
+                    .Include(x => x.ResidentTeams).ThenInclude(x => x.Team).ToList()
+                    .Where(x => x.ResidentTeams.Any(x => x.TeamId == teamId && x.Worker != null) && x.MarkedForDeletion == false).ToList();
             }
 
             return results;

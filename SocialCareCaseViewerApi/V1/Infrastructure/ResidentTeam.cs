@@ -24,8 +24,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public Worker Worker { get; set; }
 
         [Column("worker_id")]
-        [Required]
-        public int WorkerId { get; set; }
+        public int? WorkerId { get; set; }
 
         [ForeignKey("TeamId")]
         public Team Team { get; set; }
@@ -38,10 +37,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string RagRating { get; set; }
 
         [Column("summary")]
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
 
         [Column("care_package")]
-        public string CarePackage { get; set; }
+        public string? CarePackage { get; set; }
 
         [Column("allocation_date")]
         public DateTime AllocationDate { get; set; }
@@ -56,7 +55,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public Worker DeallocationWorker { get; set; }
 
         [Column("deallocated_by")]
-        public int DeallocatedBy { get; set; }
+        public int? DeallocatedBy { get; set; }
 
         [Column("deallocated_at")]
         public DateTime DeallocatedAt { get; set; }
