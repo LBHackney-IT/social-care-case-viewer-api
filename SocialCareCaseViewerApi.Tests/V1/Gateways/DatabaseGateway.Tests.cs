@@ -1569,9 +1569,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams: new List<WorkerTeam>(), id: 1));
             var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity());
 
-            var residentTeam = SaveResidentTeamToDatabase(DatabaseGatewayHelper.CreateResidentTeamDatabaseEntity(id: 1, teamId: team.Id, residentId: resident.Id));
-            resident.ResidentTeams.Add(residentTeam);
-
             var allocationRequest = new AllocateResidentToTheTeamRequest()
             {
                 PersonId = resident.Id,
