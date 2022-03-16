@@ -1,4 +1,4 @@
-# Add trigram support
+# Add auditing fields to the worker team table
 
 ## The problem we're trying to solve
 
