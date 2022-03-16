@@ -19,6 +19,8 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (string.IsNullOrEmpty(query.DateOfBirth)
                 && string.IsNullOrEmpty(query.Name)
+                && string.IsNullOrEmpty(query.FirstName)
+                && string.IsNullOrEmpty(query.LastName)
                 && string.IsNullOrEmpty(query.PersonId)
                 && string.IsNullOrEmpty(query.Postcode))
             {
