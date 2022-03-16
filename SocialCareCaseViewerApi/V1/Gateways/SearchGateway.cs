@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             SELECT Person.person_id as PersonId,
                     COUNT('x') OVER(PARTITION BY 0) AS TotalRecords");
 
-            if (!string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(name))
             {
                 sb.Append(@" , word_similarity(Person.first_name || ' ' || Person.last_name, {0}) as Score");
             }
