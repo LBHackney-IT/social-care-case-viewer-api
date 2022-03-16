@@ -1008,3 +1008,9 @@ CREATE EXTENSION IF NOT EXISTS btree_gin;
 CREATE INDEX CONCURRENTLY IF NOT EXISTS index_full_name_search
     ON dbo.dm_persons
         USING gin (first_name gin_trgm_ops, last_name gin_trgm_ops);
+
+
+alter table if exists dbo.SCCV_ALLOCATIONS_COMBINED
+  add column RAG_RATING varchar,
+  add column SUMMARY varchar,
+  add column CARE_PACKAGE varchar
