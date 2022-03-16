@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { WorkerEmail = "test@example.com" };
             var gatewayResponse = new List<Allocation> { new Allocation() { AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com"))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com", 0))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);

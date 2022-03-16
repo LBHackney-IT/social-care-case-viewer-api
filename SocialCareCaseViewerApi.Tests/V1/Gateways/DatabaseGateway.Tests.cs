@@ -277,7 +277,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email);
+            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -316,7 +316,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             originalWorker?.AllocationCount.Should().Be(1);
 
-            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "");
+            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0);
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
@@ -336,7 +336,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             getUpdatedWorker?.AllocationCount.Should().Be(1);
 
             // Check allocations assigned to the worker have been updated
-            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id, "");
+            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id, "", 0);
             updatedAllocations.Count.Should().Be(1);
             updatedAllocations.Single().AllocatedWorkerTeam.Should().Be(differentTeam.Name);
         }
