@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SocialCareCaseViewerApi.V1.Infrastructure
 {
     [Table("sccv_workerteam", Schema = "dbo")]
-    public class WorkerTeam
+    public class WorkerTeam : IAuditEntity
     {
         [Key]
         [Column("id")]
