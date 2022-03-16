@@ -1026,3 +1026,8 @@ ALTER TABLE dbo.SCCV_WORKERTEAM
 
 ALTER TABLE dbo.SCCV_WORKERTEAM
   ADD COLUMN END_DATE timestamp;
+
+alter table if exists dbo.SCCV_ALLOCATIONS_COMBINED
+  add column RAG_RATING varchar,
+  add column SUMMARY varchar,
+  add column CARE_PACKAGE varchar
