@@ -27,11 +27,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
         }
 
         [Test]
-        public void CallsSearchGateway()
+        public void WhenBothFirstAndLastNameGivenCallsSearchGateway()
         {
             _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0, 0));
 
-            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" });
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo", LastName = "bar" });
 
             _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()), Times.Once);
         }
@@ -67,7 +67,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
                     x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()))
                 .Returns((residents.Take(20).ToList(), 0, 20));
 
-            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }).NextCursor.Should().Be(expectedNextCursor);
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo" }).NextCursor.Should().Be(expectedNextCursor);
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
                     x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()))
                 .Returns((residents.ToList(), 0, null));
 
-            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { Name = "foo" }).NextCursor.Should().Be("");
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo" }).NextCursor.Should().Be("");
         }
 
         [Test]

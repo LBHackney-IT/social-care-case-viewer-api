@@ -14,9 +14,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "last_name")]
         public string? LastName { get; set; }
 
-        [FromQuery(Name = "name")]
-        public string? Name { get; set; }
-
         [FromQuery(Name = "date_of_birth")]
         public string? DateOfBirth { get; set; }
 

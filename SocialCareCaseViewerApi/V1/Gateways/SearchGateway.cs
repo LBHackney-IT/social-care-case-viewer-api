@@ -60,47 +60,59 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var postcode = request.Postcode == null ? "" : $"{request.Postcode}%";
             var dateOfBirthRangeStart = request.DateOfBirth == null ? "" : $"{request.DateOfBirth}T00:00:00.000Z";
             var dateOfBirthRangeEnd = request.DateOfBirth == null ? "" : $"{request.DateOfBirth}T23:59:59.000Z";
-            var name = request.Name == null ? "" : $"{request.Name}";
+            var firstName = request.FirstName ?? "";
+            var lastName = request.LastName ?? "";
             var cursor = request.Cursor ?? 0;
-
-            if (!string.IsNullOrEmpty(request.FirstName))
-            {
-                name += $"{request.FirstName}";
-            }
-
-            if (!string.IsNullOrEmpty(request.LastName))
-            {
-                name += $" {request.LastName}";
-            }
 
             var sb = new StringBuilder();
 
             sb.Append(@"SET pg_trgm.word_similarity_threshold TO 0.4;
-            SELECT Person.person_id as PersonId,
-                    COUNT('x') OVER(PARTITION BY 0) AS TotalRecords");
+                        SELECT Person.person_id as PersonId,
+                        COUNT('x') OVER(PARTITION BY 0) AS TotalRecords");
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName))
             {
-                sb.Append(@" , word_similarity(Person.first_name || ' ' || Person.last_name, {0}) as Score");
+                sb.Append(@", (");
+                if (!string.IsNullOrEmpty(firstName))
+                {
+                    sb.Append(@" word_similarity(Person.first_name, {0})");
+                }
+                if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
+                {
+                    sb.Append(@" + ");
+                }
+                if (!string.IsNullOrEmpty(lastName))
+                {
+                    sb.Append(@" word_similarity(Person.last_name, {1})");
+                }
+                sb.Append(@") as Score");
             }
             else
             {
                 sb.Append(@", 1.0 as Score");
             }
 
-            sb.Append(@" FROM dbo.dm_persons Person LEFT JOIN dbo.dm_addresses Address ON Person.person_id = Address.person_id AND Address.is_display_address = 'Y' WHERE Person.marked_for_deletion = false");
+            sb.Append(@" FROM dbo.dm_persons Person
+                         LEFT JOIN dbo.dm_addresses Address ON Person.person_id = Address.person_id AND Address.is_display_address = 'Y'
+                         WHERE Person.marked_for_deletion = false");
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(firstName))
             {
-                sb.Append(@" AND ({0} <% Person.first_name OR {0} <% Person.last_name)");
+                sb.Append(@" AND {0} <% Person.first_name");
             }
+
+            if (!string.IsNullOrEmpty(lastName))
+            {
+                sb.Append(@" AND {1} <% Person.last_name");
+            }
+
             if (!string.IsNullOrEmpty(request.DateOfBirth))
             {
-                sb.Append(@" AND (Person.date_of_birth BETWEEN {1}::timestamp AND {2}::timestamp)");
+                sb.Append(@" AND (Person.date_of_birth BETWEEN {2}::timestamp AND {3}::timestamp)");
             }
             if (!string.IsNullOrEmpty(request.Postcode))
             {
-                sb.Append(@" AND (REPLACE(Address.post_code, ' ', '') ILIKE REPLACE({3}, ' ', ''))");
+                sb.Append(@" AND (REPLACE(Address.post_code, ' ', '') ILIKE REPLACE({4}, ' ', ''))");
             }
 
             sb.Append(@" GROUP BY Person.person_id, Person.first_name, Person.last_name
@@ -108,9 +120,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                             Score DESC,
                             Person.first_name,
                             Person.last_name
-                            LIMIT 20 OFFSET {4};");
+                            LIMIT 20 OFFSET {5};");
 
-            return _databaseContext.Set<SearchResult>().FromSqlRaw(sb.ToString(), name, dateOfBirthRangeStart, dateOfBirthRangeEnd, postcode, cursor).ToList();
+            return _databaseContext.Set<SearchResult>().FromSqlRaw(sb.ToString(), firstName, lastName, dateOfBirthRangeStart, dateOfBirthRangeEnd, postcode, cursor).ToList();
         }
     }
 }
