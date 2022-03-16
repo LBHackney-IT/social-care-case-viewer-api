@@ -31,7 +31,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
         {
             _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0, 0));
 
-            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo", LastName = "bar"});
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo", LastName = "bar" });
 
             _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()), Times.Once);
         }

@@ -242,7 +242,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { FirstName = "ciasom", LastName = "Tessellate"};
+            var query = new PersonSearchRequest() { FirstName = "ciasom", LastName = "Tessellate" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
             listOfPersons.Count.Should().Be(1);
@@ -257,7 +257,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var query = new PersonSearchRequest() { FirstName = "ciasom", LastName = "ssellat"};
+            var query = new PersonSearchRequest() { FirstName = "ciasom", LastName = "ssellat" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
             listOfPersons.Count.Should().Be(1);
