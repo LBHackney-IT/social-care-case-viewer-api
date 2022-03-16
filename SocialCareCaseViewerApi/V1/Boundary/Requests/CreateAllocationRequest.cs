@@ -44,6 +44,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.AllocatedTeamId)
                 .NotNull().WithMessage("Team Id Required")
                 .InclusiveBetween(1, int.MaxValue).WithMessage($"Team Id must be grater than 1");
+            RuleFor(x => x.Summary)
+                .NotNull().WithMessage("Summary is Required");
+            RuleFor(x => x.RagRating)
+                .NotNull().WithMessage("RagRating is Required");
+            RuleFor(x => x.CarePackage)
+                .NotNull().WithMessage("CarePackage is Required");
             RuleFor(x => x.CreatedBy)
                 .NotNull().WithMessage("Email Required")
                 .EmailAddress().WithMessage("Enter a valid email address");
