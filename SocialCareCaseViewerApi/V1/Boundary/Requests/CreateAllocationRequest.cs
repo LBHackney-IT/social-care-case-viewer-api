@@ -20,6 +20,15 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("allocationStartDate")]
         public DateTime AllocationStartDate { get; set; }
+
+        [JsonPropertyName("ragRating")]
+        public string RagRating { get; set; }
+
+        [JsonPropertyName("summary")]
+        public string Summary { get; set; }
+
+        [JsonPropertyName("carePackage")]
+        public string CarePackage { get; set; }
     }
 
     public class CreateAllocationRequestValidator : AbstractValidator<CreateAllocationRequest>
