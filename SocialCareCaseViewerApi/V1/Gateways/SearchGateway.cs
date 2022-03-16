@@ -63,17 +63,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var name = request.Name == null ? "" : $"{request.Name}";
             var cursor = request.Cursor ?? 0;
 
-            if (string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(request.FirstName))
             {
-                if (!string.IsNullOrEmpty(request.FirstName))
-                {
-                    name += $"{request.FirstName}";
-                }
+                name += $"{request.FirstName}";
+            }
 
-                if (!string.IsNullOrEmpty(request.LastName))
-                {
-                    name += $" {request.LastName}";
-                }
+            if (!string.IsNullOrEmpty(request.LastName))
+            {
+                name += $" {request.LastName}";
             }
 
             var sb = new StringBuilder();
