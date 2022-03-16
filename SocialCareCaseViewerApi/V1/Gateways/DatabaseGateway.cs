@@ -690,6 +690,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
+                RagRating = request.RagRating,
+                CarePackage = request.CarePackage,
+                Summary = request.Summary,
                 CreatedBy = allocatedBy.Email
             };
 
