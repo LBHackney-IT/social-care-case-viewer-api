@@ -18,7 +18,6 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         public ResidentInformationList GetResidentsByQuery(PersonSearchRequest query)
         {
             if (string.IsNullOrEmpty(query.DateOfBirth)
-                && string.IsNullOrEmpty(query.Name)
                 && string.IsNullOrEmpty(query.FirstName)
                 && string.IsNullOrEmpty(query.LastName)
                 && string.IsNullOrEmpty(query.PersonId)
