@@ -8,6 +8,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         [FromQuery(Name = "person_id")]
         public string? PersonId { get; set; }
 
+        [FromQuery(Name = "first_name")]
+        public string? FirstName { get; set; }
+
+        [FromQuery(Name = "last_name")]
+        public string? LastName { get; set; }
+
         [FromQuery(Name = "name")]
         public string? Name { get; set; }
 

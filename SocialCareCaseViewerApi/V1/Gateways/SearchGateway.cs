@@ -1,4 +1,3 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -64,13 +63,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var name = request.Name == null ? "" : $"{request.Name}";
             var cursor = request.Cursor ?? 0;
 
+            if (!string.IsNullOrEmpty(request.FirstName))
+            {
+                name += $"{request.FirstName}";
+            }
+
+            if (!string.IsNullOrEmpty(request.LastName))
+            {
+                name += $" {request.LastName}";
+            }
+
             var sb = new StringBuilder();
 
             sb.Append(@"SET pg_trgm.word_similarity_threshold TO 0.4;
             SELECT Person.person_id as PersonId,
                     COUNT('x') OVER(PARTITION BY 0) AS TotalRecords");
 
-            if (!string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(name))
             {
                 sb.Append(@" , word_similarity(Person.first_name || ' ' || Person.last_name, {0}) as Score");
             }
@@ -81,7 +90,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             sb.Append(@" FROM dbo.dm_persons Person LEFT JOIN dbo.dm_addresses Address ON Person.person_id = Address.person_id AND Address.is_display_address = 'Y' WHERE Person.marked_for_deletion = false");
 
-            if (!string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(name))
             {
                 sb.Append(@" AND ({0} <% Person.first_name OR {0} <% Person.last_name)");
             }
