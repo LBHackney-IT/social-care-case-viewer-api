@@ -416,10 +416,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
 
+
             var response = _classUnderTest.CreateAllocation(request);
             var query = DatabaseContext.Allocations;
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
+            insertedRecord.RagRating.Should().Be(request.RagRating);
+            insertedRecord.Summary.Should().Be(request.Summary);
+            insertedRecord.CarePackage.Should().Be(request.CarePackage);
             insertedRecord.PersonId.Should().Be(request.MosaicId);
             insertedRecord.WorkerId.Should().Be(worker.Id);
             insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
