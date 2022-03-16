@@ -37,6 +37,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Search
         }
 
         [Test]
+        public void WhenOnlyFirstNameGivenCallsSearchGateway()
+        {
+            _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0, 0));
+
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { FirstName = "foo" });
+
+            _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()), Times.Once);
+        }
+
+        [Test]
+        public void WhenOnlyLastNameGivenCallsSearchGateway()
+        {
+            _mockSearchGateway.Setup(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>())).Returns((new List<ResidentInformation>(), 0, 0));
+
+            _searchUseCase.GetResidentsByQuery(new PersonSearchRequest() { LastName = "foo" });
+
+            _mockSearchGateway.Verify(x => x.GetPersonRecordsBySearchQuery(It.IsAny<PersonSearchRequest>()), Times.Once);
+        }
+
+        [Test]
         public void ReturnsTheNextCursor()
         {
             var residents = _fixture.CreateMany<ResidentInformation>(21).ToList();

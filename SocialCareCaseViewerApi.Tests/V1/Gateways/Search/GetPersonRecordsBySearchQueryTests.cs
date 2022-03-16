@@ -142,6 +142,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
         }
 
         [Test]
+        public void WildcardSearchWithFirstNameInFirstNameQueryParameterReturnsMatchingResident()
+        {
+            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "ciasom");
+            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Ciasom");
+
+            DatabaseContext.Persons.Add(person1);
+            DatabaseContext.Persons.Add(person2);
+            DatabaseContext.SaveChanges();
+
+            var query = new PersonSearchRequest() { FirstName = "Cia" };
+
+            var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
+
+            listOfPersons.Count.Should().Be(2);
+            listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
+            listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person2.Id).ToResidentInformationResponse());
+        }
+
+        [Test]
         public void WildcardSearchWithFirstNameInNameQueryParameterReturnsMatchingResident()
         {
             var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "ciasom");
@@ -190,6 +209,24 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
             DatabaseContext.SaveChanges();
 
             var query = new PersonSearchRequest() { Name = "sell" };
+
+            var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
+            listOfPersons.Count.Should().Be(2);
+            listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
+            listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person2.Id).ToResidentInformationResponse());
+        }
+
+        [Test]
+        public void WildcardSearchWithLastNameInLastNameQueryParameterReturnsMatchingResident()
+        {
+            var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(lastName: "tessellate");
+            var person2 = DatabaseGatewayHelper.CreatePersonDatabaseEntity(lastName: "Tessellate");
+
+            DatabaseContext.Persons.Add(person1);
+            DatabaseContext.Persons.Add(person2);
+            DatabaseContext.SaveChanges();
+
+            var query = new PersonSearchRequest() { LastName = "sell" };
 
             var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
             listOfPersons.Count.Should().Be(2);
