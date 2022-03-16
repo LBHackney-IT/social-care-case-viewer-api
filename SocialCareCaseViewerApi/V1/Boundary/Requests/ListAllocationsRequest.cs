@@ -16,6 +16,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
+
+        [FromQuery(Name = "team_id")]
+        public long TeamId { get; set; }
     }
 
     public class ListAllocationsRequestValidator : AbstractValidator<ListAllocationsRequest>
@@ -24,11 +27,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(x => x)
                 .Must(OneIsSet)
-                .WithMessage("Please provide either mosaic_id, worker_id or worker_email");
+                .WithMessage("Please provide either mosaic_id, worker_id, worker_email or team_id");
 
             RuleFor(x => x)
                 .Must(OnlyOneIsSet)
-                .WithMessage("Please provide only one of mosaic_id, worker_id or worker_email");
+                .WithMessage("Please provide only one of mosaic_id, worker_id, worker_email or team_id");
 
             When(x => !String.IsNullOrEmpty(x.WorkerEmail), () =>
             {
@@ -44,13 +47,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             {
                 request.MosaicId == 0 ? 0 : 1,
                 request.WorkerId == 0 ? 0 : 1,
+                request.TeamId == 0 ? 0 : 1,
                 String.IsNullOrEmpty(request.WorkerEmail) ? 0 : 1,
             }.Sum() <= 1;
         }
 
         private bool OneIsSet(ListAllocationsRequest request)
         {
-            return !(request.MosaicId == 0 && request.WorkerId == 0 && String.IsNullOrEmpty(request.WorkerEmail));
+            return !(request.MosaicId == 0 && request.WorkerId == 0 && String.IsNullOrEmpty(request.WorkerEmail) && request.TeamId == 0);
         }
     }
 }
