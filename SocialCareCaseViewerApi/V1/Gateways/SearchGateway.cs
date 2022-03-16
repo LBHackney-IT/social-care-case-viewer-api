@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
@@ -90,7 +91,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             sb.Append(@" FROM dbo.dm_persons Person LEFT JOIN dbo.dm_addresses Address ON Person.person_id = Address.person_id AND Address.is_display_address = 'Y' WHERE Person.marked_for_deletion = false");
 
-            if (!string.IsNullOrEmpty(request.Name))
+            if (!string.IsNullOrEmpty(name))
             {
                 sb.Append(@" AND ({0} <% Person.first_name OR {0} <% Person.last_name)");
             }
