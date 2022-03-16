@@ -96,6 +96,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
                 .RuleFor(c => c.CreatedBy, f => createdBy ?? createdByWorker.Email)
+                .RuleFor(c => c.RagRating, f => f.Random.String2(5))
+                .RuleFor(c => c.Summary, f => f.Random.String2(5))
+                .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
 
             return (createAllocationRequest, worker, createdByWorker, person, team);
