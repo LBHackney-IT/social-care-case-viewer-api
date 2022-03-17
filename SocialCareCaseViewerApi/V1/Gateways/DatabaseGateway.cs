@@ -686,7 +686,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
-                WorkerId = worker.Id,
+                WorkerId = worker?.Id,
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
@@ -714,7 +714,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = allocatedBy.Email,
                     Note =
-                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                        $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
                     AllocationId = allocation.Id.ToString(),
@@ -1114,13 +1114,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (first + " " + last).TrimStart().TrimEnd();
         }
 
-        private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        private (Domain.Worker?, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
             var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker?.Email))
-            {
-                throw new CreateAllocationException("Worker details cannot be found");
-            }
+            // if (string.IsNullOrEmpty(worker?.Email))
+            // {
+            //     throw new CreateAllocationException("Worker details cannot be found");
+            // }
 
             var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
