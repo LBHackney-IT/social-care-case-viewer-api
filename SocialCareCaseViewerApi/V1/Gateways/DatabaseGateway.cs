@@ -683,6 +683,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
+            if (worker != null)
+            {
+                var workerTeam = new WorkerTeam()
+                {
+                    WorkerId = worker.Id,
+                    TeamId = team.Id,
+                    StartDate = request.AllocationStartDate
+                };
+                _databaseContext.WorkerTeams.Add(workerTeam);
+            }
+
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
@@ -1116,11 +1127,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         private (Domain.Worker?, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
-            var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
-            // if (string.IsNullOrEmpty(worker?.Email))
-            // {
-            //     throw new CreateAllocationException("Worker details cannot be found");
-            // }
+            var worker = new Domain.Worker();
+            if (request.AllocatedWorkerId != null)
+            {
+                worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
+                if (string.IsNullOrEmpty(worker?.Email))
+                {
+                    throw new CreateAllocationException("Worker details cannot be found");
+                }
+            }
+            else
+            {
+                worker = null;
+            }
 
             var team = _databaseContext.Teams.FirstOrDefault(x => x.Id == request.AllocatedTeamId);
             if (team == null)
