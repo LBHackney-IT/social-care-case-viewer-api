@@ -90,7 +90,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ListAllocationsByTeamIdReturnsExpectedList()
         {
             var request = new ListAllocationsRequest() { TeamId = 10 };
-            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId =2, AllocatedWorker = "Test Worker" } };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
             _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10))
                 .Returns(gatewayResponse);
@@ -98,6 +98,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var response = _allocationsUseCase.Execute(request);
 
             response.Allocations.Should().BeEquivalentTo(gatewayResponse);
-        }        
+        }
     }
 }

@@ -284,7 +284,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
         }
 
-       [Test]
+        [Test]
         public void SelectAllocationsByTeamId()
         {
             // Create worker and teams
