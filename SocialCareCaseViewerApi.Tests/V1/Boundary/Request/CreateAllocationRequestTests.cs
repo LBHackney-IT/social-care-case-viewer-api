@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bogus;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.Tests.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
@@ -12,14 +11,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
     [TestFixture]
     public class CreateAllocationRequestTests
     {
-        private Faker _faker;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _faker = new Faker();
-        }
-
         [Test]
         public void CreateAllocationValidationReturnsErrorsWithInvalidProperties()
         {
