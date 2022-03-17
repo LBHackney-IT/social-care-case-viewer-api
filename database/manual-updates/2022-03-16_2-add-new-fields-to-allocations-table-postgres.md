@@ -1,4 +1,4 @@
-# Add trigram support
+# Additional fields for Allocation
 
 ## The problem we're trying to solve
 
