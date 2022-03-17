@@ -75,7 +75,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 sb.Append(@", (");
                 if (!string.IsNullOrEmpty(firstName))
                 {
-                    sb.Append(@" word_similarity(Person.first_name, {0})");
+                    sb.Append(@" cast(word_similarity(Person.first_name, {0}) as real)");
+                    sb.Append(
+                        @" + cast(""like""(lower(Person.first_name), lower({0}) || '%')::int as real)");
                 }
                 if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
                 {
@@ -83,13 +85,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
                 if (!string.IsNullOrEmpty(lastName))
                 {
-                    sb.Append(@" word_similarity(Person.last_name, {1})");
+                    sb.Append(@" cast(word_similarity(Person.last_name, {1}) as real)");
+                    sb.Append(
+                        @" + cast(""like""(lower(Person.last_name), lower({1}) || '%')::int as real)");
                 }
                 sb.Append(@") as Score");
             }
             else
             {
-                sb.Append(@", 1.0 as Score");
+                sb.Append(@", cast(1.0 as real) as Score");
             }
 
             sb.Append(@" FROM dbo.dm_persons Person
