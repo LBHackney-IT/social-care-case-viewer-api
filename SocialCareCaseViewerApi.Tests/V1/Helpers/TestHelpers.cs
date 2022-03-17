@@ -104,6 +104,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (createAllocationRequest, worker, createdByWorker, person, team);
         }
 
+
+        public static CreateAllocationRequest CreateValidatorAllocationRequest(
+            long? mosaicId = 1,
+            int? teamId = 1,
+            int? workerId = 1,
+            string? ragRating = "rating",
+            string? summary = "rating",
+            string? carePackage = "rating",
+            string? createdBy = "test@example.com",
+            DateTime? allocationStartDate = default
+        )
+        {
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => mosaicId)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(c => c.Summary, f => summary)
+                .RuleFor(c => c.CarePackage, f => carePackage)
+                .RuleFor(c => c.CreatedBy, f => createdBy)
+                .RuleFor(c => c.AllocationStartDate, allocationStartDate);
+
+            return createAllocationRequest;
+        }
+
         public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team)
             CreateUpdateAllocationRequest(
                 int? id = null,
