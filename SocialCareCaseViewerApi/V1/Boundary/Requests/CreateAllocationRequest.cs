@@ -7,28 +7,28 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
     public class CreateAllocationRequest
     {
         [JsonPropertyName("mosaicId")]
-        public long MosaicId { get; set; }
+        public long? MosaicId { get; set; }
 
         [JsonPropertyName("allocatedWorkerId")]
-        public int AllocatedWorkerId { get; set; }
+        public int? AllocatedWorkerId { get; set; }
 
         [JsonPropertyName("allocatedTeamId")]
-        public int AllocatedTeamId { get; set; }
+        public int? AllocatedTeamId { get; set; }
 
         [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; }
 
         [JsonPropertyName("allocationStartDate")]
-        public DateTime AllocationStartDate { get; set; }
+        public DateTime? AllocationStartDate { get; set; }
 
         [JsonPropertyName("ragRating")]
-        public string RagRating { get; set; }
+        public string? RagRating { get; set; }
 
         [JsonPropertyName("summary")]
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
 
         [JsonPropertyName("carePackage")]
-        public string CarePackage { get; set; }
+        public string? CarePackage { get; set; }
     }
 
     public class CreateAllocationRequestValidator : AbstractValidator<CreateAllocationRequest>
