@@ -10,7 +10,7 @@ We don't have automated db migrations
 
 ## The plan
 
-1. Run the SQL queries below one by one
+1. Run the SQL statements below one by one
 
 ## Link to Jira ticket
 
