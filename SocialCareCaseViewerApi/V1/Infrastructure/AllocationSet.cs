@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("mosaic_id")]
         [Required]
-        public long PersonId { get; set; }
+        public long? PersonId { get; set; }
 
         [Column("worker_id")]
         [MaxLength(62)]
