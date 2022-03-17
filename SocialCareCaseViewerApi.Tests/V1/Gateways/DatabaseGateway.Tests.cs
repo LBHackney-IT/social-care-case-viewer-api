@@ -416,7 +416,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
 
-
             var response = _classUnderTest.CreateAllocation(request);
             var query = DatabaseContext.Allocations;
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
