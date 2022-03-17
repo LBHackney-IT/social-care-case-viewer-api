@@ -1,4 +1,4 @@
-# Add auditing fields to the worker team table
+# Add start and end fields to the worker team table
 
 ## The problem we're trying to solve
 
