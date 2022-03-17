@@ -265,6 +265,33 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Search
         }
 
         [Test]
+        public void WhenMultipleMatchesExistExactPrefixMatchesArePromotedToTheTop()
+        {
+            DatabaseContext.Persons.Add(
+                DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Samantha", lastName: "Golding"));
+            DatabaseContext.Persons.Add(
+                DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Sammy", lastName: "Goldice"));
+            DatabaseContext.Persons.Add(
+                DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Sonia-Sam", lastName: "GildingGol"));
+            DatabaseContext.Persons.Add(
+                DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "SonnySam", lastName: "Gladding-Gol"));
+            DatabaseContext.Persons.Add(
+                DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Sachsam", lastName: "Geldingol"));
+
+            DatabaseContext.SaveChanges();
+
+            var query = new PersonSearchRequest() { FirstName = "sam", LastName = "gol" };
+
+            var (listOfPersons, _, _) = _searchGateway.GetPersonRecordsBySearchQuery(query);
+            listOfPersons.Count.Should().Be(5);
+            listOfPersons[0].FirstName.Should().Be("Sammy");
+            listOfPersons[1].FirstName.Should().Be("Samantha");
+            listOfPersons[2].FirstName.Should().Be("Sachsam");
+            listOfPersons[3].FirstName.Should().Be("Sonia-Sam");
+            listOfPersons[4].FirstName.Should().Be("SonnySam");
+        }
+
+        [Test]
         public void GetAllResidentsWithPostCodeQueryParameterReturnsOnlyResidentsWithPostcodeInDisplayAddress()
         {
             var person1 = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
