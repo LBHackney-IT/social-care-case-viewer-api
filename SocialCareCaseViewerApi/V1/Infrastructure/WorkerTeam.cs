@@ -17,10 +17,10 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public int WorkerId { get; set; }
         public Worker Worker { get; set; }
 
+
         [Column("team_id")]
         public int TeamId { get; set; }
         public Team Team { get; set; }
-
 
         //audit props
         [Column("sccv_created_at")]
