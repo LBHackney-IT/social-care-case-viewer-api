@@ -16,9 +16,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             var badAllocationRequests = new List<(UpdateAllocationRequest, string)>
             {
-                (TestHelpers.UpdateValidatorAllocationRequest(0, allocationStartDate: DateTime.Now), "Mosaic Id must be grater than 1"),
-                (TestHelpers.UpdateValidatorAllocationRequest(workerId: 0, allocationStartDate: DateTime.Now), "Worker Id must be grater than 1"),
-                (TestHelpers.UpdateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be grater than 1")
+                (TestHelpers.UpdateValidatorAllocationRequest(), "Id must be grater than 1"),
             };
 
             var validator = new UpdateAllocationRequestValidator();
