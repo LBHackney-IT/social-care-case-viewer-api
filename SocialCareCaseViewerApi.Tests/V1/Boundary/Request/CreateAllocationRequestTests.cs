@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         }
 
         [Test]
-        public void ValidCreateTeamRequestReturnsNoErrorsOnValidation()
+        public void ValidCreateAllocationRequestReturnsNoErrorsOnValidation()
         {
             var createAllocationRequest = TestHelpers.CreateValidatorAllocationRequest(allocationStartDate: DateTime.Now);
             var validator = new CreateAllocationRequestValidator();
