@@ -106,8 +106,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { TeamId = 8 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10))
-                .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
 
@@ -134,9 +132,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { MosaicId = 3 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(3, 0, null, 3))
-                .Returns(gatewayResponse);
-
             var response = _allocationsUseCase.Execute(request);
 
             response.Allocations.Should().BeNullOrEmpty();
@@ -160,9 +155,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListAllocationsRequest() { MosaicId = 5 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
-
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 5, null, 3))
-                .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
 
