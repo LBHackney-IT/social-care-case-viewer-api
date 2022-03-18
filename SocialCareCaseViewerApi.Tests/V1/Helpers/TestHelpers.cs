@@ -174,6 +174,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (updateAllocationRequest, worker, updatedByWorker, person, team);
         }
 
+
+        public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team)
+            CreatePatchAllocationRequest(
+                int? id = null,
+                string? deallocationReason = null,
+                string? createdBy = null,
+                DateTime? deallocationDate = null
+            )
+        {
+            var worker = CreateWorker();
+            var updatedByWorker = CreateWorker();
+            var person = CreatePerson();
+            var team = CreateTeam();
+
+            var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(u => u.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.DeallocationReason, f => deallocationReason ?? f.Random.String2(200))
+                .RuleFor(u => u.CreatedBy, createdBy ?? updatedByWorker.Email)
+                .RuleFor(u => u.DeallocationDate, f => deallocationDate ?? f.Date.Recent());
+
+            return (updateAllocationRequest, worker, updatedByWorker, person, team);
+        }
+
         public static Worker CreateWorker(
             int? id = null,
             string? firstName = null,
