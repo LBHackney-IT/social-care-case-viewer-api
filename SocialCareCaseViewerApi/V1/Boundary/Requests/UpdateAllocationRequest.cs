@@ -39,8 +39,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public UpdateAllocationRequestValidator()
         {
             RuleFor(x => x.Id)
-                .NotNull().WithMessage("Id Required")
                 .InclusiveBetween(1, int.MaxValue).WithMessage("Id must be grater than 1");
+            RuleFor(x => x.AllocatedWorkerId)
+                .InclusiveBetween(1, int.MaxValue).WithMessage("Worker Id must be grater than 1");
             RuleFor(x => x.DeallocationReason)
                 .MinimumLength(1).WithMessage("Deallocation reason required");
             RuleFor(x => x.CreatedBy)
