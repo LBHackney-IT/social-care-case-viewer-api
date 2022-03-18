@@ -431,7 +431,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void CreatingAnAllocationWithoutWorkerShouldInsertIntoTheDatabase()
         {
-            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var (request, _, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Workers.Add(createdByWorker);
