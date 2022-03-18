@@ -429,6 +429,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void CreatingAnAllocationWithoutWorkerShouldInsertIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
+            var response = _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations;
+            var insertedRecord = query.First(x => x.Id == response.AllocationId);
+
+            insertedRecord.RagRating.Should().Be(request.RagRating);
+            insertedRecord.Summary.Should().Be(request.Summary);
+            insertedRecord.CarePackage.Should().Be(request.CarePackage);
+            insertedRecord.PersonId.Should().Be(request.MosaicId);
+            insertedRecord.WorkerId.Should().BeNull();
+            insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);
