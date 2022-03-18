@@ -99,5 +99,76 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             response.Allocations.Should().BeEquivalentTo(gatewayResponse);
         }
+
+        [Test]
+        public void ListAllocationsByTeamIdReturnsNothingIfNoMatches()
+        {
+            var request = new ListAllocationsRequest() { TeamId = 8 };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeNullOrEmpty();
+        }
+
+        [Test]
+        public void ListAllocationsByMosaicIdReturnsExpectedList()
+        {
+            var request = new ListAllocationsRequest() { MosaicId = 3 };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(3, 0, null, 0))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeEquivalentTo(gatewayResponse);
+        }
+
+        [Test]
+        public void ListAllocationsByMosaicIdReturnsNothingIfNoMatches()
+        {
+            var request = new ListAllocationsRequest() { MosaicId = 3 };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(3, 0, null, 3))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeNullOrEmpty();
+        }
+        [Test]
+        public void ListAllocationsByWorkerIdReturnsExpectedList()
+        {
+            var request = new ListAllocationsRequest() { WorkerId = 5 };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 5, null, 0))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeEquivalentTo(gatewayResponse);
+        }
+
+        [Test]
+        public void ListAllocationsByWorkerIdReturnsNothingIfNoMatches()
+        {
+            var request = new ListAllocationsRequest() { MosaicId = 5 };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 5, null, 3))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeNullOrEmpty();
+        }
+
+
     }
 }
