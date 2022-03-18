@@ -1,17 +1,37 @@
 using System;
+using System.Text.Json.Serialization;
 using FluentValidation;
 
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateAllocationRequest
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        public string DeallocationReason { get; set; }
+        [JsonPropertyName("deallocationDate")]
+        public DateTime? DeallocationDate { get; set; }
 
+        [JsonPropertyName("deallocationReason")]
+        public string? DeallocationReason { get; set; }
+
+        [JsonPropertyName("allocatedWorkerId")]
+        public int? AllocatedWorkerId { get; set; }
+
+        [JsonPropertyName("createdBy")]
         public string CreatedBy { get; set; }
 
-        public DateTime DeallocationDate { get; set; }
+        [JsonPropertyName("allocationStartDate")]
+        public DateTime? AllocationStartDate { get; set; }
+
+        [JsonPropertyName("ragRating")]
+        public string? RagRating { get; set; }
+
+        [JsonPropertyName("summary")]
+        public string? Summary { get; set; }
+
+        [JsonPropertyName("carePackage")]
+        public string? CarePackage { get; set; }
     }
 
     public class UpdateAllocationRequestValidator : AbstractValidator<UpdateAllocationRequest>

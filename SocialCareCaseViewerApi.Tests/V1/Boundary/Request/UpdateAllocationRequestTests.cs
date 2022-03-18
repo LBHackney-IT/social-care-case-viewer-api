@@ -17,6 +17,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var badAllocationRequests = new List<(UpdateAllocationRequest, string)>
             {
                 (TestHelpers.UpdateValidatorAllocationRequest(allocationId: 0), "Id must be grater than 1"),
+                (TestHelpers.UpdateValidatorAllocationRequest(createdBy: null), "Email required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(createdBy: "not_an_email"), "Provide a valid email"),
+                (TestHelpers.UpdateValidatorAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)), "Deallocation date must be in the past"),
             };
 
             var validator = new UpdateAllocationRequestValidator();
@@ -38,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidCreateAllocationRequestReturnsNoErrorsOnValidation()
         {
-            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest();
+            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest(allocationId: 1);
             var validator = new UpdateAllocationRequestValidator();
 
             var validationResponse = validator.Validate(updateAllocationRequest);
