@@ -126,7 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             DatabaseContext.DeletedPersonRecords.First(x => x.DeletedId == personToBeDeleted.Id).MasterId.Should().Be(expectedDeletedPersonRecordEntry.MasterId);
             DatabaseContext.DeletedPersonRecords.First(x => x.DeletedId == personToBeDeleted.Id).DeletedId.Should().Be(expectedDeletedPersonRecordEntry.DeletedId);
-            DatabaseContext.DeletedPersonRecords.First(x => x.DeletedId == personToBeDeleted.Id).Timestamp.Should().BeCloseTo(expectedDeletedPersonRecordEntry.Timestamp, precision: 5000);
+            DatabaseContext.DeletedPersonRecords.First(x => x.DeletedId == personToBeDeleted.Id).Timestamp.Should().BeCloseTo(expectedDeletedPersonRecordEntry.Timestamp, precision: 10000);
         }
     }
 }

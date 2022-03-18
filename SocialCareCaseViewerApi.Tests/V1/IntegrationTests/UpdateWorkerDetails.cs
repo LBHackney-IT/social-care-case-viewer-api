@@ -37,7 +37,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
         }
 
-
         [Test]
         public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
         {
@@ -61,16 +60,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
             updatedWorkerResponse.Count.Should().Be(1);
 
-            // Worker's initial team should be replaced with the new team
-            updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
-            updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
-            updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
+            //worker should have two teams now
+            updatedWorkerResponse.First().Teams.Count.Should().Be(2);
+            updatedWorkerResponse.First().Teams.Any(x => x.Id == newTeamRequest.Id && x.Name == newTeamRequest.Name).Should().BeTrue();
+            updatedWorkerResponse.First().Teams.Any(x => x.Id == _existingDbTeam.Id && x.Name == _existingDbTeam.Name).Should().BeTrue();
 
             // Check the db state as well
             var persistedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(_existingDbWorker.Id)).ToList();
-            persistedWorkerTeams.Count.Should().Be(1);
-            persistedWorkerTeams.Single().Team.Id.Should().Be(newTeamRequest.Id);
-            persistedWorkerTeams.Single().Team.Name.Should().Be(newTeamRequest.Name);
+            persistedWorkerTeams.Count.Should().Be(2);
+            persistedWorkerTeams.Any(x => x.Team.Id == newTeamRequest.Id && x.Team.Name == newTeamRequest.Name).Should().BeTrue();
+            persistedWorkerTeams.Any(x => x.Team.Id == _existingDbTeam.Id && x.Team.Name == _existingDbTeam.Name).Should().BeTrue();
         }
 
         [Test]
@@ -119,13 +118,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var firstAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(0);
 
-            firstAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            firstAllocation?.AllocatedWorkerTeam.Should().BeNull();
             firstAllocation?.PersonId.Should().Be(_resident.Id);
             firstAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
 
             var secondAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(1);
 
-            secondAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            secondAllocation?.AllocatedWorkerTeam.Should().BeNull();
             secondAllocation?.PersonId.Should().Be(_resident.Id);
             secondAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
         }
