@@ -130,10 +130,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static UpdateAllocationRequest UpdateValidatorAllocationRequest(
+            int? allocationId = 1,
             string? createdBy = "test@example.com"
         )
         {
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(c => c.Id, f => allocationId)
                 .RuleFor(c => c.CreatedBy, f => createdBy);
             return updateAllocationRequest;
         }
