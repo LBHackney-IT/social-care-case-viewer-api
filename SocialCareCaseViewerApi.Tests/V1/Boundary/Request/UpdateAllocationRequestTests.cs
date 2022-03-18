@@ -14,14 +14,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void UpdateAllocationValidationReturnsErrorsWithInvalidProperties()
         {
-            var badAllocationRequests = new List<(CreateAllocationRequest, string)>
+            var badAllocationRequests = new List<(UpdateAllocationRequest, string)>
             {
-                (TestHelpers.CreateValidatorAllocationRequest(0, allocationStartDate: DateTime.Now), "Mosaic Id must be grater than 1"),
-                (TestHelpers.CreateValidatorAllocationRequest(workerId: 0, allocationStartDate: DateTime.Now), "Worker Id must be grater than 1"),
-                (TestHelpers.CreateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be grater than 1")
+                (TestHelpers.UpdateValidatorAllocationRequest(0, allocationStartDate: DateTime.Now), "Mosaic Id must be grater than 1"),
+                (TestHelpers.UpdateValidatorAllocationRequest(workerId: 0, allocationStartDate: DateTime.Now), "Worker Id must be grater than 1"),
+                (TestHelpers.UpdateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be grater than 1")
             };
 
-            var validator = new CreateAllocationRequestValidator();
+            var validator = new UpdateAllocationRequestValidator();
 
             foreach (var (request, expectedErrorMessage) in badAllocationRequests)
             {
@@ -40,10 +40,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidCreateAllocationRequestReturnsNoErrorsOnValidation()
         {
-            var createAllocationRequest = TestHelpers.CreateValidatorAllocationRequest(allocationStartDate: DateTime.Now);
-            var validator = new CreateAllocationRequestValidator();
+            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest();
+            var validator = new UpdateAllocationRequestValidator();
 
-            var validationResponse = validator.Validate(createAllocationRequest);
+            var validationResponse = validator.Validate(updateAllocationRequest);
 
             validationResponse.IsValid.Should().Be(true);
         }
