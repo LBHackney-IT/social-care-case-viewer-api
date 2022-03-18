@@ -18,6 +18,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             {
                 (TestHelpers.UpdateValidatorAllocationRequest(0), "Id must be grater than 1"),
                 (TestHelpers.UpdateValidatorAllocationRequest(workerId: 0), "Worker Id must be grater than 1"),
+                (TestHelpers.UpdateValidatorAllocationRequest(deallocationReason: ""), "Deallocation reason required"),
                 (TestHelpers.UpdateValidatorAllocationRequest(createdBy: null), "Email required"),
                 (TestHelpers.UpdateValidatorAllocationRequest(createdBy: "not_an_email"), "Provide a valid email"),
                 (TestHelpers.UpdateValidatorAllocationRequest(deallocationDate: DateTime.Now.AddDays(1)), "Deallocation date must be in the past"),
