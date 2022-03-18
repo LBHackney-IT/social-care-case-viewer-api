@@ -21,6 +21,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public int TeamId { get; set; }
         public Team Team { get; set; }
 
+
         //audit props
         [Column("sccv_created_at")]
         public DateTime? CreatedAt { get; set; }
