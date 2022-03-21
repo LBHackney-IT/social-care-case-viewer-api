@@ -113,7 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(c => c.MosaicId, f => personId)
                 .RuleFor(c => c.AllocatedTeamId, f => teamId)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId)
-                .RuleFor(c => c.RagRating, f => f.Random.String2(5))
+                .RuleFor(c => c.RagRating, f => "red")
                 .RuleFor(c => c.Summary, f => f.Random.String2(5))
                 .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
