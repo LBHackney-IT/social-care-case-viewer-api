@@ -714,7 +714,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = allocatedBy.Email,
                     Note =
-                        $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                        $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} {(worker == null ? "" : $" and {worker.FirstName} {worker.LastName}")} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
                     AllocationId = allocation.Id.ToString(),
