@@ -817,7 +817,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 //copy existing values in case adding note fails
                 var tmpAllocation = (AllocationSet) allocation.Clone();
-                SetDeallocationValues(allocation, request.DeallocationDate, request.CreatedBy);
+                SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
                 _databaseContext.SaveChanges();
 
                 try

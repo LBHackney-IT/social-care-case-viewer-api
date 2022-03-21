@@ -680,7 +680,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var allocation = new Allocation
             {
-                Id = request.Id,
+                Id = (int) request.Id,
                 AllocationEndDate = null,
                 AllocationStartDate = allocationStartDate,
                 CreatedAt = allocationStartDate,
