@@ -37,12 +37,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(x => x.MosaicId)
                 .NotNull().WithMessage("Mosaic Id Required")
-                .InclusiveBetween(1, int.MaxValue).WithMessage($"Mosaic Id must be grater than 1");
+                .InclusiveBetween(1, int.MaxValue).WithMessage($"Mosaic Id must be greater than 1");
             RuleFor(x => x.AllocatedWorkerId)
-                .InclusiveBetween(1, int.MaxValue).WithMessage($"Worker Id must be grater than 1");
+                .InclusiveBetween(1, int.MaxValue).WithMessage($"Worker Id must be greater than 1");
             RuleFor(x => x.AllocatedTeamId)
                 .NotNull().WithMessage("Team Id Required")
-                .InclusiveBetween(1, int.MaxValue).WithMessage($"Team Id must be grater than 1");
+                .InclusiveBetween(1, int.MaxValue).WithMessage($"Team Id must be greater than 1");
             RuleFor(x => x.RagRating)
                 .NotNull().WithMessage("RagRating is Required");
             RuleFor(x => x.CreatedBy)

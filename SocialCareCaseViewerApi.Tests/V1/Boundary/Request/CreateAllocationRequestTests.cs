@@ -17,10 +17,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var badAllocationRequests = new List<(CreateAllocationRequest, string)>
             {
                 (TestHelpers.CreateValidatorAllocationRequest(null, allocationStartDate: DateTime.Now), "Mosaic Id Required"),
-                (TestHelpers.CreateValidatorAllocationRequest(0, allocationStartDate: DateTime.Now), "Mosaic Id must be grater than 1"),
-                (TestHelpers.CreateValidatorAllocationRequest(workerId: 0, allocationStartDate: DateTime.Now), "Worker Id must be grater than 1"),
+                (TestHelpers.CreateValidatorAllocationRequest(0, allocationStartDate: DateTime.Now), "Mosaic Id must be greater than 1"),
+                (TestHelpers.CreateValidatorAllocationRequest(workerId: 0, allocationStartDate: DateTime.Now), "Worker Id must be greater than 1"),
                 (TestHelpers.CreateValidatorAllocationRequest(teamId: null, allocationStartDate: DateTime.Now), "Team Id Required"),
-                (TestHelpers.CreateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be grater than 1"),
+                (TestHelpers.CreateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be greater than 1"),
                 (TestHelpers.CreateValidatorAllocationRequest(ragRating: null, allocationStartDate: DateTime.Now), "RagRating is Required"),
                 (TestHelpers.CreateValidatorAllocationRequest(createdBy: null, allocationStartDate: DateTime.Now), "Email Required"),
                 (TestHelpers.CreateValidatorAllocationRequest(createdBy: "not_an_email", allocationStartDate: DateTime.Now), "Enter a valid email address"),

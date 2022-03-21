@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(w => w.WorkerId)
                 .NotNull().WithMessage("Worker Id must be provided")
-                .GreaterThan(0).WithMessage("Worker id must be grater than 0")
+                .GreaterThan(0).WithMessage("Worker id must be greater than 0")
                 .LessThan(int.MaxValue).WithMessage($"Worker id must be less than {int.MaxValue}");
             RuleFor(w => w.ModifiedBy)
                 .NotNull().WithMessage("Created by email address must be provided")
