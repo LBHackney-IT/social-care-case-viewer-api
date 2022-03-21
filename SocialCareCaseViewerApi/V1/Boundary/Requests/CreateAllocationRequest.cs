@@ -43,13 +43,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.AllocatedTeamId)
                 .NotNull().WithMessage("Team Id Required")
                 .InclusiveBetween(1, int.MaxValue).WithMessage($"Team Id must be greater than 1");
-            RuleFor(x => x.RagRating)
-                .NotNull().WithMessage("RagRating is Required");
             RuleFor(x => x.CreatedBy)
                 .NotNull().WithMessage("Email Required")
                 .EmailAddress().WithMessage("Enter a valid email address");
             RuleFor(x => x.AllocationStartDate)
                 .NotNull().WithMessage("Allocation start date required");
+            RuleFor(x => x.RagRating)
+                .NotNull().WithMessage("RagRating is Required")
+                .Matches("(?i:^green|red|amber|purple)").WithMessage("RAG rating must be 'green', 'red', 'amber' or 'purple'");
         }
     }
 }

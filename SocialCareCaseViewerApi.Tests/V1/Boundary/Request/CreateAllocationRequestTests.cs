@@ -22,6 +22,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateValidatorAllocationRequest(teamId: null, allocationStartDate: DateTime.Now), "Team Id Required"),
                 (TestHelpers.CreateValidatorAllocationRequest(teamId: 0, allocationStartDate: DateTime.Now), "Team Id must be greater than 1"),
                 (TestHelpers.CreateValidatorAllocationRequest(ragRating: null, allocationStartDate: DateTime.Now), "RagRating is Required"),
+                (TestHelpers.CreateValidatorAllocationRequest(ragRating: "Blue", allocationStartDate: DateTime.Now), "RAG rating must be 'green', 'red', 'amber' or 'purple'"),
                 (TestHelpers.CreateValidatorAllocationRequest(createdBy: null, allocationStartDate: DateTime.Now), "Email Required"),
                 (TestHelpers.CreateValidatorAllocationRequest(createdBy: "not_an_email", allocationStartDate: DateTime.Now), "Enter a valid email address"),
                 (TestHelpers.CreateValidatorAllocationRequest(), "Allocation start date required"),

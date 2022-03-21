@@ -96,7 +96,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
                 .RuleFor(c => c.CreatedBy, f => createdBy ?? createdByWorker.Email)
-                .RuleFor(c => c.RagRating, f => f.Random.String2(5))
+                .RuleFor(c => c.RagRating, f => "purple")
                 .RuleFor(c => c.Summary, f => f.Random.String2(5))
                 .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
@@ -109,7 +109,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long? mosaicId = 1,
             int? teamId = 1,
             int? workerId = 1,
-            string? ragRating = "rating",
+            string? ragRating = "red",
             string? summary = "rating",
             string? carePackage = "rating",
             string? createdBy = "test@example.com",
