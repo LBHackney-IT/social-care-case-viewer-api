@@ -429,6 +429,37 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void CreatingAnAllocationWithoutTeamShouldRaiseAnError()
+        {
+            var (request, _, createdByWorker, person, _) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Team details cannot be found");
+        }
+
+        [Test]
+        public void CreatingAnAllocationWithoutTeamAndWithoutWorkerShouldRaiseAnError()
+        {
+            var (request, _, _, person, _) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Team details cannot be found");
+        }
+
+        [Test]
         public void CreatingAnAllocationWithoutWorkerShouldInsertIntoTheDatabase()
         {
             var (request, _, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
