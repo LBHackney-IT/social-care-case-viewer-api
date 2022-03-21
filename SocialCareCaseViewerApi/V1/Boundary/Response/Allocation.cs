@@ -5,7 +5,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     public class Allocation
     {
         public int Id { get; set; }
-        public long? PersonId { get; set; }
+        public long PersonId { get; set; }
         public string PersonName { get; set; }
         public string PersonAddress { get; set; }
         public DateTime? PersonDateOfBirth { get; set; }
