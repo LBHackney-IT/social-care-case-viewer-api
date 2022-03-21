@@ -483,6 +483,54 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void CreatingAnAllocationForPersonWithTeamAssignedShouldInsertIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId);
+            allocation.WorkerId = null;
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations;
+            var insertedRecord = query.First(x => x.Id == response.AllocationId);
+
+            insertedRecord.RagRating.Should().Be(request.RagRating);
+            insertedRecord.Summary.Should().Be(request.Summary);
+            insertedRecord.CarePackage.Should().Be(request.CarePackage);
+            insertedRecord.PersonId.Should().Be(request.MosaicId);
+            insertedRecord.WorkerId.Should().Be(worker.Id);
+            insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingAnAllocationForPersonWithTeamAndWorkerInThisTeamAssignedShouldRaiseAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId);
+            allocation.WorkerId = createdByWorker.Id;
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<UpdateAllocationException>()
+                .WithMessage($"Person has already allocated worker in this team");
+        }
+
+        [Test]
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);

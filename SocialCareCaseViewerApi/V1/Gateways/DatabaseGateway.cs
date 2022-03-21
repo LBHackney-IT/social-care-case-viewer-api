@@ -683,6 +683,37 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
+            var residentAllocations =
+                _databaseContext.Allocations.Where(
+                    x => x.MarkedForDeletion == false && x.CaseStatus.ToUpper() == "OPEN" && x.Person.Id == request.MosaicId).ToList();
+
+
+            // If person has allocation with the same team already and request is to allocate a team - no.
+            if (request.AllocatedWorkerId == null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId ))
+            {
+                throw new UpdateAllocationException(
+                    $"Person is already allocated to this team");
+            }
+
+            // If person has allocation with the same team already but not a worker and request is to allocate a worker - yes.
+
+            // If person has allocation with the same team already and a worker and request is to allocate a worker - no.
+            if (request.AllocatedWorkerId != null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null ))
+            {
+                throw new UpdateAllocationException(
+                    $"Person has already allocated worker in this team");
+            }
+
+            var allocationToUpdate = residentAllocations.Where(x => x.TeamId == request.AllocatedTeamId).FirstOrDefault();
+
+            if (allocationToUpdate != null && request.AllocationStartDate < allocationToUpdate.AllocationStartDate)
+            {
+                throw new UpdateAllocationException(
+                    $"Worker Allocation date must be after Team Allocation");
+            }
+
+            // If the person doesn't have allocation with the same team - yes
+
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
