@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(x => x.Id)
                 .NotNull().WithMessage("Id Required")
-                .InclusiveBetween(1, int.MaxValue).WithMessage("Id must be grater than 1");
+                .InclusiveBetween(1, int.MaxValue).WithMessage("Id must be greater than 1");
             RuleFor(x => x.DeallocationReason)
                 .NotNull().WithMessage("Deallocation reason required")
                 .MinimumLength(1).WithMessage("Deallocation reason required");
