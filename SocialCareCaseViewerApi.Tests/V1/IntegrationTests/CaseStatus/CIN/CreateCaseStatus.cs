@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.CaseStatus.CIN
             addedCaseStatusResponse.Single().Answers.Should().BeEmpty();
             addedCaseStatusResponse.Single().EndDate.Should().BeNull();
             addedCaseStatusResponse.Single().Notes.Should().BeNull();
-            addedCaseStatusResponse.Single().StartDate.Should().Be(request.StartDate.ToString("O"));
+            addedCaseStatusResponse.Single().StartDate.Should().Be(request.StartDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff"));
             addedCaseStatusResponse.Single().Type.Should().Be(request.Type);
         }
     }

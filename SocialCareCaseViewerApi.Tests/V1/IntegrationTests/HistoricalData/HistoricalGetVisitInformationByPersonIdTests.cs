@@ -31,7 +31,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<List<Visit>>(stringContent);
 
-            convertedResponse.Should().BeEquivalentTo(new List<Visit> { visitInformation });
+            convertedResponse.Should().BeEquivalentTo(new List<Visit> { visitInformation },
+                options =>
+                    {
+                        options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                        return options;
+                    }
+                );
         }
 
         [Test]

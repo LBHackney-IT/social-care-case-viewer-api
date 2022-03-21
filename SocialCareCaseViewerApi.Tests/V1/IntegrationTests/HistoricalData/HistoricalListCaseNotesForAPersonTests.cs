@@ -31,9 +31,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests.HistoricalData
             var convertedResponse = JsonConvert.DeserializeObject<ListCaseNotesResponse>(stringContent);
 
             convertedResponse.CaseNotes.Count.Should().Be(3);
-            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteOne.ToDomain(includeNoteContent: false));
-            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteTwo.ToDomain(includeNoteContent: false));
-            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteThree.ToDomain(includeNoteContent: false));
+            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteOne.ToDomain(includeNoteContent: false),
+                options =>
+                    {
+                        options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                        return options;
+                    }
+                );
+            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteTwo.ToDomain(includeNoteContent: false),
+                options =>
+                    {
+                        options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                        return options;
+                    }
+                );
+            convertedResponse.CaseNotes.Should().ContainEquivalentOf(caseNoteThree.ToDomain(includeNoteContent: false),
+                options =>
+                    {
+                        options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, 1000)).WhenTypeIs<DateTime>();
+                        return options;
+                    }
+                );
         }
     }
 }
