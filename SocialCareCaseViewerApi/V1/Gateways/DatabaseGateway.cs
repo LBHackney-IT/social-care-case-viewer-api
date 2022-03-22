@@ -794,6 +794,70 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
+        public UpdateAllocationResponse UpdateRagRatingInAllocation(UpdateAllocationRequest request)
+        {
+            var response = new UpdateAllocationResponse();
+
+            try
+            {
+                var allocation = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+
+                if (allocation == null)
+                {
+                    throw new EntityUpdateException($"Allocation {request.Id} not found");
+                }
+
+                if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+                {
+                    throw new UpdateAllocationException("Allocation already closed");
+                }
+
+                var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
+
+                //copy existing values in case adding note fails
+                var tmpAllocation = (AllocationSet) allocation.Clone();
+
+                allocation.RagRating = request.RagRating;
+                _databaseContext.SaveChanges();
+
+                try
+                {
+                    var note = new UpdateRagRatingCaseNote
+                    {
+                        FirstName = person.FirstName,
+                        LastName = person.LastName,
+                        MosaicId = person.Id.ToString(),
+                        Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                        WorkerEmail = createdBy.Email, //required for my cases search
+                        FormNameOverall = "API_Allocation", //prefix API notes so they are easy to identify
+                        FormName = "Rag Rating Updated",
+                        AllocationId = request.Id.ToString(),
+                        CreatedBy = request.CreatedBy
+                    };
+
+                    var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                    response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                }
+                catch (Exception ex)
+                {
+                    var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                    RestoreAllocationValues(tmpAllocation, allocationToRestore);
+
+                    _databaseContext.SaveChanges();
+
+                    throw new UpdateAllocationException(
+                        $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new EntityUpdateException($"Unable to update allocation {request.Id}: {ex.Message}");
+            }
+
+            return response;
+        }
+
         public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
         {
             var response = new UpdateAllocationResponse();
