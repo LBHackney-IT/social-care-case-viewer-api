@@ -351,11 +351,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? contextFlag = null,
             string? role = null,
             string? createdByEmail = null,
-            DateTime? dateStart = null
+            DateTime? dateStart = null,
+            List<WorkerTeamRequest>? providedTeams = null
         )
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : providedTeams ?? new List<WorkerTeamRequest>();
 
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)

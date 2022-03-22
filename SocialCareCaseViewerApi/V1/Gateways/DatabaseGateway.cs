@@ -626,22 +626,25 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var dateTime = DateTime.Now;
 
-            //set end date to all active team relationships
-            foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
+            if (request.Teams != null && request.Teams.Count > 0)
             {
-                workerteam.EndDate = dateTime;
-                workerteam.LastModifiedBy = request.ModifiedBy;
-            }
-
-            var workerTeams = GetTeams(request.Teams).ToList();
-
-            //add new teams with start date 
-            if (workerTeams.Count > 0)
-            {
-                foreach (var team in workerTeams)
+                //set end date to all active team relationships
+                foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
                 {
-                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, Team = team, Worker = worker, CreatedBy = request.ModifiedBy });
+                    workerteam.EndDate = dateTime;
+                    workerteam.LastModifiedBy = request.ModifiedBy;
+                }
 
+                var workerTeams = GetTeams(request.Teams).ToList();
+
+                //add new teams with start date 
+                if (workerTeams.Count > 0)
+                {
+                    foreach (var team in workerTeams)
+                    {
+                        worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, Team = team, Worker = worker, CreatedBy = request.ModifiedBy });
+
+                    }
                 }
             }
 

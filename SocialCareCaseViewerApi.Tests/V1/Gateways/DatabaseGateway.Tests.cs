@@ -277,6 +277,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdatingWorkerWithoutProvidingTeamsDoesNotTouchWorkerTeamRelationships()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+
+            worker.WorkerTeams = new List<WorkerTeam>
+            {
+                workerTeam
+            };
+
+            DatabaseContext.Workers.Add(worker);     
+
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(createATeam: false, workerId: worker.Id);
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+
+            updatedWorker.WorkerTeams.Count.Should().Be(1);
+            updatedWorker.WorkerTeams.First().EndDate.Should().BeNull();
+            updatedWorker.WorkerTeams.First().StartDate.Should().Be(workerTeam.StartDate);
+            updatedWorker.WorkerTeams.First().TeamId.Should().Be(workerTeam.TeamId);
+        }
+
+        [Test]
         public void MovingWorkerToNewTeamsAddsNewWorkerTeamRelationshipsAndEndsTheActiveOnes()
         {
             var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
