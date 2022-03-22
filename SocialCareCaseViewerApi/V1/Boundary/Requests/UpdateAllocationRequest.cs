@@ -30,7 +30,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.DeallocationDate)
                 .NotNull().WithMessage("Deallocation Date is required")
                 .When(x => x.RagRating == null)
-                .LessThanOrEqualTo(DateTime.Now).WithMessage("DeallocationDate start date must not be in future");;
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("DeallocationDate start date must not be in future"); ;
             RuleFor(x => x.CreatedBy)
                 .NotNull().WithMessage("Email required")
                 .EmailAddress().WithMessage("Provide a valid email");

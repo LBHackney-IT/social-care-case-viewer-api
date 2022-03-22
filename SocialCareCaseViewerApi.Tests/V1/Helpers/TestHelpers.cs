@@ -104,7 +104,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             return (createAllocationRequest, worker, createdByWorker, person, team);
         }
 
-        public static UpdateAllocationRequest UpdateValidatorAllocationRequest (
+        public static UpdateAllocationRequest UpdateValidatorAllocationRequest(
                 int? id = 1,
                 string? deallocationReason = "Reason",
                 string? createdBy = "example@test.com",
