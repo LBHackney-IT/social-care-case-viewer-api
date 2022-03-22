@@ -31,12 +31,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Infrastructure.Team? GetTeamByTeamId(int teamId)
         {
-            return _databaseContext.Teams
+            var team = _databaseContext.Teams
                 .Where(x => x.Id == teamId)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
+
+            if(team != null && team.WorkerTeams != null)
+            {
+                foreach (var wt in team.WorkerTeams.ToList())
+                {
+                    if (wt.EndDate != null) team.WorkerTeams.Remove(wt);
+                }
+            }
+
+            return team;
         }
 
         public IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context)

@@ -71,6 +71,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetWorkerByWorkerEmailDoesNotReturnWorkerTeamsWithHistoricalRelationship()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, "worker-email@example.com"));
+
+            var currentWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: 1, teamId: 1, worker: worker));
+
+            _ = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: 1, teamId: 1, worker: worker, endDate: DateTime.Now.AddDays(-50)));
+
+            var workerTeams = new List<WorkerTeam> { currentWorkerTeamRelationship };
+
+            _ = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once, relationship added above
+
+            var responseWorker = _classUnderTest.GetWorkerByEmail(worker.Email);
+
+            responseWorker.WorkerTeams?.Count.Should().Be(1);
+        }
+
+        [Test]
         public void GetWorkerByWorkerEmailReturnsNullWhenEmailNotPresent()
         {
             const string workerEmail = "realEmail@example.com";
@@ -492,6 +512,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.GetTeamByTeamName(team.Name);
 
             response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByTeamNameDoesNotReturnWorkersWithHistoricalRelationshipWithTheTeam()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, "current-worker-email@example.com"));
+
+            var currentWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: 1, teamId: 1, worker: worker));
+
+            _ = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: 1, teamId: 1, worker: worker, endDate: DateTime.Now.AddDays(-50)));
+
+            var workerTeams = new List<WorkerTeam> { currentWorkerTeamRelationship };
+
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once, relationship added above
+
+            var responseTeam = _classUnderTest.GetTeamByTeamName(team.Name);
+
+            responseTeam?.WorkerTeams.Count.Should().Be(1);
         }
 
         [Test]
@@ -1663,6 +1703,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Address, address)
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
                 .RuleFor(p => p.OtherNames, otherNames);
+        }
+
+        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
+        {
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+            return workerTeam;
         }
     }
 }

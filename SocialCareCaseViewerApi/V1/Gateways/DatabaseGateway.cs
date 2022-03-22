@@ -556,12 +556,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker GetWorkerByEmail(string email)
         {
-            return _databaseContext.Workers
+            var worker = _databaseContext.Workers
                     .Where(worker => worker.Email.ToLower() == email.ToLower())
                     .Include(x => x.Allocations)
                     .Include(x => x.WorkerTeams)
                     .ThenInclude(y => y.Team)
                     .FirstOrDefault();
+
+            if (worker != null && worker.WorkerTeams != null)
+            {
+                foreach (var wt in worker.WorkerTeams.ToList())
+                {
+                    if (wt.EndDate != null) worker.WorkerTeams.Remove(wt);
+                }
+            }
+
+            return worker;
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
@@ -657,12 +667,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Team GetTeamByTeamName(string teamName)
         {
-            return _databaseContext.Teams
+            var team = _databaseContext.Teams
                 .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
+
+            if (team != null && team.WorkerTeams != null)
+            {
+                foreach (var wt in team.WorkerTeams.ToList())
+                {
+                    if (wt.EndDate != null) team.WorkerTeams.Remove(wt);
+                }
+            }
+
+            return team;
         }
 
         //TODO: use db views or queries

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -73,6 +74,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.TeamGatewayTests
 
             workerOneResponse.Should().BeEquivalentTo(workerOne);
             workerTwoResponse.Should().BeEquivalentTo(workerTwo);
+        }
+
+        [Test]
+        public void GetTeamByIdDoesNotReturnHistoricalWorkerTeamRelationships()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, "current-worker-email@example.com"));
+
+            var currentWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: 1, teamId: 1, worker: worker));
+
+            var previousWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: 1, teamId: 1, worker: worker, endDate: DateTime.Now.AddDays(-50)));
+
+            var workerTeams = new List<WorkerTeam> { currentWorkerTeamRelationship };
+
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once
+
+            var responseTeam = _teamGateway.GetTeamByTeamId(team.Id);
+
+            responseTeam?.WorkerTeams.Count.Should().Be(1);
         }
 
         private Team SaveTeamToDatabase(Team team)

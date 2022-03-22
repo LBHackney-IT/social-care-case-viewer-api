@@ -19,13 +19,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker? GetWorkerByWorkerId(int workerId)
         {
-            return _databaseContext.Workers
+            var worker = _databaseContext.Workers
                 .Where(x => x.Id == workerId)
                 .Include(x => x.Allocations)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(y => y.Team)
-                .FirstOrDefault()
-                ?.ToDomain(true);
+                .FirstOrDefault();
+
+            if (worker != null && worker.WorkerTeams != null)
+            {
+                foreach (var wt in worker.WorkerTeams.ToList())
+                {
+                    if (wt.EndDate != null) worker.WorkerTeams.Remove(wt);
+                }
+            }
+
+            return worker?.ToDomain(includeTeamData: true);
         }
     }
 }

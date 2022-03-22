@@ -36,7 +36,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         }
 
         [Test]
-        public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
+        public async Task UpdateWorkerWithNewTeamReturnsOnlyTheUpdatedTeam()
         {
             // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
@@ -58,10 +58,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
             updatedWorkerResponse.Count.Should().Be(1);
 
-            //worker should have two teams now
-            updatedWorkerResponse.First().Teams.Count.Should().Be(2);
+            //worker should have one team now since the old relationship has an end date
+            updatedWorkerResponse.First().Teams.Count.Should().Be(1);
             updatedWorkerResponse.First().Teams.Any(x => x.Id == newTeamRequest.Id && x.Name == newTeamRequest.Name).Should().BeTrue();
-            updatedWorkerResponse.First().Teams.Any(x => x.Id == _existingDbTeam.Id && x.Name == _existingDbTeam.Name).Should().BeTrue();
+            updatedWorkerResponse.First().Teams.Any(x => x.Id == _existingDbTeam.Id && x.Name == _existingDbTeam.Name).Should().BeFalse();
 
             // Check the db state as well
             var persistedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(_existingDbWorker.Id)).ToList();
