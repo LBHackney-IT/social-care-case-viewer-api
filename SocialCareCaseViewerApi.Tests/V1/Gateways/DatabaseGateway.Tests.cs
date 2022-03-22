@@ -288,7 +288,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 workerTeam
             };
 
-            DatabaseContext.Workers.Add(worker);     
+            DatabaseContext.Workers.Add(worker);
 
             DatabaseContext.SaveChanges();
 
