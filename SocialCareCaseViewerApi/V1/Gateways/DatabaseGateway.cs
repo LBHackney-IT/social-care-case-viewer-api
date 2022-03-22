@@ -684,11 +684,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
-            var residentAllocations =
-                _databaseContext.Allocations.Where(
-                    x => x.MarkedForDeletion == false
-                         && x.CaseStatus.ToUpper() == "OPEN"
-                         && x.Person.Id == request.MosaicId).ToList();
+            var residentAllocations = _databaseContext.Allocations.Where(x => x.MarkedForDeletion == false && x.CaseStatus.ToUpper() == "OPEN" && x.Person.Id == request.MosaicId).ToList();
 
             var hasExistingTeamOnlyAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
             var hasExistingTeamAndWorkerAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null);
