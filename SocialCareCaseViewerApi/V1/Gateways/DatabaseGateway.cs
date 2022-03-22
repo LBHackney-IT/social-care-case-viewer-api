@@ -690,39 +690,55 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                          && x.CaseStatus.ToUpper() == "OPEN"
                          && x.Person.Id == request.MosaicId).ToList();
 
+            var hasExistingTeamAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
+            var hasExistingTeamAndWorkerAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null);
+
 
             // If person has allocation with the same team already and request is to allocate a team - no.
-            if (request.AllocatedWorkerId == null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId))
+            if (request.AllocatedWorkerId == null && hasExistingTeamAllocation)
             {
-                throw new UpdateAllocationException(
+                throw new CreateAllocationException(
                     $"Person is already allocated to this team");
             }
 
             // If person has allocation with the same team already but not a worker and request is to allocate a worker - yes.
 
             // If person has allocation with the same team already and a worker and request is to allocate a worker - no.
-            if (request.AllocatedWorkerId != null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null))
+            if (request.AllocatedWorkerId != null && hasExistingTeamAndWorkerAllocation)
             {
-                throw new UpdateAllocationException(
+                throw new CreateAllocationException(
                     $"Person has already allocated worker in this team");
             }
 
-            var allocationToUpdate = residentAllocations.Where(x => x.TeamId == request.AllocatedTeamId).FirstOrDefault();
+            var allocationToUpdate = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
 
             if (allocationToUpdate != null && request.AllocationStartDate < allocationToUpdate.AllocationStartDate)
             {
-                throw new UpdateAllocationException(
-                    $"Worker Allocation date must be after Team Allocation");
+                throw new CreateAllocationException(
+                    $"Worker Allocation date must be after Team Allocation date");
             }
 
             // If the person doesn't have allocation with the same team - yes
 
             var response = new CreateAllocationResponse();
-            if (request.AllocatedWorkerId != null && request.AllocatedTeamId != null)
+
+            // Team and worker allocation
+            if (request.AllocatedWorkerId != null && !hasExistingTeamAndWorkerAllocation  && !hasExistingTeamAllocation)
             {
-                var workerAllocationResponse = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
-                var teamAllocationResponse = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
-                response = workerAllocationResponse;
+                CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+            }
+
+            // Team allocation
+            if (request.AllocatedWorkerId == null && !hasExistingTeamAllocation)
+            {
+                response = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+            }
+
+            // Worker allocation
+            if (request.AllocatedWorkerId != null && hasExistingTeamAllocation)
+            {
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
             }
 
             return response;

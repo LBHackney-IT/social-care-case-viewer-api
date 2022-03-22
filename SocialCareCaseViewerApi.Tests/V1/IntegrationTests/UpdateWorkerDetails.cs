@@ -76,19 +76,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamUpdatesAnyAllocationsAssociated()
         {
-            // Create an allocation request for existingDbWorker
-            var createAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
-
-            var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
-            var serializedRequest = JsonSerializer.Serialize(allocationRequest);
-
-            var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
-
-            var allocationResponse = await Client.PostAsync(createAllocationUri, requestContent).ConfigureAwait(true);
-            allocationResponse.StatusCode.Should().Be(201);
-
-            // Create another allocation request for existingDbWorker, due to new restrictions in use case unable to create second allocation via API, saving directly to the DB.
-            var secondDBAllocation = new AllocationSet()
+            var firstDbAllocation = new AllocationSet()
             {
                 PersonId = _resident.Id,
                 TeamId = _existingDbTeam.Id,
@@ -97,7 +85,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 CreatedBy = _allocationWorker.Email,
                 AllocationStartDate = DateTime.Now,
             };
-            DatabaseContext.Allocations.Add(secondDBAllocation);
+            DatabaseContext.Allocations.Add(firstDbAllocation);
+            DatabaseContext.SaveChanges();
+
+            // Create another allocation request for existingDbWorker, due to new restrictions in use case unable to create second allocation via API, saving directly to the DB.
+            var secondDbAllocation = new AllocationSet()
+            {
+                PersonId = _resident.Id,
+                TeamId = _existingDbTeam.Id,
+                WorkerId = _existingDbWorker.Id,
+                RagRating = "red",
+                CreatedBy = _allocationWorker.Email,
+                AllocationStartDate = DateTime.Now,
+            };
+            DatabaseContext.Allocations.Add(secondDbAllocation);
             DatabaseContext.SaveChanges();
 
             // Patch request to update team of existingDbWorker

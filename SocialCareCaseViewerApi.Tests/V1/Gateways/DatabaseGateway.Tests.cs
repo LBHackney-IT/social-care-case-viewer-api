@@ -408,6 +408,22 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [Test]
         public void CreatingTeamAndWorkerAllocationShouldInsertBothTeamAndWorkerAllocationsIntoTheDatabase()
         {
@@ -421,11 +437,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
             DatabaseContext.SaveChanges();
 
-            var response = _classUnderTest.CreateAllocation(request);
+            _classUnderTest.CreateAllocation(request);
             var query = DatabaseContext.Allocations.ToList();
-            var insertedTeamAllocation = query.Last();
-            var insertedTeamAndWorkerAllocation = query.First();
+            var insertedTeamAllocation = query.First();
+            var insertedTeamAndWorkerAllocation = query.Last();
 
+            query.Count.Should().Equals(2);
             insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
             insertedTeamAllocation.Summary.Should().Be(request.Summary);
             insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
@@ -440,6 +457,131 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedTeamAndWorkerAllocation.WorkerId.Should().Be(request.AllocatedWorkerId);
             insertedTeamAndWorkerAllocation.CreatedBy.Should().Be(createdByWorker.Email);
         }
+
+        [Test]
+        public void CreatingTeamAllocationShouldInsertTeamAllocationIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedTeamAllocation = query.First();
+
+            query.Count.Should().Equals(1);
+            insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAllocation.WorkerId.Should().Be(null);
+            insertedTeamAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationShouldInsertWorkerAllocationsIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+
+            var dateInThePast = new DateTime(2022, 1, 1);
+
+            var existingTeamAllocation = new AllocationSet()
+            {
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null,
+                RagRating = "red",
+                CreatedBy = createdByWorker.Email,
+                CaseStatus = "OPEN",
+                MarkedForDeletion = false,
+                AllocationStartDate = dateInThePast,
+            };
+
+            DatabaseContext.Allocations.Add(existingTeamAllocation);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedWorkerAllocation = query.Last();
+
+            query.Count.Should().Equals(2);
+
+            insertedWorkerAllocation.RagRating.Should().Be(request.RagRating);
+            insertedWorkerAllocation.Summary.Should().Be(request.Summary);
+            insertedWorkerAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedWorkerAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedWorkerAllocation.WorkerId.Should().Be(request.AllocatedWorkerId);
+            insertedWorkerAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationWithDateBeforeTeamAllocationShouldThrowAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            DateTime invalidWorkerAllocationTime = new DateTime(2010, 1, 18);
+            request.AllocatedTeamId = team.Id;
+            request.AllocationStartDate = invalidWorkerAllocationTime;
+
+            var existingTeamAllocation = new AllocationSet()
+            {
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null,
+                RagRating = "red",
+                CreatedBy = createdByWorker.Email,
+                CaseStatus = "OPEN",
+                MarkedForDeletion = false,
+                AllocationStartDate = DateTime.Now,
+            };
+
+            DatabaseContext.Allocations.Add(existingTeamAllocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Worker Allocation date must be after Team Allocation date");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [Test]
         public void CreatingAnAllocationWithoutTeamShouldRaiseAnError()
@@ -540,7 +682,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.CreateAllocation(request);
 
-            act.Should().Throw<UpdateAllocationException>()
+            act.Should().Throw<CreateAllocationException>()
                 .WithMessage($"Person is already allocated to this team");
         }
 
@@ -560,9 +702,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             Action act = () => _classUnderTest.CreateAllocation(request);
 
-            act.Should().Throw<UpdateAllocationException>()
+            act.Should().Throw<CreateAllocationException>()
                 .WithMessage($"Person has already allocated worker in this team");
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         [Test]
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
