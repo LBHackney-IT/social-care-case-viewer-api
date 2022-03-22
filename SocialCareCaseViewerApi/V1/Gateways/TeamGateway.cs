@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
 
-            if(team != null && team.WorkerTeams != null)
+            if (team != null && team.WorkerTeams != null)
             {
                 foreach (var wt in team.WorkerTeams.ToList())
                 {

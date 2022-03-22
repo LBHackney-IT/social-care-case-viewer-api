@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.WorkerGatewayTests
 
             _ = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once, relationship added above
 
-            var responseWorker= _workerGateway.GetWorkerByWorkerId(worker.Id);
+            var responseWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
 
             responseWorker?.Teams?.Count.Should().Be(1);
         }
