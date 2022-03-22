@@ -47,7 +47,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .NotNull().WithMessage("Email Required")
                 .EmailAddress().WithMessage("Enter a valid email address");
             RuleFor(x => x.AllocationStartDate)
-                .NotNull().WithMessage("Allocation start date required");
+                .NotNull().WithMessage("Allocation start date required")
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("Allocation start date must not be in future");
             RuleFor(x => x.RagRating)
                 .NotNull().WithMessage("RagRating is Required")
                 .Matches("(?i:^green|red|amber|purple)").WithMessage("RAG rating must be 'green', 'red', 'amber' or 'purple'");
