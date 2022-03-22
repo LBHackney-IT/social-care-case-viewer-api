@@ -422,12 +422,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.CreateAllocation(request);
-            var query = DatabaseContext.Allocations;
-            var insertedTeamAllocation = query.First(x => x.Id == response.AllocationId);
-            var insertedTeamAndWorkerAllocation = query.Last(x => x.Id == response.AllocationId);
-            var recordCount = query.Count();
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedTeamAllocation = query.Last();
+            var insertedTeamAndWorkerAllocation = query.First();
 
-            recordCount.Should().Equals(2);
             insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
             insertedTeamAllocation.Summary.Should().Be(request.Summary);
             insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);

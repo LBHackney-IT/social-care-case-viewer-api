@@ -23,6 +23,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
+using DomainWorker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -685,7 +686,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var residentAllocations =
                 _databaseContext.Allocations.Where(
-                    x => x.MarkedForDeletion == false && x.CaseStatus.ToUpper() == "OPEN" && x.Person.Id == request.MosaicId).ToList();
+                    x => x.MarkedForDeletion == false
+                         && x.CaseStatus.ToUpper() == "OPEN"
+                         && x.Person.Id == request.MosaicId).ToList();
 
 
             // If person has allocation with the same team already and request is to allocate a team - no.
@@ -714,6 +717,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             // If the person doesn't have allocation with the same team - yes
 
+            var response = new CreateAllocationResponse();
+            if (request.AllocatedWorkerId != null && request.AllocatedTeamId != null)
+            {
+                var workerAllocationResponse = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+                var teamAllocationResponse = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+                response = workerAllocationResponse;
+            }
+
+            return response;
+        }
+
+        private CreateAllocationResponse CreateTeamAndWorkerAllocation(CreateAllocationRequest request, Person person, DomainWorker worker, Worker allocatedBy, Team team)
+        {
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
