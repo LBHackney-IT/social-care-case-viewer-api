@@ -694,14 +694,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (request.AllocatedWorkerId == null && hasExistingTeamOnlyAllocation)
             {
                 throw new CreateAllocationException(
-                    $"Person is already allocated to this team");
+                    "Person is already allocated to this team");
             }
 
             // If person has worker allocation with the same team already and a worker and request is to allocate a worker
             if (request.AllocatedWorkerId != null && hasExistingTeamAndWorkerAllocation)
             {
                 throw new CreateAllocationException(
-                    $"Person has already allocated worker in this team");
+                    "Person has already allocated worker in this team");
             }
 
             var exisitingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
@@ -709,7 +709,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (exisitingAllocation != null && request.AllocationStartDate < exisitingAllocation.AllocationStartDate)
             {
                 throw new CreateAllocationException(
-                    $"Worker Allocation date must be after Team Allocation date");
+                    "Worker Allocation date must be after Team Allocation date");
             }
 
             var response = new CreateAllocationResponse();
