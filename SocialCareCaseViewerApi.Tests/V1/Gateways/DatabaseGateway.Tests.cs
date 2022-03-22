@@ -483,7 +483,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreatingAnAllocationForPersonWithTeamAssignedShouldInsertIntoTheDatabase()
+        public void CreatingAnAllocationForPersonWithTeamAssignedButNotWorkerShouldInsertIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId);
@@ -510,11 +510,32 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreatingAnAllocationForPersonWithTeamAndWorkerInThisTeamAssignedShouldRaiseAnError()
+        public void CreatingTeamAllocationForPersonWithTeamShouldRaiseAnError()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
-            var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId);
-            allocation.WorkerId = createdByWorker.Id;
+            var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId, workerId: createdByWorker.Id);
+            request.AllocatedWorkerId = null;
+            allocation.WorkerId = null;
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<UpdateAllocationException>()
+                .WithMessage($"Person is already allocated to this team");
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationForPersonWithTeamAndWorkerInThisTeamAssignedShouldRaiseAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: request.MosaicId, teamId: request.AllocatedTeamId, workerId: createdByWorker.Id);
             allocation.MarkedForDeletion = false;
             allocation.CaseStatus = "OPEN";
             DatabaseContext.Teams.Add(team);
