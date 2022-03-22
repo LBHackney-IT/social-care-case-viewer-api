@@ -104,11 +104,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ListAllocationsByTeamIdReturnsNothingIfNoMatches()
         {
             var request = new ListAllocationsRequest() { TeamId = 8 };
-            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
-
-
             var response = _allocationsUseCase.Execute(request);
-
             response.Allocations.Should().BeNullOrEmpty();
         }
 
@@ -130,10 +126,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ListAllocationsByMosaicIdReturnsNothingIfNoMatches()
         {
             var request = new ListAllocationsRequest() { MosaicId = 3 };
-            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
-
             var response = _allocationsUseCase.Execute(request);
-
             response.Allocations.Should().BeNullOrEmpty();
         }
         [Test]
@@ -154,10 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         public void ListAllocationsByWorkerIdReturnsNothingIfNoMatches()
         {
             var request = new ListAllocationsRequest() { MosaicId = 5 };
-            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
-
             var response = _allocationsUseCase.Execute(request);
-
             response.Allocations.Should().BeNullOrEmpty();
         }
 
