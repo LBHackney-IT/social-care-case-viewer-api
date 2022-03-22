@@ -597,10 +597,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
             return worker;
         }
-
         public void UpdateWorker(UpdateWorkerRequest request)
         {
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.WorkerId);
+            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == request.WorkerId);
 
             if (worker == null)
             {
@@ -615,24 +614,28 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.DateStart = request.DateStart;
             worker.IsActive = true;
 
-            var workerTeams = GetTeams(request.Teams);
+            var dateTime = DateTime.Now;
 
-            worker.WorkerTeams = workerTeams.Select(t => new WorkerTeam { Team = t, Worker = worker }).ToList();
-            _databaseContext.SaveChanges();
-
-            // Update any assigned allocations to reflect the worker's new team
-            var allocations = _databaseContext.Allocations.Where(x => x.WorkerId == request.WorkerId).ToList();
-
-            if (!allocations.Any()) return;
-
-            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id))?.Team;
-
-            foreach (var allocation in allocations)
+            //set end date to all active team relationships
+            foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
             {
-                allocation.TeamId = updatedTeam?.Id;
-                allocation.Team = updatedTeam;
-                _databaseContext.SaveChanges();
+                workerteam.EndDate = dateTime;
+                workerteam.LastModifiedBy = request.ModifiedBy;
             }
+
+            var workerTeams = GetTeams(request.Teams).ToList();
+
+            //add new teams with start date 
+            if (workerTeams.Count > 0)
+            {
+                foreach (var team in workerTeams)
+                {
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, Team = team, Worker = worker, CreatedBy = request.ModifiedBy });
+
+                }
+            }
+
+            _databaseContext.SaveChanges();
         }
 
         private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)
