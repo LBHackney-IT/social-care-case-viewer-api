@@ -14,14 +14,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void UpdateAllocationValidationReturnsErrorsWithInvalidProperties()
         {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
             var badAllocationRequests = new List<(UpdateAllocationRequest, string)>
             {
-                (TestHelpers.UpdateValidatorAllocationRequest(null, deallocationDate: DateTime.Now, ragRating: null), "Id Required"),
-                // (TestHelpers.UpdateValidatorAllocationRequest(0, deallocationDate: DateTime.Now, ragRating: null), "Id must be greater than 1"),
-                // (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: DateTime.Now), "Please do not patch RagRating and deallocate at the same time"),
-                // (TestHelpers.UpdateValidatorAllocationRequest(0, deallocationDate: DateTime.Now, ragRating: null, createdBy: null), "Id must be greater than 1"),
-
-
+                (TestHelpers.UpdateValidatorAllocationRequest(null, deallocationDate: today, ragRating: null), "Id Required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(0, deallocationDate: today, ragRating: null), "Id must be greater than 1"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationReason: null, deallocationDate: today, ragRating: null), "Deallocation reason required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationReason: "", deallocationDate: today, ragRating: null), "Deallocation reason required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, ragRating: null), "Deallocation Date is required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: tomorrow, ragRating: null), "DeallocationDate start date must not be in future"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, ragRating: null, createdBy: null), "Email required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, ragRating: null, createdBy: "not an email"), "Provide a valid email"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today), "Please do not patch RagRating and deallocate at the same time"),
             };
 
             var validator = new UpdateAllocationRequestValidator();
@@ -40,15 +45,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             }
         }
 
-        // [Test]
-        // public void ValidCreateAllocationRequestReturnsNoErrorsOnValidation()
-        // {
-        //     var createAllocationRequest = TestHelpers.CreateValidatorAllocationRequest(allocationStartDate: DateTime.Now);
-        //     var validator = new CreateAllocationRequestValidator();
-        //
-        //     var validationResponse = validator.Validate(createAllocationRequest);
-        //
-        //     validationResponse.IsValid.Should().Be(true);
-        // }
+        [Test]
+        public void ValidDeaallocationRequestReturnsNoErrorsOnValidation()
+        {
+            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: DateTime.Now, ragRating: null);
+            var validator = new UpdateAllocationRequestValidator();
+
+            var validationResponse = validator.Validate(updateAllocationRequest);
+
+            validationResponse.IsValid.Should().Be(true);
+        }
+
+        [Test]
+        public void ValidPatchAllocationRequestReturnsNoErrorsOnValidation()
+        {
+            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: "red");
+            var validator = new UpdateAllocationRequestValidator();
+
+            var validationResponse = validator.Validate(updateAllocationRequest);
+
+            validationResponse.IsValid.Should().Be(true);
+        }
     }
 }
