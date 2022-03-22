@@ -22,6 +22,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public UpdateAllocationResponse ExecuteUpdate(UpdateAllocationRequest request)
         {
+            if (request.RagRating != null)
+            {
+                return _databaseGateway.UpdateRagRatingInAllocation(request);
+            }
+
             return _databaseGateway.UpdateAllocation(request);
         }
 
