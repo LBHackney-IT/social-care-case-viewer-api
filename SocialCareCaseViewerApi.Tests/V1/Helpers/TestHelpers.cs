@@ -397,7 +397,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.TeamId, f => f.UniqueIndex)
                 .RuleFor(t => t.Team, team)
-                .RuleFor( t => t.EndDate, endDate ?? null);
+                .RuleFor(t => t.EndDate, endDate ?? null);
         }
 
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(

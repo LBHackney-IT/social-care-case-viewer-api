@@ -429,7 +429,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
-           
+
             // Update worker to be in a new team
             var updateTeamRequest = TestHelpers.CreateUpdateWorkersRequest(
                 teamId: differentTeam.Id,
