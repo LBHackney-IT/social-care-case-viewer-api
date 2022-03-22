@@ -406,8 +406,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeEquivalentTo(team);
         }
 
+
+
         [Test]
-        public void CreatingAnAllocationShouldInsertIntoTheDatabase()
+        public void CreatingTeamAndWorkerAllocationShouldInsertBothTeamAndWorkerAllocationsIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
@@ -416,16 +418,29 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
 
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
             var response = _classUnderTest.CreateAllocation(request);
             var query = DatabaseContext.Allocations;
-            var insertedRecord = query.First(x => x.Id == response.AllocationId);
+            var insertedTeamAllocation = query.First(x => x.Id == response.AllocationId);
+            var insertedTeamAndWorkerAllocation = query.Last(x => x.Id == response.AllocationId);
+            var recordCount = query.Count();
 
-            insertedRecord.RagRating.Should().Be(request.RagRating);
-            insertedRecord.Summary.Should().Be(request.Summary);
-            insertedRecord.CarePackage.Should().Be(request.CarePackage);
-            insertedRecord.PersonId.Should().Be(request.MosaicId);
-            insertedRecord.WorkerId.Should().Be(worker.Id);
-            insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
+            recordCount.Should().Equals(2);
+            insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAllocation.WorkerId.Should().Be(null);
+            insertedTeamAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+
+            insertedTeamAndWorkerAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAndWorkerAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAndWorkerAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAndWorkerAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAndWorkerAllocation.WorkerId.Should().Be(request.AllocatedWorkerId);
+            insertedTeamAndWorkerAllocation.CreatedBy.Should().Be(createdByWorker.Email);
         }
 
         [Test]
