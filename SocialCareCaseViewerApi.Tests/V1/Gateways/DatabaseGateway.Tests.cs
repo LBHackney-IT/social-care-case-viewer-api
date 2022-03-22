@@ -1625,8 +1625,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void UpdatePersonReplacesOtherNames()
         {
-            DatabaseContext.Persons.RemoveRange(DatabaseContext.Persons);
-            DatabaseContext.SaveChanges();
             var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
             SavePersonOtherNameToDatabase(DatabaseGatewayHelper.CreatePersonOtherNameDatabaseEntity(person.Id));
             var request = GetValidUpdatePersonRequest(person.Id);
