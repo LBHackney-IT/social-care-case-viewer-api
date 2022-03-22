@@ -406,24 +406,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             response.Should().BeEquivalentTo(team);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [Test]
         public void CreatingTeamAndWorkerAllocationShouldInsertBothTeamAndWorkerAllocationsIntoTheDatabase()
         {
@@ -496,6 +478,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
 
             var dateInThePast = new DateTime(2022, 1, 1);
 
@@ -565,23 +548,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             act.Should().Throw<CreateAllocationException>()
                 .WithMessage($"Worker Allocation date must be after Team Allocation date");
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         [Test]
         public void CreatingAnAllocationWithoutTeamShouldRaiseAnError()
@@ -705,36 +671,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             act.Should().Throw<CreateAllocationException>()
                 .WithMessage($"Person has already allocated worker in this team");
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         [Test]
         public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
