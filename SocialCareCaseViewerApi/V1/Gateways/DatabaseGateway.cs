@@ -723,7 +723,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var response = new CreateAllocationResponse();
 
             // Team and worker allocation
-            if (request.AllocatedWorkerId != null && !hasExistingTeamAndWorkerAllocation  && !hasExistingTeamAllocation)
+            if (request.AllocatedWorkerId != null && !hasExistingTeamAndWorkerAllocation && !hasExistingTeamAllocation)
             {
                 CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
                 response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
