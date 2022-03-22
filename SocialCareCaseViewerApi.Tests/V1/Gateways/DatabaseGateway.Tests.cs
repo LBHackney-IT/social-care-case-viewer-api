@@ -486,7 +486,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreatingWorkerAllocationShouldInsertWorkerAllocationsIntoTheDatabase()
+        public void CreatingWorkerAllocationShouldInsertWorkerAllocationIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
