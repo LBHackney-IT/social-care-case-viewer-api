@@ -689,7 +689,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
 
             // If person has allocation with the same team already and request is to allocate a team - no.
-            if (request.AllocatedWorkerId == null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId ))
+            if (request.AllocatedWorkerId == null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId))
             {
                 throw new UpdateAllocationException(
                     $"Person is already allocated to this team");
@@ -698,7 +698,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             // If person has allocation with the same team already but not a worker and request is to allocate a worker - yes.
 
             // If person has allocation with the same team already and a worker and request is to allocate a worker - no.
-            if (request.AllocatedWorkerId != null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null ))
+            if (request.AllocatedWorkerId != null && residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null))
             {
                 throw new UpdateAllocationException(
                     $"Person has already allocated worker in this team");
