@@ -30,6 +30,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromAWorker(worker);
 
             return worker?.ToDomain(includeTeamData: true);
-        }      
+        }
     }
 }

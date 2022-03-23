@@ -676,7 +676,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return team;
         }
 
-       
+
 
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
