@@ -797,7 +797,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdatingTeamAllocationWithoutAllocationShouldUpdateTheRecordInTheDatabaseAndNotCreateAnyAdditionalAllocations()
+        public void UpdatingTeamAllocationWithoutWorkerAllocationShouldUpdateTheRecordInTheDatabaseAndNotCreateAnyAdditionalAllocations()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);
             var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
