@@ -19,6 +19,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "team_id")]
         public long TeamId { get; set; }
+
+        [FromQuery(Name = "status")]
+        public string Status { get; set; }
+
     }
 
     public class ListAllocationsRequestValidator : AbstractValidator<ListAllocationsRequest>
