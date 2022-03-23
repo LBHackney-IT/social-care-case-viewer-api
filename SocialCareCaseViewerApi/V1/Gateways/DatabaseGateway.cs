@@ -64,11 +64,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             else if (teamId != 0)
             {
-            if (!String.IsNullOrEmpty(status))
-            {
-                query = query.Where(x => x.CaseStatus == status);
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus == status);
 
-            }
+                }
                query = query.Where(x => x.TeamId == teamId);
             }
 
