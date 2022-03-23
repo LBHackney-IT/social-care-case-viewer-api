@@ -884,6 +884,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         PersonId = allocation.PersonId,
                         TeamId = allocation.TeamId,
                         AllocationStartDate = allocation.AllocationStartDate,
+                        CreatedBy = allocation.CreatedBy,
+                        CreatedAt = allocation.CreatedAt,
                         CaseStatus = allocation.CaseStatus
                     };
                     _databaseContext.Allocations.Add(teamAllocationToInsert);
