@@ -44,7 +44,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId)
+        public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string status)
         {
             List<Allocation> allocations = new List<Allocation>();
             IQueryable<AllocationSet> query = _databaseContext.Allocations;
@@ -64,8 +64,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             else if (teamId != 0)
             {
-                query = query.Where(x => x.TeamId == teamId);
+            if (!String.IsNullOrEmpty(status))
+            {
+                query = query.Where(x => x.CaseStatus == status);
+
             }
+               query = query.Where(x => x.TeamId == teamId);
+            }
+
+
 
             if (query != null)
             {
