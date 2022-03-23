@@ -875,6 +875,20 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     throw new UpdateAllocationException("Allocation already closed");
                 }
+                var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null);
+
+                if (allocation.WorkerId != null && matchingTeamAllocation == null)
+                {
+                    var teamAllocationToInsert = new AllocationSet()
+                    {
+                        PersonId = allocation.PersonId,
+                        TeamId = allocation.TeamId,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        CaseStatus = allocation.CaseStatus
+                    };
+                    _databaseContext.Allocations.Add(teamAllocationToInsert);
+                    _databaseContext.SaveChanges();
+                }
 
                 var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
 
