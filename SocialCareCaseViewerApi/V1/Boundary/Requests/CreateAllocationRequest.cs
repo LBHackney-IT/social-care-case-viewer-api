@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .LessThanOrEqualTo(DateTime.Now).WithMessage("Allocation start date must not be in future");
             RuleFor(x => x.RagRating)
                 .NotNull().WithMessage("RagRating is Required")
-                .Matches("(?i:^green|red|amber|purple)").WithMessage("RAG rating must be 'green', 'red', 'amber' or 'purple'");
+                .Matches("(?i:^low|high|medium|urgent)").WithMessage("RAG rating must be 'low', 'high', 'medium' or 'urgent'");
         }
     }
 }

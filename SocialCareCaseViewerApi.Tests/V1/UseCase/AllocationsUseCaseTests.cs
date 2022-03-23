@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void UpdateAllocationCallsUpdateRagRatingInAllocationWhenRagRatingIsSet()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = "green" };
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = "low" };
 
             _allocationsUseCase.ExecuteUpdate(request);
 
