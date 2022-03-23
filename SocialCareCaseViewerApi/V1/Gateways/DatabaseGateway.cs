@@ -1274,11 +1274,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var worker = _workerGateway.GetWorkerByWorkerId(allocation.WorkerId ?? 0);
 
-            if (worker == null)
-            {
-                throw new UpdateAllocationException("Worker not found");
-            }
-
             var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
             if (person == null)
             {

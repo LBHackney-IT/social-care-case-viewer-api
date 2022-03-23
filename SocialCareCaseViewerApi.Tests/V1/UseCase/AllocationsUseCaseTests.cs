@@ -29,7 +29,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void UpdateAllocationCallsDatabaseGateway()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, DeallocationReason = "reason" };
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, DeallocationReason = "reason", RagRating = null };
 
             _allocationsUseCase.ExecuteUpdate(request);
 
@@ -37,9 +37,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
+        public void UpdateAllocationCallsUpdateRagRatingInAllocationWhenRagRatingIsSet()
+        {
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = "green" };
+
+            _allocationsUseCase.ExecuteUpdate(request);
+
+            _mockDatabaseGateway.Verify(x => x.UpdateRagRatingInAllocation(It.Is<UpdateAllocationRequest>(x => x == request)), Times.Once);
+        }
+
+        [Test]
         public void UpdateAllocationCallsDatabaseGatewayWithParameters()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1 };
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null };
 
             _allocationsUseCase.ExecuteUpdate(request);
 
@@ -49,7 +59,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void UpdateAllocationReturnsCorrectCaseNoteId()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1 };
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null };
 
             UpdateAllocationResponse expectedResponse = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
 
