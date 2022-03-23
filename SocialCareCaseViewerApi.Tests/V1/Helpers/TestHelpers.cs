@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             long? mosaicId = 1,
             int? teamId = 1,
             int? workerId = 1,
-            string? ragRating = "red",
+            string? ragRating = "urgent",
             string? summary = "rating",
             string? carePackage = "rating",
             string? createdBy = "test@example.com",
