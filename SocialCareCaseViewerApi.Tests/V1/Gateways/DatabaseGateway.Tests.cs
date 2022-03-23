@@ -673,12 +673,27 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
+        public void UpdatingAllocationWithExistingShouldUpdateTheRecordInTheDatabase()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);
             var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+            var teamAllocation = new Allocation
+            {
+                Id = (int) (request.Id + 1),
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null
+            };
 
-            var allocation = new Allocation
+            var workerAllocation = new Allocation
             {
                 Id = (int) request.Id,
                 AllocationEndDate = null,
@@ -694,7 +709,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 WorkerId = worker.Id
             };
 
-            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.Allocations.Add(workerAllocation);
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.Workers.Add(deAllocatedByWorker);
             DatabaseContext.Teams.Add(team);
@@ -707,7 +723,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.UpdateAllocation(request);
 
             var query = DatabaseContext.Allocations;
-            var updatedRecord = query.First(x => x.Id == allocation.Id);
+            var updatedRecord = query.First(x => x.Id == workerAllocation.Id);
 
             Assert.AreEqual("Closed", updatedRecord.CaseStatus);
             Assert.AreEqual(worker.Id, updatedRecord.WorkerId);
@@ -715,7 +731,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
             Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
             Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
-            Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
+            Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
             Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByWorker.Email);
         }
 

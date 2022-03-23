@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         [Test]
         public void ValidPatchAllocationRequestReturnsNoErrorsOnValidation()
         {
-            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: "red");
+            var updateAllocationRequest = TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: "urgent");
             var validator = new UpdateAllocationRequestValidator();
 
             var validationResponse = validator.Validate(updateAllocationRequest);
