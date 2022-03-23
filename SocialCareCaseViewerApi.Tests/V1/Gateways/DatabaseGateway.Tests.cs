@@ -792,7 +792,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(workerAllocation.TeamId, teamAllocation.TeamId);
             Assert.AreEqual(workerAllocation.RagRating, teamAllocation.RagRating);
             Assert.AreEqual(workerAllocation.CreatedBy, teamAllocation.CreatedBy);
-            Assert.AreEqual(workerAllocation.CreatedAt, teamAllocation.CreatedAt);
         }
 
         [Test]
