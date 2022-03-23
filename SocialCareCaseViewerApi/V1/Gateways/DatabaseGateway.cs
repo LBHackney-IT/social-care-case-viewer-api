@@ -69,7 +69,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     query = query.Where(x => x.CaseStatus == status);
 
                 }
-               query = query.Where(x => x.TeamId == teamId);
+                query = query.Where(x => x.TeamId == teamId);
             }
 
 
