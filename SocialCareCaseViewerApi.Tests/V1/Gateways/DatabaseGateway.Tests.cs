@@ -784,16 +784,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(team.Id, updatedRecord.TeamId);
             Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
             Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
-            Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
-            Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
-
+            Assert.AreEqual(deAllocatedByWorker.Email, updatedRecord.CreatedBy);
+            Assert.AreEqual(workerAllocation.CreatedAt, updatedRecord.CreatedAt);
 
             Assert.AreEqual("Open", teamAllocation.CaseStatus);
             Assert.AreEqual(null, teamAllocation.WorkerId);
             Assert.AreEqual(workerAllocation.TeamId, teamAllocation.TeamId);
             Assert.AreEqual(workerAllocation.RagRating, teamAllocation.RagRating);
-            Assert.AreEqual(workerAllocation.CreatedBy, deAllocatedByWorker.Email);
-            Assert.AreEqual(workerAllocation.CreatedAt, deAllocatedByWorker.CreatedAt);
+            Assert.AreEqual(workerAllocation.CreatedBy, teamAllocation.CreatedBy);
+            Assert.AreEqual(workerAllocation.CreatedAt, teamAllocation.CreatedAt);
         }
 
         [Test]
