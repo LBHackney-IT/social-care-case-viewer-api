@@ -563,13 +563,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .ThenInclude(y => y.Team)
                     .FirstOrDefault();
 
-            if (worker != null && worker.WorkerTeams != null)
-            {
-                foreach (var wt in worker.WorkerTeams.ToList())
-                {
-                    if (wt.EndDate != null) worker.WorkerTeams.Remove(wt);
-                }
-            }
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromAWorker(worker);
 
             return worker;
         }
@@ -677,16 +671,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
 
-            if (team != null && team.WorkerTeams != null)
-            {
-                foreach (var wt in team.WorkerTeams.ToList())
-                {
-                    if (wt.EndDate != null) team.WorkerTeams.Remove(wt);
-                }
-            }
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromATeam(team);
 
             return team;
         }
+
+       
 
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)

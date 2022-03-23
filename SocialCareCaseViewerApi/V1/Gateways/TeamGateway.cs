@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 
@@ -38,13 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
 
-            if (team != null && team.WorkerTeams != null)
-            {
-                foreach (var wt in team.WorkerTeams.ToList())
-                {
-                    if (wt.EndDate != null) team.WorkerTeams.Remove(wt);
-                }
-            }
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromATeam(team);
 
             return team;
         }
