@@ -6,7 +6,7 @@ namespace SocialCareCaseViewerApi.V1.Helpers
 {
     public static class WorkerTeamFiltering
     {
-        public static void RemoveHistoricalWorkerTeamsFromAWorker<T>(T? worker) where T : Worker
+        public static void RemoveHistoricalWorkerTeamsFromAWorker(Worker? worker)
         {
             if (worker != null && worker.WorkerTeams != null)
             {
@@ -17,7 +17,7 @@ namespace SocialCareCaseViewerApi.V1.Helpers
             }
         }
 
-        public static void RemoveHistoricalWorkerTeamsFromATeam<T>(T? team) where T : Team
+        public static void RemoveHistoricalWorkerTeamsFromATeam(Team? team)
         {
             if (team != null && team.WorkerTeams != null)
             {
