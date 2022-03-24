@@ -622,23 +622,31 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (request.Teams != null && request.Teams.Count > 0)
             {
-                //set end date to all active team relationships
-                foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
+                //boundary locked down to one team only, but ensure we only have one
+                if (request.Teams.Count > 1)
                 {
-                    workerteam.EndDate = dateTime;
-                    workerteam.LastModifiedBy = request.ModifiedBy;
+                    throw new Exception("Worker can have only one team");
                 }
 
-                var workerTeams = GetTeams(request.Teams).ToList();
-
-                //add new teams with start date 
-                if (workerTeams.Count > 0)
+                //check that team has changed. If not, ignore
+                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null))
                 {
-                    foreach (var team in workerTeams)
+                    //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
+                    foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
                     {
-                        worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, Team = team, Worker = worker, CreatedBy = request.ModifiedBy });
-
+                        workerteam.EndDate = dateTime;
+                        workerteam.LastModifiedBy = request.ModifiedBy;
                     }
+
+                    var team = request.Teams.FirstOrDefault();
+
+                    //make sure team exists
+                    if (!_databaseContext.Teams.AsNoTracking().Any(x => x.Id == team.Id))
+                    {
+                        throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
+                    }
+                    //add new team with start date 
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
                 }
             }
 
