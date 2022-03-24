@@ -66,10 +66,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (!String.IsNullOrEmpty(status))
                 {
-                    query = query.Where(x => x.CaseStatus == status);
+                    query = query.Where(x => x.CaseStatus == status && x.TeamId == teamId);
 
                 }
-                query = query.Where(x => x.TeamId == teamId);
+                else{
+                    query= query.Where(x => x.TeamId == teamId);
+                }     
             }
 
 

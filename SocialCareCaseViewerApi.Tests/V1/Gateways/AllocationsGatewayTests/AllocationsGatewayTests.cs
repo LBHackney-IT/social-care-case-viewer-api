@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
+using System.Diagnostics;
 
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -122,6 +123,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void SelectAllocationsByTeamIdAndStatusReturnsExpectedAllocations()
         {
+            
             var allocation = TestHelpers.CreateAllocation(teamId: 3);
             var anotherAllocation = TestHelpers.CreateAllocation(teamId: 3);
             allocation.CaseStatus = "CLOSED";
