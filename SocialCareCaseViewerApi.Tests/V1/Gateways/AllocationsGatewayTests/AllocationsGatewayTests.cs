@@ -123,15 +123,44 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         [Test]
         public void SelectAllocationsByTeamIdAndStatusReturnsExpectedAllocations()
         {
-            
-            var allocation = TestHelpers.CreateAllocation(teamId: 3);
-            var anotherAllocation = TestHelpers.CreateAllocation(teamId: 3);
-            allocation.CaseStatus = "CLOSED";
-            anotherAllocation.CaseStatus = "OPEN";
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 1);
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+
+            var (_, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+           
+            var allocation = new Allocation
+            {
+                Id = 1,    
+                CaseStatus = "Open",
+                CreatedBy = allocator.Email,
+                PersonId = resident.Id,
+                TeamId = workerTeam.Id,
+                WorkerId = worker.Id,
+                AllocationStartDate = DateTime.Now
+            };
+
+            var anotherAllocation = new Allocation
+            {
+                Id = 2,    
+                CaseStatus = "Closed",
+                CreatedBy = allocator.Email,
+                PersonId = resident.Id,
+                TeamId = workerTeam.Id,
+                WorkerId = worker.Id,
+                AllocationStartDate = DateTime.Now
+            };            
+
             DatabaseContext.Allocations.Add(allocation);
             DatabaseContext.Allocations.Add(anotherAllocation);
             DatabaseContext.SaveChanges();
-            var allocations = _classUnderTest.SelectAllocations(0, 0, null, 3, "CLOSED");
+
+            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, "Closed");
             allocations.Count.Should().Be(1);
         }
 
