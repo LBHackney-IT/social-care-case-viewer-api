@@ -445,7 +445,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             worker.WorkerTeams.Add(historicalWorkerTeam);
 
             DatabaseContext.Workers.Add(worker);
-            DatabaseContext.SaveChanges();                     
+            DatabaseContext.SaveChanges();
 
             var request = TestHelpers.CreateUpdateWorkersRequest(
                 createATeam: false,
