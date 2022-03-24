@@ -25,7 +25,6 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
-#nullable enable
 namespace SocialCareCaseViewerApi.V1.Gateways
 {
     public class DatabaseGateway : IDatabaseGateway

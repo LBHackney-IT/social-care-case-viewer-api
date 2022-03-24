@@ -53,7 +53,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             result[3].Id.Should().Be(MediumAllocation.Id);
             result[4].Id.Should().Be(LowAllocation.Id);
         }
-        
+
         [Test]
         [TestCase("random_string")]
         [TestCase("")]
@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
 
             var person1 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(30));
-            var allocation1 = TestHelpers.CreateAllocation(personId: (int)person1.Id, workerId: worker.Id);
+            var allocation1 = TestHelpers.CreateAllocation(personId: (int) person1.Id, workerId: worker.Id);
 
             var person2 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(10));
             var allocation2 = TestHelpers.CreateAllocation(personId: (int) person2.Id, workerId: worker.Id);
@@ -124,7 +124,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var person4 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(20));
             var allocation4 = TestHelpers.CreateAllocation(personId: (int) person4.Id, workerId: worker.Id);
-                     
+
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3, person4 });
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.SaveChanges();

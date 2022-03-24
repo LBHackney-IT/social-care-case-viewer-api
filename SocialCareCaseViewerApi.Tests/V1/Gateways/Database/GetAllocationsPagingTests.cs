@@ -31,11 +31,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
 
-            for(int i=0; i < 25; i++)
+            for (int i = 0; i < 25; i++)
             {
                 DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id));
             }
-           
+
             DatabaseContext.SaveChanges();
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "");
