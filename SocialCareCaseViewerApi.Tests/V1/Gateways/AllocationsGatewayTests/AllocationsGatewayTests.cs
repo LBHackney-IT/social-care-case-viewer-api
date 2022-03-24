@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
-using System.Diagnostics;
+
 
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
@@ -133,10 +133,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var (_, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
             DatabaseContext.Workers.Add(allocator);
             DatabaseContext.Persons.Add(resident);
-           
+
             var allocation = new Allocation
             {
-                Id = 1,    
+                Id = 1,
                 CaseStatus = "Open",
                 CreatedBy = allocator.Email,
                 PersonId = resident.Id,
@@ -147,20 +147,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var anotherAllocation = new Allocation
             {
-                Id = 2,    
+                Id = 2,
                 CaseStatus = "Closed",
                 CreatedBy = allocator.Email,
                 PersonId = resident.Id,
                 TeamId = workerTeam.Id,
                 WorkerId = worker.Id,
                 AllocationStartDate = DateTime.Now
-            };            
+            };
 
             DatabaseContext.Allocations.Add(allocation);
             DatabaseContext.Allocations.Add(anotherAllocation);
             DatabaseContext.SaveChanges();
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, "Closed");
+            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Closed");
             allocations.Count.Should().Be(1);
         }
 
