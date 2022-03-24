@@ -448,7 +448,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 },
                 workerId: worker.Id);
 
-             Action act = () => _classUnderTest.UpdateWorker(request);
+            Action act = () => _classUnderTest.UpdateWorker(request);
 
             act.Should().Throw<GetTeamException>().WithMessage($"Team with Name foo and ID 1 not found");
         }
