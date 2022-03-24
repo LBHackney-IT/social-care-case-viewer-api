@@ -100,7 +100,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             allocations = sortBy switch
             {
-                "rag_rating" => 
+                "rag_rating" =>
                     allocations
                         .OrderByDescending(x => x.RagRating == null)
                         .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList(),
@@ -109,7 +109,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         .OrderByDescending(x => x.AllocationStartDate).ToList(),
                 "review_date" =>
                     allocations
-                        .OrderBy(x => x.PersonReviewDate).ToList(), 
+                        .OrderBy(x => x.PersonReviewDate).ToList(),
                 _ =>
                     allocations
                         .OrderByDescending(x => x.RagRating == null)
