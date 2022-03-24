@@ -388,7 +388,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
 
         public static WorkerTeam CreateWorkerTeam(
             int? workerId = null,
-            DateTime? endDate = null
+            DateTime? endDate = null,
+            DateTime? startDate = null
         )
         {
             var team = CreateTeam();
@@ -398,6 +399,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.TeamId, f => f.UniqueIndex)
                 .RuleFor(t => t.Team, team)
+                .RuleFor(t => t.StartDate, startDate ?? null)
                 .RuleFor(t => t.EndDate, endDate ?? null);
         }
 

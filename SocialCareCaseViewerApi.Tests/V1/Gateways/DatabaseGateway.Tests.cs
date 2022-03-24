@@ -435,6 +435,39 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void MovingWorkerToAPreviousHistoricalTeamAddsNewWorkerTeam()
+        {
+            //historical team = worker-team relationship created before this new feature
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var historicalWorkerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id, startDate: null, endDate: null);
+            worker.WorkerTeams.Add(historicalWorkerTeam);
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();                     
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = historicalWorkerTeam.Team.Id, Name = historicalWorkerTeam.Team.Name }
+                },
+                workerId: worker.Id); ;
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id).OrderByDescending(x => x.Id).ToList();
+
+            updatedWorkerTeams.Count.Should().Be(2);
+
+            //historical worker-team realtionship that has been closed
+            updatedWorkerTeams[0].EndDate.Should().BeCloseTo(DateTime.Now);
+
+            //new relationship added with the previous histroical team. Required to get the historical data up to date
+            updatedWorkerTeams[1].StartDate.Should().BeCloseTo(DateTime.Now);
+        }
+
+        [Test]
         public void MovingWorkerToANonExistentTeamThrowsGetTeamExceptionException()
         {
             var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);

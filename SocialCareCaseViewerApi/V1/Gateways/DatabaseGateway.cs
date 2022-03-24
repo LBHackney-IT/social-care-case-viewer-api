@@ -629,7 +629,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
 
                 //check that team has changed. If not, ignore
-                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null))
+                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
                 {
                     //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
                     foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
