@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Factories;
 using SocialCareCaseViewerApi.V1.Gateways.Interfaces;
+using SocialCareCaseViewerApi.V1.Helpers;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using Team = SocialCareCaseViewerApi.V1.Domain.Team;
 
@@ -31,12 +32,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Infrastructure.Team? GetTeamByTeamId(int teamId)
         {
-            return _databaseContext.Teams
+            var team = _databaseContext.Teams
                 .Where(x => x.Id == teamId)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
+
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromATeam(team);
+
+            return team;
         }
 
         public IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context)

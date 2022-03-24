@@ -351,11 +351,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? contextFlag = null,
             string? role = null,
             string? createdByEmail = null,
-            DateTime? dateStart = null
+            DateTime? dateStart = null,
+            List<WorkerTeamRequest>? providedTeams = null
         )
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : providedTeams ?? new List<WorkerTeamRequest>();
 
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
@@ -386,7 +387,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static WorkerTeam CreateWorkerTeam(
-            int? workerId = null
+            int? workerId = null,
+            DateTime? endDate = null
         )
         {
             var team = CreateTeam();
@@ -395,7 +397,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.TeamId, f => f.UniqueIndex)
-                .RuleFor(t => t.Team, team);
+                .RuleFor(t => t.Team, team)
+                .RuleFor(t => t.EndDate, endDate ?? null);
         }
 
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
@@ -483,10 +486,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? lastName = null,
             string? contextFlag = null,
             string? role = null,
-            DateTime? dateStart = null)
+            DateTime? dateStart = null,
+            List<WorkerTeamRequest>? providedTeams = null)
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : providedTeams ?? new List<WorkerTeamRequest>();
 
             return new Faker<UpdateWorkerRequest>()
                 .RuleFor(w => w.WorkerId, f => workerId ?? f.UniqueIndex + 1)

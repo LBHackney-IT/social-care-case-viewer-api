@@ -71,6 +71,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetWorkerByWorkerEmailDoesNotReturnWorkerTeamsWithHistoricalRelationship()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, "worker-email@example.com"));
+
+            var currentWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: 1, teamId: 1, worker: worker));
+
+            _ = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: 1, teamId: 1, worker: worker, endDate: DateTime.Now.AddDays(-50)));
+
+            var workerTeams = new List<WorkerTeam> { currentWorkerTeamRelationship };
+
+            _ = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once, relationship added above
+
+            var responseWorker = _classUnderTest.GetWorkerByEmail(worker.Email);
+
+            responseWorker.WorkerTeams?.Count.Should().Be(1);
+        }
+
+        [Test]
         public void GetWorkerByWorkerEmailReturnsNullWhenEmailNotPresent()
         {
             const string workerEmail = "realEmail@example.com";
@@ -236,26 +256,221 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         public void UpdateWorkerUpdatesAnExistingWorkerInDatabase()
         {
             var worker = TestHelpers.CreateWorker();
-            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
             var team = TestHelpers.CreateTeam();
-            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
-            DatabaseContext.WorkerTeams.Add(workerTeam);
             DatabaseContext.Teams.Add(team);
             DatabaseContext.SaveChanges();
-
-            var originalWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id).ShallowCopy();
-            originalWorker.Should().BeEquivalentTo(worker);
 
             var request = TestHelpers.CreateUpdateWorkersRequest(teamId: team.Id, workerId: worker.Id);
             _classUnderTest.UpdateWorker(request);
 
             var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
 
-            updatedWorker.Should().NotBeEquivalentTo(originalWorker);
+            updatedWorker.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
+            updatedWorker.FirstName.Should().BeEquivalentTo(request.FirstName);
+            updatedWorker.LastName.Should().BeEquivalentTo(request.LastName);
+            updatedWorker.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
+            updatedWorker.Role.Should().BeEquivalentTo(request.Role);
+            updatedWorker.DateStart.Should().Be(request.DateStart);
+            updatedWorker.DateEnd.Should().BeNull();
+        }
 
-            UpdatedWorkerShouldBeEquivalentToRequest(updatedWorker, request, worker, team);
+        [Test]
+        public void UpdatingWorkerWithoutProvidingTeamsDoesNotTouchWorkerTeamRelationships()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+
+            var workerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+
+            worker.WorkerTeams = new List<WorkerTeam>
+            {
+                workerTeam
+            };
+
+            DatabaseContext.Workers.Add(worker);
+
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(createATeam: false, workerId: worker.Id);
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorker = DatabaseContext.Workers.First(w => w.Id == worker.Id);
+
+            updatedWorker.WorkerTeams.Count.Should().Be(1);
+            updatedWorker.WorkerTeams.First().EndDate.Should().BeNull();
+            updatedWorker.WorkerTeams.First().StartDate.Should().Be(workerTeam.StartDate);
+            updatedWorker.WorkerTeams.First().TeamId.Should().Be(workerTeam.TeamId);
+        }
+
+        [Test]
+        public void MovingWorkerToANewTeamAddsNewWorkerTeamRelationshipAndEndsTheActiveOnes()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var currentWorkerTeamOne = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            worker.WorkerTeams.Add(currentWorkerTeamOne);
+
+            DatabaseContext.Workers.Add(worker);
+
+            var newTeam = TestHelpers.CreateTeam();
+            DatabaseContext.Teams.Add(newTeam);
+
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() { new WorkerTeamRequest() { Id = newTeam.Id, Name = newTeam.Name } },
+                workerId: worker.Id); ;
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id);
+
+            updatedWorkerTeams.Count().Should().Be(2);
+
+            //old team with end date 
+            updatedWorkerTeams.First(x => x.TeamId == currentWorkerTeamOne.TeamId).EndDate.Should().BeCloseTo(DateTime.Now, 1000);
+
+            //new team with start date
+            updatedWorkerTeams.First(x => x.TeamId == newTeam.Id).StartDate.Should().BeCloseTo(DateTime.Now, 1000);
+            updatedWorkerTeams.First(x => x.TeamId == newTeam.Id).EndDate.Should().BeNull();
+        }
+
+        [Test]
+        public void MovingWorkerToANewTeamDoesNotUpdateExistingRelationshipsThatHaveAnEndDate()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var currentWorkerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            worker.WorkerTeams.Add(currentWorkerTeam);
+
+            var previousTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id, endDate: DateTime.Today.AddDays(-50));
+            worker.WorkerTeams.Add(previousTeam);
+            var expectedEndDate = previousTeam.EndDate;
+
+            DatabaseContext.Workers.Add(worker);
+
+            var newTeam = TestHelpers.CreateTeam();
+            DatabaseContext.Teams.Add(newTeam);
+
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = newTeam.Id, Name = newTeam.Name }
+                },
+                workerId: worker.Id); ;
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id);
+
+            updatedWorkerTeams.First(x => x.TeamId == previousTeam.TeamId).EndDate.Should().Be(expectedEndDate);
+        }
+
+        [Test]
+        public void MovingWorkerToADifferentTeamUpdatesTheAuditColumnValues()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var currentWorkerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            worker.WorkerTeams.Add(currentWorkerTeam);
+
+            DatabaseContext.Workers.Add(worker);
+
+            var newTeam = TestHelpers.CreateTeam();
+            DatabaseContext.Teams.Add(newTeam);
+
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = newTeam.Id, Name = newTeam.Name }
+                },
+                workerId: worker.Id); ;
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id);
+
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == newTeam.Id && x.WorkerId == worker.Id).CreatedAt.Should().BeCloseTo(DateTime.Now, 1000);
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == newTeam.Id && x.WorkerId == worker.Id).CreatedBy.Should().Be(request.ModifiedBy);
+
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedAt.Should().BeCloseTo(DateTime.Now, 1000);
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedBy.Should().Be(request.ModifiedBy);
+        }
+
+        [Test]
+        public void MovingWorkerToACurrentTeamDoesNotMakeAnyChangesToCurrentWorkerTeams()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            worker.WorkerTeams = new List<WorkerTeam>();
+
+            var currentWorkerTeam = TestHelpers.CreateWorkerTeam(workerId: worker.Id);
+            worker.WorkerTeams.Add(currentWorkerTeam);
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = currentWorkerTeam.TeamId, Name = currentWorkerTeam.Team.Name }
+                },
+                workerId: worker.Id); ;
+
+            _classUnderTest.UpdateWorker(request);
+
+            var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id);
+
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedAt.Should().Be(currentWorkerTeam.LastModifiedAt);
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedBy.Should().Be(currentWorkerTeam.LastModifiedBy);
+        }
+
+        [Test]
+        public void MovingWorkerToANonExistentTeamThrowsGetTeamExceptionException()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = 1, Name = "foo" }
+                },
+                workerId: worker.Id);
+
+            Action act = () => _classUnderTest.UpdateWorker(request);
+
+            act.Should().Throw<GetTeamException>().WithMessage($"Team with Name foo and ID 1 not found");
+        }
+
+        [Test]
+        public void MovingWorkerToMoreThanOneTeamException()
+        {
+            var worker = TestHelpers.CreateWorker(hasWorkerTeams: false, hasAllocations: false);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.SaveChanges();
+
+            var request = TestHelpers.CreateUpdateWorkersRequest(
+                createATeam: false,
+                providedTeams: new List<WorkerTeamRequest>() {
+                    new WorkerTeamRequest() { Id = 1, Name = "foo" },
+                    new WorkerTeamRequest() { Id = 2, Name = "foobar" }
+                },
+                workerId: worker.Id);
+
+            Action act = () => _classUnderTest.UpdateWorker(request);
+
+            act.Should().Throw<Exception>().WithMessage($"Worker can have only one team");
         }
 
         [Test]
@@ -285,7 +500,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void UpdateWorkerUpdatesTheTeamSetOnAnyAllocations()
+        public void MovingWorkerToANewTeamDoesNotUpdateAnyWorkerAllocations()
         {
             // Create worker and teams
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
@@ -294,7 +509,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
 
             DatabaseContext.Workers.Add(worker);
-            DatabaseContext.WorkerTeams.Add(workerTeam);
             DatabaseContext.Teams.Add(differentTeam);
             DatabaseContext.SaveChanges();
 
@@ -302,8 +516,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             var currentTeam = DatabaseContext.WorkerTeams.Single(x => x.WorkerId == originalWorker.Id).Team;
 
-            originalWorker?.Teams?.Count.Should().Be(1);
-            originalWorker?.Teams?.Single().Id.Should().Be(currentTeam.Id);
             originalWorker?.AllocationCount.Should().Be(0);
 
             var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
@@ -322,42 +534,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
 
             // Update worker to be in a new team
-            var updateTeamRequest = TestHelpers.CreateUpdateWorkersRequest(teamId: differentTeam.Id, teamName: differentTeam.Name,
-                workerId: originalWorker.Id, firstName: originalWorker.FirstName,
-                lastName: originalWorker.LastName, role: originalWorker.Role, contextFlag: originalWorker.ContextFlag);
+            var updateTeamRequest = TestHelpers.CreateUpdateWorkersRequest(
+                teamId: differentTeam.Id,
+                teamName: differentTeam.Name,
+                workerId: originalWorker.Id,
+                firstName: originalWorker.FirstName,
+                lastName: originalWorker.LastName,
+                role: originalWorker.Role,
+                contextFlag: originalWorker.ContextFlag);
 
             _classUnderTest.UpdateWorker(updateTeamRequest);
 
             // Check worker's details after updating
             var getUpdatedWorker = _workerGateway.GetWorkerByWorkerId(originalWorker.Id);
 
-            getUpdatedWorker?.Teams?.Count.Should().Be(1);
-            getUpdatedWorker?.Teams?.Single().Id.Should().Be(differentTeam.Id);
             getUpdatedWorker?.AllocationCount.Should().Be(1);
-
-            // Check allocations assigned to the worker have been updated
-            var updatedAllocations = _classUnderTest.SelectAllocations(0, workerId: getUpdatedWorker.Id, "");
-            updatedAllocations.Count.Should().Be(1);
-            updatedAllocations.Single().AllocatedWorkerTeam.Should().Be(differentTeam.Name);
-        }
-
-        private static void UpdatedWorkerShouldBeEquivalentToRequest(Worker updatedWorker, UpdateWorkerRequest request,
-            Worker testWorker, Team testTeam)
-        {
-            updatedWorker.LastModifiedBy.Should().BeEquivalentTo(request.ModifiedBy);
-            updatedWorker.FirstName.Should().BeEquivalentTo(request.FirstName);
-            updatedWorker.LastName.Should().BeEquivalentTo(request.LastName);
-            updatedWorker.ContextFlag.Should().BeEquivalentTo(request.ContextFlag);
-            updatedWorker.Role.Should().BeEquivalentTo(request.Role);
-            updatedWorker.DateStart.Should().Be(request.DateStart);
-            updatedWorker.DateEnd.Should().BeNull();
-
-            var updatedWorkerTeam = updatedWorker.WorkerTeams?.First();
-            var requestTeam = request.Teams.First();
-            updatedWorkerTeam?.TeamId.Should().Be(requestTeam.Id);
-            updatedWorkerTeam?.WorkerId.Should().Be(testWorker.Id);
-            updatedWorkerTeam?.Team.Should().Be(testTeam);
-            updatedWorkerTeam?.Worker.Should().Be(testWorker);
         }
 
         [Test]
@@ -404,6 +595,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var response = _classUnderTest.GetTeamByTeamName(team.Name);
 
             response.Should().BeEquivalentTo(team);
+        }
+
+        [Test]
+        public void GetTeamByTeamNameDoesNotReturnWorkersWithHistoricalRelationshipWithTheTeam()
+        {
+            var worker = SaveWorkerToDatabase(DatabaseGatewayHelper.CreateWorkerDatabaseEntity(id: 1, "current-worker-email@example.com"));
+
+            var currentWorkerTeamRelationship = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 1, workerId: 1, teamId: 1, worker: worker));
+
+            _ = SaveWorkerTeamToDatabase(
+                DatabaseGatewayHelper.CreateWorkerTeamDatabaseEntity(id: 2, workerId: 1, teamId: 1, worker: worker, endDate: DateTime.Now.AddDays(-50)));
+
+            var workerTeams = new List<WorkerTeam> { currentWorkerTeamRelationship };
+
+            var team = SaveTeamToDatabase(DatabaseGatewayHelper.CreateTeamDatabaseEntity(workerTeams)); //add the team only once, relationship added above
+
+            var responseTeam = _classUnderTest.GetTeamByTeamName(team.Name);
+
+            responseTeam?.WorkerTeams.Count.Should().Be(1);
         }
 
         [Test]
@@ -1575,6 +1786,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Address, address)
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
                 .RuleFor(p => p.OtherNames, otherNames);
+        }
+
+        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
+        {
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+            return workerTeam;
         }
     }
 }

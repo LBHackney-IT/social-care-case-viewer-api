@@ -556,12 +556,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker GetWorkerByEmail(string email)
         {
-            return _databaseContext.Workers
+            var worker = _databaseContext.Workers
                     .Where(worker => worker.Email.ToLower() == email.ToLower())
                     .Include(x => x.Allocations)
                     .Include(x => x.WorkerTeams)
                     .ThenInclude(y => y.Team)
                     .FirstOrDefault();
+
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromAWorker(worker);
+
+            return worker;
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
@@ -597,10 +601,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
             return worker;
         }
-
         public void UpdateWorker(UpdateWorkerRequest request)
         {
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.WorkerId);
+            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == request.WorkerId);
 
             if (worker == null)
             {
@@ -615,24 +618,39 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.DateStart = request.DateStart;
             worker.IsActive = true;
 
-            var workerTeams = GetTeams(request.Teams);
+            var dateTime = DateTime.Now;
 
-            worker.WorkerTeams = workerTeams.Select(t => new WorkerTeam { Team = t, Worker = worker }).ToList();
-            _databaseContext.SaveChanges();
-
-            // Update any assigned allocations to reflect the worker's new team
-            var allocations = _databaseContext.Allocations.Where(x => x.WorkerId == request.WorkerId).ToList();
-
-            if (!allocations.Any()) return;
-
-            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id))?.Team;
-
-            foreach (var allocation in allocations)
+            if (request.Teams != null && request.Teams.Count > 0)
             {
-                allocation.TeamId = updatedTeam?.Id;
-                allocation.Team = updatedTeam;
-                _databaseContext.SaveChanges();
+                //boundary locked down to one team only, but ensure we only have one
+                if (request.Teams.Count > 1)
+                {
+                    throw new Exception("Worker can have only one team");
+                }
+
+                //check that team has changed. If not, ignore
+                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null))
+                {
+                    //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
+                    foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
+                    {
+                        workerteam.EndDate = dateTime;
+                        workerteam.LastModifiedBy = request.ModifiedBy;
+                    }
+
+                    var team = request.Teams.FirstOrDefault();
+
+                    //make sure team exists
+                    if (!_databaseContext.Teams.AsNoTracking().Any(x => x.Id == team.Id))
+                    {
+                        throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
+                    }
+                    //add new team with start date 
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
+                }
             }
+
+            _databaseContext.SaveChanges();
         }
 
         private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)
@@ -654,13 +672,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Team GetTeamByTeamName(string teamName)
         {
-            return _databaseContext.Teams
+            var team = _databaseContext.Teams
                 .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
+
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromATeam(team);
+
+            return team;
         }
+
+
 
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)

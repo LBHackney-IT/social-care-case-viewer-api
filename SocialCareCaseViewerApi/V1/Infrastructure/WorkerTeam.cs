@@ -12,11 +12,15 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column("start_date")]
+        public DateTime? StartDate { get; set; }
+
+        [Column("end_date")]
+        public DateTime? EndDate { get; set; }
 
         [Column("worker_id")]
         public int WorkerId { get; set; }
         public Worker Worker { get; set; }
-
 
         [Column("team_id")]
         public int TeamId { get; set; }
