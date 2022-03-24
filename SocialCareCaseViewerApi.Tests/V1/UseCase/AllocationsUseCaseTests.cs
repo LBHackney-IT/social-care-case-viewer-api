@@ -78,12 +78,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { WorkerEmail = "test@example.com" };
             var gatewayResponse = new List<Allocation> { new Allocation() { AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com"))
-                .Returns(gatewayResponse);
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com", null, 0))
+                .Returns((gatewayResponse, 0));
 
             var response = _allocationsUseCase.Execute(request);
 
             response.Allocations.Should().BeEquivalentTo(gatewayResponse);
+        }
+
+        [Test]
+        public void ExecuteCallsSelectAllocationMethodOnGatewayWithSortPropertyWhenProvided()
+        {
+            var request = new ListAllocationsRequest() { MosaicId = 1, SortBy = "rag_rating" };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns((new List<Allocation>(), 0));
+
+            _allocationsUseCase.Execute(request);
+
+            _mockDatabaseGateway.Verify(x => x.SelectAllocations(request.MosaicId, 0, null, request.SortBy, 0), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteCallsSelectAllocationMethodOnGatewayWithCursorWhenProvided()
+        {
+            var request = new ListAllocationsRequest() { MosaicId = 1, Cursor = 20 };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns((new List<Allocation>(), 0));
+
+            _allocationsUseCase.Execute(request);
+
+            _mockDatabaseGateway.Verify(x => x.SelectAllocations(request.MosaicId, 0, null, null, request.Cursor), Times.Once);
         }
     }
 }

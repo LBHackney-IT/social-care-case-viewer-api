@@ -23,6 +23,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(62)]
         public int? TeamId { get; set; }
 
+        [Column("rag_rating")]
+        public string? RagRating { get; set; }
+
         [Column("allocation_start_date")]
         public DateTime? AllocationStartDate { get; set; }
 

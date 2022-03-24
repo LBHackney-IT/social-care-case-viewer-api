@@ -13,7 +13,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways.Interfaces
          string lastName = null, string dateOfBirth = null, string postcode = null, string address = null, string contextFlag = null);
 
         AddNewResidentResponse AddNewResident(AddNewResidentRequest request);
-        List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail);
+        (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, string sortBy, int cursor);
         CreateAllocationResponse CreateAllocation(CreateAllocationRequest request);
         string GetPersonIdByNCReference(string nfReference);
         string GetNCReferenceByPersonId(string personId);

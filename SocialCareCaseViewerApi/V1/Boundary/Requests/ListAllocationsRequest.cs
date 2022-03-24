@@ -16,6 +16,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "worker_email")]
         public string WorkerEmail { get; set; }
+
+        [FromQuery(Name = "sort_by")]
+        public string SortBy { get; set; }
+
+        [FromQuery(Name = "cursor")]
+        public int Cursor { get; set; }
     }
 
     public class ListAllocationsRequestValidator : AbstractValidator<ListAllocationsRequest>

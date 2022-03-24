@@ -15,5 +15,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public DateTime? AllocationStartDate { get; set; }
         public DateTime? AllocationEndDate { get; set; }
         public string CaseStatus { get; set; }
+        public string RagRating { get; set; }
+        public DateTime? PersonReviewDate { get; set; }
     }
 }

@@ -222,5 +222,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
 
         [Column("open_case")]
         public bool? OpenCase { get; set; }
+
+        [Column("review_date")]
+        public DateTime? ReviewDate { get; set; }
     }
 }
