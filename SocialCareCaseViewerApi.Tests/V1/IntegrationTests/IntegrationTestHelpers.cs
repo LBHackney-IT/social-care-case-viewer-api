@@ -9,7 +9,7 @@ using InfrastructureCaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseS
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
-    #nullable enable
+#nullable enable
     public static class IntegrationTestHelpers
     {
         public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string? ageContext = null, string? restricted = null)
