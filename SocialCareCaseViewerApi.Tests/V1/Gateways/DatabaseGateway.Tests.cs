@@ -331,7 +331,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             updatedWorkerTeams.Count().Should().Be(2);
 
-            //old team with end date 
+            //old team with end date
             updatedWorkerTeams.First(x => x.TeamId == currentWorkerTeamOne.TeamId).EndDate.Should().BeCloseTo(DateTime.Now, 1000);
 
             //new team with start date
@@ -461,10 +461,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedWorkerTeams.Count.Should().Be(2);
 
             //historical worker-team realtionship that has been closed
-            updatedWorkerTeams[0].EndDate.Should().BeCloseTo(DateTime.Now);
+            updatedWorkerTeams[0].EndDate.Should().BeCloseTo(DateTime.Now, 1000);
 
             //new relationship added with the previous histroical team. Required to get the historical data up to date
-            updatedWorkerTeams[1].StartDate.Should().BeCloseTo(DateTime.Now);
+            updatedWorkerTeams[1].StartDate.Should().BeCloseTo(DateTime.Now, 1000);
         }
 
         [Test]
@@ -525,7 +525,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email);
+            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0);
+
+            allocations.Count.Should().Be(1);
+            allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
+            allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
+        }
+
+        [Test]
+        public void SelectAllocationsByTeamId()
+        {
+            // Create worker and teams
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var anotherWorker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 124);
+
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            var anotherWorkerTeam = TestHelpers.CreateWorkerTeam(anotherWorker.Id);
+
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+            anotherWorker.WorkerTeams = new List<WorkerTeam> { anotherWorkerTeam };
+
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Workers.Add(anotherWorker);
+            DatabaseContext.WorkerTeams.Add(anotherWorkerTeam);
+            DatabaseContext.SaveChanges();
+
+            var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            var (createAnotherAllocationRequest, _, anotherAllocator, anotherResident, _) = TestHelpers.CreateAllocationRequest(workerId: anotherWorker.Id, teamId: anotherWorkerTeam.TeamId);
+
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.Workers.Add(anotherAllocator);
+            DatabaseContext.Persons.Add(anotherResident);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(createAllocationRequest);
+            _classUnderTest.CreateAllocation(createAnotherAllocationRequest);
+
+
+            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -561,7 +601,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             originalWorker?.AllocationCount.Should().Be(1);
 
-            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "");
+            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0);
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
