@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             return new AllocationList
             {
-                Allocations = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.Status)
+                Allocations = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.Status, request.TeamAllocationStatus)
             };
         }
 
