@@ -96,9 +96,56 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
                 .RuleFor(c => c.CreatedBy, f => createdBy ?? createdByWorker.Email)
+                .RuleFor(c => c.RagRating, f => "urgent")
+                .RuleFor(c => c.Summary, f => f.Random.String2(5))
+                .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
 
             return (createAllocationRequest, worker, createdByWorker, person, team);
+        }
+
+        public static UpdateAllocationRequest UpdateValidatorAllocationRequest(
+                int? id = 1,
+                string? deallocationReason = "Reason",
+                string? createdBy = "example@test.com",
+                string? ragRating = "urgent",
+                DateTime? deallocationDate = default
+            )
+        {
+
+            var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(u => u.Id, f => id)
+                .RuleFor(u => u.DeallocationReason, f => deallocationReason)
+                .RuleFor(u => u.CreatedBy, createdBy)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(u => u.DeallocationDate, f => deallocationDate);
+
+            return updateAllocationRequest;
+        }
+
+
+        public static CreateAllocationRequest CreateValidatorAllocationRequest(
+            long? mosaicId = 1,
+            int? teamId = 1,
+            int? workerId = 1,
+            string? ragRating = "urgent",
+            string? summary = "rating",
+            string? carePackage = "rating",
+            string? createdBy = "test@example.com",
+            DateTime? allocationStartDate = default
+        )
+        {
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => mosaicId)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(c => c.Summary, f => summary)
+                .RuleFor(c => c.CarePackage, f => carePackage)
+                .RuleFor(c => c.CreatedBy, f => createdBy)
+                .RuleFor(c => c.AllocationStartDate, allocationStartDate);
+
+            return createAllocationRequest;
         }
 
         public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team)
@@ -115,7 +162,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var team = CreateTeam();
 
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
-                .RuleFor(u => u.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.Id, f => id ?? 1)
                 .RuleFor(u => u.DeallocationReason, f => deallocationReason ?? f.Random.String2(200))
                 .RuleFor(u => u.CreatedBy, createdBy ?? updatedByWorker.Email)
                 .RuleFor(u => u.DeallocationDate, f => deallocationDate ?? f.Date.Recent());
@@ -186,8 +233,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
                 .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.RagRating, f => ragRating ?? null);
-
-
         }
 
         public static InfrastructurePerson CreatePersonWithRelatedAttributes()

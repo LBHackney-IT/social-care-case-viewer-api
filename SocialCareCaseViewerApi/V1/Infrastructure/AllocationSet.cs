@@ -26,6 +26,12 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("rag_rating")]
         public string? RagRating { get; set; }
 
+        [Column("summary")]
+        public string? Summary { get; set; }
+
+        [Column("care_package")]
+        public string? CarePackage { get; set; }
+
         [Column("allocation_start_date")]
         public DateTime? AllocationStartDate { get; set; }
 

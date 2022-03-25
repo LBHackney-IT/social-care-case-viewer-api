@@ -566,9 +566,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId);
 
-            allocations.Count.Should().Be(1);
-            allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
-            allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
+            allocations.Count.Should().Be(2);
+            allocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
+            allocations.LastOrDefault().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
+            allocations.LastOrDefault().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
         }
 
         [Test]
@@ -690,7 +691,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void CreatingAnAllocationShouldInsertIntoTheDatabase()
+        public void CreatingTeamAndWorkerAllocationShouldInsertBothTeamAndWorkerAllocationsIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
             DatabaseContext.Teams.Add(team);
@@ -699,24 +700,286 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(createdByWorker);
             DatabaseContext.SaveChanges();
 
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedTeamAllocation = query.First();
+            var insertedTeamAndWorkerAllocation = query.Last();
+
+            query.Count.Should().Equals(2);
+            insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAllocation.WorkerId.Should().Be(null);
+            insertedTeamAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+
+            insertedTeamAndWorkerAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAndWorkerAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAndWorkerAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAndWorkerAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAndWorkerAllocation.WorkerId.Should().Be(request.AllocatedWorkerId);
+            insertedTeamAndWorkerAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingTeamAllocationShouldInsertTeamAllocationIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedTeamAllocation = query.First();
+
+            query.Count.Should().Equals(1);
+            insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAllocation.WorkerId.Should().Be(null);
+            insertedTeamAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationShouldInsertWorkerAllocationIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            var dateInThePast = new DateTime(2022, 1, 1);
+
+            var existingTeamAllocation = new AllocationSet()
+            {
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null,
+                RagRating = "urgent",
+                CreatedBy = createdByWorker.Email,
+                CaseStatus = "OPEN",
+                MarkedForDeletion = false,
+                AllocationStartDate = dateInThePast,
+            };
+
+            DatabaseContext.Allocations.Add(existingTeamAllocation);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedWorkerAllocation = query.Last();
+
+            query.Count.Should().Equals(2);
+
+            insertedWorkerAllocation.RagRating.Should().Be(request.RagRating);
+            insertedWorkerAllocation.Summary.Should().Be(request.Summary);
+            insertedWorkerAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedWorkerAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedWorkerAllocation.WorkerId.Should().Be(request.AllocatedWorkerId);
+            insertedWorkerAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationWithDateBeforeTeamAllocationShouldThrowAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            DateTime invalidWorkerAllocationTime = new DateTime(2010, 1, 18);
+            request.AllocatedTeamId = team.Id;
+            request.AllocationStartDate = invalidWorkerAllocationTime;
+
+            var existingTeamAllocation = new AllocationSet()
+            {
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null,
+                RagRating = "red",
+                CreatedBy = createdByWorker.Email,
+                CaseStatus = "OPEN",
+                MarkedForDeletion = false,
+                AllocationStartDate = DateTime.Now,
+            };
+
+            DatabaseContext.Allocations.Add(existingTeamAllocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Worker Allocation date must be after Team Allocation date");
+        }
+
+        [Test]
+        public void CreatingAnAllocationWithoutTeamShouldRaiseAnError()
+        {
+            var (request, _, createdByWorker, person, _) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Team details cannot be found");
+        }
+
+        [Test]
+        public void CreatingAnAllocationWithoutTeamAndWithoutWorkerShouldRaiseAnError()
+        {
+            var (request, _, _, person, _) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Team details cannot be found");
+        }
+
+        [Test]
+        public void CreatingAnAllocationWithoutWorkerShouldInsertIntoTheDatabase()
+        {
+            var (request, _, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+
             var response = _classUnderTest.CreateAllocation(request);
             var query = DatabaseContext.Allocations;
             var insertedRecord = query.First(x => x.Id == response.AllocationId);
 
+            insertedRecord.RagRating.Should().Be(request.RagRating);
+            insertedRecord.Summary.Should().Be(request.Summary);
+            insertedRecord.CarePackage.Should().Be(request.CarePackage);
+            insertedRecord.PersonId.Should().Be(request.MosaicId);
+            insertedRecord.WorkerId.Should().BeNull();
+            insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
+        public void CreatingAnAllocationForPersonWithTeamAssignedButNotWorkerShouldInsertIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: (int) request.MosaicId, teamId: request.AllocatedTeamId);
+            allocation.WorkerId = null;
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            var response = _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations;
+            var insertedRecord = query.First(x => x.Id == response.AllocationId);
+
+            insertedRecord.RagRating.Should().Be(request.RagRating);
+            insertedRecord.Summary.Should().Be(request.Summary);
+            insertedRecord.CarePackage.Should().Be(request.CarePackage);
             insertedRecord.PersonId.Should().Be(request.MosaicId);
             insertedRecord.WorkerId.Should().Be(worker.Id);
             insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
         }
 
         [Test]
-        public void UpdatingAllocationShouldUpdateTheRecordInTheDatabase()
+        public void CreatingTeamAllocationForPersonWithTeamShouldRaiseAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: (int) request.MosaicId, teamId: request.AllocatedTeamId, workerId: createdByWorker.Id);
+            request.AllocatedWorkerId = null;
+            allocation.WorkerId = null;
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Person is already allocated to this team");
+        }
+
+        [Test]
+        public void CreatingWorkerAllocationForPersonWithTeamAndWorkerInThisTeamAssignedShouldRaiseAnError()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            var allocation = TestHelpers.CreateAllocation(personId: (int) request.MosaicId, teamId: request.AllocatedTeamId, workerId: createdByWorker.Id);
+            allocation.MarkedForDeletion = false;
+            allocation.CaseStatus = "OPEN";
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.SaveChanges();
+
+            Action act = () => _classUnderTest.CreateAllocation(request);
+
+            act.Should().Throw<CreateAllocationException>()
+                .WithMessage($"Person has already allocated worker in this team");
+        }
+
+        [Test]
+        public void UpdatingWorkerAllocationWithExistingTeamAllocationShouldUpdateTheRecordInTheDatabase()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);
             var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
-
-            var allocation = new Allocation
+            var teamAllocation = new Allocation
             {
-                Id = request.Id,
+                Id = (int) (request.Id + 1),
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null
+            };
+
+            var workerAllocation = new Allocation
+            {
+                Id = (int) request.Id,
                 AllocationEndDate = null,
                 AllocationStartDate = allocationStartDate,
                 CreatedAt = allocationStartDate,
@@ -730,7 +993,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 WorkerId = worker.Id
             };
 
-            DatabaseContext.Allocations.Add(allocation);
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.Allocations.Add(workerAllocation);
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.Workers.Add(deAllocatedByWorker);
             DatabaseContext.Teams.Add(team);
@@ -742,8 +1006,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.UpdateAllocation(request);
 
-            var query = DatabaseContext.Allocations;
-            var updatedRecord = query.First(x => x.Id == allocation.Id);
+            var query = DatabaseContext.Allocations.ToList();
+
+            query.Count.Should().Equals(2);
+
+            var updatedRecord = query.First(x => x.Id == workerAllocation.Id);
 
             Assert.AreEqual("Closed", updatedRecord.CaseStatus);
             Assert.AreEqual(worker.Id, updatedRecord.WorkerId);
@@ -751,8 +1018,111 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
             Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
             Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
-            Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
+            Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
             Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByWorker.Email);
+        }
+
+        [Test]
+        public void UpdatingWorkerAllocationWithoutExistingTeamAllocationShouldUpdateTheRecordInTheDatabaseAndCreateTeamAllocation()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-60);
+            var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+
+            var workerAllocation = new Allocation
+            {
+                Id = (int) request.Id,
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = worker.Id
+            };
+
+            DatabaseContext.Allocations.Add(workerAllocation);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+                .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+
+            _classUnderTest.UpdateAllocation(request);
+
+            var query = DatabaseContext.Allocations.ToList();
+
+            query.Count.Should().Equals(2);
+
+            var updatedRecord = query.First(x => x.Id == workerAllocation.Id);
+            var teamAllocation = query.First(x => x.TeamId == workerAllocation.TeamId && x.PersonId == workerAllocation.PersonId);
+
+            Assert.AreEqual("Closed", updatedRecord.CaseStatus);
+            Assert.AreEqual(worker.Id, updatedRecord.WorkerId);
+            Assert.AreEqual(team.Id, updatedRecord.TeamId);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
+            Assert.AreEqual(deAllocatedByWorker.Email, updatedRecord.CreatedBy);
+            Assert.AreEqual(workerAllocation.CreatedAt, updatedRecord.CreatedAt);
+
+            Assert.AreEqual("Open", teamAllocation.CaseStatus);
+            Assert.AreEqual(null, teamAllocation.WorkerId);
+            Assert.AreEqual(workerAllocation.TeamId, teamAllocation.TeamId);
+            Assert.AreEqual(workerAllocation.RagRating, teamAllocation.RagRating);
+            Assert.AreEqual(workerAllocation.CreatedBy, teamAllocation.CreatedBy);
+        }
+
+        [Test]
+        public void UpdatingTeamAllocationWithoutWorkerAllocationShouldUpdateTheRecordInTheDatabaseAndNotCreateAnyAdditionalAllocations()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-60);
+            var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+
+            var workerAllocation = new Allocation
+            {
+                Id = (int) request.Id,
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+            };
+
+            DatabaseContext.Allocations.Add(workerAllocation);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+                .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+
+            _classUnderTest.UpdateAllocation(request);
+
+            var query = DatabaseContext.Allocations.ToList();
+
+            query.Count.Should().Equals(1);
+
+            var updatedRecord = query.First(x => x.Id == workerAllocation.Id);
+
+            Assert.AreEqual("Closed", updatedRecord.CaseStatus);
+            Assert.AreEqual(team.Id, updatedRecord.TeamId);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.CaseClosureDate);
+            Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
+            Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
+            Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
         }
 
         [Test]

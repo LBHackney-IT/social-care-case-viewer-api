@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
@@ -73,25 +74,30 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [Test]
         public async Task UpdateWorkerWithNewTeamDoesNotUpdateAnyWorkerAllocations()
         {
-            // Create an allocation request for existingDbWorker
-            var createAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
+            var firstDbAllocation = new AllocationSet()
+            {
+                PersonId = _resident.Id,
+                TeamId = _existingDbTeam.Id,
+                WorkerId = _existingDbWorker.Id,
+                RagRating = "high",
+                CreatedBy = _allocationWorker.Email,
+                AllocationStartDate = DateTime.Now,
+            };
+            DatabaseContext.Allocations.Add(firstDbAllocation);
+            DatabaseContext.SaveChanges();
 
-            var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
-            var serializedRequest = JsonSerializer.Serialize(allocationRequest);
-
-            var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
-
-            var allocationResponse = await Client.PostAsync(createAllocationUri, requestContent).ConfigureAwait(true);
-            allocationResponse.StatusCode.Should().Be(201);
-
-            // Create another allocation request for existingDbWorker
-            var secondAllocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
-            var secondSerializedRequest = JsonSerializer.Serialize(secondAllocationRequest);
-
-            var secondRequestContent = new StringContent(secondSerializedRequest, Encoding.UTF8, "application/json");
-
-            var allocationTwoResponse = await Client.PostAsync(createAllocationUri, secondRequestContent).ConfigureAwait(true);
-            allocationTwoResponse.StatusCode.Should().Be(201);
+            // Create another allocation request for existingDbWorker, due to new restrictions in use case unable to create second allocation via API, saving directly to the DB.
+            var secondDbAllocation = new AllocationSet()
+            {
+                PersonId = _resident.Id,
+                TeamId = _existingDbTeam.Id,
+                WorkerId = _existingDbWorker.Id,
+                RagRating = "high",
+                CreatedBy = _allocationWorker.Email,
+                AllocationStartDate = DateTime.Now,
+            };
+            DatabaseContext.Allocations.Add(secondDbAllocation);
+            DatabaseContext.SaveChanges();
 
             // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);

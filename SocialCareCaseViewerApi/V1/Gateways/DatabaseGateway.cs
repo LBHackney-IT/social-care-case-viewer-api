@@ -23,6 +23,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
+using DomainWorker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -761,13 +762,70 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
+            var residentAllocations = _databaseContext.Allocations.Where(x => x.MarkedForDeletion == false && x.CaseStatus.ToUpper() == "OPEN" && x.Person.Id == request.MosaicId).ToList();
+
+            var hasExistingTeamOnlyAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
+            var hasExistingTeamAndWorkerAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null);
+
+
+            // If person has allocation with the same team already and request is to allocate a team
+            if (request.AllocatedWorkerId == null && hasExistingTeamOnlyAllocation)
+            {
+                throw new CreateAllocationException(
+                    "Person is already allocated to this team");
+            }
+
+            // If person has worker allocation with the same team already and a worker and request is to allocate a worker
+            if (request.AllocatedWorkerId != null && hasExistingTeamAndWorkerAllocation)
+            {
+                throw new CreateAllocationException(
+                    "Person has already allocated worker in this team");
+            }
+
+            var exisitingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
+
+            if (exisitingAllocation != null && request.AllocationStartDate < exisitingAllocation.AllocationStartDate)
+            {
+                throw new CreateAllocationException(
+                    "Worker Allocation date must be after Team Allocation date");
+            }
+
+            var response = new CreateAllocationResponse();
+
+            // Team and worker allocation
+            if (request.AllocatedWorkerId != null && !hasExistingTeamOnlyAllocation)
+            {
+                CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+            }
+
+            // Team allocation
+            if (request.AllocatedWorkerId == null && !hasExistingTeamOnlyAllocation)
+            {
+                response = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+            }
+
+            // Worker allocation
+            if (request.AllocatedWorkerId != null && hasExistingTeamOnlyAllocation)
+            {
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+            }
+
+            return response;
+        }
+
+        private CreateAllocationResponse CreateTeamAndWorkerAllocation(CreateAllocationRequest request, Person person, DomainWorker worker, Worker allocatedBy, Team team)
+        {
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
-                WorkerId = worker.Id,
+                WorkerId = worker?.Id,
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
+                RagRating = request.RagRating,
+                CarePackage = request.CarePackage,
+                Summary = request.Summary,
                 CreatedBy = allocatedBy.Email
             };
 
@@ -789,7 +847,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = allocatedBy.Email,
                     Note =
-                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                        $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} {(worker == null ? "" : $" and {worker.FirstName} {worker.LastName}")} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
                     AllocationId = allocation.Id.ToString(),
@@ -814,7 +872,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
-        public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
+        public UpdateAllocationResponse UpdateRagRatingInAllocation(UpdateAllocationRequest request)
         {
             var response = new UpdateAllocationResponse();
 
@@ -834,10 +892,90 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
 
+                //copy existing values in case adding note fails
+                var tmpAllocation = (AllocationSet) allocation.Clone();
+
+                allocation.RagRating = request.RagRating;
+                _databaseContext.SaveChanges();
+
+                try
+                {
+                    var note = new UpdateRagRatingCaseNote
+                    {
+                        FirstName = person.FirstName,
+                        LastName = person.LastName,
+                        MosaicId = person.Id.ToString(),
+                        Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                        WorkerEmail = createdBy.Email, //required for my cases search
+                        FormNameOverall = "API_Allocation", //prefix API notes so they are easy to identify
+                        FormName = "Rag Rating Updated",
+                        AllocationId = request.Id.ToString(),
+                        CreatedBy = request.CreatedBy
+                    };
+
+                    var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                    response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                }
+                catch (Exception ex)
+                {
+                    var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                    RestoreAllocationValues(tmpAllocation, allocationToRestore);
+
+                    _databaseContext.SaveChanges();
+
+                    throw new UpdateAllocationException(
+                        $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new EntityUpdateException($"Unable to update allocation {request.Id}: {ex.Message}");
+            }
+
+            return response;
+        }
+
+        public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
+        {
+            var response = new UpdateAllocationResponse();
+
+            try
+            {
+                var allocation = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+
+                if (allocation == null)
+                {
+                    throw new EntityUpdateException($"Allocation {request.Id} not found");
+                }
+
+                if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+                {
+                    throw new UpdateAllocationException("Allocation already closed");
+                }
+                var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null);
+
+                if (allocation.WorkerId != null && matchingTeamAllocation == null)
+                {
+                    var teamAllocationToInsert = new AllocationSet()
+                    {
+                        PersonId = allocation.PersonId,
+                        TeamId = allocation.TeamId,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        CreatedBy = allocation.CreatedBy,
+                        CreatedAt = allocation.CreatedAt,
+                        CaseStatus = allocation.CaseStatus
+                    };
+                    _databaseContext.Allocations.Add(teamAllocationToInsert);
+                    _databaseContext.SaveChanges();
+                }
+
+                var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
+
 
                 //copy existing values in case adding note fails
                 var tmpAllocation = (AllocationSet) allocation.Clone();
-                SetDeallocationValues(allocation, request.DeallocationDate, request.CreatedBy);
+                SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
                 _databaseContext.SaveChanges();
 
                 try
@@ -1189,10 +1327,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (first + " " + last).TrimStart().TrimEnd();
         }
 
-        private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        private (Domain.Worker?, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
             var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker?.Email))
+            if (string.IsNullOrEmpty(worker?.Email) && request.AllocatedWorkerId != null)
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
@@ -1229,11 +1367,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var worker = _workerGateway.GetWorkerByWorkerId(allocation.WorkerId ?? 0);
-
-            if (worker == null)
-            {
-                throw new UpdateAllocationException("Worker not found");
-            }
 
             var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
             if (person == null)
