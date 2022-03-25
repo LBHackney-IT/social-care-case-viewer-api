@@ -525,7 +525,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0);
+            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -564,8 +564,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(createAllocationRequest);
             _classUnderTest.CreateAllocation(createAnotherAllocationRequest);
 
-
-            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId);
+            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -601,7 +600,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             originalWorker?.AllocationCount.Should().Be(1);
 
-            var allocation = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0);
+            var (allocation, _) = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0);
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);

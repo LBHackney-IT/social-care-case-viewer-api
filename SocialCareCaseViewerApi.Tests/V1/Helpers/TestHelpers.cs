@@ -165,7 +165,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
+        public static AllocationSet CreateAllocation(
+            int? id = null,
+            int? personId = null,
+            int? workerId = null,
+            int? teamId = null,
+            string? ragRating = null,
+            DateTime? dateAdded = null
+            )
         {
             var caseStatusChoices = new List<string> { "open", "closed" };
 
@@ -174,10 +181,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.TeamId, f => teamId ?? f.UniqueIndex + 1)
-                .RuleFor(a => a.AllocationStartDate, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(a => a.AllocationStartDate, f => dateAdded ?? f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.AllocationEndDate, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
-                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime());
+                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(a => a.RagRating, f => ragRating ?? null);
 
 
         }
@@ -254,7 +262,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
         }
 
-        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null, DateTime? reviewDate = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -276,7 +284,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.SexualOrientation, f => f.Random.String2(100))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(100))
-                .RuleFor(p => p.Restricted, f => f.Random.String2(1));
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Future());
         }
 
         public static Address CreateAddress(long? personId = null, string? postCode = null, string? address = null, int? uprn = null)

@@ -44,8 +44,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId)
+        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0)
         {
+            var limit = 20;
+
             List<Allocation> allocations = new List<Allocation>();
             IQueryable<AllocationSet> query = _databaseContext.Allocations;
 
@@ -69,7 +71,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (query != null)
             {
-                allocations = query.Include(x => x.Team)
+                allocations = query
+                    .Include(x => x.Team)
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
@@ -90,12 +93,59 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                 x.IsDisplayAddress.ToUpper() == "Y") == null
                                 ? null
                                 : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
-                                    .AddressLines
+                                    .AddressLines,
+                        RagRating = x.RagRating,
+                        PersonReviewDate = x.Person.ReviewDate
                     }
                     ).AsNoTracking().ToList();
             }
 
-            return allocations;
+            var totalCount = allocations.Count;
+
+            allocations = sortBy switch
+            {
+                "rag_rating" =>
+                    allocations
+                        .OrderByDescending(x => x.RagRating == null)
+                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList(),
+                "date_added" =>
+                    allocations
+                        .OrderByDescending(x => x.AllocationStartDate).ToList(),
+                "review_date" =>
+                    allocations
+                        .OrderBy(x => x.PersonReviewDate).ToList(),
+                _ =>
+                    allocations
+                        .OrderByDescending(x => x.RagRating == null)
+                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList()
+            };
+
+            return (allocations
+                    .Skip(cursor)
+                    .Take(limit)
+                    .ToList(),
+                    GetNextOffset(cursor, totalCount, 20));
+        }
+
+        private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)
+        {
+            int nextOffset = currentOffset + limit;
+
+            if (nextOffset < totalRecords)
+            {
+                return nextOffset;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private enum RagRatingToNumber
+        {
+            Low,
+            Medium,
+            High,
+            Urgent
         }
 
         public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
@@ -649,7 +699,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     {
                         throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
                     }
-                    //add new team with start date 
+                    //add new team with start date
                     worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
                 }
             }
