@@ -18,7 +18,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public Worker? GetWorkerByWorkerId(int workerId)
+        public Worker? GetWorkerByWorkerId(int? workerId)
         {
             var worker = _databaseContext.Workers
                 .Where(x => x.Id == workerId)

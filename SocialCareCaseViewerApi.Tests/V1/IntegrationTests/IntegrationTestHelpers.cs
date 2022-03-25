@@ -9,9 +9,10 @@ using InfrastructureCaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseS
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 {
+#nullable enable
     public static class IntegrationTestHelpers
     {
-        public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string ageContext = null, string restricted = null)
+        public static DbPerson CreateExistingPerson(DatabaseContext context, int? personId = null, string? ageContext = null, string? restricted = null)
         {
             var person = new Faker<DbPerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.IndexGlobal + f.Random.Int(0))
@@ -113,10 +114,26 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 .RuleFor(c => c.MosaicId, f => personId)
                 .RuleFor(c => c.AllocatedTeamId, f => teamId)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.RagRating, f => "high")
+                .RuleFor(c => c.Summary, f => f.Random.String2(5))
+                .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
                 .RuleFor(c => c.AllocationStartDate, f => f.Date.Recent()).Generate();
 
             return createAllocationRequest;
+        }
+
+        public static UpdateAllocationRequest PatchAllocationRequest(int allocationId, Worker createdByWorker, string? ragRating, string? deallocationReason, DateTime? deallocationDate)
+        {
+            var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(c => c.Id, f => allocationId)
+                .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(c => c.DeallocationReason, f => deallocationReason)
+                .RuleFor(c => c.DeallocationDate, f => deallocationDate)
+                .RuleFor(c => c.RagRating, f => ragRating);
+
+            return updateAllocationRequest;
         }
 
         public static (List<InfrastructureCaseStatus>, DbPerson) SavePersonWithMultipleCaseStatusesToDatabase(
