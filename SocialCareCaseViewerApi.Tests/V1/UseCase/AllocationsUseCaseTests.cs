@@ -78,7 +78,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { WorkerEmail = "test@example.com" };
             var gatewayResponse = new List<Allocation> { new Allocation() { AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com", 0, null))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, "test@example.com", 0, null, null))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { TeamId = 10 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, null))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, null, null))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
@@ -114,7 +114,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { MosaicId = 3 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(3, 0, null, 0, null))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(3, 0, null, 0, null, null))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
@@ -135,7 +135,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { WorkerId = 5 };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 5, null, 0, null))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 5, null, 0, null, null))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);
@@ -157,7 +157,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
             var request = new ListAllocationsRequest() { TeamId = 10, Status = "CLOSED" };
             var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker", CaseStatus = "CLOSED" } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, "CLOSED"))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, "CLOSED", null))
                 .Returns(gatewayResponse);
 
             var response = _allocationsUseCase.Execute(request);

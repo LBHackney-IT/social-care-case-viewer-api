@@ -113,7 +113,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(createAnotherAllocationRequest);
 
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, null);
+            var allocations = _classUnderTest.SelectAllocations(0, 0, null, teamId: workerTeam.TeamId, null);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -134,7 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Workers.Add(allocator);
             DatabaseContext.Persons.Add(resident);
 
-            var allocation = new Allocation
+            var allocation = new AllocationSet()
             {
                 Id = 1,
                 CaseStatus = "Open",
@@ -145,7 +145,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 AllocationStartDate = DateTime.Now
             };
 
-            var anotherAllocation = new Allocation
+            var anotherAllocation = new AllocationSet()
             {
                 Id = 2,
                 CaseStatus = "Closed",
@@ -160,14 +160,60 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Allocations.Add(anotherAllocation);
             DatabaseContext.SaveChanges();
 
-            var closedAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Closed");
-            var openAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Open");
+            var closedAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, null, "Closed");
+            var openAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, null, "Open");
             closedAllocations.Count.Should().Be(1);
             openAllocations.Count.Should().Be(1);
             closedAllocations.First().CaseStatus.Should().Be("Closed");
             openAllocations.First().CaseStatus.Should().Be("Open");
         }
 
+        [Test]
+        public void SelectAllocationsByTeamIdAndAndAllocationStatusStatusReturnsExpectedAllocations()
+        {
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 1);
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+
+            var (_, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+
+            var teamAllocation = new AllocationSet()
+            {
+                Id = 1,
+                CaseStatus = "Open",
+                CreatedBy = allocator.Email,
+                PersonId = resident.Id,
+                TeamId = workerTeam.Id,
+                AllocationStartDate = DateTime.Now
+            };
+
+            var workerAllocation = new AllocationSet()
+            {
+                Id = 2,
+                CaseStatus = "Open",
+                CreatedBy = allocator.Email,
+                PersonId = resident.Id,
+                TeamId = workerTeam.Id,
+                WorkerId = worker.Id,
+                AllocationStartDate = DateTime.Now
+            };
+
+            DatabaseContext.Allocations.Add(workerAllocation);
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.SaveChanges();
+
+            var assignedAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "allocated" );
+            var unassignedAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "unallocated");
+            assignedAllocations.Count.Should().Be(1);
+            unassignedAllocations.Count.Should().Be(1);
+            assignedAllocations.First().AllocatedWorker.Should().NotBeNull();
+            unassignedAllocations.First().AllocatedWorker.Should().BeNull();
+        }
 
         [Test]
         public void UpdateWorkerUpdatesTheTeamSetOnAnyAllocations()
@@ -225,6 +271,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             updatedAllocations.Count.Should().Be(1);
             updatedAllocations.Single().AllocatedWorkerTeam.Should().Be(differentTeam.Name);
         }
+
         [Test]
         public void CreatingAnAllocationShouldInsertIntoTheDatabase()
         {
@@ -290,7 +337,5 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(updatedRecord.CreatedAt, allocation.CreatedAt);
             Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByWorker.Email);
         }
-
-
     }
 }

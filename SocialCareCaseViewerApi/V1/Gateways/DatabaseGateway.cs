@@ -65,17 +65,22 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             else if (teamId != 0)
             {
                 query = query.Where(x => x.TeamId == teamId);
+
                 if (!String.IsNullOrEmpty(status))
                 {
-                    query = query.Where(x => x.CaseStatus == status);
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
                 }
-                if (teamAllocationStatus == "allocated")
+                if (!String.IsNullOrEmpty(teamAllocationStatus))
                 {
-                    query = query.Where(x => x.CaseStatus == status && x.WorkerId != null);
-                }
-                if (teamAllocationStatus == "unallocated")
-                {
-                    query = query.Where(x => x.CaseStatus == status && x.WorkerId == null);
+                    if (teamAllocationStatus == "allocated")
+                    {
+                        var test = query.ToList();
+                        query = query.Where(x => x.WorkerId != null);
+                    }
+                    if (teamAllocationStatus == "unallocated")
+                    {
+                        query = query.Where(x => x.WorkerId == null);
+                    }
                 }
             }
 
