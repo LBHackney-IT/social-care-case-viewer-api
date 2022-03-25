@@ -160,8 +160,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Allocations.Add(anotherAllocation);
             DatabaseContext.SaveChanges();
 
-            var allocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Closed");
-            allocations.Count.Should().Be(1);
+            var closedAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Closed");
+            var openAllocations = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.Id, "Open");
+            closedAllocations.Count.Should().Be(1);
+            openAllocations.Count.Should().Be(1);
+            closedAllocations.First().CaseStatus.Should().Be("Closed");
+            openAllocations.First().CaseStatus.Should().Be("Open");
         }
 
 
