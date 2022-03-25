@@ -170,7 +170,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _allocationsUseCase.Execute(request);
 
-            _mockDatabaseGateway.Verify(x => x.SelectAllocations(request.MosaicId, 0, null, request.TeamId ,request.SortBy, 0), Times.Once);
+            _mockDatabaseGateway.Verify(x => x.SelectAllocations(request.MosaicId, 0, null, request.TeamId, request.SortBy, 0), Times.Once);
         }
 
         [Test]
@@ -178,7 +178,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         {
             var request = new ListAllocationsRequest() { MosaicId = 1, Cursor = 20 };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(),It.IsAny<string>(), It.IsAny<int>())).Returns((new List<Allocation>(), 0));
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>())).Returns((new List<Allocation>(), 0));
 
             _allocationsUseCase.Execute(request);
 
