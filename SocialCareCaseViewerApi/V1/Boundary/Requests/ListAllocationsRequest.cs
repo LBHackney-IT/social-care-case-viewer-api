@@ -25,6 +25,12 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [FromQuery(Name = "cursor")]
         public int Cursor { get; set; }
+
+        [FromQuery(Name = "status")]
+        public string? Status { get; set; }
+
+        [FromQuery(Name = "team_allocation_status")]
+        public string? TeamAllocationStatus { get; set; }
     }
 
     public class ListAllocationsRequestValidator : AbstractValidator<ListAllocationsRequest>
