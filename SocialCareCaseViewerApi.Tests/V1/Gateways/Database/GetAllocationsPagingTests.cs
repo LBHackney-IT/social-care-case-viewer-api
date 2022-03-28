@@ -33,7 +33,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             for (int i = 0; i < 25; i++)
             {
-                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id));
+                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
 
             DatabaseContext.SaveChanges();
@@ -51,7 +51,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             for (int i = 0; i < 25; i++)
             {
-                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id));
+                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
 
             DatabaseContext.SaveChanges();
@@ -123,7 +123,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             for (int i = 0; i < 50; i++)
             {
-                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id));
+                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
 
             DatabaseContext.SaveChanges();
@@ -141,7 +141,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             for (int i = 0; i < 50; i++)
             {
-                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id));
+                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
 
             DatabaseContext.SaveChanges();
