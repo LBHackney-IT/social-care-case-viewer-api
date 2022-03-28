@@ -61,7 +61,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
                     {
-                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId != null));
+                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
                     };
                 }
 
