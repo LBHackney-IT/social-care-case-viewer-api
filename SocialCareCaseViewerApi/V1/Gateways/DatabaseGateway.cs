@@ -54,7 +54,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (mosaicId != 0)
             {
+
                 query = query.Where(x => x.PersonId == mosaicId);
+                var test = query.ToList();
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                    var x = query.ToList();
+                }
             }
             else if (workerId != 0)
             {
