@@ -26,7 +26,7 @@ terraform {
 /*    POSTGRES SET UP    */
 data "aws_vpc" "staging_vpc" {
   tags = {
-    Name = "vpc-staging-apis-staging"
+    Name = "apis-stg"
   }
 }
 data "aws_subnet_ids" "staging" {
