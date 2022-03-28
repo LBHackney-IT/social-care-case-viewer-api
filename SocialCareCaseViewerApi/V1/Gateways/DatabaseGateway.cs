@@ -54,6 +54,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (mosaicId != 0)
             {
+                query = query.Where(x => x.PersonId == mosaicId);
+
                 var teams = query.Where(x => x.TeamId != null && x.WorkerId == null).ToList();
                 var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null).ToList();
 
