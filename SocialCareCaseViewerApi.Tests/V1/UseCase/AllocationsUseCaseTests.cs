@@ -60,7 +60,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void UpdateAllocationCallsDatabaseGatewayWithParameters()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null, DeallocationDate = DateTime.Now, DeallocationReason = "reason"};
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null, DeallocationDate = DateTime.Now, DeallocationReason = "reason" };
 
             _allocationsUseCase.ExecuteUpdate(request);
 
