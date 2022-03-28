@@ -36,11 +36,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var MediumAllocation = TestHelpers.CreateAllocation(ragRating: "Medium", personId: personId);
-            var UrgentAllocation = TestHelpers.CreateAllocation(ragRating: "Urgent", personId: personId);
-            var LowAllocation = TestHelpers.CreateAllocation(ragRating: "Low", personId: personId);
-            var HighAllocation = TestHelpers.CreateAllocation(ragRating: "High", personId: personId);
-            var allocationWithoutRagRating = TestHelpers.CreateAllocation(ragRating: null, personId: personId);
+            var MediumAllocation = TestHelpers.CreateAllocation(ragRating: "Medium", personId: personId, caseStatus: "open");
+            var UrgentAllocation = TestHelpers.CreateAllocation(ragRating: "Urgent", personId: personId, caseStatus: "open");
+            var LowAllocation = TestHelpers.CreateAllocation(ragRating: "Low", personId: personId, caseStatus: "open");
+            var HighAllocation = TestHelpers.CreateAllocation(ragRating: "High", personId: personId, caseStatus: "open");
+            var allocationWithoutRagRating = TestHelpers.CreateAllocation(ragRating: null, personId: personId, caseStatus: "open");
 
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { HighAllocation, LowAllocation, allocationWithoutRagRating, UrgentAllocation, MediumAllocation });
             DatabaseContext.SaveChanges();
@@ -65,11 +65,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var MediumAllocation = TestHelpers.CreateAllocation(ragRating: "Medium", personId: personId);
-            var UrgentAllocation = TestHelpers.CreateAllocation(ragRating: "Urgent", personId: personId);
-            var LowAllocation = TestHelpers.CreateAllocation(ragRating: "Low", personId: personId);
-            var HighAllocation = TestHelpers.CreateAllocation(ragRating: "High", personId: personId);
-            var allocationWithoutRagRating = TestHelpers.CreateAllocation(ragRating: null, personId: personId);
+            var MediumAllocation = TestHelpers.CreateAllocation(ragRating: "Medium", personId: personId, caseStatus: "open");
+            var UrgentAllocation = TestHelpers.CreateAllocation(ragRating: "Urgent", personId: personId, caseStatus: "open");
+            var LowAllocation = TestHelpers.CreateAllocation(ragRating: "Low", personId: personId, caseStatus: "open");
+            var HighAllocation = TestHelpers.CreateAllocation(ragRating: "High", personId: personId, caseStatus: "open");
+            var allocationWithoutRagRating = TestHelpers.CreateAllocation(ragRating: null, personId: personId, caseStatus: "open");
 
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { HighAllocation, LowAllocation, allocationWithoutRagRating, UrgentAllocation, MediumAllocation });
             DatabaseContext.SaveChanges();
@@ -92,10 +92,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var allocation1 = TestHelpers.CreateAllocation(personId: personId, dateAdded: DateTime.Today.AddDays(-20));
-            var allocation2 = TestHelpers.CreateAllocation(personId: personId, dateAdded: DateTime.Today.AddDays(-40));
-            var allocation3 = TestHelpers.CreateAllocation(personId: personId, dateAdded: DateTime.Today.AddDays(-10));
-            var allocation4 = TestHelpers.CreateAllocation(personId: personId, dateAdded: DateTime.Today.AddDays(-30));
+            var allocation1 = TestHelpers.CreateAllocation(personId: personId, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-20));
+            var allocation2 = TestHelpers.CreateAllocation(personId: personId, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-40));
+            var allocation3 = TestHelpers.CreateAllocation(personId: personId, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-10));
+            var allocation4 = TestHelpers.CreateAllocation(personId: personId, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-30));
 
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4 });
             DatabaseContext.SaveChanges();

@@ -55,6 +55,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (mosaicId != 0)
             {
                 query = query.Where(x => x.PersonId == mosaicId);
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                }
             }
             else if (workerId != 0)
             {
@@ -142,7 +146,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Skip(cursor)
                     .Take(limit)
                     .ToList(),
-                    GetNextOffset(cursor, totalCount, 20));
+                    GetNextOffset(cursor, totalCount, limit));
         }
 
         private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)

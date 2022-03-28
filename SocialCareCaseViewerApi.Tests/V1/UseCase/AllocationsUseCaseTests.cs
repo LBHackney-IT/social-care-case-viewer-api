@@ -199,10 +199,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void ListAllocationsByTeamIdWithStatusReturnsExpectedList()
         {
-            var request = new ListAllocationsRequest() { TeamId = 10, Status = "CLOSED" };
-            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker", CaseStatus = "CLOSED", AllocatedWorkerTeamId = 10 } };
+            var request = new ListAllocationsRequest() { TeamId = 10, Status = "closed" };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker", CaseStatus = "closed", AllocatedWorkerTeamId = 10 } };
 
-            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, null, 0, "CLOSED", null))
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, null, 0, null, "closed"))
                 .Returns((gatewayResponse, 0));
 
             var response = _allocationsUseCase.Execute(request);

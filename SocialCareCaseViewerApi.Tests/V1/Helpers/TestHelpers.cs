@@ -218,7 +218,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             int? workerId = null,
             int? teamId = null,
             string? ragRating = null,
-            DateTime? dateAdded = null
+            DateTime? dateAdded = null,
+            string? caseStatus = null
             )
         {
             var caseStatusChoices = new List<string> { "open", "closed" };
@@ -230,7 +231,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.TeamId, f => teamId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.AllocationStartDate, f => dateAdded ?? f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.AllocationEndDate, f => f.Date.Past().ToUniversalTime())
-                .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
+                .RuleFor(a => a.CaseStatus, f => caseStatus ?? f.PickRandom(caseStatusChoices))
                 .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.RagRating, f => ragRating ?? null);
         }
