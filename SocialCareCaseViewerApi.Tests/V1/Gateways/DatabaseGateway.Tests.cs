@@ -752,6 +752,34 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void CreatingTeamAllocationWithNoRagRatingShouldInsertTeamAllocationIntoTheDatabase()
+        {
+            var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();
+            request.RagRating = null;
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(createdByWorker);
+            DatabaseContext.SaveChanges();
+
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.SaveChanges();
+
+            request.AllocatedWorkerId = null;
+            _classUnderTest.CreateAllocation(request);
+            var query = DatabaseContext.Allocations.ToList();
+            var insertedTeamAllocation = query.First();
+
+            query.Count.Should().Equals(1);
+            insertedTeamAllocation.RagRating.Should().Be(request.RagRating);
+            insertedTeamAllocation.Summary.Should().Be(request.Summary);
+            insertedTeamAllocation.CarePackage.Should().Be(request.CarePackage);
+            insertedTeamAllocation.PersonId.Should().Be(request.MosaicId);
+            insertedTeamAllocation.WorkerId.Should().Be(null);
+            insertedTeamAllocation.CreatedBy.Should().Be(createdByWorker.Email);
+        }
+
+        [Test]
         public void CreatingWorkerAllocationShouldInsertWorkerAllocationIntoTheDatabase()
         {
             var (request, worker, createdByWorker, person, team) = TestHelpers.CreateAllocationRequest();

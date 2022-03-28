@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -47,9 +48,19 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void UpdateAllocationCallsDatabaseGatewayWithParameters()
+        public void UpdateAllocationCallsUpdateRagRatingInAllocationWhenRagRatingIsSetToNull()
         {
             UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null };
+
+            _allocationsUseCase.ExecuteUpdate(request);
+
+            _mockDatabaseGateway.Verify(x => x.UpdateRagRatingInAllocation(It.Is<UpdateAllocationRequest>(x => x == request)), Times.Once);
+        }
+
+        [Test]
+        public void UpdateAllocationCallsDatabaseGatewayWithParameters()
+        {
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null, DeallocationDate = DateTime.Now, DeallocationReason = "reason" };
 
             _allocationsUseCase.ExecuteUpdate(request);
 
@@ -59,7 +70,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
         [Test]
         public void UpdateAllocationReturnsCorrectCaseNoteId()
         {
-            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null };
+            UpdateAllocationRequest request = new UpdateAllocationRequest() { Id = 1, RagRating = null, DeallocationDate = DateTime.Now, DeallocationReason = "reason" };
 
             UpdateAllocationResponse expectedResponse = new UpdateAllocationResponse() { CaseNoteId = _fixture.Create<string>() };
 
