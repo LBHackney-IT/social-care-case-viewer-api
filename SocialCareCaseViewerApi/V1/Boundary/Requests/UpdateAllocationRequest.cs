@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .NotNull().WithMessage("Email required")
                 .EmailAddress().WithMessage("Provide a valid email");
             RuleFor(x => x.RagRating)
-                .Matches("(?i:^low|high|medium|urgent)").WithMessage("RAG rating must be 'low', 'high', 'medium', 'urgent' or 'none'");
+                .Matches("(?i:^none|low|high|medium|urgent)").WithMessage("RAG rating must be 'low', 'high', 'medium', 'urgent' or 'none'");
             When(x => x.RagRating != null
                       && x.DeallocationReason != null
                       && x.DeallocationDate != null, () => { RuleFor(x => x.RagRating).Null().WithMessage("Please do not patch RagRating and deallocate at the same time"); });

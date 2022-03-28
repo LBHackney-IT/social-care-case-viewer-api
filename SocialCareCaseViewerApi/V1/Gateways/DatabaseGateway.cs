@@ -143,6 +143,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         }
         private enum RagRatingToNumber
         {
+            None,
             Low,
             Medium,
             High,
