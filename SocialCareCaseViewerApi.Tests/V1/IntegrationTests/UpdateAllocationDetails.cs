@@ -48,7 +48,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 AllocatedTeamId = _existingDbTeam.Id,
                 AllocationStartDate = DateTime.Now,
                 Summary = "summary",
-                RagRating = null,
+                RagRating = "low",
                 CreatedBy = _allocationWorker.Email,
                 CarePackage = "package"
 
@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var newAllocationPatchRequest = IntegrationTestHelpers.PatchAllocationRequest(
                 createdAllocation.Id,
                 createdByWorker: _existingDbWorker,
-                ragRating: "low",
+                ragRating: null,
                 deallocationReason: null,
                 deallocationDate: null);
             var serializedPatchRequest = JsonSerializer.Serialize(newAllocationPatchRequest);

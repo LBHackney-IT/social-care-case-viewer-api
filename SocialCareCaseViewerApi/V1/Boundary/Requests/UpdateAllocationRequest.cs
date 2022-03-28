@@ -41,8 +41,6 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .NotNull().WithMessage("Email required")
                 .EmailAddress().WithMessage("Provide a valid email");
             RuleFor(x => x.RagRating)
-                .NotNull().WithMessage("Please provide either RagRating or Deallocation Details")
-                .When(x => x.DeallocationReason == null && x.DeallocationDate == null)
                 .Matches("(?i:^low|high|medium|urgent)").WithMessage("RAG rating must be 'low', 'high', 'medium', 'urgent' or 'none'");
             When(x => x.RagRating != null
                       && x.DeallocationReason != null
