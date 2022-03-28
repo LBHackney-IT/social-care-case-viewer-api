@@ -25,7 +25,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
 
         public UpdateAllocationResponse ExecuteUpdate(UpdateAllocationRequest request)
         {
-            if (request.RagRating != null)
+            if (request.DeallocationReason == null && request.DeallocationDate == null)
             {
                 return _databaseGateway.UpdateRagRatingInAllocation(request);
             }

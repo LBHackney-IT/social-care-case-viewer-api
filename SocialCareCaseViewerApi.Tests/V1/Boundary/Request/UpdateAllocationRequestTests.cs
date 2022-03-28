@@ -27,7 +27,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, ragRating: null, createdBy: null), "Email required"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, ragRating: null, createdBy: "not an email"), "Provide a valid email"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: null), "Please provide either RagRating or Deallocation Details"),
-                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: "blue"), "RAG rating must be 'low', 'high', 'medium' or 'urgent'"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, deallocationReason: null, ragRating: "blue"), "RAG rating must be 'low', 'high', 'medium', 'urgent' or 'none'"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today), "Please do not patch RagRating and deallocate at the same time"),
             };
 
