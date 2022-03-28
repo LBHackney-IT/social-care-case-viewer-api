@@ -184,5 +184,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
 
             _mockDatabaseGateway.Verify(x => x.SelectAllocations(request.MosaicId, 0, null, request.TeamId, null, request.Cursor), Times.Once);
         }
+
+        [Test]
+        public void ListAllocationsByTeamIdWithStatusReturnsExpectedList()
+        {
+            var request = new ListAllocationsRequest() { TeamId = 10, Status = "CLOSED" };
+            var gatewayResponse = new List<Allocation> { new Allocation() { Id = 1, PersonId = 2, AllocatedWorker = "Test Worker", CaseStatus = "CLOSED" } };
+
+            _mockDatabaseGateway.Setup(x => x.SelectAllocations(0, 0, null, 10, "CLOSED", null))
+                .Returns(gatewayResponse);
+
+            var response = _allocationsUseCase.Execute(request);
+
+            response.Allocations.Should().BeEquivalentTo(gatewayResponse);
+        }
+
     }
 }

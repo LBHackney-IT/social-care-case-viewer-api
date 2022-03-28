@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0)
+        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus, string status = "OPEN")
         {
             var limit = 20;
 
@@ -68,6 +68,23 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             else if (teamId != 0)
             {
                 query = query.Where(x => x.TeamId == teamId);
+
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                }
+                if (!String.IsNullOrEmpty(teamAllocationStatus))
+                {
+                    if (teamAllocationStatus == "allocated")
+                    {
+                        var test = query.ToList();
+                        query = query.Where(x => x.WorkerId != null);
+                    }
+                    if (teamAllocationStatus == "unallocated")
+                    {
+                        query = query.Where(x => x.WorkerId == null);
+                    }
+                }
             }
 
             if (query != null)
@@ -84,6 +101,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
                         AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
                         AllocatedWorkerTeam = x.Team.Name,
+                        AllocatedWorkerTeamId = x.Team.Id,
                         WorkerType = x.Worker.Role,
                         AllocationStartDate = x.AllocationStartDate,
                         AllocationEndDate = x.AllocationEndDate,
