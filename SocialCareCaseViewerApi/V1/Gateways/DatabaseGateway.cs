@@ -973,7 +973,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
                 var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null);
 
-                if (allocation.WorkerId != null && matchingTeamAllocation == null)
+                if (allocation.WorkerId != null && matchingTeamAllocation == null && allocation.TeamId != null)
                 {
                     var teamAllocationToInsert = new AllocationSet()
                     {
