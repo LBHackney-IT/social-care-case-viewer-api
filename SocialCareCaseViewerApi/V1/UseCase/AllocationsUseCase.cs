@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public AllocationList Execute(ListAllocationsRequest request)
         {
-            var (allocations, cursor) = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.SortBy, request.Cursor,request.Status, request.TeamAllocationStatus);
+            var (allocations, cursor) = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.SortBy, request.Cursor, request.Status, request.TeamAllocationStatus);
 
             return new AllocationList
             {
