@@ -54,7 +54,12 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (mosaicId != 0)
             {
-                query = query.Where(x => x.PersonId == mosaicId);
+                query = query
+                    .Include(x => x.Team)
+                    .Include(x => x.Person)
+                    .ThenInclude(y => y.Addresses)
+                    .GroupBy(allocation => allocation.TeamId)
+                    .Select(grp => grp.OrderByDescending(c => c.WorkerId).FirstOrDefault());
             }
             else if (workerId != 0)
             {
@@ -89,9 +94,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             if (query != null)
             {
                 allocations = query
-                    .Include(x => x.Team)
-                    .Include(x => x.Person)
-                    .ThenInclude(y => y.Addresses)
+                    // .Include(x => x.Team)
+                    // .Include(x => x.Person)
+                    // .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
                     {
                         Id = x.Id,
