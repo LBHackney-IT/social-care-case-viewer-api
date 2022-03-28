@@ -550,8 +550,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
+            var allRelatedAllocations = DatabaseContext.Allocations.Where(x => x.PersonId == resident.Id).ToList();
+
             var (allocations, _) = _classUnderTest.SelectAllocations(mosaicId: resident.Id, 0, null, 0);
 
+            allRelatedAllocations.Count.Should().Be(2);
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
             allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
