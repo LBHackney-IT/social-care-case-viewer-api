@@ -38,6 +38,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         }
 
         [Test]
+        public async Task UpdateAllocationWithNullRagRatingUpdatesTheAllocation()
+        {
+            // Create allocation via API
+            var patchUri = new Uri("/api/v1/allocations", UriKind.Relative);
+            var newAllocationRequest = new CreateAllocationRequest()
+            {
+                MosaicId = _resident.Id,
+                AllocatedTeamId = _existingDbTeam.Id,
+                AllocationStartDate = DateTime.Now,
+                Summary = "summary",
+                RagRating = null,
+                CreatedBy = _allocationWorker.Email,
+                CarePackage = "package"
+
+            };
+            var serializedRequest = JsonSerializer.Serialize(newAllocationRequest);
+            var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
+            var createAllocationResponse = await Client.PostAsync(patchUri, requestContent).ConfigureAwait(true);
+
+            // Check the API response and DB records
+            var createdAllocation = DatabaseContext.Allocations.First();
+            createdAllocation.PersonId.Should().Equals(newAllocationRequest.MosaicId);
+            createAllocationResponse.StatusCode.Should().Be(201);
+
+            // Create update rag rating request and update created allocation via API
+            var newAllocationPatchRequest = IntegrationTestHelpers.PatchAllocationRequest(
+                createdAllocation.Id,
+                createdByWorker: _existingDbWorker,
+                ragRating: "low",
+                deallocationReason: null,
+                deallocationDate: null);
+            var serializedPatchRequest = JsonSerializer.Serialize(newAllocationPatchRequest);
+            var patchRequestContent = new StringContent(serializedPatchRequest, Encoding.UTF8, "application/json");
+            var patchAllocationResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
+
+            // Check the API response and DB records
+            var updatedAllocation = DatabaseContext.Allocations.First();
+            patchAllocationResponse.StatusCode.Should().Be(200);
+            updatedAllocation.RagRating.Should().Equals(newAllocationPatchRequest.RagRating);
+            updatedAllocation.Summary.Should().Equals(createdAllocation.Summary);
+            updatedAllocation.CarePackage.Should().Equals(createdAllocation.CarePackage);
+            updatedAllocation.PersonId.Should().Equals(createdAllocation.PersonId);
+            updatedAllocation.AllocationStartDate.Should().Equals(createdAllocation.AllocationStartDate);
+            updatedAllocation.CreatedBy.Should().Equals(createdAllocation.CreatedBy);
+        }
+
+        [Test]
         public async Task UpdateAllocationWithNewRagRatingUpdatesTheAllocation()
         {
             // Create allocation via API
