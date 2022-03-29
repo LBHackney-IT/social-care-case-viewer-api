@@ -1162,8 +1162,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var query = DatabaseContext.Allocations.ToList();
             var updatedRecord = query.First(x => x.Id == teamAllocation.Id);
 
-            Assert.AreEqual(updatedRecord.RagRating, request.RagRating);
-            Assert.AreEqual(updatedRecord.LastModifiedBy, worker.Email);
+            updatedRecord.RagRating.Should().Be(request.RagRating);
+            updatedRecord.LastModifiedBy.Should().Be(worker.Email);
+            updatedRecord.LastModifiedAt.Should().NotBeNull();
         }
 
         [Test]
