@@ -1030,6 +1030,41 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 //copy existing values in case adding note fails
                 var tmpAllocation = (AllocationSet) allocation.Clone();
                 SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
+                if (request.DeallocationScope != null && matchingTeamAllocation != null && request.DeallocationScope.ToLower() == "team")
+                {
+                    SetDeallocationValues(matchingTeamAllocation, (DateTime) request.DeallocationDate, request.CreatedBy);
+                    try
+                    {
+                        var note = new DeallocationCaseNote
+                        {
+                            FirstName = person.FirstName,
+                            LastName = person.LastName,
+                            MosaicId = person.Id.ToString(),
+                            Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                            WorkerEmail = createdBy.Email, //required for my cases search
+                            DeallocationReason = request.DeallocationReason,
+                            FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
+                            FormName = "Team deallocated",
+                            AllocationId = request.Id.ToString(),
+                            CreatedBy = request.CreatedBy
+                        };
+
+                        var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                        response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                        RestoreAllocationValues(tmpAllocation, allocationToRestore);
+
+                        _databaseContext.SaveChanges();
+
+                        throw new UpdateAllocationException(
+                            $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                    }
+                };
+                SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
                 _databaseContext.SaveChanges();
 
                 try

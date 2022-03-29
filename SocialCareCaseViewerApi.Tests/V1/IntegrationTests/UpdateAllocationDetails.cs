@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 createdByWorker: _existingDbWorker,
                 ragRating: null,
                 deallocationReason: null,
-                deallocationDate: null);
+                deallocationDate: null, deallocationScope: "worker");
             var serializedPatchRequest = JsonSerializer.Serialize(newAllocationPatchRequest);
             var patchRequestContent = new StringContent(serializedPatchRequest, Encoding.UTF8, "application/json");
             var patchAllocationResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
@@ -115,7 +115,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 createdByWorker: _existingDbWorker,
                 ragRating: "low",
                 deallocationReason: null,
-                deallocationDate: null);
+                deallocationDate: null,
+                deallocationScope: "worker");
             var serializedPatchRequest = JsonSerializer.Serialize(newAllocationPatchRequest);
             var patchRequestContent = new StringContent(serializedPatchRequest, Encoding.UTF8, "application/json");
             var patchAllocationResponse = await Client.PatchAsync(patchUri, patchRequestContent).ConfigureAwait(true);
@@ -164,6 +165,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
                 createdByWorker: _existingDbWorker,
                 ragRating: null,
                 deallocationReason: "reason",
+                deallocationScope: "worker",
                 deallocationDate: today);
             var serializedPatchRequest = JsonSerializer.Serialize(newAllocationPatchRequest);
             var patchRequestContent = new StringContent(serializedPatchRequest, Encoding.UTF8, "application/json");

@@ -1276,6 +1276,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
                 .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
+            request.DeallocationScope = "worker";
             _classUnderTest.UpdateAllocation(request);
 
             var query = DatabaseContext.Allocations.ToList();
@@ -1292,6 +1293,83 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
             Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
             Assert.AreEqual(updatedRecord.LastModifiedBy, deAllocatedByWorker.Email);
+        }
+
+
+        [Test]
+        public void DeallocatingBothWorkerAndTeamForAllocationWithExistingTeamAllocationShouldUpdateBothTheRecordInTheDatabase()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-60);
+            var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+            var teamAllocation = new Allocation
+            {
+                Id = (int) (request.Id + 1),
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null
+            };
+
+            var workerAllocation = new Allocation
+            {
+                Id = (int) request.Id,
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = deAllocatedByWorker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = worker.Id
+            };
+
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.Allocations.Add(workerAllocation);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+                .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+
+            request.DeallocationScope = "team";
+            _classUnderTest.UpdateAllocation(request);
+
+            var query = DatabaseContext.Allocations.ToList();
+
+            query.Count.Should().Equals(2);
+
+            var updatedWorkerAllocation = query.First(x => x.Id == workerAllocation.Id);
+            var updatedTeamAllocation = query.First(x => x.TeamId == team.Id && x.WorkerId == null);
+
+            Assert.AreEqual("Closed", updatedWorkerAllocation.CaseStatus);
+            Assert.AreEqual(worker.Id, updatedWorkerAllocation.WorkerId);
+            Assert.AreEqual(team.Id, updatedWorkerAllocation.TeamId);
+            Assert.AreEqual(request.DeallocationDate, updatedWorkerAllocation.CaseClosureDate);
+            Assert.AreEqual(request.DeallocationDate, updatedWorkerAllocation.AllocationEndDate);
+            Assert.AreEqual(updatedWorkerAllocation.CreatedBy, deAllocatedByWorker.Email);
+            Assert.AreEqual(updatedWorkerAllocation.CreatedAt, workerAllocation.CreatedAt);
+            Assert.AreEqual(updatedWorkerAllocation.LastModifiedBy, deAllocatedByWorker.Email);
+
+            Assert.AreEqual("Closed", updatedTeamAllocation.CaseStatus);
+            Assert.AreEqual(team.Id, updatedTeamAllocation.TeamId);
+            Assert.AreEqual(request.DeallocationDate, updatedTeamAllocation.CaseClosureDate);
+            Assert.AreEqual(request.DeallocationDate, updatedTeamAllocation.AllocationEndDate);
+            Assert.AreEqual(updatedTeamAllocation.CreatedBy, deAllocatedByWorker.Email);
+            Assert.AreEqual(updatedTeamAllocation.CreatedAt, workerAllocation.CreatedAt);
+            Assert.AreEqual(updatedTeamAllocation.LastModifiedBy, deAllocatedByWorker.Email);
         }
 
 
@@ -1430,6 +1508,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
                 .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
 
+            request.DeallocationScope = "worker";
             _classUnderTest.UpdateAllocation(request);
 
             var query = DatabaseContext.Allocations.ToList();

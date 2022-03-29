@@ -123,13 +123,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             return createAllocationRequest;
         }
 
-        public static UpdateAllocationRequest PatchAllocationRequest(int allocationId, Worker createdByWorker, string? ragRating, string? deallocationReason, DateTime? deallocationDate)
+        public static UpdateAllocationRequest PatchAllocationRequest(int allocationId, Worker createdByWorker, string? ragRating, string? deallocationReason, DateTime? deallocationDate, string? deallocationScope)
         {
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
                 .RuleFor(c => c.Id, f => allocationId)
                 .RuleFor(c => c.CreatedBy, f => createdByWorker.Email)
                 .RuleFor(c => c.RagRating, f => ragRating)
                 .RuleFor(c => c.DeallocationReason, f => deallocationReason)
+                .RuleFor(c => c.DeallocationScope, f => deallocationScope)
                 .RuleFor(c => c.DeallocationDate, f => deallocationDate)
                 .RuleFor(c => c.RagRating, f => ragRating);
 
