@@ -1078,6 +1078,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             insertedRecord.CarePackage.Should().Be(request.CarePackage);
             insertedRecord.PersonId.Should().Be(request.MosaicId);
             insertedRecord.WorkerId.Should().Be(worker.Id);
+            insertedRecord.RagRating.Should().Be(allocation.RagRating);
             insertedRecord.CreatedBy.Should().Be(createdByWorker.Email);
         }
 
