@@ -47,7 +47,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
         {
-            var limit = 20;
+            var limit = 250;
 
             List<Allocation> allocations = new List<Allocation>();
             IQueryable<AllocationSet> query = _databaseContext.Allocations;
