@@ -929,6 +929,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 //copy existing values in case adding note fails
                 var tmpAllocation = (AllocationSet) allocation.Clone();
+                allocation.LastModifiedBy = request.CreatedBy;
 
                 allocation.RagRating = request.RagRating;
                 _databaseContext.SaveChanges();
