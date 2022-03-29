@@ -24,6 +24,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
         {
             const string longEmail = "thisEmailIsLongerThan62CharactersAndAlsoValid@HereIAmJustCreatingMoreCharacters.com";
 
+            var teams = new List<WorkerTeamRequest>() {
+                new WorkerTeamRequest() { Id = 1, Name = "Team 1" },
+                new WorkerTeamRequest() { Id = 2, Name = "Team 2" }
+            };
+
             var badCreateWorkerRequests = new List<(CreateWorkerRequest, string)>
             {
                 (TestHelpers.CreateWorkerRequest(email: ""), "Email address must be valid"),
@@ -41,8 +46,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.CreateWorkerRequest(teamId: 0), "Team ID must be greater than 0"),
                 (TestHelpers.CreateWorkerRequest(createATeam: false), "A team must be provided"),
                 (TestHelpers.CreateWorkerRequest(createdByEmail: ""), "Created by email address must be valid"),
-                (TestHelpers.CreateWorkerRequest(createdByEmail: longEmail), "Created by email address must be no longer than 62 characters")
-
+                (TestHelpers.CreateWorkerRequest(createdByEmail: longEmail), "Created by email address must be no longer than 62 characters"),
+                (TestHelpers.CreateWorkerRequest(createATeam: false, providedTeams: teams), "Please provide only one team")
             };
 
             var validator = new CreateWorkerRequestValidator();

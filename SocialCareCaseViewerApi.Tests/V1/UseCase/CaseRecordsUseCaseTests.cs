@@ -141,7 +141,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Warning Note Ended"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Warning Note Reviewed"),
                 TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Worker allocated"),
-                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Worker deallocated")
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Rag Rating Updated"),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Worker deallocated"),
+                TestHelpers.CreateCaseSubmission(SubmissionState.Submitted, residentId: int.Parse(request.MosaicId ?? ""), formId: "Team deallocated")
             };
 
             _mockDatabaseGateWay.Setup(x => x.GetNCReferenceByPersonId(request.MosaicId)).Returns(request.MosaicId ?? "");

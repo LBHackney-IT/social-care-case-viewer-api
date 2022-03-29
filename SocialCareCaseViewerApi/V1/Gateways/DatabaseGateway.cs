@@ -23,6 +23,7 @@ using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
 using ResidentInformationResponse = SocialCareCaseViewerApi.V1.Boundary.Response.ResidentInformation;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
+using DomainWorker = SocialCareCaseViewerApi.V1.Domain.Worker;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
 namespace SocialCareCaseViewerApi.V1.Gateways
@@ -44,28 +45,84 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public List<Allocation> SelectAllocations(long mosaicId, long workerId, string workerEmail)
+        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
         {
+            var limit = 20;
+
             List<Allocation> allocations = new List<Allocation>();
             IQueryable<AllocationSet> query = _databaseContext.Allocations;
 
             if (mosaicId != 0)
             {
                 query = query.Where(x => x.PersonId == mosaicId);
+
+                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
+                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
+
+                foreach (var allocation in teams)
+                {
+                    if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
+                    {
+                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
+                    };
+                }
+
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                }
             }
+
             else if (workerId != 0)
             {
                 query = query.Where(x => x.WorkerId == workerId);
+
+                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
+                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
+
+                foreach (var allocation in teams)
+                {
+                    if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
+                    {
+                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
+                    };
+                }
+
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                }
             }
             else if (!String.IsNullOrEmpty(workerEmail))
             {
                 query = query.Include(x => x.Worker)
                     .Where(x => x.Worker.Email == workerEmail);
             }
+            else if (teamId != 0)
+            {
+                query = query.Where(x => x.TeamId == teamId);
+
+                if (!String.IsNullOrEmpty(status))
+                {
+                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+                }
+                if (!String.IsNullOrEmpty(teamAllocationStatus))
+                {
+                    if (teamAllocationStatus == "allocated")
+                    {
+                        query = query.Where(x => x.WorkerId != null);
+                    }
+                    if (teamAllocationStatus == "unallocated")
+                    {
+                        query = query.Where(x => x.WorkerId == null);
+                    }
+                }
+            }
 
             if (query != null)
             {
-                allocations = query.Include(x => x.Team)
+                allocations = query
+                    .Include(x => x.Team)
                     .Include(x => x.Person)
                     .ThenInclude(y => y.Addresses)
                     .Select(x => new Allocation()
@@ -76,6 +133,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         PersonName = ToTitleCaseFullPersonName(x.Person.FirstName, x.Person.LastName),
                         AllocatedWorker = x.Worker == null ? null : $"{x.Worker.FirstName} {x.Worker.LastName}",
                         AllocatedWorkerTeam = x.Team.Name,
+                        AllocatedWorkerTeamId = x.Team.Id,
                         WorkerType = x.Worker.Role,
                         AllocationStartDate = x.AllocationStartDate,
                         AllocationEndDate = x.AllocationEndDate,
@@ -86,12 +144,60 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                                 x.IsDisplayAddress.ToUpper() == "Y") == null
                                 ? null
                                 : x.Person.Addresses.FirstOrDefault(x => x.IsDisplayAddress.ToUpper() == "Y")
-                                    .AddressLines
+                                    .AddressLines,
+                        RagRating = x.RagRating,
+                        PersonReviewDate = x.Person.ReviewDate
                     }
                     ).AsNoTracking().ToList();
             }
 
-            return allocations;
+            var totalCount = allocations.Count;
+
+            allocations = sortBy switch
+            {
+                "rag_rating" =>
+                    allocations
+                        .OrderByDescending(x => x.RagRating == null)
+                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList(),
+                "date_added" =>
+                    allocations
+                        .OrderByDescending(x => x.AllocationStartDate).ToList(),
+                "review_date" =>
+                    allocations
+                        .OrderBy(x => x.PersonReviewDate).ToList(),
+                _ =>
+                    allocations
+                        .OrderByDescending(x => x.RagRating == null)
+                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList()
+            };
+
+            return (allocations
+                    .Skip(cursor)
+                    .Take(limit)
+                    .ToList(),
+                    GetNextOffset(cursor, totalCount, limit));
+        }
+
+        private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)
+        {
+            int nextOffset = currentOffset + limit;
+
+            if (nextOffset < totalRecords)
+            {
+                return nextOffset;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private enum RagRatingToNumber
+        {
+            None,
+            Low,
+            Medium,
+            High,
+            Urgent
         }
 
         public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
@@ -556,12 +662,16 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Worker GetWorkerByEmail(string email)
         {
-            return _databaseContext.Workers
+            var worker = _databaseContext.Workers
                     .Where(worker => worker.Email.ToLower() == email.ToLower())
                     .Include(x => x.Allocations)
                     .Include(x => x.WorkerTeams)
                     .ThenInclude(y => y.Team)
                     .FirstOrDefault();
+
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromAWorker(worker);
+
+            return worker;
         }
 
         public Worker CreateWorker(CreateWorkerRequest createWorkerRequest)
@@ -597,10 +707,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
             return worker;
         }
-
         public void UpdateWorker(UpdateWorkerRequest request)
         {
-            var worker = _databaseContext.Workers.FirstOrDefault(x => x.Id == request.WorkerId);
+            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == request.WorkerId);
 
             if (worker == null)
             {
@@ -615,24 +724,39 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             worker.DateStart = request.DateStart;
             worker.IsActive = true;
 
-            var workerTeams = GetTeams(request.Teams);
+            var dateTime = DateTime.Now;
 
-            worker.WorkerTeams = workerTeams.Select(t => new WorkerTeam { Team = t, Worker = worker }).ToList();
-            _databaseContext.SaveChanges();
-
-            // Update any assigned allocations to reflect the worker's new team
-            var allocations = _databaseContext.Allocations.Where(x => x.WorkerId == request.WorkerId).ToList();
-
-            if (!allocations.Any()) return;
-
-            var updatedTeam = _databaseContext.WorkerTeams.FirstOrDefault(x => x.WorkerId.Equals(worker.Id))?.Team;
-
-            foreach (var allocation in allocations)
+            if (request.Teams != null && request.Teams.Count > 0)
             {
-                allocation.TeamId = updatedTeam?.Id;
-                allocation.Team = updatedTeam;
-                _databaseContext.SaveChanges();
+                //boundary locked down to one team only, but ensure we only have one
+                if (request.Teams.Count > 1)
+                {
+                    throw new Exception("Worker can have only one team");
+                }
+
+                //check that team has changed. If not, ignore
+                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
+                {
+                    //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
+                    foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
+                    {
+                        workerteam.EndDate = dateTime;
+                        workerteam.LastModifiedBy = request.ModifiedBy;
+                    }
+
+                    var team = request.Teams.FirstOrDefault();
+
+                    //make sure team exists
+                    if (!_databaseContext.Teams.AsNoTracking().Any(x => x.Id == team.Id))
+                    {
+                        throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
+                    }
+                    //add new team with start date
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
+                }
             }
+
+            _databaseContext.SaveChanges();
         }
 
         private ICollection<Team> GetTeams(List<WorkerTeamRequest> request)
@@ -654,13 +778,19 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public Team GetTeamByTeamName(string teamName)
         {
-            return _databaseContext.Teams
+            var team = _databaseContext.Teams
                 .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
                 .FirstOrDefault();
+
+            WorkerTeamFiltering.RemoveHistoricalWorkerTeamsFromATeam(team);
+
+            return team;
         }
+
+
 
         //TODO: use db views or queries
         public List<dynamic> GetWorkerAllocations(List<Worker> workers)
@@ -683,13 +813,71 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         {
             var (worker, team, person, allocatedBy) = GetCreateAllocationRequirements(request);
 
+            var residentAllocations = _databaseContext.Allocations.Where(x => x.MarkedForDeletion == false && x.CaseStatus.ToUpper() == "OPEN" && x.Person.Id == request.MosaicId).ToList();
+
+            var hasExistingTeamOnlyAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
+            var hasExistingTeamAndWorkerAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null);
+
+            // If person has allocation with the same team already and request is to allocate a team
+            if (request.AllocatedWorkerId == null && hasExistingTeamOnlyAllocation)
+            {
+                throw new CreateAllocationException(
+                    "Person is already allocated to this team");
+            }
+
+            // If person has worker allocation with the same team already and a worker and request is to allocate a worker
+            if (request.AllocatedWorkerId != null && hasExistingTeamAndWorkerAllocation)
+            {
+                throw new CreateAllocationException(
+                    "Person has already allocated worker in this team");
+            }
+
+            var exisitingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
+
+            if (exisitingAllocation != null && request.AllocationStartDate < exisitingAllocation.AllocationStartDate)
+            {
+                throw new CreateAllocationException(
+                    "Worker Allocation date must be after Team Allocation date");
+            }
+
+            var response = new CreateAllocationResponse();
+
+            // Team and worker allocation
+            if (request.AllocatedWorkerId != null && !hasExistingTeamOnlyAllocation)
+            {
+                CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+            }
+
+            // Team allocation
+            if (request.AllocatedWorkerId == null && !hasExistingTeamOnlyAllocation)
+            {
+                response = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+            }
+
+            // Worker allocation
+            if (request.AllocatedWorkerId != null && hasExistingTeamOnlyAllocation)
+            {
+                var existingTeamAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
+                request.RagRating = existingTeamAllocation.RagRating;
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
+            }
+
+            return response;
+        }
+
+        private CreateAllocationResponse CreateTeamAndWorkerAllocation(CreateAllocationRequest request, Person person, DomainWorker worker, Worker allocatedBy, Team team)
+        {
             var allocation = new AllocationSet
             {
                 PersonId = person.Id,
-                WorkerId = worker.Id,
+                WorkerId = worker?.Id,
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
                 CaseStatus = "Open",
+                RagRating = request.RagRating,
+                CarePackage = request.CarePackage,
+                Summary = request.Summary,
                 CreatedBy = allocatedBy.Email
             };
 
@@ -711,7 +899,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
                     WorkerEmail = allocatedBy.Email,
                     Note =
-                        $"{dt.ToShortDateString()} | Allocation | {worker.FirstName} {worker.LastName} in {team.Name} was allocated to this person (by {allocatedBy.FirstName} {allocatedBy.LastName})",
+                        $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} {(worker == null ? "" : $" and {worker.FirstName} {worker.LastName}")} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
                     FormName = "Worker allocated",
                     AllocationId = allocation.Id.ToString(),
@@ -736,7 +924,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return response;
         }
 
-        public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
+        public UpdateAllocationResponse UpdateRagRatingInAllocation(UpdateAllocationRequest request)
         {
             var response = new UpdateAllocationResponse();
 
@@ -756,10 +944,127 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
                 var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
 
+                //copy existing values in case adding note fails
+                var tmpAllocation = (AllocationSet) allocation.Clone();
+                allocation.LastModifiedBy = request.CreatedBy;
+
+                allocation.RagRating = request.RagRating;
+                _databaseContext.SaveChanges();
+
+                try
+                {
+                    var note = new UpdateRagRatingCaseNote
+                    {
+                        FirstName = person.FirstName,
+                        LastName = person.LastName,
+                        MosaicId = person.Id.ToString(),
+                        Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                        WorkerEmail = createdBy.Email, //required for my cases search
+                        FormNameOverall = "API_Allocation", //prefix API notes so they are easy to identify
+                        FormName = "Rag Rating Updated",
+                        AllocationId = request.Id.ToString(),
+                        CreatedBy = request.CreatedBy
+                    };
+
+                    var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                    response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                }
+                catch (Exception ex)
+                {
+                    var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                    RestoreAllocationValues(tmpAllocation, allocationToRestore);
+
+                    _databaseContext.SaveChanges();
+
+                    throw new UpdateAllocationException(
+                        $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new EntityUpdateException($"Unable to update allocation {request.Id}: {ex.Message}");
+            }
+
+            return response;
+        }
+
+        public UpdateAllocationResponse UpdateAllocation(UpdateAllocationRequest request)
+        {
+            var response = new UpdateAllocationResponse();
+
+            try
+            {
+                var allocation = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+
+                if (allocation == null)
+                {
+                    throw new EntityUpdateException($"Allocation {request.Id} not found");
+                }
+
+                if (allocation.CaseStatus?.ToUpper() == "CLOSED")
+                {
+                    throw new UpdateAllocationException("Allocation already closed");
+                }
+                var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null && x.CaseStatus.ToLower() == "open");
+
+                if (allocation.WorkerId != null && matchingTeamAllocation == null && allocation.TeamId != null)
+                {
+                    var teamAllocationToInsert = new AllocationSet()
+                    {
+                        PersonId = allocation.PersonId,
+                        TeamId = allocation.TeamId,
+                        RagRating = allocation.RagRating,
+                        AllocationStartDate = allocation.AllocationStartDate,
+                        CreatedBy = allocation.CreatedBy,
+                        CreatedAt = allocation.CreatedAt,
+                        CaseStatus = allocation.CaseStatus
+                    };
+                    _databaseContext.Allocations.Add(teamAllocationToInsert);
+                    _databaseContext.SaveChanges();
+                }
+
+                var (person, createdBy) = GetUpdateAllocationRequirements(allocation, request);
+
 
                 //copy existing values in case adding note fails
                 var tmpAllocation = (AllocationSet) allocation.Clone();
-                SetDeallocationValues(allocation, request.DeallocationDate, request.CreatedBy);
+                SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
+                if (request.DeallocationScope != null && matchingTeamAllocation != null && request.DeallocationScope.ToLower() == "team")
+                {
+                    SetDeallocationValues(matchingTeamAllocation, (DateTime) request.DeallocationDate, request.CreatedBy);
+                    try
+                    {
+                        var note = new DeallocationCaseNote
+                        {
+                            FirstName = person.FirstName,
+                            LastName = person.LastName,
+                            MosaicId = person.Id.ToString(),
+                            Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                            WorkerEmail = createdBy.Email, //required for my cases search
+                            DeallocationReason = request.DeallocationReason,
+                            FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
+                            FormName = "Team deallocated",
+                            AllocationId = request.Id.ToString(),
+                            CreatedBy = request.CreatedBy
+                        };
+
+                        var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+
+                        response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                        RestoreAllocationValues(tmpAllocation, allocationToRestore);
+
+                        _databaseContext.SaveChanges();
+
+                        throw new UpdateAllocationException(
+                            $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                    }
+                };
+                SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
                 _databaseContext.SaveChanges();
 
                 try
@@ -1111,10 +1416,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return (first + " " + last).TrimStart().TrimEnd();
         }
 
-        private (Domain.Worker, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
+        private (Domain.Worker?, Team, Person, Worker) GetCreateAllocationRequirements(CreateAllocationRequest request)
         {
             var worker = _workerGateway.GetWorkerByWorkerId(request.AllocatedWorkerId);
-            if (string.IsNullOrEmpty(worker?.Email))
+            if (string.IsNullOrEmpty(worker?.Email) && request.AllocatedWorkerId != null)
             {
                 throw new CreateAllocationException("Worker details cannot be found");
             }
@@ -1151,11 +1456,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
 
             var worker = _workerGateway.GetWorkerByWorkerId(allocation.WorkerId ?? 0);
-
-            if (worker == null)
-            {
-                throw new UpdateAllocationException("Worker not found");
-            }
 
             var person = _databaseContext.Persons.FirstOrDefault(x => x.Id == allocation.PersonId);
             if (person == null)

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Boundary.Requests;
 using SocialCareCaseViewerApi.V1.Boundary.Response;
+using SocialCareCaseViewerApi.V1.Infrastructure;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
@@ -25,7 +26,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
         [SetUp]
         public void Setup()
         {
-
             // Create existing workers with teams
             (_existingDbWorker, _existingDbTeam) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
             (_allocationWorker, _) = IntegrationTestHelpers.SetupExistingWorker(DatabaseContext);
@@ -34,12 +34,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             // Create an existing resident that shares the same age context as existingDbWorker
             _resident = IntegrationTestHelpers.CreateExistingPerson(DatabaseContext, ageContext: _existingDbWorker.ContextFlag);
-
         }
 
-
         [Test]
-        public async Task UpdateWorkerWithNewTeamReturnsTheOnlyTheUpdatedTeam()
+        public async Task UpdateWorkerWithNewTeamReturnsOnlyTheUpdatedTeam()
         {
             // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
@@ -61,40 +59,45 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             var updatedWorkerResponse = JsonConvert.DeserializeObject<List<WorkerResponse>>(updatedContent).ToList();
             updatedWorkerResponse.Count.Should().Be(1);
 
-            // Worker's initial team should be replaced with the new team
-            updatedWorkerResponse.Single().Teams.Count.Should().Be(1);
-            updatedWorkerResponse.Single().Teams.Single().Id.Should().Be(newTeamRequest.Id);
-            updatedWorkerResponse.Single().Teams.Single().Name.Should().Be(newTeamRequest.Name);
+            //worker should have one team now since the old relationship has an end date
+            updatedWorkerResponse.First().Teams.Count.Should().Be(1);
+            updatedWorkerResponse.First().Teams.Any(x => x.Id == newTeamRequest.Id && x.Name == newTeamRequest.Name).Should().BeTrue();
+            updatedWorkerResponse.First().Teams.Any(x => x.Id == _existingDbTeam.Id && x.Name == _existingDbTeam.Name).Should().BeFalse();
 
             // Check the db state as well
             var persistedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId.Equals(_existingDbWorker.Id)).ToList();
-            persistedWorkerTeams.Count.Should().Be(1);
-            persistedWorkerTeams.Single().Team.Id.Should().Be(newTeamRequest.Id);
-            persistedWorkerTeams.Single().Team.Name.Should().Be(newTeamRequest.Name);
+            persistedWorkerTeams.Count.Should().Be(2);
+            persistedWorkerTeams.Any(x => x.Team.Id == newTeamRequest.Id && x.Team.Name == newTeamRequest.Name).Should().BeTrue();
+            persistedWorkerTeams.Any(x => x.Team.Id == _existingDbTeam.Id && x.Team.Name == _existingDbTeam.Name).Should().BeTrue();
         }
 
         [Test]
-        public async Task UpdateWorkerWithNewTeamUpdatesAnyAllocationsAssociated()
+        public async Task UpdateWorkerWithNewTeamDoesNotUpdateAnyWorkerAllocations()
         {
-            // Create an allocation request for existingDbWorker
-            var createAllocationUri = new Uri("/api/v1/allocations", UriKind.Relative);
+            var firstDbAllocation = new AllocationSet()
+            {
+                PersonId = _resident.Id,
+                TeamId = _existingDbTeam.Id,
+                WorkerId = _existingDbWorker.Id,
+                RagRating = "high",
+                CreatedBy = _allocationWorker.Email,
+                AllocationStartDate = DateTime.Now,
+            };
+            DatabaseContext.Allocations.Add(firstDbAllocation);
+            DatabaseContext.SaveChanges();
 
-            var allocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
-            var serializedRequest = JsonSerializer.Serialize(allocationRequest);
-
-            var requestContent = new StringContent(serializedRequest, Encoding.UTF8, "application/json");
-
-            var allocationResponse = await Client.PostAsync(createAllocationUri, requestContent).ConfigureAwait(true);
-            allocationResponse.StatusCode.Should().Be(201);
-
-            // Create another allocation request for existingDbWorker
-            var secondAllocationRequest = IntegrationTestHelpers.CreateAllocationRequest(_resident.Id, _existingDbTeam.Id, _existingDbWorker.Id, _allocationWorker);
-            var secondSerializedRequest = JsonSerializer.Serialize(secondAllocationRequest);
-
-            var secondRequestContent = new StringContent(secondSerializedRequest, Encoding.UTF8, "application/json");
-
-            var allocationTwoResponse = await Client.PostAsync(createAllocationUri, secondRequestContent).ConfigureAwait(true);
-            allocationTwoResponse.StatusCode.Should().Be(201);
+            // Create another allocation request for existingDbWorker, due to new restrictions in use case unable to create second allocation via API, saving directly to the DB.
+            var secondDbAllocation = new AllocationSet()
+            {
+                PersonId = _resident.Id,
+                TeamId = _existingDbTeam.Id,
+                WorkerId = _existingDbWorker.Id,
+                RagRating = "high",
+                CreatedBy = _allocationWorker.Email,
+                AllocationStartDate = DateTime.Now,
+            };
+            DatabaseContext.Allocations.Add(secondDbAllocation);
+            DatabaseContext.SaveChanges();
 
             // Patch request to update team of existingDbWorker
             var patchUri = new Uri("/api/v1/workers", UriKind.Relative);
@@ -119,13 +122,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
 
             var firstAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(0);
 
-            firstAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
-            firstAllocation?.PersonId.Should().Be(_resident.Id);
             firstAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
+            firstAllocation?.PersonId.Should().Be(_resident.Id);
+            firstAllocation?.AllocatedWorkerTeam.Should().Be(_existingDbTeam.Name);
 
             var secondAllocation = updatedAllocationResponse.Allocations.ElementAtOrDefault(1);
 
-            secondAllocation?.AllocatedWorkerTeam.Should().Be(newTeamRequest.Name);
+            secondAllocation?.AllocatedWorkerTeam.Should().Be(_existingDbTeam.Name);
             secondAllocation?.PersonId.Should().Be(_resident.Id);
             secondAllocation?.AllocatedWorker.Should().Be($"{_existingDbWorker.FirstName} {_existingDbWorker.LastName}");
         }

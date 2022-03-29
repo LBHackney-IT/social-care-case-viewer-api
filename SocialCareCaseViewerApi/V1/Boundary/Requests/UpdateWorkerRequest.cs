@@ -39,7 +39,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(w => w.WorkerId)
                 .NotNull().WithMessage("Worker Id must be provided")
-                .GreaterThan(0).WithMessage("Worker id must be grater than 0")
+                .GreaterThan(0).WithMessage("Worker id must be greater than 0")
                 .LessThan(int.MaxValue).WithMessage($"Worker id must be less than {int.MaxValue}");
             RuleFor(w => w.ModifiedBy)
                 .NotNull().WithMessage("Created by email address must be provided")
@@ -58,6 +58,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 .MinimumLength(1).WithMessage("Context flag must be provided")
                 .MaximumLength(1).WithMessage("Context flag must be no longer than 1 character")
                 .Matches("(?i:^A|C)").WithMessage("Context flag must be 'A' or 'C'");
+            RuleFor(w => w.Teams.Count).LessThan(2).WithMessage("Please provide only one team");
             RuleForEach(w => w.Teams)
                 .ChildRules(team =>
                 {
