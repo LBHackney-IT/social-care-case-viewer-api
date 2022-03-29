@@ -842,8 +842,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             // Worker allocation
             if (request.AllocatedWorkerId != null && hasExistingTeamOnlyAllocation)
             {
-                var existingTeam = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
-                request.RagRating = existingTeam.RagRating;
+                var existingTeamAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
+                request.RagRating = existingTeamAllocation.RagRating;
                 response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
             }
 
