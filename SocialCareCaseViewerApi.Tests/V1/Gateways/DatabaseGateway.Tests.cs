@@ -592,6 +592,35 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void SelectAllocationsByWorkerIdReturnsOnlySingleAllocationPerTeamGivingPreferenceToTheAllocationWithATeamAssigned()
+        {
+            // Create worker and teams
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+
+            var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(createAllocationRequest);
+
+            var allRelatedAllocations = DatabaseContext.Allocations.Where(x => x.PersonId == resident.Id).ToList();
+
+            var (allocations, _) = _classUnderTest.SelectAllocations(mosaicId: 0, worker.Id, null, 0);
+
+            allRelatedAllocations.Count.Should().Be(2);
+            allocations.Count.Should().Be(1);
+            allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
+            allocations.Single().AllocatedWorker.Should().Be($"{worker.FirstName} {worker.LastName}");
+        }
+
+        [Test]
         public void SelectAllocationsByWorkerEmail()
         {
             // Create worker and teams
