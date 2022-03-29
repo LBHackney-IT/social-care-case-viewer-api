@@ -1006,7 +1006,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     throw new UpdateAllocationException("Allocation already closed");
                 }
-                var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null);
+                var matchingTeamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId && x.WorkerId == null && x.CaseStatus.ToLower() == "open");
 
                 if (allocation.WorkerId != null && matchingTeamAllocation == null && allocation.TeamId != null)
                 {
