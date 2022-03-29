@@ -1124,6 +1124,50 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdatingWorkerAllocationWithRagRatingShouldUpdateTheRecordInTheDatabaseWithNewRagRatingAndAuditingStamp()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-60);
+            var (request, worker, _, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+            request.DeallocationDate = null;
+            request.DeallocationReason = null;
+            request.RagRating = "High";
+            request.CreatedBy = worker.Email;
+            var teamAllocation = new Allocation
+            {
+                Id = (int) (request.Id),
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = worker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null
+            };
+
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            _mockProcessDataGateway.Setup(x => x.InsertCaseNoteDocument(It.IsAny<CaseNotesDocument>()))
+                .Returns(Task.FromResult(_faker.Random.Guid().ToString()));
+
+            _classUnderTest.UpdateRagRatingInAllocation(request);
+
+            var query = DatabaseContext.Allocations.ToList();
+            var updatedRecord = query.First(x => x.Id == teamAllocation.Id);
+
+            updatedRecord.RagRating.Should().Be(request.RagRating);
+            updatedRecord.LastModifiedBy.Should().Be(worker.Email);
+            updatedRecord.LastModifiedAt.Should().NotBeNull();
+        }
+
+        [Test]
         public void UpdatingWorkerAllocationWithExistingTeamAllocationShouldUpdateTheRecordInTheDatabase()
         {
             var allocationStartDate = DateTime.Now.AddDays(-60);
