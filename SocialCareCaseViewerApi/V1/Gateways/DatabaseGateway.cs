@@ -54,45 +54,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             if (mosaicId != 0)
             {
-                query = query.Where(x => x.PersonId == mosaicId);
-
-                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
-                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
-
-                foreach (var allocation in teams)
-                {
-                    if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
-                    {
-                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
-                    };
-                }
-
-                if (!String.IsNullOrEmpty(status))
-                {
-                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
-                }
+                query = RemoveClosedAndDuplicateAllocations(query.Where(x => x.PersonId == mosaicId), status);
             }
 
             else if (workerId != 0)
             {
-                query = query.Where(x => x.WorkerId == workerId);
-
-                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
-                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
-
-                foreach (var allocation in teams)
-                {
-                    if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
-                    {
-                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
-                    };
-                }
-
-                if (!String.IsNullOrEmpty(status))
-                {
-                    query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
-                }
+                query = RemoveClosedAndDuplicateAllocations(query.Where(x => x.WorkerId == workerId), status);
             }
+
             else if (!String.IsNullOrEmpty(workerEmail))
             {
                 query = query.Include(x => x.Worker)
@@ -176,6 +145,27 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Take(limit)
                     .ToList(),
                     GetNextOffset(cursor, totalCount, limit));
+        }
+
+        private static IQueryable<AllocationSet> RemoveClosedAndDuplicateAllocations(IQueryable<AllocationSet> query, string status)
+        {
+            var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
+            var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
+
+            foreach (var allocation in teams)
+            {
+                if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
+                {
+                    query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
+                };
+            }
+
+            if (!String.IsNullOrEmpty(status))
+            {
+                query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
+            }
+
+            return query;
         }
 
         private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)
