@@ -56,8 +56,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 query = query.Where(x => x.PersonId == mosaicId);
 
-                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null).ToList();
-                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null).ToList();
+                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
+                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
 
                 foreach (var allocation in teams)
                 {
