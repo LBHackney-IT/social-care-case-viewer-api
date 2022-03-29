@@ -22,6 +22,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
                 (TestHelpers.UpdateValidatorAllocationRequest(0, deallocationDate: today, ragRating: null), "Id must be greater than 1"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationReason: null, deallocationDate: today, ragRating: null), "Deallocation reason required"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationReason: "", deallocationDate: today, ragRating: null), "Deallocation reason required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, deallocationScope: null, ragRating: null), "Deallocation Scope required"),
+                (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, deallocationScope: "foo", ragRating: null), "Deallocation Scope must be either 'team' or 'worker'"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: null, ragRating: null), "Deallocation Date is required"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: tomorrow, ragRating: null), "DeallocationDate start date must not be in future"),
                 (TestHelpers.UpdateValidatorAllocationRequest(1, deallocationDate: today, ragRating: null, createdBy: null), "Email required"),

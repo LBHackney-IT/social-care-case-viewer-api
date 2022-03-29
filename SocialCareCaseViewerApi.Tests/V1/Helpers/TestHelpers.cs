@@ -109,6 +109,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 string? deallocationReason = "Reason",
                 string? createdBy = "example@test.com",
                 string? ragRating = "urgent",
+                string? deallocationScope = "team",
                 DateTime? deallocationDate = default
             )
         {
@@ -116,6 +117,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
                 .RuleFor(u => u.Id, f => id)
                 .RuleFor(u => u.DeallocationReason, f => deallocationReason)
+                .RuleFor(u => u.DeallocationScope, f => deallocationScope)
                 .RuleFor(u => u.CreatedBy, createdBy)
                 .RuleFor(c => c.RagRating, f => ragRating)
                 .RuleFor(u => u.DeallocationDate, f => deallocationDate);

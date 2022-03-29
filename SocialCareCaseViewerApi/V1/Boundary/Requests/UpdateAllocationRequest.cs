@@ -20,6 +20,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         [JsonPropertyName("deallocationDate")]
         public DateTime? DeallocationDate { get; set; }
+
+        [JsonPropertyName("deallocationScope")]
+        public string? DeallocationScope { get; set; }
     }
 
     public class UpdateAllocationRequestValidator : AbstractValidator<UpdateAllocationRequest>
@@ -40,6 +43,10 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
             RuleFor(x => x.CreatedBy)
                 .NotNull().WithMessage("Email required")
                 .EmailAddress().WithMessage("Provide a valid email");
+            RuleFor(x => x.DeallocationScope)
+                .NotNull().WithMessage("Deallocation Scope required")
+                .When(x => x.RagRating == null && x.DeallocationReason != null)
+                .Matches("(?i:^team|worker)").WithMessage("Deallocation Scope must be either 'team' or 'worker'");
             RuleFor(x => x.RagRating)
                 .Matches("(?i:^none|low|high|medium|urgent)").WithMessage("RAG rating must be 'low', 'high', 'medium', 'urgent' or 'none'");
             When(x => x.RagRating != null
