@@ -113,17 +113,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         {
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
 
-            var person1 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(30));
-            var allocation1 = TestHelpers.CreateAllocation(personId: (int) person1.Id, workerId: worker.Id);
+            var person1 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(10));
+            var allocation1 = TestHelpers.CreateAllocation(personId: (int) person1.Id, workerId: worker.Id, caseStatus: "open");
 
-            var person2 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(10));
-            var allocation2 = TestHelpers.CreateAllocation(personId: (int) person2.Id, workerId: worker.Id);
+            var person2 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(20));
+            var allocation2 = TestHelpers.CreateAllocation(personId: (int) person2.Id, workerId: worker.Id, caseStatus: "open");
 
-            var person3 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(40));
-            var allocation3 = TestHelpers.CreateAllocation(personId: (int) person3.Id, workerId: worker.Id);
+            var person3 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(30));
+            var allocation3 = TestHelpers.CreateAllocation(personId: (int) person3.Id, workerId: worker.Id, caseStatus: "open");
 
-            var person4 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(20));
-            var allocation4 = TestHelpers.CreateAllocation(personId: (int) person4.Id, workerId: worker.Id);
+            var person4 = TestHelpers.CreatePerson(reviewDate: DateTime.Today.AddDays(40));
+            var allocation4 = TestHelpers.CreateAllocation(personId: (int) person4.Id, workerId: worker.Id, caseStatus: "open");
 
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3, person4 });
             DatabaseContext.Workers.Add(worker);
@@ -134,10 +134,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(0, workerId: worker.Id, workerEmail: "", 0, "review_date");
 
-            result[0].Id.Should().Be(allocation2.Id);
-            result[1].Id.Should().Be(allocation4.Id);
-            result[2].Id.Should().Be(allocation1.Id);
-            result[3].Id.Should().Be(allocation3.Id);
+            result[0].Id.Should().Be(allocation1.Id);
+            result[1].Id.Should().Be(allocation2.Id);
+            result[2].Id.Should().Be(allocation3.Id);
+            result[3].Id.Should().Be(allocation4.Id);
         }
     }
 }
