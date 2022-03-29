@@ -26,12 +26,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         [Test]
         public void GetAllocationsReturnsAmountOfResultsSetByTheLimit()
         {
-            var limit = 20; //hard coded in the gateway for now
+            var limit = 250; //hard coded in the gateway for now
 
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 260; i++)
             {
                 DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
@@ -44,12 +44,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void GivenMoreThanTwentyResultsWhenNextCursorUnspecifiedNextCursorIsTwenty()
+        public void GivenMoreThanTwoHundredAndFiftyResultsWhenNextCursorUnspecifiedNextCursorIsTwoHundredAndFifty()
         {
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 260; i++)
             {
                 DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
             }
@@ -58,11 +58,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0);
 
-            cursor.Should().Be(20);
+            cursor.Should().Be(250);
         }
 
         [Test]
-        public void GivenLessThanTwentyResultsWhenNextCursorIsUnspecifiedNextCursorIsNull()
+        public void GivenLessThanTwoHundredAndFiftyResultsWhenNextCursorIsUnspecifiedNextCursorIsNull()
         {
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
@@ -80,7 +80,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void GivenTwentyResultsWhenNextCursorIsUnspecifiedNextCursorIsNull()
+        public void GivenTwoHundredAndFiftyResultsWhenNextCursorIsUnspecifiedNextCursorIsNull()
         {
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
@@ -98,7 +98,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
         }
 
         [Test]
-        public void GivenLessThanTwentyResultsWhenNextCursorIsTwentyNextCursorIsNull()
+        public void GivenLessThanTwoHundredAndFiftyResultsNextCursorIsNull()
         {
             var person = TestHelpers.CreatePerson();
             DatabaseContext.Persons.Add(person);
@@ -113,24 +113,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0);
 
             cursor.Should().Be(null);
-        }
-
-        [Test]
-        public void GivenMoreThanFortyResultsWhenNextCursorIsTwentyNextCursorIsForty()
-        {
-            var person = TestHelpers.CreatePerson();
-            DatabaseContext.Persons.Add(person);
-
-            for (int i = 0; i < 50; i++)
-            {
-                DatabaseContext.Add(TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "open"));
-            }
-
-            DatabaseContext.SaveChanges();
-
-            var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", cursor: 20, teamId: 0);
-
-            cursor.Should().Be(40);
         }
 
         [Test]
