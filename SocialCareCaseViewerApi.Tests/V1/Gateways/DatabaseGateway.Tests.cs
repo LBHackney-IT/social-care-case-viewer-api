@@ -1768,5 +1768,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Emails, emailAddress)
                 .RuleFor(p => p.OtherNames, otherNames);
         }
+
+        private WorkerTeam SaveWorkerTeamToDatabase(WorkerTeam workerTeam)
+        {
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.SaveChanges();
+            return workerTeam;
+        }
     }
 }
