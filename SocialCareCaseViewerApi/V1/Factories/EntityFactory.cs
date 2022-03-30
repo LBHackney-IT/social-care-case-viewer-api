@@ -305,7 +305,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         {
             return new AllocationSet
             {
-                PersonId = request.MosaicId,
+                PersonId = (long) request.MosaicId,
                 WorkerId = workerId,
                 AllocationStartDate = allocationStartDate,
                 CaseStatus = caseStatus,
@@ -334,7 +334,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static dbEmailAddress ToEntity(this EmailAddress entry, long personId)
+        public static dbEmailAddress ToEntity(this EmailAddress entry)
         {
             return new dbEmailAddress()
             {

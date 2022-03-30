@@ -31,10 +31,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             Worker worker,
             int id = 1,
             int workerId = 1,
-            int teamId = 1
+            int teamId = 1,
+            DateTime? endDate = null
             )
         {
-            return new WorkerTeam { Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId };
+            return new WorkerTeam { Worker = worker, Id = id, WorkerId = workerId, TeamId = teamId, EndDate = endDate };
         }
 
         public static dbPerson CreatePersonDatabaseEntity(long? personId = null, string firstName = null, string lastName = null, bool markedForDeletion = false)

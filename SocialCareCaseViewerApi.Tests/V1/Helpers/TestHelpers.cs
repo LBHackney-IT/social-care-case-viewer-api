@@ -15,6 +15,10 @@ using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 using CaseStatus = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatus;
 using CaseStatusAnswer = SocialCareCaseViewerApi.V1.Infrastructure.CaseStatusAnswer;
+using Disability = SocialCareCaseViewerApi.V1.Infrastructure.Disability;
+using EmailAddress = SocialCareCaseViewerApi.V1.Infrastructure.EmailAddress;
+using KeyContact = SocialCareCaseViewerApi.V1.Infrastructure.KeyContact;
+using TechUse = SocialCareCaseViewerApi.V1.Infrastructure.TechUse;
 
 #nullable enable
 namespace SocialCareCaseViewerApi.Tests.V1.Helpers
@@ -92,9 +96,58 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(c => c.AllocatedTeamId, f => teamId ?? team.Id)
                 .RuleFor(c => c.AllocatedWorkerId, f => workerId ?? worker.Id)
                 .RuleFor(c => c.CreatedBy, f => createdBy ?? createdByWorker.Email)
+                .RuleFor(c => c.RagRating, f => "urgent")
+                .RuleFor(c => c.Summary, f => f.Random.String2(5))
+                .RuleFor(c => c.CarePackage, f => f.Random.String2(5))
                 .RuleFor(c => c.AllocationStartDate, DateTime.Now);
 
             return (createAllocationRequest, worker, createdByWorker, person, team);
+        }
+
+        public static UpdateAllocationRequest UpdateValidatorAllocationRequest(
+                int? id = 1,
+                string? deallocationReason = "Reason",
+                string? createdBy = "example@test.com",
+                string? ragRating = "urgent",
+                string? deallocationScope = "team",
+                DateTime? deallocationDate = default
+            )
+        {
+
+            var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
+                .RuleFor(u => u.Id, f => id)
+                .RuleFor(u => u.DeallocationReason, f => deallocationReason)
+                .RuleFor(u => u.DeallocationScope, f => deallocationScope)
+                .RuleFor(u => u.CreatedBy, createdBy)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(u => u.DeallocationDate, f => deallocationDate);
+
+            return updateAllocationRequest;
+        }
+
+
+        public static CreateAllocationRequest CreateValidatorAllocationRequest(
+            long? mosaicId = 1,
+            int? teamId = 1,
+            int? workerId = 1,
+            string? ragRating = "urgent",
+            string? summary = "rating",
+            string? carePackage = "rating",
+            string? createdBy = "test@example.com",
+            DateTime? allocationStartDate = default
+        )
+        {
+            var createAllocationRequest = new Faker<CreateAllocationRequest>()
+                .RuleFor(c => c.MosaicId, f => mosaicId)
+                .RuleFor(c => c.AllocatedTeamId, f => teamId)
+                .RuleFor(c => c.AllocatedWorkerId, f => workerId)
+                .RuleFor(c => c.RagRating, f => ragRating)
+                .RuleFor(c => c.Summary, f => summary)
+                .RuleFor(c => c.CarePackage, f => carePackage)
+                .RuleFor(c => c.CreatedBy, f => createdBy)
+                .RuleFor(c => c.AllocationStartDate, allocationStartDate);
+
+            return createAllocationRequest;
         }
 
         public static (UpdateAllocationRequest, Worker, Worker, InfrastructurePerson, Team)
@@ -111,7 +164,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             var team = CreateTeam();
 
             var updateAllocationRequest = new Faker<UpdateAllocationRequest>()
-                .RuleFor(u => u.Id, f => id ?? f.UniqueIndex + 1)
+                .RuleFor(u => u.Id, f => id ?? 1)
                 .RuleFor(u => u.DeallocationReason, f => deallocationReason ?? f.Random.String2(200))
                 .RuleFor(u => u.CreatedBy, createdBy ?? updatedByWorker.Email)
                 .RuleFor(u => u.DeallocationDate, f => deallocationDate ?? f.Date.Recent());
@@ -161,7 +214,15 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(w => w.LastModifiedBy, f => createdBy ?? f.Person.Email);
         }
 
-        public static AllocationSet CreateAllocation(int? id = null, int? personId = null, int? workerId = null, int? teamId = null)
+        public static AllocationSet CreateAllocation(
+            int? id = null,
+            int? personId = null,
+            int? workerId = null,
+            int? teamId = null,
+            string? ragRating = null,
+            DateTime? dateAdded = null,
+            string? caseStatus = null
+            )
         {
             var caseStatusChoices = new List<string> { "open", "closed" };
 
@@ -170,15 +231,86 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(a => a.PersonId, f => personId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(a => a.TeamId, f => teamId ?? f.UniqueIndex + 1)
-                .RuleFor(a => a.AllocationStartDate, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(a => a.AllocationStartDate, f => dateAdded ?? f.Date.Past().ToUniversalTime())
                 .RuleFor(a => a.AllocationEndDate, f => f.Date.Past().ToUniversalTime())
-                .RuleFor(a => a.CaseStatus, f => f.PickRandom(caseStatusChoices))
-                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime());
+                .RuleFor(a => a.CaseStatus, f => caseStatus ?? f.PickRandom(caseStatusChoices))
+                .RuleFor(a => a.CaseClosureDate, f => f.Date.Past().ToUniversalTime())
+                .RuleFor(a => a.RagRating, f => ragRating ?? null);
+        }
 
+        public static InfrastructurePerson CreatePersonWithRelatedAttributes()
+        {
+            var addresses = new List<Address>();
+            var otherNames = new List<PersonOtherName>();
+            var phoneNumbers = new List<PhoneNumber>();
+            var allocations = new List<AllocationSet>();
+            var warningNotes = new List<WarningNote>();
+            var keyContacts = new List<KeyContact>();
+            var techUse = new List<TechUse>();
+            var disability = new List<Disability>();
+            var emails = new List<EmailAddress>();
+            var lastUpdated = new List<LastUpdated>();
+            var gpDetails = new List<GpDetails>();
+
+            return new Faker<InfrastructurePerson>()
+                .RuleFor(p => p.Id, f => f.UniqueIndex + 1)
+                .RuleFor(p => p.Addresses, f => addresses)
+                .RuleFor(p => p.PhoneNumbers, f => phoneNumbers)
+                .RuleFor(p => p.OtherNames, f => otherNames)
+                .RuleFor(p => p.Allocations, f => allocations)
+                .RuleFor(p => p.WarningNotes, f => warningNotes)
+                .RuleFor(p => p.KeyContacts, f => keyContacts)
+                .RuleFor(p => p.GpDetails, f => gpDetails)
+                .RuleFor(p => p.TechUse, f => techUse)
+                .RuleFor(p => p.Disability, f => disability)
+                .RuleFor(p => p.Emails, f => emails)
+                .RuleFor(p => p.LastUpdated, f => lastUpdated);
 
         }
 
-        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null)
+        public static LastUpdated CreateLastUpdated(long? personId = null)
+        {
+            return new Faker<LastUpdated>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static EmailAddress CreateEmailAddress(long? personId = null)
+        {
+            return new Faker<EmailAddress>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static Disability CreateDisability(long? personId = null)
+        {
+            return new Faker<Disability>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static KeyContact CreateKeyContact(long? personId = null)
+        {
+            return new Faker<KeyContact>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static TechUse CreateTechUse(long? personId = null)
+        {
+            return new Faker<TechUse>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static GpDetails CreateGpDetails(long? personId = null)
+        {
+            return new Faker<GpDetails>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static AllocationSet CreatePersonAllocationSet(long? personId = null)
+        {
+            return new Faker<AllocationSet>()
+                .RuleFor(p => p.PersonId, personId ?? CreatePerson().Id);
+        }
+
+        public static InfrastructurePerson CreatePerson(long? personId = null, string? firstName = null, string? lastName = null, string? ageContext = null, DateTime? reviewDate = null)
         {
             return new Faker<InfrastructurePerson>()
                 .RuleFor(p => p.Id, f => personId ?? f.UniqueIndex + 1)
@@ -200,7 +332,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(p => p.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                 .RuleFor(p => p.SexualOrientation, f => f.Random.String2(100))
                 .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.String2(100))
-                .RuleFor(p => p.Restricted, f => f.Random.String2(1));
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.ReviewDate, f => reviewDate ?? f.Date.Future());
         }
 
         public static Address CreateAddress(long? personId = null, string? postCode = null, string? address = null, int? uprn = null)
@@ -275,11 +408,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? contextFlag = null,
             string? role = null,
             string? createdByEmail = null,
-            DateTime? dateStart = null
+            DateTime? dateStart = null,
+            List<WorkerTeamRequest>? providedTeams = null
         )
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : providedTeams ?? new List<WorkerTeamRequest>();
 
             return new Faker<CreateWorkerRequest>()
                 .RuleFor(w => w.EmailAddress, f => email ?? f.Person.Email)
@@ -310,7 +444,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         }
 
         public static WorkerTeam CreateWorkerTeam(
-            int? workerId = null
+            int? workerId = null,
+            DateTime? endDate = null,
+            DateTime? startDate = null
         )
         {
             var team = CreateTeam();
@@ -319,7 +455,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(t => t.Id, f => f.UniqueIndex + 1)
                 .RuleFor(t => t.WorkerId, f => workerId ?? f.UniqueIndex + 1)
                 .RuleFor(t => t.TeamId, f => f.UniqueIndex)
-                .RuleFor(t => t.Team, team);
+                .RuleFor(t => t.Team, team)
+                .RuleFor(t => t.StartDate, startDate ?? null)
+                .RuleFor(t => t.EndDate, endDate ?? null);
         }
 
         private static WorkerTeamRequest CreateWorkerRequestWorkerTeam(
@@ -407,10 +545,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? lastName = null,
             string? contextFlag = null,
             string? role = null,
-            DateTime? dateStart = null)
+            DateTime? dateStart = null,
+            List<WorkerTeamRequest>? providedTeams = null)
         {
             var team = CreateWorkerRequestWorkerTeam(teamId, teamName);
-            var teams = createATeam ? new List<WorkerTeamRequest> { team } : new List<WorkerTeamRequest>();
+            var teams = createATeam ? new List<WorkerTeamRequest> { team } : providedTeams ?? new List<WorkerTeamRequest>();
 
             return new Faker<UpdateWorkerRequest>()
                 .RuleFor(w => w.WorkerId, f => workerId ?? f.UniqueIndex + 1)
@@ -535,6 +674,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
             string? lastName = null,
             string? workerEmail = null,
             bool? includeDeletedRecords = null,
+            bool? pinnedFirst = null,
             bool? excludeAuditTrailEvents = null,
             bool? includeDeletedRecordsCount = null)
         {
@@ -544,6 +684,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                 .RuleFor(r => r.LastName, lastName)
                 .RuleFor(r => r.WorkerEmail, workerEmail)
                 .RuleFor(r => r.IncludeDeletedRecords, includeDeletedRecords ?? false)
+                .RuleFor(r => r.PinnedFirst, pinnedFirst ?? false)
                 .RuleFor(r => r.ExcludeAuditTrailEvents, excludeAuditTrailEvents ?? false)
                 .RuleFor(r => r.IncludeDeletedRecordsCount, includeDeletedRecordsCount ?? false);
         }

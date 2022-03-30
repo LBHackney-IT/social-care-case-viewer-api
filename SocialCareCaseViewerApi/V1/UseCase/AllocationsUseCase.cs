@@ -14,15 +14,25 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public AllocationList Execute(ListAllocationsRequest request)
         {
+            var (allocations, cursor) = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.SortBy, request.Cursor, request.TeamAllocationStatus, request.Status);
+
             return new AllocationList
             {
-                Allocations = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail)
+                Allocations = allocations,
+                NextCursor = cursor.ToString()
             };
         }
 
         public UpdateAllocationResponse ExecuteUpdate(UpdateAllocationRequest request)
         {
-            return _databaseGateway.UpdateAllocation(request);
+            if (request.DeallocationReason == null && request.DeallocationDate == null)
+            {
+                return _databaseGateway.UpdateRagRatingInAllocation(request);
+            }
+            else
+            {
+                return _databaseGateway.UpdateAllocation(request);
+            }
         }
 
         public CreateAllocationResponse ExecutePost(CreateAllocationRequest request)

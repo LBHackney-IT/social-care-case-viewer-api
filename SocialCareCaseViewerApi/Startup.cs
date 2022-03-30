@@ -139,6 +139,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseStatusGateway, CaseStatusGateway>();
             services.AddScoped<IWorkerGateway, WorkerGateway>();
             services.AddScoped<IHistoricalDataGateway, HistoricalDataGateway>();
+            services.AddScoped<ISearchGateway, SearchGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -157,6 +158,7 @@ namespace SocialCareCaseViewerApi
             services.AddScoped<ICaseStatusesUseCase, CaseStatusesUseCase>();
             services.AddScoped<ICreateRequestAuditUseCase, CreateRequestAuditUseCase>();
             services.AddScoped<IResidentUseCase, ResidentUseCase>();
+            services.AddScoped<ISearchUseCase, SearchUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

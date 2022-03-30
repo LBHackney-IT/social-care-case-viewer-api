@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using Npgsql;
 using NUnit.Framework;
 using SocialCareCaseViewerApi.V1.Infrastructure;
 using System;
@@ -13,31 +12,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
     public class IntegrationTestSetup<TStartup> where TStartup : class
     {
         private MockWebApplicationFactory<TStartup> _factory;
-        private NpgsqlConnection _connection;
-        private NpgsqlConnection _historicalDataDBconnection;
 
         protected HttpClient Client { get; private set; }
         protected DatabaseContext DatabaseContext { get; private set; }
         protected HistoricalDataContext HistoricalSocialCareContext { get; private set; }
         private MongoClient MongoDbClient { get; set; }
-
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            _connection = new NpgsqlConnection(ConnectionString.TestDatabase());
-            _connection.Open();
-
-            var npgsqlCommand = _connection.CreateCommand();
-            npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
-            npgsqlCommand.ExecuteNonQuery();
-
-            _historicalDataDBconnection = new NpgsqlConnection(ConnectionString.HistoricalDataTestDatabase());
-            _historicalDataDBconnection.Open();
-
-            var historicalDatanpsqlCommand = _historicalDataDBconnection.CreateCommand();
-            historicalDatanpsqlCommand.CommandText = "SET deadlock_timeout TO 30";
-            historicalDatanpsqlCommand.ExecuteNonQuery();
-        }
 
         [SetUp]
         public void BaseSetup()
@@ -45,11 +24,16 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             // Set up MongoDB connection string depending on whether the tests are run locally or in docker
             SetUpEnvironmentVariables();
 
-            _factory = new MockWebApplicationFactory<TStartup>(_connection, _historicalDataDBconnection);
+            _factory = new MockWebApplicationFactory<TStartup>();
             Client = _factory.CreateClient();
 
-            DatabaseContext = _factory.Server.Host.Services.GetRequiredService<DatabaseContext>();
-            HistoricalSocialCareContext = _factory.Server.Host.Services.GetRequiredService<HistoricalDataContext>();
+            var scope = _factory.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            DatabaseContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+            DatabaseContext.Database.EnsureCreated();
+
+            HistoricalSocialCareContext = scope.ServiceProvider.GetRequiredService<HistoricalDataContext>();
+            HistoricalSocialCareContext.Database.EnsureCreated();
 
             WipeDatabase();
             WipeMongoDatabase();
@@ -62,13 +46,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             _factory.Dispose();
             WipeDatabase();
             WipeMongoDatabase();
-        }
-
-        [OneTimeTearDown]
-        public void AfterAllTests()
-        {
-            _connection.Dispose();
-            _historicalDataDBconnection.Dispose();
         }
 
         private void WipeDatabase()
