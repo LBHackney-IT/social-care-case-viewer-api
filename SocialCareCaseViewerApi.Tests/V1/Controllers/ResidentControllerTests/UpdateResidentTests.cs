@@ -26,11 +26,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
         }
 
         [Test]
-        public void UpdatePersonReturns200WhenSuccessful()
+        public void UpdatePersonReturns204WhenSuccessful()
         {
             var request = new UpdatePersonRequest();
 
             var result = _residentController.UpdatePerson(request) as ObjectResult;
+
+            result?.StatusCode.Should().Be(204);
+        }
+
+        [Test]
+        public void PatchPersonReturns204WhenSuccessful()
+        {
+            var request = new PatchPersonRequest();
+
+            var result = _residentController.PatchPerson(request) as ObjectResult;
 
             result?.StatusCode.Should().Be(204);
         }
@@ -45,6 +55,21 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
                 .Throws(new UpdatePersonException("Person not found"));
 
             var result = _residentController.UpdatePerson(request) as ObjectResult;
+
+            result?.StatusCode.Should().Be(404);
+            result?.Value.Should().Be("Person not found");
+        }
+
+        [Test]
+        public void PatchPersonReturns404WhenPersonNotFound()
+        {
+            var request = new PatchPersonRequest();
+
+            _mockResidentUseCase
+                .Setup(x => x.PatchResident(request))
+                .Throws(new UpdatePersonException("Person not found"));
+
+            var result = _residentController.PatchPerson(request) as ObjectResult;
 
             result?.StatusCode.Should().Be(404);
             result?.Value.Should().Be("Person not found");

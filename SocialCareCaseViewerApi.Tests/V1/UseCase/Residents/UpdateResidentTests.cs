@@ -28,14 +28,31 @@ namespace SocialCareCaseViewerApi.Tests.V1.UseCase.Residents
                 .RuleFor(x => x.Id, _faker.Random.Long());
         }
 
+        private PatchPersonRequest GetValidPatchPersonRequest()
+        {
+            return new Faker<PatchPersonRequest>()
+                .RuleFor(x => x.Id, _faker.Random.Long());
+        }
+
         [Test]
-        public void ExecutePatchCallsDatabaseGateway()
+        public void ExecutePutCallsDatabaseGateway()
         {
             var request = GetValidUpdatePersonRequest();
 
             _residentUseCase.UpdateResident(request);
 
             _mockDataBaseGateway.Verify(x => x.UpdatePerson(request));
+        }
+
+
+        [Test]
+        public void ExecutePatchCallsDatabaseGateway()
+        {
+            var request = GetValidPatchPersonRequest();
+
+            _residentUseCase.PatchResident(request);
+
+            _mockDataBaseGateway.Verify(x => x.PatchPerson(request));
         }
     }
 }
