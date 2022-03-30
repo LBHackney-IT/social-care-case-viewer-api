@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using SocialCareCaseViewerApi.V1.Domain;
 using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
@@ -144,9 +145,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string? ContextFlag { get; set; }
 
         [EmailAddress]
+        [Required]
         public string? CreatedBy { get; set; }
 
         [RegularExpression("(?i:^Y|N)", ErrorMessage = "Restricted must be 'Y' or 'N' only.")]
         public string? Restricted { get; set; }
+
     }
 }

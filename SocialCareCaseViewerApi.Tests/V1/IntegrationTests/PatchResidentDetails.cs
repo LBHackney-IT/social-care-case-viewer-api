@@ -34,6 +34,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.IntegrationTests
             {
                 Id = _resident.Id,
                 EmailAddress = _resident.EmailAddress,
+                CreatedBy = _existingDbWorker.Email,
                 Title = "Update"
             };
 

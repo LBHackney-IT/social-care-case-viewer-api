@@ -2251,6 +2251,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Restricted.Should().Be(request.Restricted);
             person.SexualOrientation.Should().Be(request.SexualOrientation);
             person.Title.Should().Be(request.Title);
+            person.ReviewDate.Should().Be(request.ReviewDate);
         }
 
         [Test]
@@ -2312,6 +2313,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.TechUse[0].TechType.Should().BeEquivalentTo(request.TechUse[0]);
             person.Disability[0].DisabilityType.Should().BeEquivalentTo(request.Disabilities[0]);
             person.Emails.Should().BeEquivalentTo(request.Emails);
+            person.ReviewDate.Should().Be(request.ReviewDate);
         }
 
         [Test]
@@ -2705,6 +2707,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Ethnicity, f => f.Random.Word())
                 .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+                .RuleFor(p => p.ReviewDate, f => f.Date.Past())
                 .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                 .RuleFor(p => p.LastName, f => f.Person.LastName)
                 .RuleFor(p => p.Title, f => f.Random.String2(2))
@@ -2784,6 +2787,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Pronoun, f => f.Random.String2(3))
                 .RuleFor(p => p.GenderAssignedAtBirth, f => f.Random.Bool())
                 .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.ReviewDate, f => f.Date.Past())
                 .RuleFor(p => p.PreferredLanguage, f => f.Random.Word())
                 .RuleFor(p => p.FluentInEnglish, f => f.Random.Bool())
                 .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())

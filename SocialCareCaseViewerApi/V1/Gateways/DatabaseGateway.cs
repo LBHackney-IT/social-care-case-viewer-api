@@ -437,6 +437,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.BlindRegister = request.BlindRegister;
             person.BlueBadge = request.BlueBadge;
             person.OpenCase = request.OpenCase;
+            person.ReviewDate = request.ReviewDate;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
@@ -611,6 +612,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 person.FullName = $"{request.FirstName} {request.LastName}";
             }
             person.AgeContext = request.ContextFlag ?? person.AgeContext;
+            person.ReviewDate = request.ReviewDate ?? person.ReviewDate;
             person.DateOfBirth = request.DateOfBirth ?? person.DateOfBirth;
             person.DateOfDeath = request.DateOfDeath ?? person.DateOfDeath;
             person.EmailAddress = request.EmailAddress ?? person.EmailAddress;
