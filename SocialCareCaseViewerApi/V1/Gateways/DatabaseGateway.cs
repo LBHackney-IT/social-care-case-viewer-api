@@ -146,15 +146,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             foreach (var allocation in teams)
             {
                 if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
-                {
                     query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
-                };
+                ;
             }
 
-            if (!String.IsNullOrEmpty(status))
-            {
-                query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
-            }
+            if (!string.IsNullOrEmpty(status)) query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
 
             return query;
         }
