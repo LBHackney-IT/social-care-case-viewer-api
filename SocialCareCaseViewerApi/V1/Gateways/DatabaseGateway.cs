@@ -1095,6 +1095,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 var dt = DateTime.Now;
 
+                var formName = worker?.Id == null ? "Team Allocation" : "Worker Allocation";
+
                 var note = new AllocationCaseNote
                 {
                     FirstName = person.FirstName,
@@ -1105,7 +1107,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     Note =
                         $"{dt.ToShortDateString()} | Allocation | {person.FirstName} {person.LastName} was allocated to the team {team.Name} {(worker == null ? "" : $" and {worker.FirstName} {worker.LastName}")} (by {allocatedBy.FirstName} {allocatedBy.LastName})",
                     FormNameOverall = "API_Allocation",
-                    FormName = "Worker allocated",
+                    FormName = formName,
                     AllocationId = allocation.Id.ToString(),
                     CreatedBy = request.CreatedBy
                 };
