@@ -33,6 +33,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 
         public DateTime? DateOfDeath { get; set; }
 
+        public DateTime? ReviewDate { get; set; }
+
         public string? Ethnicity { get; set; }
 
         public string? FirstLanguage { get; set; }
