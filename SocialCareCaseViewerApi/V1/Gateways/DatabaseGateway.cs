@@ -437,6 +437,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.BlindRegister = request.BlindRegister;
             person.BlueBadge = request.BlueBadge;
             person.OpenCase = request.OpenCase;
+            person.ReviewDate = request.ReviewDate;
 
             //replace Last Updated
             _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
@@ -496,7 +497,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 foreach (var email in request.Emails)
                 {
-                    person.Emails.Add(email.ToEntity());
+                    person.Emails.Add(email.ToEntity(person.Id));
                 }
             }
 
@@ -557,6 +558,209 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     displayAddress.IsDisplayAddress = "N";
                     displayAddress.EndDate = DateTime.Now;
                     displayAddress.LastModifiedBy = request.CreatedBy;
+                }
+            }
+
+            DateTime dt = DateTime.Now;
+
+            UpdatePersonCaseNote note = new UpdatePersonCaseNote()
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                MosaicId = person.Id.ToString(),
+                Timestamp = dt.ToString("dd/MM/yyyy H:mm:ss"), //in line with imported form data
+                WorkerEmail = request.CreatedBy,
+                Note = $"{dt.ToShortDateString()} Person details updated - by {request.CreatedBy}.",
+                FormNameOverall = "API_Update_Person",
+                FormName = "Person updated",
+                CreatedBy = request.CreatedBy
+            };
+
+            CaseNotesDocument caseNotesDocument = new CaseNotesDocument()
+            {
+                CaseFormData = JsonConvert.SerializeObject(note)
+            };
+
+            //TODO: refactor so gateways don't call each other
+            _ = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+
+            _databaseContext.SaveChanges();
+        }
+
+        public void PatchPerson(PatchPersonRequest request)
+        {
+            Person person = _databaseContext
+                .Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.PhoneNumbers)
+                .Include(x => x.OtherNames)
+                .Include(x => x.KeyContacts)
+                .Include(x => x.GpDetails)
+                .Include(x => x.TechUse)
+                .Include(x => x.Disability)
+                .Include(x => x.Emails)
+                .Include(x => x.LastUpdated)
+                .FirstOrDefault(x => x.Id == request.Id);
+
+            if (person == null)
+            {
+                throw new UpdatePersonException("Person not found");
+            }
+
+            if (request.FirstName != null && request.LastName != null)
+            {
+                person.FullName = $"{request.FirstName} {request.LastName}";
+            }
+            person.AgeContext = request.ContextFlag ?? person.AgeContext;
+            person.ReviewDate = request.ReviewDate ?? person.ReviewDate;
+            person.DateOfBirth = request.DateOfBirth ?? person.DateOfBirth;
+            person.DateOfDeath = request.DateOfDeath ?? person.DateOfDeath;
+            person.EmailAddress = request.EmailAddress ?? person.EmailAddress;
+            person.Ethnicity = request.Ethnicity ?? person.Ethnicity;
+            person.FirstLanguage = request.FirstLanguage ?? person.FirstLanguage;
+            person.FirstName = request.FirstName ?? person.FirstName;
+            person.Gender = request.Gender ?? person.Gender;
+            person.LastModifiedBy = request.CreatedBy ?? person.LastModifiedBy;
+            person.LastName = request.LastName ?? person.LastName;
+            person.NhsNumber = request.NhsNumber ?? person.NhsNumber;
+            person.PreferredMethodOfContact = request.PreferredMethodOfContact ?? person.PreferredMethodOfContact;
+            person.Religion = request.Religion ?? person.Religion;
+            person.Restricted = request.Restricted ?? person.Restricted;
+            person.SexualOrientation = request.SexualOrientation ?? person.SexualOrientation;
+            person.Title = request.Title ?? person.Title;
+            person.FluentInEnglish = request.FluentInEnglish ?? person.FluentInEnglish;
+            person.InterpreterNeeded = request.InterpreterNeeded ?? person.InterpreterNeeded;
+            person.CommunicationDifficulties = request.CommunicationDifficulties ?? person.CommunicationDifficulties;
+            person.DifficultyMakingDecisions = request.DifficultyMakingDecisions ?? person.DifficultyMakingDecisions;
+            person.CommunicationDifficultiesDetails = request.CommunicationDifficultiesDetails ?? person.CommunicationDifficultiesDetails;
+            person.Employment = request.Employment ?? person.Employment;
+            person.AllocatedTeam = request.AllocatedTeam ?? person.AllocatedTeam;
+            person.HousingOfficer = request.HousingOfficer ?? person.HousingOfficer;
+            person.AccessToHome = request.AccessToHome ?? person.AccessToHome;
+            person.AccomodationType = request.AccomodationType ?? person.AccomodationType;
+            person.TenureType = request.TenureType ?? person.TenureType;
+            person.LivingSituation = request.LivingSituation ?? person.LivingSituation;
+            person.CareProvider = request.CareProvider ?? person.CareProvider;
+            person.PrimarySupportReason = request.PrimarySupportReason ?? person.PrimarySupportReason;
+            person.ImmigrationStatus = request.ImmigrationStatus ?? person.ImmigrationStatus;
+            person.MaritalStatus = request.MaritalStatus ?? person.MaritalStatus;
+            person.GenderAssignedAtBirth = request.GenderAssignedAtBirth ?? person.GenderAssignedAtBirth;
+            person.Pronoun = request.Pronoun ?? person.Pronoun;
+            person.CreatedBy = request.CreatedBy ?? person.CreatedBy;
+            person.Nationality = request.Nationality ?? person.Nationality;
+            person.HousingStaffInContact = request.HousingStaffInContact ?? person.HousingStaffInContact;
+            person.CautionaryAlert = request.CautionaryAlert ?? person.CautionaryAlert;
+            person.PossessionEvictionOrder = request.PossessionEvictionOrder ?? person.PossessionEvictionOrder;
+            person.RentRecord = request.RentRecord ?? person.RentRecord;
+            person.HousingBenefit = request.HousingBenefit ?? person.HousingBenefit;
+            person.MentalHealthSectionStatus = request.MentalHealthSectionStatus ?? person.MentalHealthSectionStatus;
+            person.DeafRegister = request.DeafRegister ?? person.DeafRegister;
+            person.BlindRegister = request.BlindRegister ?? person.BlindRegister;
+            person.PreferredLanguage = request.PreferredLanguage ?? request.PreferredLanguage;
+            person.BlueBadge = request.BlueBadge ?? person.BlueBadge;
+            person.OpenCase = request.OpenCase ?? person.OpenCase;
+            person.CouncilTenureType = request.CouncilTenureType ?? person.CouncilTenureType;
+
+            //replace Last Updated
+            if (request.LastUpdated != null)
+            {
+                _databaseContext.LastUpdated.RemoveRange(person.LastUpdated);
+                foreach (var entry in request.LastUpdated)
+                {
+                    person.LastUpdated.Add(entry.ToEntity(person.Id));
+                }
+            }
+
+            //replace tech used
+            if (request.TechUse != null)
+            {
+                _databaseContext.TechUse.RemoveRange(person.TechUse);
+                foreach (var entry in request.TechUse)
+                {
+                    person.TechUse.Add(new dbTechUse { TechType = entry, PersonId = person.Id, });
+                }
+            }
+
+            //replace disabilities
+            if (request.Disabilities != null)
+            {
+                _databaseContext.Disabilities.RemoveRange(person.Disability);
+                foreach (var entry in request.Disabilities)
+                {
+                    person.Disability.Add(new dbDisability { DisabilityType = entry, PersonId = person.Id, });
+                }
+            }
+            //replace key contacts
+            if (request.KeyContacts != null)
+            {
+                _databaseContext.KeyContacts.RemoveRange(person.KeyContacts);
+                foreach (var contact in request.KeyContacts)
+                {
+                    person.KeyContacts.Add(contact.ToEntity(person.Id));
+                }
+            }
+
+            //replace gp details
+            if (request.GpDetails != null)
+            {
+                _databaseContext.GpDetails.RemoveRange(person.GpDetails);
+                person.GpDetails.Add(request.GpDetails.ToEntity(person.Id));
+            }
+
+            //replace emails
+            if (request.Emails != null)
+            {
+                _databaseContext.Emails.RemoveRange(person.Emails);
+                foreach (var email in request.Emails)
+                {
+                    person.Emails.Add(email.ToEntity(person.Id));
+                }
+            }
+
+            //replace phone numbers
+            if (request.PhoneNumbers != null)
+            {
+                _databaseContext.PhoneNumbers.RemoveRange(person.PhoneNumbers);
+                foreach (var number in request.PhoneNumbers)
+                {
+                    person.PhoneNumbers.Add(number.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //replace other names
+            if (request.OtherNames != null)
+            {
+                _databaseContext.PersonOtherNames.RemoveRange(person.OtherNames);
+                foreach (var otherName in request.OtherNames)
+                {
+                    person.OtherNames.Add(otherName.ToEntity(person.Id, request.CreatedBy));
+                }
+            }
+
+            //check for changed address
+            if (request.Address != null)
+            {
+                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+
+                if (displayAddress == null)
+                {
+                    person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                        request.Address.Uprn, request.CreatedBy));
+                }
+                else
+                {
+                    //has address changed?
+                    if (!(request.Address.Address == displayAddress.AddressLines
+                          && request.Address.Postcode == displayAddress.PostCode
+                          && displayAddress.Uprn == request.Address.Uprn))
+                    {
+                        displayAddress.IsDisplayAddress = "N";
+                        displayAddress.EndDate = DateTime.Now;
+                        displayAddress.LastModifiedBy = request.CreatedBy;
+
+                        person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
+                            request.Address.Uprn, request.CreatedBy));
+                    }
                 }
             }
 

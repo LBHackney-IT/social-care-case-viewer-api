@@ -31,6 +31,11 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return resident != null ? ResponseFactory.ToResponse(resident) : null;
         }
 
+        public void PatchResident(PatchPersonRequest request)
+        {
+            _databaseGateway.PatchPerson(request);
+        }
+
         public void UpdateResident(UpdatePersonRequest request)
         {
             _databaseGateway.UpdatePerson(request);

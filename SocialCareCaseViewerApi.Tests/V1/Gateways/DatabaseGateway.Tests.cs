@@ -20,10 +20,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Allocation = SocialCareCaseViewerApi.V1.Infrastructure.AllocationSet;
 using dbAddress = SocialCareCaseViewerApi.V1.Infrastructure.Address;
+using EmailAddress = SocialCareCaseViewerApi.V1.Domain.EmailAddress;
 using Person = SocialCareCaseViewerApi.V1.Infrastructure.Person;
 using PhoneNumber = SocialCareCaseViewerApi.V1.Domain.PhoneNumber;
+using KeyContact = SocialCareCaseViewerApi.V1.Domain.KeyContact;
 using PhoneNumberInfrastructure = SocialCareCaseViewerApi.V1.Infrastructure.PhoneNumber;
 using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
+using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
 
@@ -2248,6 +2251,94 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             person.Restricted.Should().Be(request.Restricted);
             person.SexualOrientation.Should().Be(request.SexualOrientation);
             person.Title.Should().Be(request.Title);
+            person.ReviewDate.Should().Be(request.ReviewDate);
+        }
+
+        [Test]
+        public void PatchPersonSetsCorrectValuesForPersonEntity()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
+            PatchPersonRequest request = GetValidPatchPersonRequest(person.Id);
+
+            _classUnderTest.PatchPerson(request);
+
+            person.Title.Should().Be(request.Title);
+            person.FirstName.Should().Be(request.FirstName);
+            person.LastName.Should().Be(request.LastName);
+            person.Gender.Should().Be(request.Gender);
+            person.DateOfBirth.Should().Be(request.DateOfBirth);
+            person.DateOfDeath.Should().Be(request.DateOfDeath);
+            person.Ethnicity.Should().Be(request.Ethnicity);
+            person.FirstLanguage.Should().Be(request.FirstLanguage);
+            person.Religion.Should().Be(request.Religion);
+            person.SexualOrientation.Should().Be(request.SexualOrientation);
+            person.NhsNumber.Should().Be(request.NhsNumber);
+            person.FluentInEnglish.Should().Be(request.FluentInEnglish);
+            person.InterpreterNeeded.Should().Be(request.InterpreterNeeded);
+            person.CommunicationDifficulties.Should().Be(request.CommunicationDifficulties);
+            person.DifficultyMakingDecisions.Should().Be(request.DifficultyMakingDecisions);
+            person.CommunicationDifficultiesDetails.Should().Be(request.CommunicationDifficultiesDetails);
+            person.Employment.Should().Be(request.Employment);
+            person.AllocatedTeam.Should().Be(request.AllocatedTeam);
+            person.PreferredLanguage.Should().Be(request.PreferredLanguage);
+            person.Nationality.Should().Be(request.Nationality);
+            person.Pronoun.Should().Be(request.Pronoun);
+            person.GenderAssignedAtBirth.Should().Be(request.GenderAssignedAtBirth);
+            person.MaritalStatus.Should().Be(request.MaritalStatus);
+            person.ImmigrationStatus.Should().Be(request.ImmigrationStatus);
+            person.PrimarySupportReason.Should().Be(request.PrimarySupportReason);
+            person.CareProvider.Should().Be(request.CareProvider);
+            person.LivingSituation.Should().Be(request.LivingSituation);
+            person.AccomodationType.Should().Be(request.AccomodationType);
+            person.AccessToHome.Should().Be(request.AccessToHome);
+            person.HousingOfficer.Should().Be(request.HousingOfficer);
+            person.HousingStaffInContact.Should().Be(request.HousingStaffInContact);
+            person.CautionaryAlert.Should().Be(request.CautionaryAlert);
+            person.PossessionEvictionOrder.Should().Be(request.PossessionEvictionOrder);
+            person.FirstName.Should().Be(request.FirstName);
+            person.RentRecord.Should().Be(request.RentRecord);
+            person.HousingBenefit.Should().Be(request.HousingBenefit);
+            person.CouncilTenureType.Should().Be(request.CouncilTenureType);
+            person.MentalHealthSectionStatus.Should().Be(request.MentalHealthSectionStatus);
+            person.DeafRegister.Should().Be(request.DeafRegister);
+            person.BlindRegister.Should().Be(request.BlindRegister);
+            person.BlueBadge.Should().Be(request.BlueBadge);
+            person.OpenCase.Should().Be(request.OpenCase);
+            person.LastUpdated.Should().BeEquivalentTo(request.LastUpdated);
+            person.OtherNames.Should().BeEquivalentTo(request.OtherNames);
+            person.PhoneNumbers.Should().BeEquivalentTo(request.PhoneNumbers);
+            person.LastUpdated.Should().BeEquivalentTo(request.LastUpdated);
+            person.KeyContacts.Should().BeEquivalentTo(request.KeyContacts);
+            person.GpDetails.Should().BeEquivalentTo(request.GpDetails);
+            person.TechUse[0].TechType.Should().BeEquivalentTo(request.TechUse[0]);
+            person.Disability[0].DisabilityType.Should().BeEquivalentTo(request.Disabilities[0]);
+            person.Emails.Should().BeEquivalentTo(request.Emails);
+            person.ReviewDate.Should().Be(request.ReviewDate);
+        }
+
+        [Test]
+        public void PatchPersonRemovesListTypesForPersonEntityWhenNullValueIsRequested()
+        {
+            Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
+            PatchPersonRequest request = GetValidPatchPersonRequest(person.Id);
+
+            request.LastUpdated = null;
+            request.KeyContacts = null;
+            request.GpDetails = null;
+            request.TechUse = null;
+            request.Disabilities = null;
+            request.Emails = null;
+            request.PhoneNumbers = null;
+
+            _classUnderTest.PatchPerson(request);
+
+            person.LastUpdated.Should().BeEmpty();
+            person.PhoneNumbers.Should().BeEmpty();
+            person.LastUpdated.Should().BeEmpty();
+            person.KeyContacts.Should().BeEmpty();
+            person.TechUse.Should().BeEmpty();
+            person.Disability.Should().BeEmpty();
+            person.Emails.Should().BeEmpty();
         }
 
         [Test]
@@ -2616,6 +2707,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.Ethnicity, f => f.Random.Word())
                 .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
                 .RuleFor(p => p.DateOfDeath, f => f.Date.Past())
+                .RuleFor(p => p.ReviewDate, f => f.Date.Past())
                 .RuleFor(p => p.FirstName, f => f.Person.FirstName)
                 .RuleFor(p => p.LastName, f => f.Person.LastName)
                 .RuleFor(p => p.Title, f => f.Random.String2(2))
@@ -2627,6 +2719,110 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
                 .RuleFor(p => p.Address, address)
                 .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+                .RuleFor(p => p.OtherNames, otherNames);
+        }
+
+        private static PatchPersonRequest GetValidPatchPersonRequest(long personId)
+        {
+            AddressDomain address = new Faker<AddressDomain>()
+                .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+                .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Uprn, f => f.Random.Int());
+
+            const string phoneNumberOne = "07755555555";
+            const string phoneNumberTypeOne = "Mobile";
+
+            const string phoneNumberTwo = "07977777777";
+            const string phoneNumberTypeTwo = "Fax";
+
+            var phoneNumbers = new List<PhoneNumber>()
+            {
+                new PhoneNumber() {Number = phoneNumberOne, Type = phoneNumberTypeOne},
+                new PhoneNumber() {Number = phoneNumberTwo, Type = phoneNumberTypeTwo}
+            };
+
+            var otherNames = new List<OtherName>()
+            {
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName),
+                new Faker<OtherName>()
+                    .RuleFor(o => o.FirstName, f => f.Person.FirstName)
+                    .RuleFor(o => o.LastName, f => f.Person.LastName)
+            };
+
+            var lastUpdated = new List<LastUpdatedDomain>()
+            {
+                new Faker<LastUpdatedDomain>()
+                    .RuleFor(o => o.Type, f => f.Random.Word())
+                    .RuleFor(o => o.UpdatedAt, f => f.Date.Recent()),
+            };
+
+            var keyContacts = new List<KeyContact>()
+            {
+                new Faker<KeyContact>()
+                    .RuleFor(o => o.Name, f => f.Random.String2(3))
+                    .RuleFor(o => o.Email, f => f.Internet.Email())
+            };
+
+            var techUse = new List<string>() { "Tech One", "Tech Two" };
+
+            var disabilities = new List<string>() { "Disability One", "Disability Two" };
+
+            var emailAddress = new List<EmailAddress>()
+            {
+                new Faker<EmailAddress>()
+                    .RuleFor(o => o.Type, f => f.Random.Word())
+                    .RuleFor(o => o.Email, f => f.Internet.Email())
+            };
+
+            GpDetailsDomain gpDetailsDomain = new Faker<GpDetailsDomain>()
+                .RuleFor(a => a.Address, f => f.Address.StreetAddress())
+                .RuleFor(a => a.Postcode, f => f.Address.ZipCode())
+                .RuleFor(a => a.Email, f => f.Internet.Email())
+                .RuleFor(a => a.PhoneNumber, f => f.Phone.PhoneNumber());
+
+            return new Faker<PatchPersonRequest>()
+                .RuleFor(p => p.Id, personId)
+                .RuleFor(p => p.Pronoun, f => f.Random.String2(3))
+                .RuleFor(p => p.GenderAssignedAtBirth, f => f.Random.Bool())
+                .RuleFor(p => p.FirstLanguage, f => f.Random.Word())
+                .RuleFor(p => p.ReviewDate, f => f.Date.Past())
+                .RuleFor(p => p.PreferredLanguage, f => f.Random.Word())
+                .RuleFor(p => p.FluentInEnglish, f => f.Random.Bool())
+                .RuleFor(p => p.DifficultyMakingDecisions, f => f.Random.Bool())
+                .RuleFor(p => p.InterpreterNeeded, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficulties, f => f.Random.Bool())
+                .RuleFor(p => p.CommunicationDifficultiesDetails, f => f.Random.Word())
+                .RuleFor(p => p.Employment, f => f.Random.Word())
+                .RuleFor(p => p.ImmigrationStatus, f => f.Random.Word())
+                .RuleFor(p => p.SexualOrientation, f => f.Random.Word())
+                .RuleFor(p => p.ContextFlag, f => f.Random.String2(1))
+                .RuleFor(p => p.EmailAddress, f => f.Internet.Email())
+                .RuleFor(p => p.Ethnicity, f => f.Random.String2(20))
+                .RuleFor(p => p.CreatedBy, f => f.Internet.Email())
+                .RuleFor(p => p.DateOfBirth, f => f.Date.Past())
+                .RuleFor(p => p.DateOfDeath, f => f.Date.Recent())
+                .RuleFor(p => p.FirstName, f => f.Random.Word())
+                .RuleFor(p => p.LastName, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.String2(1))
+                .RuleFor(p => p.Gender, f => f.Random.String2(1))
+                .RuleFor(p => p.Nationality, f => f.Random.Word())
+                .RuleFor(p => p.Title, f => f.Random.String2(5))
+                .RuleFor(p => p.NhsNumber, f => f.Random.Number())
+                .RuleFor(p => p.PreferredMethodOfContact, f => f.Random.Word())
+                .RuleFor(p => p.Religion, f => f.Random.Word())
+                .RuleFor(p => p.AllocatedTeam, f => f.Random.Word())
+                .RuleFor(p => p.Restricted, f => f.Random.String2(1))
+                .RuleFor(p => p.Address, address)
+                .RuleFor(p => p.PhoneNumbers, phoneNumbers)
+                .RuleFor(p => p.OtherNames, otherNames)
+                .RuleFor(p => p.LastUpdated, lastUpdated)
+                .RuleFor(p => p.KeyContacts, keyContacts)
+                .RuleFor(p => p.GpDetails, gpDetailsDomain)
+                .RuleFor(p => p.TechUse, techUse)
+                .RuleFor(p => p.Disabilities, disabilities)
+                .RuleFor(p => p.Emails, emailAddress)
                 .RuleFor(p => p.OtherNames, otherNames);
         }
 
