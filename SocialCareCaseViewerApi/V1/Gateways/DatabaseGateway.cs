@@ -1095,7 +1095,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 var dt = DateTime.Now;
 
-                var formName = worker?.Id == null ? "Team Allocation" : "Worker Allocation";
+                var formName = worker?.Id == null ? "Team allocated" : "Worker allocated";
 
                 var note = new AllocationCaseNote
                 {
