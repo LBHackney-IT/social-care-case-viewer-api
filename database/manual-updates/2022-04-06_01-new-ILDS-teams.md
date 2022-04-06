@@ -20,12 +20,14 @@ https://hackney.atlassian.net/browse/SCT-1806
 
 ```sql
 insert into dbo.sccv_team (name, context) values ('ILDS', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Nursing discipline', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Social work discipline', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Occupational therapy discipline', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Psychology discipline', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Psychiatry discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Behaviour analysis discipline', 'A');
 insert into dbo.sccv_team (name, context) values ('ILDS: Dietetics discipline', 'A');
-insert into dbo.sccv_team (name, context) values ('ILDS: Speech and language therapy discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Health support discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Nursing discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Occupational therapy discipline', 'A');
 insert into dbo.sccv_team (name, context) values ('ILDS: Physiotherapy discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Psychiatry discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Psychology discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Social work discipline', 'A');
+insert into dbo.sccv_team (name, context) values ('ILDS: Speech and language therapy discipline', 'A');
 ```
