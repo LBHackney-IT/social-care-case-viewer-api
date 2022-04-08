@@ -47,11 +47,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, "", 0, sortBy: "rag_rating", 0);
 
-            result[0].Id.Should().Be(allocationWithoutRagRating.Id);
-            result[1].Id.Should().Be(UrgentAllocation.Id);
-            result[2].Id.Should().Be(HighAllocation.Id);
-            result[3].Id.Should().Be(MediumAllocation.Id);
-            result[4].Id.Should().Be(LowAllocation.Id);
+            result[0].Id.Should().Be(UrgentAllocation.Id);
+            result[1].Id.Should().Be(HighAllocation.Id);
+            result[2].Id.Should().Be(MediumAllocation.Id);
+            result[3].Id.Should().Be(LowAllocation.Id);
+            result[4].Id.Should().Be(allocationWithoutRagRating.Id);
+
         }
 
         [Test]
@@ -76,11 +77,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, workerEmail: "", 0, sortBy: sortBy, 0);
 
-            result[0].Id.Should().Be(allocationWithoutRagRating.Id);
-            result[1].Id.Should().Be(UrgentAllocation.Id);
-            result[2].Id.Should().Be(HighAllocation.Id);
-            result[3].Id.Should().Be(MediumAllocation.Id);
-            result[4].Id.Should().Be(LowAllocation.Id);
+            result[0].Id.Should().Be(UrgentAllocation.Id);
+            result[1].Id.Should().Be(HighAllocation.Id);
+            result[2].Id.Should().Be(MediumAllocation.Id);
+            result[3].Id.Should().Be(LowAllocation.Id);
+            result[4].Id.Should().Be(allocationWithoutRagRating.Id);
+
         }
 
         [Test]
