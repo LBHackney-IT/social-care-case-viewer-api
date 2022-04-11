@@ -403,10 +403,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var updatedWorkerTeams = DatabaseContext.WorkerTeams.Where(x => x.WorkerId == worker.Id);
 
-            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == newTeam.Id && x.WorkerId == worker.Id).CreatedAt.Should().BeCloseTo(DateTime.Now, 1000);
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == newTeam.Id && x.WorkerId == worker.Id).CreatedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
             updatedWorkerTeams.FirstOrDefault(x => x.TeamId == newTeam.Id && x.WorkerId == worker.Id).CreatedBy.Should().Be(request.ModifiedBy);
 
-            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedAt.Should().BeCloseTo(DateTime.Now, 1000);
+            updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, 1000);
             updatedWorkerTeams.FirstOrDefault(x => x.TeamId == currentWorkerTeam.Team.Id && x.WorkerId == worker.Id).LastModifiedBy.Should().Be(request.ModifiedBy);
         }
 

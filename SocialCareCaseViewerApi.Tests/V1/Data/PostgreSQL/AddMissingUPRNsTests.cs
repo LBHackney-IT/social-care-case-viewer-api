@@ -102,7 +102,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             var updatedAddress = DatabaseContext.Addresses.FirstOrDefault();
 
-            updatedAddress.LastModifiedAt.Should().BeCloseTo(DateTime.Now, precision: 10000);
+            updatedAddress.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, precision: 10000);
             updatedAddress.LastModifiedBy.Should().Be(lastModifiedBy);
         }
 
