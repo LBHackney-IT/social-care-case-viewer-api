@@ -111,6 +111,7 @@ jobs:
           name: Run formatter check
           command: ./dotnet-format-local/dotnet-format --check
   build-and-test:
+    context: SonarCloud
     executor: docker-python
     steps:
       - checkout
