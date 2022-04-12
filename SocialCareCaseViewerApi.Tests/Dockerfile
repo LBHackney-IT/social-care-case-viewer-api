@@ -28,5 +28,5 @@ RUN dotnet restore ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests
 COPY . .
 COPY ./SocialCareCaseViewerApi/rds-ca-2019-root.pem /ssl/rds-ca-2019-root.pem
 RUN dotnet build -c debug -o out SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj
-RUN dotnet-coverage collect 'dotnet test' -f xml -o 'coverage.xml'
+CMD dotnet-coverage collect 'dotnet test' -f xml -o 'coverage.xml'
 RUN dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
