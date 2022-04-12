@@ -168,6 +168,8 @@ workflows:
     jobs:
       - check-code-formatting
       - build-and-test:
+          context:
+            - SonarCloud
           requires:
             - check-code-formatting
       # - assume-role-development:
@@ -192,6 +194,8 @@ workflows:
   check-and-deploy-staging-and-mosaic-production:
       jobs:
       - build-and-test:
+          context:
+            - SonarCloud
           filters:
             branches:
               only:

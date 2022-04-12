@@ -3,7 +3,17 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 # disable microsoft telematry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 
+ARG SONAR_TOKEN
+ENV SONAR_TOKEN=$SONAR_TOKEN
+
 WORKDIR /app
+
+#SonarCloud scan
+RUN apt-get update && apt-get install -y openjdk-11-jdk
+RUN dotnet tool install --global dotnet-sonarscanner
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+RUN dotnet sonarscanner begin /k:"LBHackney-IT_social-care-case-viewer-api" /o:"lbhackney-it" /d:sonar.host.url=https://sonarcloud.io /d:sonar.login="${SONAR_TOKEN}"
 
 # Copy csproj and restore as distinct layers
 COPY ./SocialCareCaseViewerApi.sln ./
@@ -17,5 +27,7 @@ RUN dotnet restore ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests
 COPY . .
 COPY ./SocialCareCaseViewerApi/rds-ca-2019-root.pem /ssl/rds-ca-2019-root.pem
 RUN dotnet build -c debug -o out SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj
+
+RUN dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
 
 CMD dotnet test
