@@ -166,10 +166,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: 0, workerId: worker.Id, workerEmail: "", teamId: 0, sortBy: "date_added");
 
-            result[0].Id.Should().Be(allocation2.Id);
-            result[1].Id.Should().Be(allocation4.Id);
-            result[2].Id.Should().Be(allocation1.Id);
-            result[3].Id.Should().Be(allocation3.Id);
+            result[0].Id.Should().Be(allocation3.Id);
+            result[1].Id.Should().Be(allocation1.Id);
+            result[2].Id.Should().Be(allocation4.Id);
+            result[3].Id.Should().Be(allocation2.Id);
         }
     }
 }
