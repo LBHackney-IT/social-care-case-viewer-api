@@ -8,7 +8,6 @@ ENV SONAR_TOKEN=$SONAR_TOKEN
 
 WORKDIR /app
 
-
 RUN apt-get update && apt-get install -y openjdk-11-jdk
 RUN dotnet tool install --global dotnet-sonarscanner
 RUN dotnet tool install --global dotnet-coverage
@@ -18,9 +17,6 @@ ENV PATH="$PATH:/root/.dotnet/tools"
 COPY ./SocialCareCaseViewerApi.sln ./
 COPY ./SocialCareCaseViewerApi/SocialCareCaseViewerApi.csproj ./SocialCareCaseViewerApi/
 COPY ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj ./SocialCareCaseViewerApi.Tests/
-
-RUN dotnet restore ./SocialCareCaseViewerApi/SocialCareCaseViewerApi.csproj
-RUN dotnet restore ./SocialCareCaseViewerApi.Tests/SocialCareCaseViewerApi.Tests.csproj
 
 # Copy everything else, build and generate coverage file
 COPY . .
