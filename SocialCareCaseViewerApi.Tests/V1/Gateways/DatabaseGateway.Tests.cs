@@ -775,6 +775,46 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+
+        public void GetAllocationsByTeamIdOnlyReturnsCorrectWaitingList()
+        {
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var anotherWorker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 124);
+
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            var anotherWorkerTeam = TestHelpers.CreateWorkerTeam(anotherWorker.Id);
+
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+            anotherWorker.WorkerTeams = new List<WorkerTeam> { anotherWorkerTeam };
+
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Workers.Add(anotherWorker);
+            DatabaseContext.WorkerTeams.Add(anotherWorkerTeam);
+            DatabaseContext.SaveChanges();
+
+            var (teamAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(teamId: workerTeam.TeamId);
+            teamAllocationRequest.AllocatedWorkerId = null;
+            var (teamAndWorkerAllocationRequest, _, anotherAllocator, anotherResident, _) = TestHelpers.CreateAllocationRequest(workerId: anotherWorker.Id, teamId: workerTeam.TeamId);
+
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.Workers.Add(anotherAllocator);
+            DatabaseContext.Persons.Add(anotherResident);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(teamAllocationRequest);
+            _classUnderTest.CreateAllocation(teamAndWorkerAllocationRequest);
+
+            var (teamAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId);
+
+            teamAllocations.Count.Should().Be(1);
+            teamAllocations.FirstOrDefault().AllocatedWorker.Should().NotBeNull();
+
+        }
+
+        [Test]
         public void MovingWorkerToANewTeamDoesNotUpdateAnyWorkerAllocations()
         {
             // Create worker and teams

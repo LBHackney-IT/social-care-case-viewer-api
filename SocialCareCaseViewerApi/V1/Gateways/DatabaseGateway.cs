@@ -102,6 +102,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 query = query.Where(x => x.TeamId == teamId);
 
+                var teams = query.Where(x => x.TeamId != null && x.WorkerId == null && x.CaseStatus.ToLower() != "closed").ToList();
+                var workerTeams = query.Where(x => x.TeamId != null && x.WorkerId != null && x.CaseStatus.ToLower() != "closed").ToList();
+
+                foreach (var allocation in teams)
+                {
+                    if (workerTeams.Any(x => x.TeamId == allocation.TeamId && x.PersonId == allocation.PersonId))
+                    {
+                        query = query.Where(x => !(x.TeamId == allocation.TeamId && x.WorkerId == null));
+                    };
+                }
+
+
                 if (!String.IsNullOrEmpty(status))
                 {
                     query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
