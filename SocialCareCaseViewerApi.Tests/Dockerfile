@@ -27,4 +27,5 @@ COPY . .
 COPY ./SocialCareCaseViewerApi/rds-ca-2019-root.pem /ssl/rds-ca-2019-root.pem
 
 #build, test and SonarCloud scan
+RUN chmod 777 ./SocialCareCaseViewerApi.Tests/startup.sh
 CMD ./SocialCareCaseViewerApi.Tests/startup.sh
