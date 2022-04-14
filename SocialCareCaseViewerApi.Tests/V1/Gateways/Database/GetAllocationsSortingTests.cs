@@ -47,11 +47,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, "", 0, sortBy: "rag_rating", 0);
 
-            result[0].Id.Should().Be(allocationWithoutRagRating.Id);
-            result[1].Id.Should().Be(UrgentAllocation.Id);
-            result[2].Id.Should().Be(HighAllocation.Id);
-            result[3].Id.Should().Be(MediumAllocation.Id);
-            result[4].Id.Should().Be(LowAllocation.Id);
+            result[0].Id.Should().Be(UrgentAllocation.Id);
+            result[1].Id.Should().Be(HighAllocation.Id);
+            result[2].Id.Should().Be(MediumAllocation.Id);
+            result[3].Id.Should().Be(LowAllocation.Id);
+            result[4].Id.Should().Be(allocationWithoutRagRating.Id);
+
         }
 
         [Test]
@@ -76,11 +77,12 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, workerEmail: "", 0, sortBy: sortBy, 0);
 
-            result[0].Id.Should().Be(allocationWithoutRagRating.Id);
-            result[1].Id.Should().Be(UrgentAllocation.Id);
-            result[2].Id.Should().Be(HighAllocation.Id);
-            result[3].Id.Should().Be(MediumAllocation.Id);
-            result[4].Id.Should().Be(LowAllocation.Id);
+            result[0].Id.Should().Be(UrgentAllocation.Id);
+            result[1].Id.Should().Be(HighAllocation.Id);
+            result[2].Id.Should().Be(MediumAllocation.Id);
+            result[3].Id.Should().Be(LowAllocation.Id);
+            result[4].Id.Should().Be(allocationWithoutRagRating.Id);
+
         }
 
         [Test]
@@ -102,10 +104,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, workerId: 0, workerEmail: "", 0, "date_added", 0);
 
-            result[0].Id.Should().Be(allocation3.Id);
-            result[1].Id.Should().Be(allocation1.Id);
-            result[2].Id.Should().Be(allocation4.Id);
-            result[3].Id.Should().Be(allocation2.Id);
+            result[0].Id.Should().Be(allocation2.Id);
+            result[1].Id.Should().Be(allocation4.Id);
+            result[2].Id.Should().Be(allocation1.Id);
+            result[3].Id.Should().Be(allocation3.Id);
         }
 
         [Test]
@@ -138,6 +140,36 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             result[1].Id.Should().Be(allocation2.Id);
             result[2].Id.Should().Be(allocation3.Id);
             result[3].Id.Should().Be(allocation4.Id);
+        }
+
+        [Test]
+        public void GetAllocationsReturnsResultsInSortByDateAddedOrderWhenFilteredByWorkerIdAndWhenSortByIsSetToDateAdded()
+        {
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+
+            var person1 = TestHelpers.CreatePerson();
+            var allocation1 = TestHelpers.CreateAllocation(personId: (int) person1.Id, workerId: worker.Id, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-50));
+
+            var person2 = TestHelpers.CreatePerson();
+            var allocation2 = TestHelpers.CreateAllocation(personId: (int) person2.Id, workerId: worker.Id, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-10));
+
+            var person3 = TestHelpers.CreatePerson();
+            var allocation3 = TestHelpers.CreateAllocation(personId: (int) person3.Id, workerId: worker.Id, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-60));
+
+            var person4 = TestHelpers.CreatePerson();
+            var allocation4 = TestHelpers.CreateAllocation(personId: (int) person4.Id, workerId: worker.Id, caseStatus: "open", dateAdded: DateTime.Today.AddDays(-30));
+
+            DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3, person4 });
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4 });
+            DatabaseContext.SaveChanges();
+
+            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: 0, workerId: worker.Id, workerEmail: "", teamId: 0, sortBy: "date_added");
+
+            result[0].Id.Should().Be(allocation3.Id);
+            result[1].Id.Should().Be(allocation1.Id);
+            result[2].Id.Should().Be(allocation4.Id);
+            result[3].Id.Should().Be(allocation2.Id);
         }
     }
 }

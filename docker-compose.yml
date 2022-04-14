@@ -39,6 +39,8 @@ services:
     build:
       context: .
       dockerfile: SocialCareCaseViewerApi.Tests/Dockerfile
+      args:
+      - SONAR_TOKEN=${SONAR_TOKEN}
     environment:
       - CONTAINER_ENV=DockerTest
       - MONGO_DB_TEST_CONN_STRING=mongodb://sccv-api-test-mongo-db:27017/?gssapiServiceName=mongodb

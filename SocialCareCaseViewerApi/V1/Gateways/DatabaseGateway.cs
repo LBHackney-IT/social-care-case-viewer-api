@@ -157,18 +157,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 "rag_rating" =>
                     allocations
-                        .OrderByDescending(x => x.RagRating == null)
-                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList(),
+                        .OrderByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null)
+                        .ThenByDescending(x => x.RagRating == null).ToList(),
                 "date_added" =>
                     allocations
-                        .OrderByDescending(x => x.AllocationStartDate).ToList(),
+                        .OrderBy(x => x.AllocationStartDate).ToList(),
                 "review_date" =>
                     allocations
                         .OrderBy(x => x.PersonReviewDate).ToList(),
                 _ =>
                     allocations
-                        .OrderByDescending(x => x.RagRating == null)
-                        .ThenByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null).ToList()
+                        .OrderByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null)
+                        .ThenByDescending(x => x.RagRating == null).ToList()
             };
 
             return (allocations
