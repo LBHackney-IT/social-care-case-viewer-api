@@ -119,7 +119,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         var allocatedList = query.Where(x => x.WorkerId != null).ToList();
                         query = query.Where(x => x.WorkerId == null);
 
-                        foreach (var allocation  in query.ToList())
+                        foreach (var allocation in query.ToList())
                         {
                             if (allocatedList.Any(x => x.PersonId == allocation.PersonId))
                             {
