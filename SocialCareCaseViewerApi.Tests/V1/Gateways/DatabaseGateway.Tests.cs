@@ -803,10 +803,10 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(teamAllocationRequest);
             _classUnderTest.CreateAllocation(teamAndWorkerAllocationRequest);
 
-            var (workerAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, teamAllocationStatus: "unallocated");
+            var (waitingListAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, teamAllocationStatus: "unallocated");
 
-            workerAllocations.Count.Should().Be(1);
-            workerAllocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
+            waitingListAllocations.Count.Should().Be(1);
+            waitingListAllocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
 
         }
 
