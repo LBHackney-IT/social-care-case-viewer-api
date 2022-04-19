@@ -771,7 +771,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
         [Test]
 
-        public void GetAllocationsByTeamIdAndUnallocatedDoesntReturnAnythingIfTheAllocationHasAWorker()
+        public void GetAllocationsByTeamIdAndUnallocatedReturnsOnlyAllocationsWithoutWorker()
         {
             var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
             var anotherWorker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 124);
@@ -804,7 +804,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var (teamAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, teamAllocationStatus: "unallocated");
 
-            teamAllocations.Count.Should().Be(0);
+            teamAllocations.Count.Should().Be(1);
+            teamAllocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
 
         }
 
