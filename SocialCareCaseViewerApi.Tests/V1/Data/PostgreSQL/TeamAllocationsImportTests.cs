@@ -57,7 +57,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             DatabaseContext.TeamAllocationImports.Add(teamAllocationToImport1);
             DatabaseContext.TeamAllocationImports.Add(teamAllocationToImport2);
             DatabaseContext.SaveChanges();
-           
+
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);
 
             DatabaseContext.Allocations.Count().Should().Be(2);
