@@ -41,8 +41,8 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<CaseStatus> CaseStatuses { get; set; }
         public DbSet<CaseStatusAnswer> CaseStatusAnswers { get; set; }
         public DbSet<UPRNupdate> UPRNupdates { get; set; }
-
         public DbSet<SearchResult> SearchResults { get; set; }
+        public DbSet<TeamAllocationImport> TeamAllocationImports { get; set; }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
