@@ -102,6 +102,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 query = query.Where(x => x.TeamId == teamId);
 
+
                 if (!String.IsNullOrEmpty(status))
                 {
                     query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
@@ -114,7 +115,17 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     }
                     if (teamAllocationStatus == "unallocated")
                     {
+
+                        var allocatedList = query.Where(x => x.WorkerId != null).ToList();
                         query = query.Where(x => x.WorkerId == null);
+
+                        foreach (var allocation in query.ToList())
+                        {
+                            if (allocatedList.Any(x => x.PersonId == allocation.PersonId))
+                            {
+                                query = query.Where(y => y.Id != allocation.Id);
+                            }
+                        }
                     }
                 }
             }
