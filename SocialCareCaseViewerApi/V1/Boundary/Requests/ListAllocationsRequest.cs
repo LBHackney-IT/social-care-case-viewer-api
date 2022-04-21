@@ -63,13 +63,14 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
                 request.MosaicId == 0 ? 0 : 1,
                 request.WorkerId == 0 ? 0 : 1,
                 request.TeamId == 0 ? 0 : 1,
+                request.AllocationId == 0 ? 0 : 1,
                 String.IsNullOrEmpty(request.WorkerEmail) ? 0 : 1,
             }.Sum() <= 1;
         }
 
         private bool OneIsSet(ListAllocationsRequest request)
         {
-            return !(request.MosaicId == 0 && request.WorkerId == 0 && String.IsNullOrEmpty(request.WorkerEmail) && request.TeamId == 0);
+            return !(request.AllocationId == 0 && request.MosaicId == 0 && request.WorkerId == 0 && String.IsNullOrEmpty(request.WorkerEmail) && request.TeamId == 0);
         }
     }
 }
