@@ -8,6 +8,9 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class ListAllocationsRequest
     {
+        [FromQuery(Name = "allocation_id")]
+        public long AllocationId { get; set; }
+
         [FromQuery(Name = "mosaic_id")]
         public long MosaicId { get; set; }
 
