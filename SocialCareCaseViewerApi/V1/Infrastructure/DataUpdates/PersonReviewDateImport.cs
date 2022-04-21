@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 #nullable enable
 namespace SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates
 {
-    [Table("sccv_team_allocations_import_review_team", Schema = "dbo")]
-    public class TeamAllocationImport
+    [Table("sccv_person_review_date_import_review_team", Schema = "dbo")]
+    public class PersonReviewDateImport
     {
         [Column("id")]
         [MaxLength(16)]
@@ -16,10 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure.DataUpdates
         [Column("mosaic_id")]
         public long MosaicId { get; set; }
 
-        [Column("referral_date")]
-        public DateTime? ReferralDate { get; set; }
-
-        [Column("team_id")]
-        public int TeamId { get; set; }
+        [Column("review_date")]
+        public DateTime? Reviewdate { get; set; }
     }
 }

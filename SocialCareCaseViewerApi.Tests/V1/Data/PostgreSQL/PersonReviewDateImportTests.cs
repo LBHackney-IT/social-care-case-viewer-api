@@ -17,9 +17,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             UPDATE dbo.dm_persons p
             SET
                 review_date = i.review_date,
-                sccv_last_modified_by = 'person_review_date_update_script',
+                sccv_last_modified_by = 'person_review_date_review_team_update_script',
                 sccv_last_modified_at = NOW()
-            FROM dbo.sccv_team_allocations_import_review_team i
+            FROM dbo.sccv_person_review_date_import_review_team i
             WHERE p.person_id = i.mosaic_id and p.review_date is null;
            ";
 
@@ -41,13 +41,13 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             var person3 = TestHelpers.CreatePerson();
             var person3ReviewDate = person3.ReviewDate;
 
-            var reviewDate1 = new TeamAllocationImport()
+            var reviewDate1 = new PersonReviewDateImport()
             {
                 MosaicId = person1.Id,
                 Reviewdate = DateTime.Today.AddDays(20)
             };
 
-            var reviewDate2 = new TeamAllocationImport()
+            var reviewDate2 = new PersonReviewDateImport()
             {
                 MosaicId = person2.Id,
                 Reviewdate = DateTime.Today.AddDays(10)
@@ -56,8 +56,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             DatabaseContext.Persons.Add(person1);
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.Persons.Add(person3);
-            DatabaseContext.TeamAllocationImports.Add(reviewDate1);
-            DatabaseContext.TeamAllocationImports.Add(reviewDate2);
+            DatabaseContext.PersonReviewDateImports.Add(reviewDate1);
+            DatabaseContext.PersonReviewDateImports.Add(reviewDate2);
             DatabaseContext.SaveChanges();
 
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);
@@ -66,11 +66,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             var updatedPerson2 = DatabaseContext.Persons.FirstOrDefault(x => x.Id == person2.Id);
 
             updatedPerson1.ReviewDate.Should().Be(reviewDate1.Reviewdate);
-            updatedPerson1.LastModifiedBy.Should().Be("person_review_date_update_script");
+            updatedPerson1.LastModifiedBy.Should().Be("person_review_date_review_team_update_script");
             updatedPerson1.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, 3000);
 
             updatedPerson2.ReviewDate.Should().Be(reviewDate2.Reviewdate);
-            updatedPerson2.LastModifiedBy.Should().Be("person_review_date_update_script");
+            updatedPerson2.LastModifiedBy.Should().Be("person_review_date_review_team_update_script");
             updatedPerson1.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, 3000);
 
             var unmodifiedPerson3 = DatabaseContext.Persons.FirstOrDefault(x => x.Id == person3.Id);
@@ -84,14 +84,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
 
             var personReviewDate = person.ReviewDate;
 
-            var reviewDate = new TeamAllocationImport()
+            var reviewDate = new PersonReviewDateImport()
             {
                 MosaicId = person.Id,
                 Reviewdate = DateTime.Today.AddDays(10)
             };
 
             DatabaseContext.Persons.Add(person);
-            DatabaseContext.TeamAllocationImports.Add(reviewDate);
+            DatabaseContext.PersonReviewDateImports.Add(reviewDate);
             DatabaseContext.SaveChanges();
 
             DatabaseContext.Database.ExecuteSqlInterpolated(_queryUnderTest);

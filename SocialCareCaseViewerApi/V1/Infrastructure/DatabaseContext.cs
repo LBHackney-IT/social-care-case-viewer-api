@@ -43,6 +43,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public DbSet<UPRNupdate> UPRNupdates { get; set; }
         public DbSet<SearchResult> SearchResults { get; set; }
         public DbSet<TeamAllocationImport> TeamAllocationImports { get; set; }
+        public DbSet<PersonReviewDateImport> PersonReviewDateImports { get; set; }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {

@@ -17,7 +17,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 allocation_start_date,
                 mosaic_id,
                 team_id,
-                rag_rating,
                 case_status,
                 sccv_created_at,
                 sccv_created_by
@@ -26,10 +25,9 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 referral_date,
                 mosaic_id,
                 team_id,
-                rag_rating,
                 'Open',
                 NOW(),
-                'Data import'
+                'Review team data import'
             FROM dbo.sccv_team_allocations_import_review_team;
            ";
 
@@ -39,18 +37,14 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             var teamAllocationToImport1 = new TeamAllocationImport()
             {
                 MosaicId = 123,
-                RagRating = "high",
                 ReferralDate = DateTime.Today.AddDays(-20),
-                Reviewdate = DateTime.Today.AddDays(20),
                 TeamId = 142
             };
 
             var teamAllocationToImport2 = new TeamAllocationImport()
             {
                 MosaicId = 456,
-                RagRating = "low",
                 ReferralDate = DateTime.Today.AddDays(-10),
-                Reviewdate = DateTime.Today.AddDays(10),
                 TeamId = 142
             };
 
@@ -70,7 +64,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 Id = addedTeamAllocation1.Id,
                 AllocationStartDate = teamAllocationToImport1.ReferralDate,
                 PersonId = teamAllocationToImport1.MosaicId,
-                RagRating = teamAllocationToImport1.RagRating,
                 TeamId = teamAllocationToImport1.TeamId,
 
                 CaseStatus = "Open",
@@ -82,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 WorkerId = null,
 
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = "Data import",
+                CreatedBy = "Review team data import",
                 LastModifiedAt = null,
                 LastModifiedBy = null
             };
@@ -92,7 +85,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 Id = addedTeamAllocation2.Id,
                 AllocationStartDate = teamAllocationToImport2.ReferralDate,
                 PersonId = teamAllocationToImport2.MosaicId,
-                RagRating = teamAllocationToImport2.RagRating,
                 TeamId = teamAllocationToImport2.TeamId,
 
                 CaseStatus = "Open",
@@ -104,7 +96,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
                 WorkerId = null,
 
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = "Data import",
+                CreatedBy = "Review team data import",
                 LastModifiedAt = null,
                 LastModifiedBy = null
             };
