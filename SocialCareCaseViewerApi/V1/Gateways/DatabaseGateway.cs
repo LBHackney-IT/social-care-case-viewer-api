@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
+        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, long allocationId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
         {
             var limit = 250;
 
@@ -71,6 +71,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 {
                     query = query.Where(x => x.CaseStatus.ToLower() == status.ToLower());
                 }
+            }
+
+            else if (allocationId != 0)
+            {
+                query = query.Where(x => x.Id == allocationId);
             }
 
             else if (workerId != 0)
