@@ -24,7 +24,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var validationResults = validator.Validate(_request);
 
             Assert.IsFalse(validationResults.IsValid);
-            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide either mosaic_id, worker_id, worker_email or team_id")));
+            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide either mosaic_id, worker_id, worker_email, team_id or allocation_id")));
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
             var validationResults = validator.Validate(_request);
 
             Assert.IsFalse(validationResults.IsValid);
-            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide only one of mosaic_id, worker_id, worker_email or team_id")));
+            Assert.IsTrue(validationResults.Errors.Any(x => x.ErrorMessage.Contains("Please provide only one of mosaic_id, worker_id, worker_email, team_id or allocation_id")));
         }
 
         [Test]

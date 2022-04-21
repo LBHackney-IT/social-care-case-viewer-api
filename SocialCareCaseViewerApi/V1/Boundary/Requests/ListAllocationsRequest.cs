@@ -39,11 +39,11 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         {
             RuleFor(x => x)
                 .Must(OneIsSet)
-                .WithMessage("Please provide either mosaic_id, worker_id, worker_email or team_id");
+                .WithMessage("Please provide either mosaic_id, worker_id, worker_email, team_id or allocation_id");
 
             RuleFor(x => x)
                 .Must(OnlyOneIsSet)
-                .WithMessage("Please provide only one of mosaic_id, worker_id, worker_email or team_id");
+                .WithMessage("Please provide only one of mosaic_id, worker_id, worker_email, team_id or allocation_id");
 
             When(x => !String.IsNullOrEmpty(x.WorkerEmail), () =>
             {
