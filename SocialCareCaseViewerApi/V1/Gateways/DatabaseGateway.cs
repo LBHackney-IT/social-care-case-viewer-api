@@ -73,6 +73,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
+            else if (allocationId != 0)
+            {
+                query = query.Where(x => x.Id == allocationId);
+                var test = query.ToList();
+                tetsts = query.ToList();
+
+            }
+
             else if (workerId != 0)
             {
                 query = query.Where(x => x.WorkerId == workerId);
