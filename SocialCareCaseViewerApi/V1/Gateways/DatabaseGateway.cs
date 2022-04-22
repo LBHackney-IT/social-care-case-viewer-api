@@ -525,23 +525,33 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //check for changed address
             if (request.Address != null)
             {
-                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+                List<Address> displayAddresses = person.Addresses.All(x => x.IsDisplayAddress == "Y");
+                
+                //get all addresses where isDisplayAddress = Y
+                //filter down to the most recently updated address where isDisplayAddress = Y
+                //check the request address agains the most recently updated address where isDisplayAddress = Y 
+                //    to determine if we insert the request address into the database
+                //    if we are inserting the request address into the database then mark all exisitng address where isDisplayAddress = Y as where isDisplayAddress = N
+                //      then insert request address into the db
 
-                if (displayAddress == null)
+                
+                if(!(displayAddresses?.Any()))
                 {
                     person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
                         request.Address.Uprn, request.CreatedBy));
                 }
                 else
                 {
+                    Address currentDisplayAddress = displayAddresses.OrderByDescending(x => x.LastModifiedAt).Take(1);
                     //has address changed?
-                    if (!(request.Address.Address == displayAddress.AddressLines
-                          && request.Address.Postcode == displayAddress.PostCode
-                          && displayAddress.Uprn == request.Address.Uprn))
+                    if (!(request.Address.Address == currentDisplayAddress.AddressLines
+                          && request.Address.Postcode == currentDisplayAddress.PostCode
+                          && currentDisplayAddress.Uprn == request.Address.Uprn))
                     {
+                        displayAddresses.ForEach(displayAddress => {
                         displayAddress.IsDisplayAddress = "N";
                         displayAddress.EndDate = DateTime.Now;
-                        displayAddress.LastModifiedBy = request.CreatedBy;
+                        displayAddress.LastModifiedBy = request.CreatedBy;});
 
                         person.Addresses.Add(GetNewDisplayAddress(request.Address.Address, request.Address.Postcode,
                             request.Address.Uprn, request.CreatedBy));
