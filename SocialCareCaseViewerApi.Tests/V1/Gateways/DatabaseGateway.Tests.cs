@@ -2418,6 +2418,20 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void PatchPersonDoesNotUpdateCreatedByProperty()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
+            var request = GetValidPatchPersonRequest(person.Id);
+
+            var expectedCreatedBy = person.CreatedBy;
+            request.CreatedBy = "first.last@domain.com";
+
+            _classUnderTest.PatchPerson(request);
+
+            person.CreatedBy.Should().Be(expectedCreatedBy);
+        }
+
+        [Test]
         public void UpdatePersonSetsNewDisplayAddressWhenOneDoesntExist()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());
