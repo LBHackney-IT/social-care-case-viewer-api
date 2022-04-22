@@ -153,6 +153,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         WorkerType = x.Worker.Role,
                         AllocationStartDate = x.AllocationStartDate,
                         AllocationEndDate = x.AllocationEndDate,
+                        TeamAllocationStartDate = x.TeamAllocationStartDate,
                         CaseStatus = x.CaseStatus,
                         PersonAddress =
                             x.Person.Addresses.FirstOrDefault(x =>
@@ -1094,7 +1095,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WorkerId = worker?.Id,
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
-                TeamAllocationStartDate = existingTeamAllocation.AllocationStartDate,
+                TeamAllocationStartDate = existingTeamAllocation?.AllocationStartDate,
                 CaseStatus = "Open",
                 RagRating = request.RagRating,
                 CarePackage = request.CarePackage,
