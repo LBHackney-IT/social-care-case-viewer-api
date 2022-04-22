@@ -35,6 +35,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [Column("allocation_start_date")]
         public DateTime? AllocationStartDate { get; set; }
 
+        [Column("team_allocation_start_date")]
+        public DateTime? TeamAllocationStartDate { get; set; }
+
         [Column("allocation_end_date")]
         public DateTime? AllocationEndDate { get; set; }
 

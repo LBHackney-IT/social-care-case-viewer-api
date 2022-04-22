@@ -1052,9 +1052,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     "Person has already allocated worker in this team");
             }
 
-            var exisitingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
+            var existingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
 
-            if (exisitingAllocation != null && request.AllocationStartDate < exisitingAllocation.AllocationStartDate)
+            if (existingAllocation != null && request.AllocationStartDate < existingAllocation.AllocationStartDate)
             {
                 throw new CreateAllocationException(
                     "Worker Allocation date must be after Team Allocation date");
