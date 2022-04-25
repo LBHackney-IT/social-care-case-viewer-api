@@ -662,7 +662,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             person.MaritalStatus = request.MaritalStatus ?? person.MaritalStatus;
             person.GenderAssignedAtBirth = request.GenderAssignedAtBirth ?? person.GenderAssignedAtBirth;
             person.Pronoun = request.Pronoun ?? person.Pronoun;
-            person.CreatedBy = request.CreatedBy ?? person.CreatedBy;
             person.Nationality = request.Nationality ?? person.Nationality;
             person.HousingStaffInContact = request.HousingStaffInContact ?? person.HousingStaffInContact;
             person.CautionaryAlert = request.CautionaryAlert ?? person.CautionaryAlert;
