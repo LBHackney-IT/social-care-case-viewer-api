@@ -810,7 +810,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
         }
 
-        [Test] // WIP
+        [Test]
         public void GetAllocationsReturnsTeamAllocationStartDateForTeamAndWorkerAllocation()
         {
             // Create worker and teams
