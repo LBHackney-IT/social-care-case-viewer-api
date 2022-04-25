@@ -40,7 +40,9 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         [MaxLength(1)]
         public string? ContextFlag { get; set; }
 
-        [Column("created_by")] [MaxLength(62)] public string? CreatedBy { get; set; }
+        [Column("created_by")]
+        [MaxLength(62)]
+        public string? CreatedBy { get; set; }
 
         [Column("date_start")] public DateTime? DateStart { get; set; }
 
