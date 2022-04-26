@@ -529,8 +529,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
             person.Addresses = new List<Address>
             {
                 secondAddress,
-                lastAddress,
-                firstAddress
+                firstAddress,
+                lastAddress
             };
 
             AddressDomain addressDomain = new AddressDomain()
