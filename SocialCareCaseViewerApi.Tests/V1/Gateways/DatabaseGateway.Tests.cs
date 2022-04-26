@@ -2331,6 +2331,49 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdatePersonsAddressUpdatesTheMostRecentAddressToDisplay()
+        {
+            var first = DateTime.Today;
+            var second = DateTime.Today.AddDays(-1);
+            var last = DateTime.Today.AddDays(-2);
+
+            var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person.Addresses = null;
+            var firstAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: first, isDisplayAddress: "Y");
+            var secondAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: second, isDisplayAddress: "Y");
+            var lastAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: last, isDisplayAddress: "Y");
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Addresses.Add(firstAddress);
+            DatabaseContext.Addresses.Add(secondAddress);
+            DatabaseContext.Addresses.Add(lastAddress);
+            DatabaseContext.SaveChanges();
+
+            var personBeforeUpdate = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            personBeforeUpdate.Addresses.Count.Should().Equals(3);
+            personBeforeUpdate.Addresses.First().StartDate.Should().Equals(first);
+            personBeforeUpdate.Addresses.First().IsDisplayAddress.Should().Equals("Y");
+            personBeforeUpdate.Addresses.First().PostCode.Should().Equals(firstAddress.PostCode);
+
+            var request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+
+            var updatedPerson = _classUnderTest.GetPersonDetailsById(person.Id);
+
+            updatedPerson.Addresses.Count.Should().Equals(4);
+            updatedPerson.Addresses.First().StartDate.Should().Equals(first);
+            updatedPerson.Addresses.First().PostCode.Should().Equals(firstAddress.PostCode);
+            updatedPerson.Addresses.First().EndDate.Should().NotBeNull();
+            updatedPerson.Addresses.First().IsDisplayAddress.Should().Equals("N");
+
+            updatedPerson.Addresses.Last().IsDisplayAddress.Should().Equals("Y");
+            updatedPerson.Addresses.Last().StartDate.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTime.Now);
+            updatedPerson.Addresses.Last().PostCode.Should().Equals(request.Address.Postcode);
+        }
+
+        [Test]
         public void PatchPersonSetsCorrectValuesForPersonEntity()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
