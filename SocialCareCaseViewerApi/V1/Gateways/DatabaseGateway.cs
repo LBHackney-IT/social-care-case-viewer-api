@@ -153,7 +153,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         WorkerType = x.Worker.Role,
                         AllocationStartDate = x.AllocationStartDate,
                         AllocationEndDate = x.AllocationEndDate,
-                        TeamAllocationStartDate = x.TeamAllocationStartDate,
                         CaseStatus = x.CaseStatus,
                         PersonAddress =
                             x.Person.Addresses.FirstOrDefault(x =>
@@ -170,7 +169,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             foreach (var allocation in allocations)
             {
-                if (allocation.AllocatedWorker != null && allocation.CaseStatus.ToLower() != "closed")
+                if (allocation.AllocatedWorker != null && allocation.CaseStatus?.ToLower() != "closed")
                 {
                     var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.MarkedForDeletion == false);
                     allocation.TeamAllocationStartDate = teamAllocation?.AllocationStartDate;
