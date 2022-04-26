@@ -2349,7 +2349,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Addresses.Add(lastAddress);
             DatabaseContext.SaveChanges();
 
-            var personBeforeUpdate = _classUnderTest.GetPersonDetailsById(person.Id);
+            var personBeforeUpdate = DatabaseContext.Persons.Find(person.Id);
 
             personBeforeUpdate.Addresses.Count.Should().Equals(3);
             personBeforeUpdate.Addresses.First().StartDate.Should().Equals(first);
@@ -2360,7 +2360,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.UpdatePerson(request);
 
-            var updatedPerson = _classUnderTest.GetPersonDetailsById(person.Id);
+            var updatedPerson = DatabaseContext.Persons.Find(person.Id);
 
             updatedPerson.Addresses.Count.Should().Equals(4);
             updatedPerson.Addresses.First().StartDate.Should().Equals(first);
