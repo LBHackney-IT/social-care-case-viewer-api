@@ -513,6 +513,92 @@ namespace SocialCareCaseViewerApi.Tests.V1.Factories
         }
 
         [Test]
+        public void DisplaysTheMostRecentAddressMarkedAsYInGetPersonResponse()
+        {
+            var first = DateTime.Today;
+            var second = DateTime.Today.AddDays(-1);
+            var last = DateTime.Today.AddDays(-2);
+            var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person.Id = 123;
+
+            Address firstAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: first, isDisplayAddress: "Y");
+            Address secondAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: second, isDisplayAddress: "Y");
+            Address lastAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: last, isDisplayAddress: "Y");
+
+            // Addresses are in random order
+            person.Addresses = new List<Address>
+            {
+                secondAddress,
+                lastAddress,
+                firstAddress
+            };
+
+            AddressDomain addressDomain = new AddressDomain()
+            {
+                Address = firstAddress.AddressLines,
+                Postcode = firstAddress.PostCode,
+                Uprn = firstAddress.Uprn
+            };
+
+            var expectedResponse = new GetPersonResponse()
+            {
+                GenderAssignedAtBirth = person.GenderAssignedAtBirth,
+                PreferredLanguage = person.PreferredLanguage,
+                FluentInEnglish = person.FluentInEnglish,
+                InterpreterNeeded = person.InterpreterNeeded,
+                CommunicationDifficulties = person.CommunicationDifficulties,
+                DifficultyMakingDecisions = person.DifficultyMakingDecisions,
+                CommunicationDifficultiesDetails = person.CommunicationDifficultiesDetails,
+                Employment = person.Employment,
+                MaritalStatus = person.MaritalStatus,
+                ImmigrationStatus = person.ImmigrationStatus,
+                PrimarySupportReason = person.PrimarySupportReason,
+                TenureType = person.TenureType,
+                AccomodationType = person.AccomodationType,
+                AccessToHome = person.AccessToHome,
+                CareProvider = person.CareProvider,
+                LivingSituation = person.LivingSituation,
+                HousingOfficer = person.HousingOfficer,
+                HousingStaffInContact = person.HousingStaffInContact,
+                CautionaryAlert = person.CautionaryAlert,
+                PossessionEvictionOrder = person.PossessionEvictionOrder,
+                RentRecord = person.RentRecord,
+                HousingBenefit = person.HousingBenefit,
+                CouncilTenureType = person.CouncilTenureType,
+                TenancyHouseholdStructure = person.TenancyHouseholdStructure,
+                MentalHealthSectionStatus = person.MentalHealthSectionStatus,
+                DeafRegister = person.DeafRegister,
+                BlindRegister = person.BlindRegister,
+                Pronoun = person.Pronoun,
+                BlueBadge = person.BlueBadge,
+                OpenCase = person.OpenCase,
+                EmailAddress = person.EmailAddress,
+                DateOfBirth = person.DateOfBirth.Value,
+                DateOfDeath = person.DateOfDeath.Value,
+                Address = addressDomain,
+                SexualOrientation = person.SexualOrientation,
+                ContextFlag = person.AgeContext,
+                CreatedBy = person.CreatedBy,
+                Ethnicity = person.Ethnicity,
+                FirstLanguage = person.FirstLanguage,
+                FirstName = person.FirstName,
+                Gender = person.Gender,
+                LastName = person.LastName,
+                NhsNumber = person.NhsNumber.Value,
+                Id = person.Id,
+                PreferredMethodOfContact = person.PreferredMethodOfContact,
+                Religion = person.Religion,
+                Restricted = person.Restricted,
+                Title = person.Title,
+                AllocatedTeam = person.AllocatedTeam
+            };
+
+            var result = ResponseFactory.ToResponse(person);
+
+            result.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
         public void MapWarningNoteToResponseReturnsAnObjectWithFormattedDates()
         {
             var dbWarningNote = TestHelpers.CreateWarningNote();
