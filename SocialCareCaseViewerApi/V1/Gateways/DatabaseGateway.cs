@@ -170,7 +170,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             foreach (var allocation in allocations)
             {
-                if (allocation.AllocatedWorker != null)
+                if (allocation.AllocatedWorker != null && allocation.CaseStatus.ToLower() != "closed")
                 {
                     var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.MarkedForDeletion == false);
                     allocation.TeamAllocationStartDate = teamAllocation?.AllocationStartDate;
@@ -1075,15 +1075,14 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             // Team and worker allocation
             if (request.AllocatedWorkerId != null && !hasExistingTeamOnlyAllocation)
             {
-                CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team, null);
-                var createdTeamAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
-                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team, createdTeamAllocation);
+                CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
             }
 
             // Team allocation
             if (request.AllocatedWorkerId == null && !hasExistingTeamOnlyAllocation)
             {
-                response = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team, existingAllocation);
+                response = CreateTeamAndWorkerAllocation(request, person, null, allocatedBy, team);
             }
 
             // Worker allocation
@@ -1091,13 +1090,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 var existingTeamAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
                 request.RagRating = existingTeamAllocation.RagRating;
-                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team, existingTeamAllocation);
+                response = CreateTeamAndWorkerAllocation(request, person, worker, allocatedBy, team);
             }
 
             return response;
         }
 
-        private CreateAllocationResponse CreateTeamAndWorkerAllocation(CreateAllocationRequest request, Person person, DomainWorker worker, Worker allocatedBy, Team team, AllocationSet existingTeamAllocation)
+        private CreateAllocationResponse CreateTeamAndWorkerAllocation(CreateAllocationRequest request, Person person, DomainWorker worker, Worker allocatedBy, Team team)
         {
             var allocation = new AllocationSet
             {
@@ -1105,7 +1104,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WorkerId = worker?.Id,
                 TeamId = team.Id,
                 AllocationStartDate = request.AllocationStartDate,
-                TeamAllocationStartDate = existingTeamAllocation?.AllocationStartDate,
                 CaseStatus = "Open",
                 RagRating = request.RagRating,
                 CarePackage = request.CarePackage,
