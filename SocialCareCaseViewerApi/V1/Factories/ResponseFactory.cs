@@ -143,7 +143,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
         public static GetPersonResponse ToResponse(Person person)
         {
             //get the current display address
-            var displayAddress = person.Addresses?.FirstOrDefault(x => x.IsDisplayAddress?.ToUpper() == "Y");
+            var displayAddress = person.Addresses?.OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.IsDisplayAddress == "Y");
             var displayGpDetails = person.GpDetails?.FirstOrDefault();
 
             return new GetPersonResponse()
