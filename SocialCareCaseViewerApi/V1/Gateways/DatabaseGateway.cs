@@ -168,6 +168,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     ).AsNoTracking().ToList();
             }
 
+            foreach (var allocation in allocations)
+            {
+                if (allocation.AllocatedWorker != null)
+                {
+                    var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.MarkedForDeletion == false);
+                    allocation.TeamAllocationStartDate = teamAllocation?.AllocationStartDate;
+                }
+            }
+
             var totalCount = allocations.Count;
 
             allocations = sortBy switch
