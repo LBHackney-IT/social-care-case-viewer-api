@@ -2350,27 +2350,25 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.SaveChanges();
 
             var personBeforeUpdate = DatabaseContext.Persons.Find(person.Id);
+            var addressBeforeUpdate = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == firstAddress.PostCode && x.StartDate == first && x.PersonId == person.Id);
 
             personBeforeUpdate.Addresses.Count.Should().Equals(3);
-            personBeforeUpdate.Addresses.First().StartDate.Should().Equals(first);
-            personBeforeUpdate.Addresses.First().IsDisplayAddress.Should().Equals("Y");
-            personBeforeUpdate.Addresses.First().PostCode.Should().Equals(firstAddress.PostCode);
+            addressBeforeUpdate.IsDisplayAddress.Should().Equals("Y");
 
             var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
 
             var updatedPerson = DatabaseContext.Persons.Find(person.Id);
+            var previousAddress = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == firstAddress.PostCode && x.StartDate == first && x.PersonId == person.Id);
+            var newAddress = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == request.Address.Postcode && x.PersonId == person.Id);
 
             updatedPerson.Addresses.Count.Should().Equals(4);
-            updatedPerson.Addresses.First().StartDate.Should().Equals(first);
-            updatedPerson.Addresses.First().PostCode.Should().Equals(firstAddress.PostCode);
-            updatedPerson.Addresses.First().EndDate.Should().NotBeNull();
-            updatedPerson.Addresses.First().IsDisplayAddress.Should().Equals("N");
+            previousAddress.EndDate.Should().NotBeNull();
+            previousAddress.IsDisplayAddress.Should().Equals("N");
 
-            updatedPerson.Addresses.Last().IsDisplayAddress.Should().Equals("Y");
-            updatedPerson.Addresses.Last().StartDate.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTime.Now);
-            updatedPerson.Addresses.Last().PostCode.Should().Equals(request.Address.Postcode);
+            newAddress.IsDisplayAddress.Should().Equals("Y");
+            newAddress.StartDate.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTime.Now);
         }
 
         [Test]
