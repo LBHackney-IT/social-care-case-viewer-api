@@ -834,7 +834,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
             var teamAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId == null);
-            var teamcation = DatabaseContext.Allocations.Where(x => x.PersonId == createAllocationRequest.MosaicId).ToList();
             var workerAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId != null);
 
             var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, workerAllocation.Id);
