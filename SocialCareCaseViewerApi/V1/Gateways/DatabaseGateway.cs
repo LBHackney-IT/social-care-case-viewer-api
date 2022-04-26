@@ -1485,7 +1485,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
         public Person GetPersonDetailsById(long id)
         {
             //load related entities to minimise SQL calls
-            var person = _databaseContext
+            return _databaseContext
                 .Persons
                 .Include(x => x.Addresses)
                 .Include(x => x.PhoneNumbers)
@@ -1498,9 +1498,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.LastUpdated)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
 
-            person.Addresses.OrderBy(x => x.StartDate).ToList();
-
-            return person;
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
