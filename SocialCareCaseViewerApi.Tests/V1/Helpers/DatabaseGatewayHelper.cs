@@ -85,6 +85,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
         public static Address CreateAddressDatabaseEntity(
             long? personId = null,
             string isDisplayAddress = "Y",
+            DateTime? startDate = null,
             DateTime? endDate = null,
             string postCode = null,
             string address = null
@@ -96,6 +97,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Helpers
                  .RuleFor(a => a.CreatedBy, f => f.Internet.Email())
                  .RuleFor(a => a.DataIsFromDmPersonsBackup, f => f.Random.String2(1))
                  .RuleFor(a => a.EndDate, endDate)
+                 .RuleFor(a => a.StartDate, startDate)
                  .RuleFor(a => a.IsDisplayAddress, f => string.IsNullOrEmpty(isDisplayAddress) ? f.Random.String2(1) : isDisplayAddress)
                  .RuleFor(a => a.LastModifiedAt, f => f.Date.Past())
                  .RuleFor(a => a.LastModifiedBy, f => f.Internet.Email())

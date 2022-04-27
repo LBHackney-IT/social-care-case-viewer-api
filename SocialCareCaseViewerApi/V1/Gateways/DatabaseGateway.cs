@@ -542,7 +542,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //check for changed address
             if (request.Address != null)
             {
-                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+                Address displayAddress = person.Addresses.OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.IsDisplayAddress == "Y");
 
                 if (displayAddress == null)
                 {
@@ -567,7 +567,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             else //address not provided, remove current display address if it exists
             {
-                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+                Address displayAddress = person.Addresses.OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.IsDisplayAddress == "Y");
 
                 if (displayAddress != null)
                 {
@@ -755,7 +755,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             //check for changed address
             if (request.Address != null)
             {
-                Address displayAddress = person.Addresses.FirstOrDefault(x => x.IsDisplayAddress == "Y");
+                Address displayAddress = person.Addresses.OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.IsDisplayAddress == "Y");
 
                 if (displayAddress == null)
                 {
@@ -1497,6 +1497,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .Include(x => x.Emails)
                 .Include(x => x.LastUpdated)
                 .FirstOrDefault(x => x.Id == id && x.MarkedForDeletion == false);
+
         }
         public List<Person> GetPersonsByListOfIds(List<long> ids)
         {
