@@ -2339,9 +2339,11 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
             person.Addresses = null;
+
             var firstAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: first, isDisplayAddress: "Y");
             var secondAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: second, isDisplayAddress: "Y");
             var lastAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: last, isDisplayAddress: "Y");
+            DatabaseContext.AddRange(new List<dbAddress>() { firstAddress, secondAddress, lastAddress });
 
             DatabaseContext.Persons.Add(person);
             DatabaseContext.Addresses.Add(firstAddress);
@@ -2349,23 +2351,17 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Addresses.Add(lastAddress);
             DatabaseContext.SaveChanges();
 
-            var personBeforeUpdate = DatabaseContext.Persons.Find(person.Id);
-            var addressBeforeUpdate = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == firstAddress.PostCode && x.StartDate == first && x.PersonId == person.Id);
-
-            personBeforeUpdate.Addresses.Count.Should().Equals(3);
-            addressBeforeUpdate.IsDisplayAddress.Should().Equals("Y");
+            person.Addresses.Count.Should().Equals(3);
+            firstAddress.IsDisplayAddress.Should().Equals("Y");
 
             var request = GetValidUpdatePersonRequest(person.Id);
 
             _classUnderTest.UpdatePerson(request);
-
-            var updatedPerson = DatabaseContext.Persons.Find(person.Id);
-            var previousAddress = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == firstAddress.PostCode && x.StartDate == first && x.PersonId == person.Id);
             var newAddress = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == request.Address.Postcode && x.PersonId == person.Id);
 
-            updatedPerson.Addresses.Count.Should().Equals(4);
-            previousAddress.EndDate.Should().NotBeNull();
-            previousAddress.IsDisplayAddress.Should().Equals("N");
+            person.Addresses.Count.Should().Equals(4);
+            firstAddress.EndDate.Should().NotBeNull();
+            firstAddress.IsDisplayAddress.Should().Equals("N");
 
             newAddress.IsDisplayAddress.Should().Equals("Y");
             newAddress.StartDate.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTime.Now);
