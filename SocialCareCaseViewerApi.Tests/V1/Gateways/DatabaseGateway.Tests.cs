@@ -2331,6 +2331,43 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdatePersonsAddressUpdatesTheMostRecentAddressToDisplay()
+        {
+            var first = DateTime.Today;
+            var second = DateTime.Today.AddDays(-1);
+            var last = DateTime.Today.AddDays(-2);
+
+            var person = DatabaseGatewayHelper.CreatePersonDatabaseEntity();
+            person.Addresses = null;
+
+            var firstAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: first, isDisplayAddress: "Y");
+            var secondAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: second, isDisplayAddress: "Y");
+            var lastAddress = DatabaseGatewayHelper.CreateAddressDatabaseEntity(person.Id, startDate: last, isDisplayAddress: "Y");
+            DatabaseContext.AddRange(new List<dbAddress>() { firstAddress, secondAddress, lastAddress });
+
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.Addresses.Add(firstAddress);
+            DatabaseContext.Addresses.Add(secondAddress);
+            DatabaseContext.Addresses.Add(lastAddress);
+            DatabaseContext.SaveChanges();
+
+            person.Addresses.Count.Should().Equals(3);
+            firstAddress.IsDisplayAddress.Should().Equals("Y");
+
+            var request = GetValidUpdatePersonRequest(person.Id);
+
+            _classUnderTest.UpdatePerson(request);
+            var newAddress = DatabaseContext.Addresses.FirstOrDefault(x => x.PostCode == request.Address.Postcode && x.PersonId == person.Id);
+
+            person.Addresses.Count.Should().Equals(4);
+            firstAddress.EndDate.Should().NotBeNull();
+            firstAddress.IsDisplayAddress.Should().Equals("N");
+
+            newAddress.IsDisplayAddress.Should().Equals("Y");
+            newAddress.StartDate.Should().BeWithin(TimeSpan.FromSeconds(1)).Before(DateTime.Now);
+        }
+
+        [Test]
         public void PatchPersonSetsCorrectValuesForPersonEntity()
         {
             Person person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "Foo"));
