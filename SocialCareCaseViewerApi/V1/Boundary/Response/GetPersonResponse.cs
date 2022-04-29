@@ -13,6 +13,8 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
     {
         public long Id { get; set; }
 
+        public DateTime? ReviewDate { get; set; }
+
         public string Title { get; set; }
 
         public string? Pronoun { get; set; }
