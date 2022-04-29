@@ -2662,6 +2662,40 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void UpdatePersonUpdatesFullNameWhenFirstNameIsUpdated()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "First", lastName: "Last"));
+
+            var request = GetValidPatchPersonRequest(person.Id);
+
+            request.FirstName = "FirstUpdated";
+            request.LastName = null;
+
+            _classUnderTest.PatchPerson(request);
+
+            var updatedPerson = DatabaseContext.Persons.FirstOrDefault(x => x.Id == person.Id);
+
+            updatedPerson.FullName.Should().Be($"{request.FirstName} {person.LastName}");
+        }
+
+        [Test]
+        public void UpdatePersonUpdatesFullNameWhenLastNameIsUpdated()
+        {
+            var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity(firstName: "First", lastName: "Last"));
+
+            var request = GetValidPatchPersonRequest(person.Id);
+
+            request.FirstName = null;
+            request.LastName = "LastUpdated";
+
+            _classUnderTest.PatchPerson(request);
+
+            var updatedPerson = DatabaseContext.Persons.FirstOrDefault(x => x.Id == person.Id);
+
+            updatedPerson.FullName.Should().Be($"{person.FirstName} {request.LastName}");
+        }
+
+        [Test]
         public void UpdatePersonCreatesCorrectCaseHistoryNoteByCallingProcessDataGateway()
         {
             var person = SavePersonToDatabase(DatabaseGatewayHelper.CreatePersonDatabaseEntity());

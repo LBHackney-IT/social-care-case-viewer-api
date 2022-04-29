@@ -636,6 +636,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 person.FullName = $"{request.FirstName} {request.LastName}";
             }
+            else if (request.FirstName != null && request.LastName == null)
+            {
+                person.FullName = $"{request.FirstName} {person.LastName}";
+            }
+            else if (request.FirstName == null && request.LastName != null)
+            {
+                person.FullName = $"{person.FirstName} {request.LastName}";
+            }
+
             person.AgeContext = request.ContextFlag ?? person.AgeContext;
             person.ReviewDate = request.ReviewDate ?? person.ReviewDate;
             person.DateOfBirth = request.DateOfBirth ?? person.DateOfBirth;
