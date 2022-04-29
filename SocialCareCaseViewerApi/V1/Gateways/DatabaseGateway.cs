@@ -171,7 +171,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 if (allocation.AllocatedWorker != null && allocation.CaseStatus?.ToLower() != "closed")
                 {
-                    var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.MarkedForDeletion == false);
+                    var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.TeamId == allocation.Id && x.MarkedForDeletion == false);
                     allocation.TeamAllocationStartDate = teamAllocation?.AllocationStartDate;
                 }
             }
