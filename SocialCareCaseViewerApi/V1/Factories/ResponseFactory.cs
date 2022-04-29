@@ -196,6 +196,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 Restricted = person.Restricted,
                 Title = person.Title,
                 AllocatedTeam = person.AllocatedTeam,
+                ReviewDate = person.ReviewDate,
                 Address = displayAddress != null ? EntityFactory.DbAddressToAddressDomain(displayAddress) : null,
                 GpDetails = displayGpDetails != null ? EntityFactory.DbGpDetailsToDomain(displayGpDetails) : null,
                 OtherNames = person.OtherNames?.Select(x => x.ToDomain()).ToList(),
