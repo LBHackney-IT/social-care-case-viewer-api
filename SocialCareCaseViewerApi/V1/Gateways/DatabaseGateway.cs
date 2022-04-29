@@ -167,6 +167,15 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     ).AsNoTracking().ToList();
             }
 
+            foreach (var allocation in allocations)
+            {
+                if (allocation.AllocatedWorker != null && allocation.CaseStatus?.ToLower() != "closed")
+                {
+                    var teamAllocation = _databaseContext.Allocations.FirstOrDefault(x => x.PersonId == allocation.PersonId && x.WorkerId == null && x.TeamId == allocation.Id && x.MarkedForDeletion == false);
+                    allocation.TeamAllocationStartDate = teamAllocation?.AllocationStartDate;
+                }
+            }
+
             var totalCount = allocations.Count;
 
             allocations = sortBy switch
@@ -1051,9 +1060,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     "Person has already allocated worker in this team");
             }
 
-            var exisitingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
+            var existingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
 
-            if (exisitingAllocation != null && request.AllocationStartDate < exisitingAllocation.AllocationStartDate)
+            if (existingAllocation != null && request.AllocationStartDate < existingAllocation.AllocationStartDate)
             {
                 throw new CreateAllocationException(
                     "Worker Allocation date must be after Team Allocation date");

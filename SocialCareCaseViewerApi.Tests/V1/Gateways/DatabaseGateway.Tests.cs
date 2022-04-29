@@ -811,6 +811,47 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetAllocationsReturnsTeamAllocationStartDateForTeamAndWorkerAllocation()
+        {
+            // Create worker and teams
+            var worker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 123);
+            var anotherWorker = TestHelpers.CreateWorker(hasAllocations: false, hasWorkerTeams: false, id: 124);
+
+            var workerTeam = TestHelpers.CreateWorkerTeam(worker.Id);
+            var anotherWorkerTeam = TestHelpers.CreateWorkerTeam(anotherWorker.Id);
+
+            worker.WorkerTeams = new List<WorkerTeam> { workerTeam };
+            anotherWorker.WorkerTeams = new List<WorkerTeam> { anotherWorkerTeam };
+
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.WorkerTeams.Add(workerTeam);
+            DatabaseContext.Workers.Add(anotherWorker);
+            DatabaseContext.WorkerTeams.Add(anotherWorkerTeam);
+            DatabaseContext.SaveChanges();
+
+            var (createAllocationRequest, _, allocator, resident, _) = TestHelpers.CreateAllocationRequest(workerId: worker.Id, teamId: workerTeam.TeamId);
+            var (createAnotherAllocationRequest, _, anotherAllocator, anotherResident, _) = TestHelpers.CreateAllocationRequest(workerId: anotherWorker.Id, teamId: anotherWorkerTeam.TeamId);
+
+            DatabaseContext.Workers.Add(allocator);
+            DatabaseContext.Persons.Add(resident);
+            DatabaseContext.Workers.Add(anotherAllocator);
+            DatabaseContext.Persons.Add(anotherResident);
+            DatabaseContext.SaveChanges();
+
+            _classUnderTest.CreateAllocation(createAllocationRequest);
+            _classUnderTest.CreateAllocation(createAnotherAllocationRequest);
+
+            var teamAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId == null && x.TeamId == createAllocationRequest.AllocatedTeamId);
+            var workerAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId != null && x.TeamId == createAllocationRequest.AllocatedTeamId);
+
+            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, workerAllocation.Id);
+
+            allocations.Count.Should().Be(1);
+            allocations.FirstOrDefault().TeamAllocationStartDate.Equals(teamAllocation.AllocationStartDate);
+
+        }
+
+        [Test]
         public void GetAllocationsByTeamIdAndUnallocatedReturnsOnlyAllocationsWithoutWorkerThatDoesntHaveWorkerAllocation()
         {
             // Create worker and teams
