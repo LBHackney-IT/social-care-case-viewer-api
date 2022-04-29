@@ -627,11 +627,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 person.FullName = $"{request.FirstName} {request.LastName}";
             }
-            else if(request.FirstName != null && request.LastName == null)
+            else if (request.FirstName != null && request.LastName == null)
             {
                 person.FullName = $"{request.FirstName} {person.LastName}";
             }
-            else if(request.FirstName == null && request.LastName != null)
+            else if (request.FirstName == null && request.LastName != null)
             {
                 person.FullName = $"{person.FirstName} {request.LastName}";
             }
