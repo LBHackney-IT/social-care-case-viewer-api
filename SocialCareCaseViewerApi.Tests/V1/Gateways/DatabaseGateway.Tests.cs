@@ -528,7 +528,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0, 0);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeamId.Should().Be(workerTeam.Team.Id);
@@ -558,7 +558,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var allRelatedAllocations = DatabaseContext.Allocations.Where(x => x.PersonId == resident.Id).ToList();
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(mosaicId: resident.Id, 0, null, 0, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(mosaicId: resident.Id, 0, null, 0, 0);
 
             allRelatedAllocations.Count.Should().Be(2);
             allocations.Count.Should().Be(1);
@@ -586,7 +586,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var allRelatedAllocations = DatabaseContext.Allocations.Where(x => x.PersonId == resident.Id).ToList();
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(mosaicId: resident.Id, 0, null, 0, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(mosaicId: resident.Id, 0, null, 0, 0);
 
             allRelatedAllocations.Count.Should().Be(2);
             allocations.Count.Should().Be(1);
@@ -615,7 +615,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var allRelatedAllocations = DatabaseContext.Allocations.Where(x => x.PersonId == resident.Id).ToList();
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(mosaicId: 0, worker.Id, null, 0, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(mosaicId: 0, worker.Id, null, 0, 0);
 
             allRelatedAllocations.Count.Should().Be(2);
             allocations.Count.Should().Be(1);
@@ -642,7 +642,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             _classUnderTest.CreateAllocation(createAllocationRequest);
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, worker.Email, 0, 0);
 
             allocations.Count.Should().Be(1);
             allocations.Single().AllocatedWorkerTeam.Should().Be(workerTeam.Team.Name);
@@ -681,7 +681,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(createAllocationRequest);
             _classUnderTest.CreateAllocation(createAnotherAllocationRequest);
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0);
 
             allocations.Count.Should().Be(2);
             allocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
@@ -723,7 +723,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Allocations.Where(x => x.TeamId == workerTeam.TeamId).FirstOrDefault().CaseStatus = "CLOSED";
             DatabaseContext.SaveChanges();
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, status: "CLOSED");
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, status: "CLOSED");
 
             allocations.Count.Should().Be(1);
             allocations.FirstOrDefault().CaseStatus.Should().Be("CLOSED");
@@ -762,7 +762,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(teamAllocationRequest);
             _classUnderTest.CreateAllocation(teamAndWorkerAllocationRequest);
 
-            var (workerAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, teamAllocationStatus: "allocated");
+            var (workerAllocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, teamAllocationStatus: "allocated");
 
             workerAllocations.Count.Should().Be(1);
             workerAllocations.FirstOrDefault().AllocatedWorker.Should().NotBeNull();
@@ -803,7 +803,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 
             var myAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId);
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, myAllocation.Id);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, myAllocation.Id);
 
             allocations.Count.Should().Be(1);
             allocations.FirstOrDefault().Id.Equals(myAllocation.Id);
@@ -844,7 +844,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             var teamAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId == null && x.TeamId == createAllocationRequest.AllocatedTeamId);
             var workerAllocation = DatabaseContext.Allocations.FirstOrDefault(x => x.PersonId == createAllocationRequest.MosaicId && x.WorkerId != null && x.TeamId == createAllocationRequest.AllocatedTeamId);
 
-            var (allocations, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, workerAllocation.Id);
+            var (allocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, 0, workerAllocation.Id);
 
             allocations.Count.Should().Be(1);
             allocations.FirstOrDefault().TeamAllocationStartDate.Equals(teamAllocation.AllocationStartDate);
@@ -884,7 +884,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             _classUnderTest.CreateAllocation(teamAllocationRequest);
             _classUnderTest.CreateAllocation(teamAndWorkerAllocationRequest);
 
-            var (waitingListAllocations, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, teamAllocationStatus: "unallocated");
+            var (waitingListAllocations, _, _) = _classUnderTest.SelectAllocations(0, 0, null, workerTeam.TeamId, 0, teamAllocationStatus: "unallocated");
 
             waitingListAllocations.Count.Should().Be(1);
             waitingListAllocations.FirstOrDefault().AllocatedWorker.Should().BeNull();
@@ -920,7 +920,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             originalWorker = _workerGateway.GetWorkerByWorkerId(worker.Id);
             originalWorker?.AllocationCount.Should().Be(1);
 
-            var (allocation, _) = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0, 0);
+            var (allocation, _, _) = _classUnderTest.SelectAllocations(0, workerId: originalWorker.Id, "", 0, 0);
 
             allocation.Count.Should().Be(1);
             allocation.Single().AllocatedWorkerTeam.Should().Be(currentTeam.Name);
