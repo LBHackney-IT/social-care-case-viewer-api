@@ -1667,7 +1667,6 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
                 TeamId = team.Id,
                 WorkerId = null
             };
-           
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.Workers.Add(deAllocatedByWorker);
             DatabaseContext.Teams.Add(team);
