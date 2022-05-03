@@ -29,7 +29,7 @@ insert into dbo.dm_addresses (ref_addresses_people_id, ref_address_id, person_id
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (7, 78, '6903446318', 'Mobile');
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (100, 21, '5087280941', 'Work');
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (9, 21, '6344116355', 'Mobile');
-insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (7, 78, '4489769930', 'Work');
+insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (101, 78, '4489769930', 'Work');
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (81, 70, '7712705477', 'House');
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (18, 19, '4457745916', 'House');
 insert into dbo.dm_telephone_numbers (telephone_number_id, person_id, telephone_number, telephone_number_type) values (89, 88, '7326547202', 'Work');
