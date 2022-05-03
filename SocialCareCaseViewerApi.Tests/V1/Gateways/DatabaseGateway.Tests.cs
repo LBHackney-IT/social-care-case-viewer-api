@@ -1674,7 +1674,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            //remove other allocations created by the helper for simplicity
+            //remove other allocations (created by the helpers) for simplicity
             DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
             DatabaseContext.Allocations.Add(teamAllocation);
             DatabaseContext.SaveChanges();
