@@ -14,12 +14,13 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         }
         public AllocationList Execute(ListAllocationsRequest request)
         {
-            var (allocations, cursor) = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.AllocationId, request.SortBy, request.Cursor, request.TeamAllocationStatus, request.Status);
+            var (allocations, cursor, totalCount) = _databaseGateway.SelectAllocations(request.MosaicId, request.WorkerId, request.WorkerEmail, request.TeamId, request.AllocationId, request.SortBy, request.Cursor, request.TeamAllocationStatus, request.Status);
 
             return new AllocationList
             {
                 Allocations = allocations,
-                NextCursor = cursor.ToString()
+                NextCursor = cursor.ToString(),
+                TotalCount = totalCount
             };
         }
 
