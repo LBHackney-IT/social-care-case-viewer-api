@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { HighAllocation, LowAllocation, allocationWithoutRagRating, UrgentAllocation, MediumAllocation });
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, "", 0, 0, sortBy: "rag_rating", 0);
+            var (result, _, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, "", 0, 0, sortBy: "rag_rating", 0);
 
             result[0].Id.Should().Be(UrgentAllocation.Id);
             result[1].Id.Should().Be(HighAllocation.Id);
@@ -75,7 +75,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { HighAllocation, LowAllocation, allocationWithoutRagRating, UrgentAllocation, MediumAllocation });
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, workerEmail: "", 0, 0, sortBy: sortBy, 0);
+            var (result, _, _) = _databaseGateway.SelectAllocations(mosaicId: personId, 0, workerEmail: "", 0, 0, sortBy: sortBy, 0);
 
             result[0].Id.Should().Be(UrgentAllocation.Id);
             result[1].Id.Should().Be(HighAllocation.Id);
@@ -102,7 +102,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4 });
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: personId, workerId: 0, workerEmail: "", 0, 0, "date_added", 0);
+            var (result, _, _) = _databaseGateway.SelectAllocations(mosaicId: personId, workerId: 0, workerEmail: "", 0, 0, "date_added", 0);
 
             result[0].Id.Should().Be(allocation2.Id);
             result[1].Id.Should().Be(allocation4.Id);
@@ -134,7 +134,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4 });
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(0, workerId: worker.Id, workerEmail: "", 0, 0, "review_date");
+            var (result, _, _) = _databaseGateway.SelectAllocations(0, workerId: worker.Id, workerEmail: "", 0, 0, "review_date");
 
             result[0].Id.Should().Be(allocation1.Id);
             result[1].Id.Should().Be(allocation2.Id);
@@ -164,7 +164,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4 });
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: 0, workerId: worker.Id, workerEmail: "", teamId: 0, 0, sortBy: "date_added");
+            var (result, _, _) = _databaseGateway.SelectAllocations(mosaicId: 0, workerId: worker.Id, workerEmail: "", teamId: 0, 0, sortBy: "date_added");
 
             result[0].Id.Should().Be(allocation3.Id);
             result[1].Id.Should().Be(allocation1.Id);

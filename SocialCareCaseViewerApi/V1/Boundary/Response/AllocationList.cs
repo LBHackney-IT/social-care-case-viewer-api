@@ -7,5 +7,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
         public IList<Allocation> Allocations { get; set; }
 
         public string NextCursor { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }
