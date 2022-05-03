@@ -29,6 +29,7 @@ using Team = SocialCareCaseViewerApi.V1.Infrastructure.Team;
 using TechUse = SocialCareCaseViewerApi.V1.Domain.TechUse;
 using WarningNote = SocialCareCaseViewerApi.V1.Infrastructure.WarningNote;
 using Worker = SocialCareCaseViewerApi.V1.Infrastructure.Worker;
+using MongoDB.Driver.Linq;
 
 namespace SocialCareCaseViewerApi.Tests.V1.Gateways
 {
@@ -1679,6 +1680,53 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways
             Assert.AreEqual(request.DeallocationDate, updatedRecord.AllocationEndDate);
             Assert.AreEqual(updatedRecord.CreatedBy, deAllocatedByWorker.Email);
             Assert.AreEqual(updatedRecord.CreatedAt, workerAllocation.CreatedAt);
+        }
+
+        [Test]
+        public void DeallocatingTeamWhenWorkerIsNotAllocatedShouldCreateOnlyTeamDeallocatedCaseNote()
+        {
+            var allocationStartDate = DateTime.Now.AddDays(-10);
+            var (request, worker, deAllocatedByWorker, person, team) = TestHelpers.CreateUpdateAllocationRequest();
+
+            var teamAllocation = new Allocation
+            {
+                Id = (int) request.Id,
+                AllocationEndDate = null,
+                AllocationStartDate = allocationStartDate,
+                CreatedAt = allocationStartDate,
+                CaseStatus = "Open",
+                CaseClosureDate = null,
+                LastModifiedAt = null,
+                CreatedBy = worker.Email,
+                LastModifiedBy = null,
+                PersonId = person.Id,
+                TeamId = team.Id,
+                WorkerId = null
+            };
+            DatabaseContext.Workers.Add(worker);
+            DatabaseContext.Workers.Add(deAllocatedByWorker);
+            DatabaseContext.Teams.Add(team);
+            DatabaseContext.Persons.Add(person);
+            DatabaseContext.SaveChanges();
+
+            //remove other allocations (created by the helpers) for simplicity
+            DatabaseContext.Allocations.RemoveRange(DatabaseContext.Allocations);
+            DatabaseContext.Allocations.Add(teamAllocation);
+            DatabaseContext.SaveChanges();
+
+            request.DeallocationScope = "team";
+
+            var response = _classUnderTestWithProcessDataGateway.UpdateAllocation(request);
+
+            var filter = Builders<BsonDocument>.Filter.Eq("mosaic_id", person.Id.ToString());
+
+            var query = MongoDbTestContext.getCollection().AsQueryable().Where(db => filter.Inject());
+
+            var result = query.ToList();
+
+            result.Count.Should().Be(1);
+            result.FirstOrDefault()["form_name"].Should().Be("Team deallocated");
+            result.FirstOrDefault()["_id"].Should().Be(ObjectId.Parse(response.CaseNoteId));
         }
 
         [Test]
