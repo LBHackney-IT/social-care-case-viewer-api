@@ -38,7 +38,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (result, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
+            var (result, _, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
 
             result.Count.Should().Be(limit);
         }
@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
+            var (_, cursor, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
 
             cursor.Should().Be(250);
         }
@@ -74,7 +74,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
+            var (_, cursor, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
 
             cursor.Should().Be(null);
         }
@@ -92,7 +92,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
+            var (_, cursor, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
 
             cursor.Should().Be(null);
         }
@@ -110,7 +110,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (_, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
+            var (_, cursor, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", 0, 0);
 
             cursor.Should().Be(null);
         }
@@ -128,7 +128,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
 
             DatabaseContext.SaveChanges();
 
-            var (results, cursor) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", allocationId: 0, cursor: 40, teamId: 0);
+            var (results, cursor, _) = _databaseGateway.SelectAllocations(mosaicId: person.Id, workerId: 0, workerEmail: "", allocationId: 0, cursor: 40, teamId: 0);
 
             cursor.Should().Be(null);
             results.Count.Should().Be(10);

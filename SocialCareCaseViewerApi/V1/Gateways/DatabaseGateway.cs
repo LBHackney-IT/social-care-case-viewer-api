@@ -45,7 +45,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _systemTime = systemTime;
         }
 
-        public (List<Allocation>, int?) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, long allocationId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
+        public (List<Allocation>, int?, int) SelectAllocations(long mosaicId, long workerId, string workerEmail, long teamId, long allocationId, string sortBy = "rag_rating", int cursor = 0, string teamAllocationStatus = null, string status = "OPEN")
         {
             var limit = 250;
 
@@ -188,8 +188,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     allocations
                         .OrderBy(x => x.AllocationStartDate).ToList(),
                 "review_date" =>
-                    allocations
-                        .OrderBy(x => x.PersonReviewDate).ToList(),
+                    allocations.OrderByDescending(x => x.PersonReviewDate.HasValue)
+                        .ThenBy(x => x.PersonReviewDate).ToList(),
                 _ =>
                     allocations
                         .OrderByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null)
@@ -200,7 +200,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .Skip(cursor)
                     .Take(limit)
                     .ToList(),
-                    GetNextOffset(cursor, totalCount, limit));
+                    GetNextOffset(cursor, totalCount, limit), totalCount);
         }
 
         private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)
@@ -1306,35 +1306,38 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 SetDeallocationValues(allocation, (DateTime) request.DeallocationDate, request.CreatedBy);
                 _databaseContext.SaveChanges();
 
-                try
+                if (allocation.WorkerId != null)
                 {
-                    var note = new DeallocationCaseNote
+                    try
                     {
-                        FirstName = person.FirstName,
-                        LastName = person.LastName,
-                        MosaicId = person.Id.ToString(),
-                        Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
-                        WorkerEmail = createdBy.Email, //required for my cases search
-                        DeallocationReason = request.DeallocationReason,
-                        FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
-                        FormName = "Worker deallocated",
-                        AllocationId = request.Id.ToString(),
-                        CreatedBy = request.CreatedBy
-                    };
+                        var note = new DeallocationCaseNote
+                        {
+                            FirstName = person.FirstName,
+                            LastName = person.LastName,
+                            MosaicId = person.Id.ToString(),
+                            Timestamp = DateTime.Now.ToString("dd/MM/yyyy H:mm:ss"),
+                            WorkerEmail = createdBy.Email, //required for my cases search
+                            DeallocationReason = request.DeallocationReason,
+                            FormNameOverall = "API_Deallocation", //prefix API notes so they are easy to identify
+                            FormName = "Worker deallocated",
+                            AllocationId = request.Id.ToString(),
+                            CreatedBy = request.CreatedBy
+                        };
 
-                    var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
+                        var caseNotesDocument = new CaseNotesDocument() { CaseFormData = JsonConvert.SerializeObject(note) };
 
-                    response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-                }
-                catch (Exception ex)
-                {
-                    var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
-                    RestoreAllocationValues(tmpAllocation, allocationToRestore);
+                        response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        var allocationToRestore = _databaseContext.Allocations.FirstOrDefault(x => x.Id == request.Id);
+                        RestoreAllocationValues(tmpAllocation, allocationToRestore);
 
-                    _databaseContext.SaveChanges();
+                        _databaseContext.SaveChanges();
 
-                    throw new UpdateAllocationException(
-                        $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                        throw new UpdateAllocationException(
+                            $"Unable to create a case note. Allocation not updated: {ex.Message}");
+                    }
                 }
             }
             catch (Exception ex)
