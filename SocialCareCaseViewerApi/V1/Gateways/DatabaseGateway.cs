@@ -188,8 +188,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     allocations
                         .OrderBy(x => x.AllocationStartDate).ToList(),
                 "review_date" =>
-                    allocations
-                        .OrderBy(x => x.PersonReviewDate).ToList(),
+                    allocations.OrderByDescending(x => x.PersonReviewDate.HasValue)
+                        .ThenBy(x => x.PersonReviewDate).ToList(),
                 _ =>
                     allocations
                         .OrderByDescending(x => x.RagRating != null ? Enum.Parse(typeof(RagRatingToNumber), x.RagRating, true) : null)
