@@ -139,7 +139,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Workers.Add(worker);
             DatabaseContext.SaveChanges();
 
-            DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation1, allocation2, allocation3, allocation4, allocation5, allocation6 });
+            DatabaseContext.Allocations.AddRange(new List<AllocationSet>() { allocation6, allocation5, allocation4, allocation3, allocation2, allocation1 });
             DatabaseContext.SaveChanges();
 
             var (result, _, _) = _databaseGateway.SelectAllocations(0, workerId: worker.Id, workerEmail: "", 0, 0, "review_date");
