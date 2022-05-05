@@ -19,7 +19,8 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             case_status = 'Closed',
             sccv_last_modified_by = 'first.last@hackney.gov.uk',
             sccv_last_modified_at = NOW(),
-            closure_date_if_closed = NOW()
+            closure_date_if_closed = NOW(),
+            marked_for_deletion = true
             where id in
             (select 
 	            a.id
@@ -47,7 +48,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
             var allocationAgainstMissingPerson = TestHelpers.CreateAllocation(personId: 555, caseStatus: "Open");
             allocationAgainstMissingPerson.LastModifiedBy = null;
             allocationAgainstMissingPerson.LastModifiedAt = null;
-            allocationAgainstMissingPerson.MarkedForDeletion = true;
+            allocationAgainstMissingPerson.MarkedForDeletion = false;
             allocationAgainstMissingPerson.CaseClosureDate = null;
 
             DatabaseContext.Allocations.AddRange(new List<AllocationSet> { allocation1, allocation2, allocationAgainstMissingPerson });
