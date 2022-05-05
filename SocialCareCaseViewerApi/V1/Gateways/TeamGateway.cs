@@ -46,7 +46,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
         public IEnumerable<Infrastructure.Team> GetTeamsByTeamContextFlag(string context)
         {
-            return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper()));
+            return _databaseContext.Teams.Where(x => x.Context.ToUpper().Equals(context.ToUpper())).OrderBy(x => x.Name);
         }
     }
 }
