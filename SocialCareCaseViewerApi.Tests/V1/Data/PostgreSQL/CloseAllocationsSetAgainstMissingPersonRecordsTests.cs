@@ -41,7 +41,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
         {
             var person = TestHelpers.CreatePerson();
 
-            var allocation1 = TestHelpers.CreateAllocation(personId: (int)person.Id, caseStatus: "Open");
+            var allocation1 = TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "Open");
             var allocation2 = TestHelpers.CreateAllocation(personId: (int) person.Id, caseStatus: "Open");
 
             var allocationAgainstMissingPerson = TestHelpers.CreateAllocation(personId: 555, caseStatus: "Open");
