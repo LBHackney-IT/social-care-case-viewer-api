@@ -66,7 +66,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Data.PostgreSQL
         }
 
         [Test]
-        public void DoesNotCloseAnyAllocationsThatHavePersonAssociatedWithThem()
+        public void DoesNotCloseAnyAllocationsThatHaveTheAssociatedPersonInTheDatabase()
         {
             var person = TestHelpers.CreatePerson();
 
