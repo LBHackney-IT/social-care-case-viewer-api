@@ -108,10 +108,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
     public static class MongoConnectionStrings
     {
-        public static Dictionary<Collection, string> Map = new Dictionary<Collection, string>(new Dictionary<Collection, string>
+        public static readonly ImmutableDictionary<Collection, string> Map = new Dictionary<Collection, string>
         {
             {Collection.ResidentCaseSubmissions, "resident-case-submissions"}
-        }.ToImmutableDictionary());
+        }.ToImmutableDictionary();
     }
 
     public enum Collection
