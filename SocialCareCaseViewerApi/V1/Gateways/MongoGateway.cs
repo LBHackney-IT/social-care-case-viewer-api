@@ -108,7 +108,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
     public static class MongoConnectionStrings
     {
-        public static readonly Dictionary<Collection, string> Map = new Dictionary<Collection, string>(new Dictionary<Collection, string>
+        public static Dictionary<Collection, string> Map = new Dictionary<Collection, string>(new Dictionary<Collection, string>
         {
             {Collection.ResidentCaseSubmissions, "resident-case-submissions"}
         }.ToImmutableDictionary());
