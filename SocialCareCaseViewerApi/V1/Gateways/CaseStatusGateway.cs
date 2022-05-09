@@ -318,8 +318,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 caseStatus.Answers.Add(new Infrastructure.CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
-                    CreatedBy = request.EditedBy,
-                    StartDate = startDate ?? (DateTime) request.StartDate,
+                    CreatedBy = request?.EditedBy,
+                    StartDate = startDate ?? (DateTime) request?.StartDate,
                     EndDate = endDate ?? null,
                     Option = a.Option,
                     Value = a.Value,
