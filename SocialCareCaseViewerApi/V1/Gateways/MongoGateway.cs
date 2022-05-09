@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SocialCareCaseViewerApi.V1.Helpers;
@@ -107,10 +108,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
     public static class MongoConnectionStrings
     {
-        public static readonly Dictionary<Collection, string> Map = new Dictionary<Collection, string>
+        public static readonly Dictionary<Collection, string> Map = new Dictionary<Collection, string>(new Dictionary<Collection, string>
         {
             {Collection.ResidentCaseSubmissions, "resident-case-submissions"}
-        };
+        }.ToImmutableDictionary());
     }
 
     public enum Collection
