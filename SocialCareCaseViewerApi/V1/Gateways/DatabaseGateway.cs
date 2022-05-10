@@ -225,7 +225,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             Urgent
         }
 
-        public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
+        public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstName = null,
           string lastname = null, string dateOfBirth = null, string postcode = null, string address = null, string contextflag = null)
         {
             var addressSearchPattern = GetSearchPattern(address);
@@ -234,8 +234,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var queryByAddress = postcode != null || address != null;
 
             var (peopleIds, totalCount) = queryByAddress
-                ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstname, lastname, postcode, address, contextflag)
-                : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstname, lastname, dateOfBirth, contextflag);
+                ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstName, lastname, postcode, address, contextflag)
+                : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstName, lastname, dateOfBirth, contextflag);
 
             var var = _databaseContext.Persons
                 .Where(p => peopleIds.Contains(p.Id))
