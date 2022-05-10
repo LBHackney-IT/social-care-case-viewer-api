@@ -1055,22 +1055,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var hasExistingTeamOnlyAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId == null);
             var hasExistingTeamAndWorkerAllocation = residentAllocations.Any(x => x.TeamId == request.AllocatedTeamId && x.WorkerId != null);
 
-            switch (request.AllocatedWorkerId)
+            // If person has allocation with the same team already and request is to allocate a team
+            if (request.AllocatedWorkerId == null && hasExistingTeamOnlyAllocation)
             {
-                case null:
-                    if (hasExistingTeamOnlyAllocation)
-                    {
-                        throw new CreateAllocationException(
-                            "Person is already allocated to this team");
-                    }
-                    break;
-                default:
-                    if (hasExistingTeamAndWorkerAllocation)
-                    {
-                        throw new CreateAllocationException(
-                            "Person has already allocated worker in this team");
-                    }
-                    break;
+                throw new CreateAllocationException(
+                    "Person is already allocated to this team");
+            }
+
+            // If person has worker allocation with the same team already and a worker and request is to allocate a worker
+            if (request.AllocatedWorkerId != null && hasExistingTeamAndWorkerAllocation)
+            {
+                throw new CreateAllocationException(
+                    "Person has already allocated worker in this team");
             }
 
             var existingAllocation = residentAllocations.FirstOrDefault(x => x.TeamId == request.AllocatedTeamId);
