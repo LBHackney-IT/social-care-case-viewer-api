@@ -8,7 +8,7 @@ namespace AlertsHandlerLambda
     {
         protected GoogleApiException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        public GoogleApiException(SerializationInfo info, StreamingContext? context, string message) : base(message) { }
+        public GoogleApiException(SerializationInfo? info, StreamingContext? context, string message) : base(message) { }
     }
 
     [Serializable]
@@ -16,6 +16,6 @@ namespace AlertsHandlerLambda
     {
         protected ConfigurationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        public ConfigurationException(SerializationInfo info, StreamingContext? context, string message) : base(message) { }
+        public ConfigurationException(SerializationInfo? info, StreamingContext? context, string message) : base(message) { }
     }
 }
