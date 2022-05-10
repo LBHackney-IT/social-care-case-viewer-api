@@ -944,44 +944,44 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
             return worker;
         }
-        public void UpdateWorker(UpdateWorkerRequest request)
+        public void UpdateWorker(UpdateWorkerRequest updateWorkerRequest)
         {
-            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == request.WorkerId);
+            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == updateWorkerRequest.WorkerId);
 
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with Id {request.WorkerId} not found");
+                throw new WorkerNotFoundException($"Worker with Id {updateWorkerRequest.WorkerId} not found");
             }
 
-            worker.LastModifiedBy = request.ModifiedBy;
-            worker.FirstName = request.FirstName;
-            worker.LastName = request.LastName;
-            worker.ContextFlag = request.ContextFlag;
-            worker.Role = request.Role;
-            worker.DateStart = request.DateStart;
+            worker.LastModifiedBy = updateWorkerRequest.ModifiedBy;
+            worker.FirstName = updateWorkerRequest.FirstName;
+            worker.LastName = updateWorkerRequest.LastName;
+            worker.ContextFlag = updateWorkerRequest.ContextFlag;
+            worker.Role = updateWorkerRequest.Role;
+            worker.DateStart = updateWorkerRequest.DateStart;
             worker.IsActive = true;
 
             var dateTime = DateTime.Now;
 
-            if (request.Teams != null && request.Teams.Count > 0)
+            if (updateWorkerRequest.Teams != null && updateWorkerRequest.Teams.Count > 0)
             {
                 //boundary locked down to one team only, but ensure we only have one
-                if (request.Teams.Count > 1)
+                if (updateWorkerRequest.Teams.Count > 1)
                 {
                     throw new Exception("Worker can have only one team");
                 }
 
                 //check that team has changed. If not, ignore
-                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
+                if (!worker.WorkerTeams.Any(x => x.TeamId == updateWorkerRequest.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
                 {
                     //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
                     foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
                     {
                         workerteam.EndDate = dateTime;
-                        workerteam.LastModifiedBy = request.ModifiedBy;
+                        workerteam.LastModifiedBy = updateWorkerRequest.ModifiedBy;
                     }
 
-                    var team = request.Teams.FirstOrDefault();
+                    var team = updateWorkerRequest.Teams.FirstOrDefault();
 
                     //make sure team exists
                     if (!_databaseContext.Teams.AsNoTracking().Any(x => x.Id == team.Id))
@@ -989,7 +989,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
                     }
                     //add new team with start date
-                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = updateWorkerRequest.ModifiedBy });
                 }
             }
 
