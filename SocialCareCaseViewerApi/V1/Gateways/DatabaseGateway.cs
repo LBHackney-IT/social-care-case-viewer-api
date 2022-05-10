@@ -1013,10 +1013,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return teamsWorkerBelongsIn;
         }
 
-        public Team GetTeamByTeamName(string teamName)
+        public Team GetTeamByTeamName(string name)
         {
             var team = _databaseContext.Teams
-                .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
+                .Where(x => x.Name.ToUpper().Equals(name.ToUpper()))
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
