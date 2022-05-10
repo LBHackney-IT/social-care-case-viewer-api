@@ -25,7 +25,7 @@ namespace AlertsHandlerLambda.UseCases
             }
             else
             {
-                throw new ArgumentNullException("Message");
+                throw new ArgumentNullException();
             }
         }
     }

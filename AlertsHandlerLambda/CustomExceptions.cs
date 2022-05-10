@@ -1,16 +1,17 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace AlertsHandlerLambda
 {
     [Serializable]
     public class GoogleApiException : Exception
     {
-        public GoogleApiException(string message) : base(message) { }
+        public GoogleApiException(SerializationInfo info, StreamingContext context, string message) : base(message) { }
     }
 
     [Serializable]
     public class ConfigurationException : Exception
     {
-        public ConfigurationException(string message) : base(message) { }
+        public ConfigurationException(SerializationInfo info, StreamingContext context, string message) : base(message) { }
     }
 }
