@@ -20,11 +20,11 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext = databaseContext;
         }
 
-        public (List<ResidentInformation>, int, int?) GetPersonRecordsBySearchQuery(PersonSearchRequest request)
+        public (List<ResidentInformation>, int, int?) GetPersonRecordsBySearchQuery(PersonSearchRequest query)
         {
             var totalCount = 0;
             var matchingResults = new List<SearchResult>();
-            matchingResults = FilterByNameAgainstAllRecords(request);
+            matchingResults = FilterByNameAgainstAllRecords(query);
 
             if (matchingResults.Count > 0) totalCount = matchingResults.FirstOrDefault().TotalRecords;
 
@@ -40,7 +40,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 sortedDbRecords.Add(dbRecords.First(x => x.MosaicId == result.PersonId.ToString()));
             }
 
-            return (sortedDbRecords, totalCount, GetNextOffset(request.Cursor ?? 0, totalCount, 20));
+            return (sortedDbRecords, totalCount, GetNextOffset(query.Cursor ?? 0, totalCount, 20));
         }
         private static int? GetNextOffset(int currentOffset, int totalRecords, int limit)
         {

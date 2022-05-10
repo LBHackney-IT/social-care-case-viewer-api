@@ -147,7 +147,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstname: "ciasom");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstName: "ciasom");
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
@@ -164,7 +164,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstname: "iaso");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstName: "iaso");
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
@@ -181,7 +181,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, lastname: "tessellate");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, lastName: "tessellate");
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
@@ -198,7 +198,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person2);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, lastname: "sell");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, lastName: "sell");
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person2.Id).ToResidentInformationResponse());
@@ -212,7 +212,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstname: "ciasom", lastname: "Tessellate");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstName: "ciasom", lastName: "Tessellate");
             listOfPersons.Count.Should().Be(1);
             listOfPersons.First().MosaicId.Should().Be(person.Id.ToString());
         }
@@ -225,7 +225,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.Add(person);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstname: "ciasom", lastname: "ssellat");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstName: "ciasom", lastName: "ssellat");
             listOfPersons.Count.Should().Be(1);
             listOfPersons.First().MosaicId.Should().Be(person.Id.ToString());
         }
@@ -374,7 +374,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextflag: "A");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextFlag: "A");
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
@@ -404,7 +404,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Addresses.Add(address3);
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstname: "ciasom", postcode: "E8 1DY");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, firstName: "ciasom", postcode: "E8 1DY");
 
             listOfPersons.Count.Should().Be(1);
             listOfPersons.First().MosaicId.Should().Be(person1.Id.ToString());
@@ -574,7 +574,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var (_, totalCount) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 1, firstname: "foo");
+            var (_, totalCount) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 1, firstName: "foo");
 
             totalCount.Should().Be(3);
         }

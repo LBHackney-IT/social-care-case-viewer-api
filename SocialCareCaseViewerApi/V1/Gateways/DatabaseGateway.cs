@@ -225,8 +225,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             Urgent
         }
 
-        public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstname = null,
-          string lastname = null, string dateOfBirth = null, string postcode = null, string address = null, string contextflag = null)
+        public (List<ResidentInformationResponse>, int) GetResidentsBySearchCriteria(int cursor, int limit, long? id = null, string firstName = null,
+          string lastName = null, string dateOfBirth = null, string postcode = null, string address = null, string contextFlag = null)
         {
             var addressSearchPattern = GetSearchPattern(address);
             var postcodeSearchPattern = GetSearchPattern(postcode);
@@ -234,8 +234,8 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             var queryByAddress = postcode != null || address != null;
 
             var (peopleIds, totalCount) = queryByAddress
-                ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstname, lastname, postcode, address, contextflag)
-                : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstname, lastname, dateOfBirth, contextflag);
+                ? GetPersonIdsBasedOnAddressCriteria(cursor, limit, id, firstName, lastName, postcode, address, contextFlag)
+                : GetPersonIdsBasedOnSearchCriteria(cursor, limit, id, firstName, lastName, dateOfBirth, contextFlag);
 
             var var = _databaseContext.Persons
                 .Where(p => peopleIds.Contains(p.Id))
@@ -878,9 +878,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return numbers.Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
-        public string GetPersonIdByNCReference(string ncId)
+        public string GetPersonIdByNCReference(string nfReference)
         {
-            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == ncId).FirstOrDefault();
+            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == nfReference).FirstOrDefault();
 
             return lookup?.MosaicId;
         }
@@ -944,44 +944,44 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             _databaseContext.SaveChanges();
             return worker;
         }
-        public void UpdateWorker(UpdateWorkerRequest request)
+        public void UpdateWorker(UpdateWorkerRequest updateWorkerRequest)
         {
-            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == request.WorkerId);
+            var worker = _databaseContext.Workers.Include(x => x.WorkerTeams).FirstOrDefault(x => x.Id == updateWorkerRequest.WorkerId);
 
             if (worker == null)
             {
-                throw new WorkerNotFoundException($"Worker with Id {request.WorkerId} not found");
+                throw new WorkerNotFoundException($"Worker with Id {updateWorkerRequest.WorkerId} not found");
             }
 
-            worker.LastModifiedBy = request.ModifiedBy;
-            worker.FirstName = request.FirstName;
-            worker.LastName = request.LastName;
-            worker.ContextFlag = request.ContextFlag;
-            worker.Role = request.Role;
-            worker.DateStart = request.DateStart;
+            worker.LastModifiedBy = updateWorkerRequest.ModifiedBy;
+            worker.FirstName = updateWorkerRequest.FirstName;
+            worker.LastName = updateWorkerRequest.LastName;
+            worker.ContextFlag = updateWorkerRequest.ContextFlag;
+            worker.Role = updateWorkerRequest.Role;
+            worker.DateStart = updateWorkerRequest.DateStart;
             worker.IsActive = true;
 
             var dateTime = DateTime.Now;
 
-            if (request.Teams != null && request.Teams.Count > 0)
+            if (updateWorkerRequest.Teams != null && updateWorkerRequest.Teams.Count > 0)
             {
                 //boundary locked down to one team only, but ensure we only have one
-                if (request.Teams.Count > 1)
+                if (updateWorkerRequest.Teams.Count > 1)
                 {
                     throw new Exception("Worker can have only one team");
                 }
 
                 //check that team has changed. If not, ignore
-                if (!worker.WorkerTeams.Any(x => x.TeamId == request.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
+                if (!worker.WorkerTeams.Any(x => x.TeamId == updateWorkerRequest.Teams.FirstOrDefault().Id && x.EndDate == null && x.StartDate != null))
                 {
                     //set end date to all active team relationships. This helps getting all old (incorrectly created) records up to date
                     foreach (var workerteam in worker.WorkerTeams?.Where(x => x.EndDate == null))
                     {
                         workerteam.EndDate = dateTime;
-                        workerteam.LastModifiedBy = request.ModifiedBy;
+                        workerteam.LastModifiedBy = updateWorkerRequest.ModifiedBy;
                     }
 
-                    var team = request.Teams.FirstOrDefault();
+                    var team = updateWorkerRequest.Teams.FirstOrDefault();
 
                     //make sure team exists
                     if (!_databaseContext.Teams.AsNoTracking().Any(x => x.Id == team.Id))
@@ -989,7 +989,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         throw new GetTeamException($"Team with Name {team.Name} and ID {team.Id} not found");
                     }
                     //add new team with start date
-                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = request.ModifiedBy });
+                    worker.WorkerTeams.Add(new WorkerTeam { StartDate = dateTime, TeamId = team.Id, Worker = worker, CreatedBy = updateWorkerRequest.ModifiedBy });
                 }
             }
 
@@ -1013,10 +1013,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return teamsWorkerBelongsIn;
         }
 
-        public Team GetTeamByTeamName(string teamName)
+        public Team GetTeamByTeamName(string name)
         {
             var team = _databaseContext.Teams
-                .Where(x => x.Name.ToUpper().Equals(teamName.ToUpper()))
+                .Where(x => x.Name.ToUpper().Equals(name.ToUpper()))
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)
@@ -1571,10 +1571,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(prt => prt.Id == relationshipId);
         }
 
-        public void DeleteRelationship(long id)
+        public void DeleteRelationship(long relationshipId)
         {
             var relationship = _databaseContext.PersonalRelationships
-                .Where(prt => prt.Id == id)
+                .Where(prt => prt.Id == relationshipId)
                 .Include(pr => pr.Type)
                 .Include(pr => pr.Details)
                 .FirstOrDefault();

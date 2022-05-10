@@ -74,10 +74,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return caseStatuses.Select(caseStatus => caseStatus.ToDomain()).ToList();
         }
 
-        public List<CaseStatus> GetClosedCaseStatusesByPersonIdAndDate(long personId, DateTime date)
+        public List<CaseStatus> GetClosedCaseStatusesByPersonIdAndDate(long personId, DateTime startDate)
         {
             var caseStatuses = _databaseContext.CaseStatuses
-                .Where(cs => cs.PersonId == personId && cs.EndDate > date)
+                .Where(cs => cs.PersonId == personId && cs.EndDate > startDate)
                 .Include(cs => cs.Person)
                 .Include(cs => cs.Answers).ToList();
 
