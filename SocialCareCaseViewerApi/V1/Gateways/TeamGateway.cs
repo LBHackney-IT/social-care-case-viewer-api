@@ -30,10 +30,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return team.ToDomain();
         }
 
-        public Infrastructure.Team? GetTeamByTeamId(int teamId)
+        public Infrastructure.Team? GetTeamByTeamId(int id)
         {
             var team = _databaseContext.Teams
-                .Where(x => x.Id == teamId)
+                .Where(x => x.Id == id)
                 .Include(x => x.WorkerTeams)
                 .ThenInclude(x => x.Worker)
                 .ThenInclude(x => x.Allocations)

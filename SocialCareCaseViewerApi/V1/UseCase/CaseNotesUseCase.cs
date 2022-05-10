@@ -16,9 +16,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _historicalDataGateway = historicalSocialCareGateway;
         }
 
-        public ListCaseNotesResponse ExecuteGetByPersonId(long id)
+        public ListCaseNotesResponse ExecuteGetByPersonId(long personId)
         {
-            var caseNotes = _historicalDataGateway.GetCaseNotesByPersonId(id);
+            var caseNotes = _historicalDataGateway.GetCaseNotesByPersonId(personId);
 
             return new ListCaseNotesResponse()
             {
