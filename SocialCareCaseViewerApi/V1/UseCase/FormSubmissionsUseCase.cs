@@ -68,20 +68,20 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             return foundSubmission?.ToDomain().ToResponse();
         }
 
-        public void ExecuteDelete(string submissionsId, DeleteCaseSubmissionRequest request)
+        public void ExecuteDelete(string submissionId, DeleteCaseSubmissionRequest request)
         {
             _ = GetSanitisedWorker(request.DeletedBy);
 
-            var submissionToBeDeleted = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionsId));
+            var submissionToBeDeleted = _mongoGateway.LoadRecordById<CaseSubmission>(_collectionName, ObjectId.Parse(submissionId));
 
             if (submissionToBeDeleted == null)
             {
-                throw new DeleteSubmissionException($"Submission with ID {submissionsId} not found");
+                throw new DeleteSubmissionException($"Submission with ID {submissionId} not found");
             }
 
             if (submissionToBeDeleted.Deleted == true)
             {
-                throw new SubmissionAlreadyDeletedException($"Submission with ID { submissionsId} has already been deleted");
+                throw new SubmissionAlreadyDeletedException($"Submission with ID { submissionId} has already been deleted");
             }
 
             if (submissionToBeDeleted.FormId?.ToLower() != FormIdName.ChildCaseNote && submissionToBeDeleted.FormId?.ToLower() != FormIdName.AdultCaseNote)
@@ -99,7 +99,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 DeleteRequestedBy = request.DeleteRequestedBy
             };
 
-            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionsId), submissionToBeDeleted);
+            _mongoGateway.UpsertRecord(_collectionName, ObjectId.Parse(submissionId), submissionToBeDeleted);
         }
 
         public static FilterDefinition<CaseSubmission> GenerateFilter(QueryCaseSubmissionsRequest request, bool addDeletedRecordsFilter = true)
