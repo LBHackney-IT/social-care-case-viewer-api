@@ -878,9 +878,9 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             return numbers.Select(x => x.ToEntity(personId, createdBy)).ToList();
         }
 
-        public string GetPersonIdByNCReference(string ncId)
+        public string GetPersonIdByNCReference(string nfReference)
         {
-            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == ncId).FirstOrDefault();
+            PersonIdLookup lookup = _databaseContext.PersonLookups.Where(x => x.NCId == nfReference).FirstOrDefault();
 
             return lookup?.MosaicId;
         }
