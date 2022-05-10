@@ -15,9 +15,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             _historicalDataGateway = historicalSocialCareGateway;
         }
 
-        public List<Visit> ExecuteGetByPersonId(long id)
+        public List<Visit> ExecuteGetByPersonId(long personId)
         {
-            return _historicalDataGateway.GetVisitByPersonId(id).ToList();
+            return _historicalDataGateway.GetVisitByPersonId(personId).ToList();
         }
     }
 }
