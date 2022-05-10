@@ -112,7 +112,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.CaseStatusGatewayTests.LAC
             episodeEndingAnswer.Option.Should().Be(newRequestAnswer.Option);
             episodeEndingAnswer.Value.Should().Be(newRequestAnswer.Value);
             episodeEndingAnswer.EndDate.Value.Date.Should().Be(request.EndDate.Value.Date);
-            episodeEndingAnswer.StartDate.Date.Should().Be(activeAnswersStartDate);
+            episodeEndingAnswer.StartDate?.Date.Should().Be(activeAnswersStartDate);
             episodeEndingAnswer.CreatedBy.Should().Be(request.EditedBy);
             episodeEndingAnswer.GroupId.Should().Be(groupId);
         }

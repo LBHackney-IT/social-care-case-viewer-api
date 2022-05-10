@@ -20,7 +20,7 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
         public string? Value { get; set; }
 
         [Column("start_date")]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         [Column("fk_person_case_status_id")]
         public long CaseStatusId { get; set; }
