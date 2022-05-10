@@ -2,6 +2,8 @@ using System;
 using System.Text.Json.Serialization;
 using FluentValidation;
 
+#nullable enable
+
 namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class UpdateAllocationRequest
