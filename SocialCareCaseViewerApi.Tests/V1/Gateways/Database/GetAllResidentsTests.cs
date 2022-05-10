@@ -374,7 +374,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Gateways.Database
             DatabaseContext.Persons.AddRange(new List<Person> { person1, person2, person3 });
             DatabaseContext.SaveChanges();
 
-            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextflag: "A");
+            var (listOfPersons, _) = _classUnderTest.GetResidentsBySearchCriteria(cursor: 0, limit: 20, contextFlag: "A");
 
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(DatabaseContext.Persons.First(x => x.Id == person1.Id).ToResidentInformationResponse());
