@@ -14,7 +14,7 @@ namespace AlertsHandlerLambda
 
             services.AddHttpClient<IGoogleAPIGateway, GoogleAPIGateway>(client =>
             {
-                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("GOOGLE_API_URL")) ?? throw new ConfigurationException("GOOGLE_API_URL not set");
+                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("GOOGLE_API_URL")) ?? throw new ConfigurationException(null, null, "GOOGLE_API_URL not set");
             });
         }
     }

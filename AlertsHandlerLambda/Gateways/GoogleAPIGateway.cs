@@ -10,7 +10,7 @@ namespace AlertsHandlerLambda.Gateways
     public class GoogleAPIGateway : IGoogleAPIGateway
     {
         private readonly HttpClient _httpClient;
-        private readonly string _url = Environment.GetEnvironmentVariable("GOOGLE_CHAT_ROOM_PATH") ?? throw new ConfigurationException("GOOGLE_CHAT_ROOM_PATH not set");
+        private readonly string _url = Environment.GetEnvironmentVariable("GOOGLE_CHAT_ROOM_PATH") ?? throw new ConfigurationException(null, null, "GOOGLE_CHAT_ROOM_PATH not set");
 
         public GoogleAPIGateway(HttpClient httpClient)
         {
@@ -25,7 +25,7 @@ namespace AlertsHandlerLambda.Gateways
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw new GoogleApiException(((int) response.StatusCode).ToString());
+                throw new GoogleApiException(null, null, ((int) response.StatusCode).ToString());
             }
 
             return "Message sent successfully";

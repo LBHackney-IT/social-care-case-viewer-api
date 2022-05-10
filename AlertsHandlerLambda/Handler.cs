@@ -35,7 +35,7 @@ namespace AlertsHandlerLambda
 
             if (googleRoomUseCase == null)
             {
-                throw new ConfigurationException("IGoogleRoomUseCase not configured");
+                throw new ConfigurationException(null, null, "IGoogleRoomUseCase not configured");
             }
 
             return await googleRoomUseCase.SendMessage(snsEvent);
