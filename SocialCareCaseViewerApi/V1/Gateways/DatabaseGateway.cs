@@ -1571,10 +1571,10 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 .FirstOrDefault(prt => prt.Id == relationshipId);
         }
 
-        public void DeleteRelationship(long id)
+        public void DeleteRelationship(long relationshipId)
         {
             var relationship = _databaseContext.PersonalRelationships
-                .Where(prt => prt.Id == id)
+                .Where(prt => prt.Id == relationshipId)
                 .Include(pr => pr.Type)
                 .Include(pr => pr.Details)
                 .FirstOrDefault();
