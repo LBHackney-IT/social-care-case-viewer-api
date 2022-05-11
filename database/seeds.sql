@@ -2,7 +2,7 @@
 set datestyle = 'DMY';
 
 -- add test persons
-insert into dbo.dm_persons (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, title, first_name, last_name, date_of_birth, date_of_death, gender, restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, nationality, religion, marital_status, first_language, fluency_in_english, email_address, context_flag, scra_id, interpreter_required, from_dm_person) values (7, '6298688113', '7589619035', '523049769', '8794578580355', '3870601053985', 'Birgit Gaylard', 'Ms', 'Birgit', 'Gaylard', '1976-05-12T08:10:37Z', '1912-11-27T05:36:40Z', 'F', 'Y', 74, 'B.B2', 'SI', 'Y', 'Y', 'Somali', 'Atheist', 'Widowed', 'Luxembourgish', 'N', 'bgaylard0@example.com', 'A', '1536125370280', 'N', 'N');
+insert into dbo.dm_persons (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, title, first_name, last_name, date_of_birth, date_of_death, gender, restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, nationality, religion, marital_status, first_language, fluency_in_english, email_address, context_flag, scra_id, interpreter_required, from_dm_person) values (7, '6298688113', '7589619035', '523049769', '8794578580355', '3870601053985', 'Birgit Gaylard', 'Ms', 'Birgit', 'Gaylard', '1976-05-12T08:10:37Z', '1912-11-27T05:36:40Z', 'F', 'N', 74, 'B.B2', 'SI', 'Y', 'Y', 'Somali', 'Atheist', 'Widowed', 'Luxembourgish', 'N', 'bgaylard0@example.com', 'A', '1536125370280', 'N', 'N');
 insert into dbo.dm_persons (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, title, first_name, last_name, date_of_birth, date_of_death, gender, restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, nationality, religion, marital_status, first_language, fluency_in_english, email_address, context_flag, scra_id, interpreter_required, from_dm_person) values (78, '9484164441', '9707109432', '586651054', '3408835010317', '0782557414440', 'Yank Snelgrove', 'Ms', 'Yank', 'Snelgrove', '1998-02-03T22:18:44Z', '1938-02-01T11:21:00Z', 'M', 'Y', 70, 'E.E2', 'CY', 'N', 'Y', 'Hungarian', 'Other', 'Married', 'Danish', 'N', 'ysnelgrove1@example.com', 'C', '3449792366736', 'N', 'N');
 insert into dbo.dm_persons (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, title, first_name, last_name, date_of_birth, date_of_death, gender, restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, nationality, religion, marital_status, first_language, fluency_in_english, email_address, context_flag, scra_id, interpreter_required, from_dm_person) values (70, '6181852965', '5818660834', '908291915', '8913998322761', null, 'Eliza Ganforth', 'Mrs', 'Eliza', 'Ganforth', '1957-11-29T16:43:38Z', '1972-12-19T10:17:54Z', 'F', 'N', 43, 'B.B3', 'ID', 'Y', 'N', 'Belarusian', 'Buddhist', 'Married', 'Northern Sotho', 'N', 'eganforth2@example.com', 'A', '1237723455250', 'Y', 'N');
 insert into dbo.dm_persons (person_id, ssda903_id, nhs_id, scn_id, upn_id, former_upn_id, full_name, title, first_name, last_name, date_of_birth, date_of_death, gender, restricted, person_id_legacy, full_ethnicity_code, country_of_birth_code, is_child_legacy, is_adult_legacy, nationality, religion, marital_status, first_language, fluency_in_english, email_address, context_flag, scra_id, interpreter_required, from_dm_person) values (71, '5544099348', '0788448870', '601568222', '6855298409854', '2073096793145', 'Maryanna Cogdon', 'Dr', 'Maryanna', 'Cogdon', '1943-12-30T12:33:59Z', '1953-05-18T06:57:36Z', 'F', 'Y', 71, 'C.C4', 'EG', 'Y', 'N', 'Emirian', 'Christian', 'Widowed', 'Kannada', 'N', 'mcogdon3@example.com', 'C', '5244563164332', 'Y', 'Y');
@@ -68,3 +68,273 @@ insert into dbo.sccv_workerteam (id, worker_id, team_id) values (87, 74, 32);
 insert into dbo.sccv_workerteam (id, worker_id, team_id) values (92, 50, 24);
 insert into dbo.sccv_workerteam (id, worker_id, team_id) values (56, 39, 24);
 insert into dbo.sccv_workerteam (id, worker_id, team_id) values (95, 18, 20);
+
+--e2e tests
+
+--Adults e2e worker
+INSERT INTO dbo.sccv_worker
+            (id,
+             email,
+             first_name,
+             last_name,
+             role,
+             context_flag,
+             created_by,
+             date_start,
+             date_end,
+             last_modified_by,
+             created_at,
+             last_modified_at,
+             is_active)
+VALUES      (1,
+             'e2e.tests.adult@hackney.gov.uk',
+             'End to End',
+             'Test Adult',
+             'Admin Lead',
+             'A',
+             'e2e.tests.adult@hackney.gov.uk',
+             Now(),
+             NULL,
+             'e2e.tests.adult@hackney.gov.uk',
+             Now(),
+             Now(),
+             true);
+
+--allocation for adult 7
+INSERT INTO dbo.sccv_allocations_combined
+            (id,
+             mosaic_id,
+             worker_id,
+             allocation_start_date,
+             allocation_end_date,
+             case_status,
+             team_id,
+             sccv_created_at,
+             sccv_created_by,
+             marked_for_deletion)
+VALUES      (1,
+             7,
+             1,
+             Now(),
+             NULL,
+             'Open',
+             1,
+             Now(),
+             'e2e.tests.adult@e2e',
+             false);
+
+--allocation for child 19
+INSERT INTO dbo.sccv_allocations_combined
+            (id,
+             mosaic_id,
+             worker_id,
+             allocation_start_date,
+             allocation_end_date,
+             case_status,
+             closure_date_if_closed,
+             team_id,
+             sccv_created_at,
+             sccv_created_by,
+             marked_for_deletion)
+VALUES      (2,
+             19,
+             1,
+             Now(),
+             NULL,
+             'Open',
+             NULL,
+             1,
+             Now(),
+             'e2e.tests.adult@e2e',
+             false);
+
+--team 
+INSERT INTO dbo.sccv_team
+            (id,
+             NAME,
+             context)
+VALUES      (1,
+             'Team One',
+             'A');
+
+INSERT INTO dbo.sccv_workerteam
+            (id,
+             worker_id,
+             team_id,
+             sccv_created_at,
+             sccv_created_by,
+             start_date)
+VALUES      (100,
+             1,
+             1,
+             Now(),
+             'e2e.tests.adult@e2e',
+             Now());
+
+--search for a person
+INSERT INTO dbo.dm_persons
+            (person_id,
+             first_name,
+             last_name,
+             full_name,
+             date_of_birth)
+VALUES      (50000362,
+             'Qumendus',
+             'Quality',
+             'Qumendus Quality',
+             '2000-06-01');
+
+-- case statuses 
+INSERT INTO dbo.dm_persons
+            (person_id,
+             first_name,
+             last_name,
+             full_name,
+             date_of_birth,
+             context_flag)
+VALUES      (50000014,
+             'Cameron',
+             'Bond',
+             'Caemore Bond',
+             '2015-07-14',
+             'C');
+
+INSERT INTO dbo.dm_persons
+            (person_id,
+             first_name,
+             last_name,
+             full_name,
+             date_of_birth,
+             context_flag)
+VALUES      (50000015,
+             'Geraldine',
+             'Sheppard',
+             'Geraldine Sheppard',
+             '2004-03-17',
+             'C');
+
+-- team allocations
+INSERT INTO dbo.sccv_team
+            (id,
+             NAME,
+             context)
+VALUES      (78,
+             'testing-team',
+             'A');
+
+--team allocation, person 7 to team 78
+INSERT INTO dbo.sccv_allocations_combined
+            (id,
+             mosaic_id,
+             worker_id,
+             allocation_start_date,
+             allocation_end_date,
+             case_status,
+             closure_date_if_closed,
+             team_id,
+             sccv_created_at,
+             sccv_created_by,
+             marked_for_deletion,
+             rag_rating)
+VALUES      (700,
+             7,
+             170,
+             Now(),
+             NULL,
+             'Open',
+             NULL,
+             78,
+             Now(),
+             'e2e.tests.adult@e2e',
+             false,
+             'urgent');
+
+--worker 170
+INSERT INTO dbo.sccv_worker
+            (id,
+             email,
+             first_name,
+             last_name,
+             role,
+             context_flag,
+             created_by,
+             date_start,
+             date_end,
+             last_modified_by,
+             created_at,
+             last_modified_at,
+             is_active)
+VALUES      (170,
+             'email@test.com',
+             'e2e',
+             'Test Worker',
+             'Admin Lead',
+             'A',
+             'e2e.tests.adult@e2e',
+             Now(),
+             NULL,
+             'e2e.tests.adult@e2e',
+             Now(),
+             Now(),
+             true);
+
+--worker for team allocations
+INSERT INTO dbo.sccv_worker
+            (id,
+             email,
+             first_name,
+             last_name,
+             role,
+             context_flag,
+             created_by,
+             date_start,
+             date_end,
+             last_modified_by,
+             created_at,
+             last_modified_at,
+             is_active)
+VALUES      (270,
+             'test@example.com',
+             'Test',
+             'Example',
+             'Admin Lead',
+             'A',
+             'e2e.tests.adult@e2e',
+             Now(),
+             NULL,
+             'e2e.tests.adult@e2e',
+             Now(),
+             Now(),
+             true);
+
+-- worker 170 to team 78
+INSERT INTO dbo.sccv_workerteam
+            (id,
+             worker_id,
+             team_id,
+             sccv_created_at,
+             sccv_created_by,
+             start_date,
+             end_date)
+VALUES      (200,
+             170,
+             78,
+             Now(),
+             'e2e.tests.adult@e2e',
+             Now(),
+             NULL); 
+
+--view person
+INSERT INTO dbo.dm_persons
+            (person_id,
+             first_name,
+             last_name,
+             full_name,
+             restricted,
+             context_flag)
+VALUES      (20,
+             'Person',
+             'Twenty',
+             'Person Twenty',
+             'Y',
+             'A');
