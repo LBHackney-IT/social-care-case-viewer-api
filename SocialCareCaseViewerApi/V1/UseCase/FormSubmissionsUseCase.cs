@@ -159,12 +159,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
                 filter &= MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(bsonQuery);
             }
 
-            if (addDeletedRecordsFilter)
+            if (addDeletedRecordsFilter && !request.IncludeDeletedRecords)
             {
-                if (!request.IncludeDeletedRecords)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
-                }
+                filter &= Builders<CaseSubmission>.Filter.Ne(s => s.Deleted, true);
             }
 
             return filter;
