@@ -79,21 +79,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
 
             var response = result.ToResponse();
 
-            if (request.StartDate != null)
+            if (request.StartDate != null && DateTime.TryParseExact(((DateTime) request.StartDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate))
             {
-                if (DateTime.TryParseExact(((DateTime) request.StartDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var startDate))
-                {
-                    response = response
-                        .Where(x =>
+                response = response
+                    .Where(x =>
+                    {
+                        if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                         {
-                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                            {
-                                return date.Date >= startDate.Date;
-                            }
-                            return false;
-                        })
-                        .ToList();
-                }
+                            return date.Date >= startDate.Date;
+                        }
+                        return false;
+                    })
+                    .ToList();
             }
 
             if (request.EndDate != null)
