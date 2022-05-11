@@ -1,12 +1,12 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace SocialCareCaseViewerApi.V1.Domain
 {
+    [Serializable]
     public class InvalidQueryParameterException : Exception
     {
-        public InvalidQueryParameterException(string message)
-            : base(message)
-        {
-        }
+        protected InvalidQueryParameterException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        public InvalidQueryParameterException(SerializationInfo info, StreamingContext context, string message) : base(message) { }
     }
 }
