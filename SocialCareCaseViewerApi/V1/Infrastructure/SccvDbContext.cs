@@ -18,7 +18,6 @@ namespace SocialCareCaseViewerApi.V1.Infrastructure
                 // ADD CA certificate to local trust store
                 // DO this once - Maybe when your service starts
                 X509Store localTrustStore = new X509Store(StoreName.Root);
-                //  string caContentString = System.IO.File.ReadAllText(cAfile);
 
                 X509Certificate2 caCert = new X509Certificate2(Encoding.ASCII.GetBytes(cAfile));
 
