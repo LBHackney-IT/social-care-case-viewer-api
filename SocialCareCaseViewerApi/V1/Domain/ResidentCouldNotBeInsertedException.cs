@@ -10,6 +10,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
     public class ResidentCouldNotBeInsertedException : Exception
     {
         protected ResidentCouldNotBeInsertedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-        public ResidentCouldNotBeInsertedException(SerializationInfo info, StreamingContext? context, string message) : base(message) { }
+        public ResidentCouldNotBeInsertedException(string message) : base(message) { }
     }
 }

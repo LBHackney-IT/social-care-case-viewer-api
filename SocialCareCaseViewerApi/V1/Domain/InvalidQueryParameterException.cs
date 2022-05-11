@@ -7,6 +7,6 @@ namespace SocialCareCaseViewerApi.V1.Domain
     public class InvalidQueryParameterException : Exception
     {
         protected InvalidQueryParameterException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-        public InvalidQueryParameterException(SerializationInfo info, StreamingContext context, string message) : base(message) { }
+        public InvalidQueryParameterException(string message) : base(message) { }
     }
 }

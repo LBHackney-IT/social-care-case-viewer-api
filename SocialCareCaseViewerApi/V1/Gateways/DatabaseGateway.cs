@@ -350,7 +350,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             }
             catch (DbUpdateException ex)
             {
-                throw new ResidentCouldNotBeInsertedException(null, null,
+                throw new ResidentCouldNotBeInsertedException(
                     $"Error with inserting resident record has occurred - {ex.Message}");
             }
 
