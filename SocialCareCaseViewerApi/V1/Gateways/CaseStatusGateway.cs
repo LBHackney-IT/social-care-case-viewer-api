@@ -270,13 +270,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
-            foreach (var ra in request.Answers)
+            foreach (var ra in request?.Answers)
             {
                 caseStatus.Answers.Add(new CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
-                    CreatedBy = request.EditedBy,
-                    StartDate = (DateTime) request.StartDate,
+                    CreatedBy = request?.EditedBy,
+                    StartDate = request?.StartDate,
                     Option = ra.Option,
                     Value = ra.Value,
                     GroupId = identifier.ToString(),
