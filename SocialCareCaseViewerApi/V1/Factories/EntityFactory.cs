@@ -90,7 +90,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
                 ContextFlag = worker.ContextFlag,
                 CreatedBy = worker.CreatedBy,
                 DateStart = worker.DateStart,
-                AllocationCount = worker.Allocations?.Where(x => x.CaseStatus.ToUpper() == "OPEN").Count() ?? 0,
+                AllocationCount = worker.Allocations?.Count(x => x.CaseStatus.ToUpper() == "OPEN") ?? 0,
                 Teams = (includeTeamData ? worker.WorkerTeams?.Select(x => new Team() { Id = x.Team.Id, Name = x.Team.Name, Context = x.Team.Context }).ToList() : null) ?? new List<Team>()
             };
         }
