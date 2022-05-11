@@ -68,7 +68,7 @@ namespace AlertsHandlerLambda.Tests.UseCases
 
             Func<Task> f = async () => await _googleRoomUseCase.SendMessage(_sNSEvent);
 
-            await f.Should().ThrowAsync<ArgumentNullException>().WithMessage("Value cannot be null. (Parameter 'Message')");
+            await f.Should().ThrowAsync<ArgumentNullException>().WithMessage("Value cannot be null.");
         }
     }
 }

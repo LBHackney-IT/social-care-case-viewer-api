@@ -68,7 +68,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Boundary.Request
 
             var errors = ValidationHelper.ValidateModel(request);
 
-            Assert.AreEqual(errors.Count, 1);
+            Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors.Any(x => x.ErrorMessage.Contains("Please enter valid person id")));
         }
 
