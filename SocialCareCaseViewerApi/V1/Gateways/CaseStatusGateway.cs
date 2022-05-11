@@ -164,7 +164,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         }
 
                         //save start date and group id from the current answer and use them in the end reason
-                        var activeAnswer = activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today).First();
+                        var activeAnswer = activeStatusAnswers.First(x => x.StartDate <= DateTime.Today);
 
                         //end current ones
                         foreach (var a in activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today))
