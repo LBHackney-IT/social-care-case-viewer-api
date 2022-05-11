@@ -1390,14 +1390,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             };
 
             response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-            // }
-            // catch (Exception ex)
-            // {
-            //     _databaseContext.WarningNotes.Remove(warningNote);
-            //     _databaseContext.SaveChanges();
-
-            //     throw new PostWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
-            // }
 
             return response;
         }
