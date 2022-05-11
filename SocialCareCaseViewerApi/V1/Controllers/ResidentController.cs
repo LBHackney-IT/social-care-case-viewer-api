@@ -56,7 +56,7 @@ namespace SocialCareCaseViewerApi.V1.Controllers
                 return CreatedAtAction(nameof(AddNewResident), new { id = response.Id }, response);
             }
             catch (Exception e) when (
-                e is ResidentCouldNotBeinsertedException ||
+                e is ResidentCouldNotBeInsertedException ||
                 e is AddressCouldNotBeInsertedException
                 )
             {
