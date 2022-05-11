@@ -93,21 +93,18 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                     .ToList();
             }
 
-            if (request.EndDate != null)
+            if (request.EndDate != null && DateTime.TryParseExact(((DateTime) request.EndDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
             {
-                if (DateTime.TryParseExact(((DateTime) request.EndDate).ToString(CultureInfo.InvariantCulture), "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var endDate))
-                {
-                    response = response
-                        .Where(x =>
+                response = response
+                    .Where(x =>
+                    {
+                        if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                         {
-                            if (DateTime.TryParseExact(x.CaseFormTimestamp, "dd/MM/yyyy H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                            {
-                                return date.Date <= endDate.Date;
-                            }
-                            return false;
-                        })
-                        .ToList();
-                }
+                            return date.Date <= endDate.Date;
+                        }
+                        return false;
+                    })
+                    .ToList();
             }
 
             var totalCount = response.Count;
