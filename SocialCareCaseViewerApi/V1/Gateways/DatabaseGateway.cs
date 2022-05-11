@@ -1369,8 +1369,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WarningNoteId = warningNote.Id
             };
 
-            // try
-            // {
             var dt = DateTime.Now;
 
             var note = new WarningNoteCaseNote
