@@ -334,7 +334,7 @@ namespace SocialCareCaseViewerApi.V1.Factories
             };
         }
 
-        public static dbEmailAddress ToEntity(this EmailAddress entry, long personId)
+        public static dbEmailAddress ToEntity(this EmailAddress entry)
         {
             return new dbEmailAddress()
             {
