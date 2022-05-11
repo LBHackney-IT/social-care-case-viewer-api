@@ -82,7 +82,7 @@ namespace SocialCareCaseViewerApi.V1.UseCase
         {
             if (teamId == 0)
             {
-                return new List<Worker>();
+                return null;
             }
 
             var team = _teamGateway.GetTeamByTeamId(teamId);
