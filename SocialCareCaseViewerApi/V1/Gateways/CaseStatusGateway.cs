@@ -164,7 +164,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                         }
 
                         //save start date and group id from the current answer and use them in the end reason
-                        var activeAnswer = activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today).First();
+                        var activeAnswer = activeStatusAnswers.First(x => x.StartDate <= DateTime.Today);
 
                         //end current ones
                         foreach (var a in activeStatusAnswers.Where(x => x.StartDate <= DateTime.Today))
@@ -270,13 +270,13 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 }
             }
 
-            foreach (var ra in request.Answers)
+            foreach (var ra in request?.Answers)
             {
                 caseStatus.Answers.Add(new CaseStatusAnswer()
                 {
                     CaseStatusId = caseStatus.Id,
-                    CreatedBy = request.EditedBy,
-                    StartDate = (DateTime) request.StartDate,
+                    CreatedBy = request?.EditedBy,
+                    StartDate = request?.StartDate,
                     Option = ra.Option,
                     Value = ra.Value,
                     GroupId = identifier.ToString(),
