@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public int? AllocatedTeamId { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [JsonPropertyName("allocationStartDate")]
         public DateTime? AllocationStartDate { get; set; }
