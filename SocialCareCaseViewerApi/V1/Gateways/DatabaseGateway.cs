@@ -522,7 +522,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             {
                 foreach (var email in request.Emails)
                 {
-                    person.Emails.Add(email.ToEntity(person.Id));
+                    person.Emails.Add(email.ToEntity());
                 }
             }
 
@@ -746,7 +746,7 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 _databaseContext.Emails.RemoveRange(person.Emails);
                 foreach (var email in request.Emails)
                 {
-                    person.Emails.Add(email.ToEntity(person.Id));
+                    person.Emails.Add(email.ToEntity());
                 }
             }
 
@@ -1369,8 +1369,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
                 WarningNoteId = warningNote.Id
             };
 
-            // try
-            // {
             var dt = DateTime.Now;
 
             var note = new WarningNoteCaseNote
@@ -1392,14 +1390,6 @@ namespace SocialCareCaseViewerApi.V1.Gateways
             };
 
             response.CaseNoteId = _processDataGateway.InsertCaseNoteDocument(caseNotesDocument).Result;
-            // }
-            // catch (Exception ex)
-            // {
-            //     _databaseContext.WarningNotes.Remove(warningNote);
-            //     _databaseContext.SaveChanges();
-
-            //     throw new PostWarningNoteException($"Unable to create a case note. Warning Note not created: {ex.Message}");
-            // }
 
             return response;
         }

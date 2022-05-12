@@ -181,12 +181,9 @@ namespace SocialCareCaseViewerApi.V1.UseCase
             filter &= Builders<CaseSubmission>.Filter.Eq(x =>
                 x.SubmissionState, SubmissionState.Submitted);
 
-            if (addDeletedRecordsFilter)
+            if (addDeletedRecordsFilter && !request.IncludeDeletedRecords)
             {
-                if (!request.IncludeDeletedRecords)
-                {
-                    filter &= Builders<CaseSubmission>.Filter.Ne(x => x.Deleted, true);
-                }
+                filter &= Builders<CaseSubmission>.Filter.Ne(x => x.Deleted, true);
             }
 
             return filter;
