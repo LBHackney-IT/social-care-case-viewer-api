@@ -42,7 +42,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Response
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return this.GetHashCode();
         }
 
         public override bool Equals(object? obj)
