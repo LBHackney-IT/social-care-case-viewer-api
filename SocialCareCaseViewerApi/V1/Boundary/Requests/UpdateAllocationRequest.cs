@@ -16,7 +16,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
         public string? DeallocationReason { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         [JsonPropertyName("deallocationDate")]
         public DateTime? DeallocationDate { get; set; }

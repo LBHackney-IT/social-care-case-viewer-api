@@ -49,7 +49,7 @@ namespace SocialCareCaseViewerApi.Tests.V1.Controllers.ResidentControllerTests
             var addNewResidentRequest = _fixture.Create<AddNewResidentRequest>();
             _mockResidentUseCase
                 .Setup(x => x.AddNewResident(addNewResidentRequest))
-                .Throws(new ResidentCouldNotBeinsertedException("Resident could not be inserted"));
+                .Throws(new ResidentCouldNotBeInsertedException("Resident could not be inserted"));
 
             var response = _residentController.AddNewResident(addNewResidentRequest) as ObjectResult;
 
