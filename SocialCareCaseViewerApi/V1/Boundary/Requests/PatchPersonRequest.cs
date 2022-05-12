@@ -14,7 +14,7 @@ namespace SocialCareCaseViewerApi.V1.Boundary.Requests
 {
     public class PatchPersonRequest
     {
-        private string _email;
+        private string? _email;
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Please enter valid person id")]
